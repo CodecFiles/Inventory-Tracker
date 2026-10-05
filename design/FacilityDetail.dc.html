@@ -1,0 +1,751 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Qatar Foundation · MRD Inventory</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F6F8;color:#0E1726;font-family:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#0B7A6B;text-decoration:none}a:hover{color:#075C51}
+h1,h2,h3,h4,p{margin:0}
+.mono{font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;letter-spacing:-.01em}
+.muted{color:#5E6B7D}
+.side{flex:0 0 248px;background:#0C1424;padding:18px 12px 16px;display:flex;flex-direction:column;gap:1px}
+.nav{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:8px;color:#B3BDCB;font-size:13.5px}
+.nav:hover{background:#152036;color:#fff}
+.nav.on{background:#1C2A42;color:#fff;box-shadow:inset 2px 0 0 #2BC4A8}
+.nav svg{flex:0 0 16px;width:16px;height:16px}
+.nav .ct{margin-left:auto;font-size:11px;font-weight:600;background:#2BC4A8;color:#04211C;border-radius:999px;padding:1px 7px}
+.sec{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#7F8CA0;padding:16px 10px 6px;font-weight:500}
+.mtop{display:none}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 32px;background:#fff;border-bottom:1px solid #E3E7EC}
+.srch{flex:1 1 320px;max-width:560px;display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border:1px solid #DCE1E8;border-radius:10px;background:#F8FAFB;color:#5E6B7D;font-size:13.5px}
+.srch:hover{border-color:#B9C2CE;color:#3B4758}
+.kbd{margin-left:auto;font-family:'Geist Mono',monospace;font-size:11px;border:1px solid #DCE1E8;border-radius:5px;padding:1px 6px;background:#fff;color:#5E6B7D}
+.main{padding:28px 32px 48px;max-width:1400px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+.card{background:#fff;border:1px solid #E3E7EC;border-radius:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 14px;border-radius:9px;border:1px solid #D5DBE3;background:#fff;color:#1B2638;font:inherit;font-size:13.5px;font-weight:500;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#F4F6F8;color:#0E1726}
+.btn.p{background:#0B7A6B;border-color:#0B7A6B;color:#fff}.btn.p:hover{background:#08695C;color:#fff}
+.btn.sm{height:32px;padding:0 10px;font-size:12.5px;border-radius:8px}
+.btn.ic{width:40px;padding:0}
+.btn svg{width:16px;height:16px}
+.b{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;background:#EEF1F5;color:#3E4A5C}
+.b::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.s-unconf{background:#EEF1F5;color:#3E4A5C}.s-prep{background:#FFF3DC;color:#8A4B00}.s-ready{background:#E6EEFF;color:#1D4FB8}.s-reserved{background:#F0EAFE;color:#5B32B4}.s-deployed{background:#E1F4EC;color:#0A6648}.s-stock{background:#E3F2F6;color:#0E5E73}.s-maint{background:#FFEDE3;color:#9A3D0B}.s-damaged{background:#FDEBEA;color:#A3201F}.s-transit{background:#E9EDFC;color:#3346A8}.s-returned{background:#F1EEE8;color:#5E554A}.s-retired{background:#EFF0F2;color:#646C79}
+.g-insp{background:#EEF1F5;color:#3E4A5C}.g-bms{background:#E3F2F6;color:#0E5E73}.g-poc{background:#F0EAFE;color:#5B32B4}.g-study{background:#FFF3DC;color:#8A4B00}.g-cpend{background:#E6EEFF;color:#1D4FB8}.g-contract{background:#E1F4EC;color:#0A6648}.g-ops{background:#0B7A6B;color:#fff}.g-done{background:#EFF0F2;color:#646C79}.g-hold{background:#FDEBEA;color:#A3201F}
+.t{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:6px;font-size:11.5px;font-weight:600;letter-spacing:.02em;border:1px solid}
+.t-poc{color:#5B32B4;border-color:#D7C8FA;background:#FAF7FF}.t-con{color:#0A6648;border-color:#BFE3D3;background:#F4FBF8}.t-rep{color:#8A4B00;border-color:#F3D9A6;background:#FFFBF2}.t-add{color:#1D4FB8;border-color:#C8D8FA;background:#F6F9FF}
+.tw{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-weight:500;color:#5E6B7D;font-size:12px;padding:10px 14px;border-bottom:1px solid #E3E7EC;background:#F8FAFB;white-space:nowrap}
+.tbl td{padding:11px 14px;border-bottom:1px solid #EEF1F4;white-space:nowrap;vertical-align:middle}
+.tbl tr:hover td{background:#F8FAFB}
+.tbl tr:last-child td{border-bottom:0}
+.ov{font-size:12px;font-weight:500;color:#5E6B7D;text-transform:uppercase;letter-spacing:.06em}
+.kpi{padding:16px 18px;display:flex;flex-direction:column;gap:6px;color:#0E1726}
+.kpi:hover{border-color:#B9C2CE;color:#0E1726}
+.kpi .n{font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
+.seg{display:flex;gap:2px;height:8px;border-radius:4px;overflow:hidden}
+.seg span{display:block;height:100%}
+.row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-top:1px solid #EEF1F4;color:#0E1726}
+.row:hover{background:#F8FAFB;color:#0E1726}
+.chip{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;border:0;background:transparent;font:inherit;font-size:13px;color:#3B4758;cursor:pointer}
+.chip.on{background:#fff;color:#0E1726;box-shadow:0 1px 2px rgba(14,23,38,.12)}
+.crumb{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px;color:#5E6B7D}
+.crumb a{color:#5E6B7D}.crumb a:hover{color:#0E1726}
+.ph{position:relative;background:#DCE4EA;background-image:linear-gradient(135deg,#E4EAEF 0%,#D2DCE5 100%);display:flex;align-items:center;justify-content:center;color:#8494A6;overflow:hidden}
+.av{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#0E1726;flex:0 0 28px}
+.tab{height:46px;padding:0 2px;border:0;border-bottom:2px solid transparent;background:none;font:inherit;font-size:13.5px;color:#5E6B7D;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.tab:hover{color:#0E1726}
+.tab.on{color:#0E1726;border-bottom-color:#0B7A6B;font-weight:500}
+.tab .cn{font-size:11px;background:#EEF1F5;color:#3E4A5C;border-radius:999px;padding:0 6px;font-weight:500}
+.pn{padding:22px;display:flex;flex-direction:column;gap:22px}
+.h2{font-size:15px;font-weight:600;letter-spacing:-.005em}
+.kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px 24px;margin:0}
+.kv div{display:flex;flex-direction:column;gap:3px}
+.kv dt{font-size:12px;color:#5E6B7D}
+.kv dd{margin:0;font-size:13.5px;font-weight:500;color:#0E1726}
+.ae{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#6B3D00;background:#FFF8EB;border:1px solid #F3D9A6;border-radius:7px;padding:3px 9px}
+.stat{padding:14px;border:1px solid #E3E7EC;border-radius:10px;display:flex;flex-direction:column;gap:2px}
+.stat .n{font-size:22px;font-weight:600;letter-spacing:-.02em}
+.doc{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid #E3E7EC;border-radius:10px;color:#0E1726}
+.doc:hover{border-color:#B9C2CE;color:#0E1726}
+.fi{width:34px;height:38px;border-radius:6px;background:#FDEBEA;color:#A3201F;font-size:9.5px;font-weight:700;display:flex;align-items:flex-end;justify-content:center;padding-bottom:5px;flex:0 0 34px;letter-spacing:.04em}
+.in{width:100%;height:40px;border:1px solid #D5DBE3;border-radius:9px;padding:0 12px;font:inherit;font-size:13.5px;color:#0E1726;background:#fff}
+.in:focus{outline:2px solid rgba(11,122,107,.25);border-color:#0B7A6B}
+.fld{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#1B2638}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.btn.danger{background:#B42318;border-color:#B42318;color:#fff}.btn.danger:hover{background:#9A1D14;color:#fff}
+.mi{display:flex;align-items:center;gap:10px;width:100%;height:38px;padding:0 12px;border:0;background:none;font:inherit;font-size:13px;color:#1B2638;cursor:pointer;border-radius:7px;text-align:left}
+.mi:hover{background:#F4F6F8;color:#0E1726}
+.bar{height:8px;background:#EEF1F5;border-radius:4px;position:relative}
+.tr{display:flex;gap:12px;color:#0E1726}
+@media (max-width:900px){.side{display:none}.mtop{display:flex}.main{padding:20px 16px 40px}.top{padding:12px 16px}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh; background: #F4F6F8">
+<nav class="side" aria-label="Primary">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 2px 8px 14px; color: #fff">
+<span style="width: 32px; height: 32px; border-radius: 9px; background: #0B7A6B; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4a8 8 0 1 0 4 11.5A6.5 6.5 0 0 1 16 4z"></path><path d="M6 18l2.5-2.5"></path></svg></span>
+<span style="display: flex; flex-direction: column; line-height: 1.15"><span style="font-weight: 600; font-size: 14px">Moonrock R&amp;D</span><span style="font-size: 11.5px; color: #8D99AC">Inventory × Exergio</span></span>
+</a>
+<a class="nav" href="Main.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>Dashboard</a>
+<div class="sec">Inventory</div>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"></path><path d="M3 8v8l9 5 9-5V8"></path><path d="M12 13v8"></path></svg>All inventory</a>
+<a class="nav" href="Products.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg>Products</a>
+<a class="nav" href="Batches.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l10 5-10 5L2 7l10-5z"></path><path d="M2 12l10 5 10-5"></path><path d="M2 17l10 5 10-5"></path></svg>Batches</a>
+<a class="nav" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive stock</a>
+<div class="sec">Devices</div>
+<a class="nav" href="DevicePrep.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg>Device preparation<span class="ct">15</span></a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="18" height="7" rx="2"></rect><path d="M7 16.5h.01M11 16.5h.01"></path><path d="M17 13V5"></path><path d="M14 7.5a4 4 0 0 1 6 0"></path></svg>Teltonika</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h11a3 3 0 1 0-3-3"></path><path d="M3 12h16a3 3 0 1 1-3 3"></path><path d="M3 16h7"></path></svg>CO₂ sensors</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"></circle><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7M5.6 5.6a9 9 0 0 0 0 12.8M18.4 5.6a9 9 0 0 1 0 12.8"></path></svg>LoRaWAN gateways</a>
+<a class="nav" href="SimInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"></path><rect x="8.5" y="11" width="7" height="6" rx="1"></rect></svg>SIM cards</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"></rect><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"></path></svg>Other equipment</a>
+<div class="sec">Facilities &amp; projects</div>
+<a class="nav on" href="Facilities.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"></rect><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1"></path></svg>Facilities</a>
+<a class="nav" href="PocManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6L4.5 18.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3"></path><path d="M7 15h10"></path></svg>POC projects</a>
+<a class="nav" href="ContractManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path><path d="M9 13h6M9 17h4"></path></svg>Contracts</a>
+<div class="sec">Deployments</div>
+<a class="nav" href="Deployments.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3z"></path><path d="M14 10h4l3 3v3h-7"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>Deployments</a>
+<a class="nav" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>New deployment</a>
+<div class="sec">Insights &amp; admin</div>
+<a class="nav" href="Reports.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M10 20V5M16 20v-6M21 20H3"></path></svg>Reports</a>
+<a class="nav" href="AuditLog.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l3 2"></path></svg>Audit log</a>
+<a class="nav" href="Users.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20a6.5 6.5 0 0 1 13 0"></path><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"></path></svg>Users &amp; roles</a>
+<a class="nav" href="Settings.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Settings</a>
+<div style="margin-top: auto; padding: 16px 8px 0; display: flex; align-items: center; gap: 10px; border-top: 1px solid #1C2A42">
+<span style="width: 32px; height: 32px; border-radius: 50%; background: #2BC4A8; color: #04211C; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600">CH</span>
+<span style="display: flex; flex-direction: column; line-height: 1.2"><span style="color: #fff; font-size: 13px; font-weight: 500">Chetan</span><span style="color: #8D99AC; font-size: 11.5px">Admin · MRD Office</span></span>
+</div>
+</nav>
+
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+<div class="mtop" style="align-items: center; justify-content: space-between; padding: 12px 16px; background: #0C1424; color: #fff">
+<span style="font-weight: 600">Moonrock R&amp;D</span>
+<button class="btn sm" aria-label="Open menu" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
+</div>
+<header class="top">
+<a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
+<span style="flex: 1"></span>
+<span class="b s-prep" title="All records shown are sample data">Sample data</span>
+<a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
+<a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
+<button class="btn ic" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg></button>
+</header>
+
+<main class="main">
+<nav class="crumb" aria-label="Breadcrumb"><a href="Main.dc.html">Dashboard</a><span aria-hidden="true">/</span><a href="Facilities.dc.html">Facilities</a><span aria-hidden="true">/</span><span style="color: #0E1726">Qatar Foundation</span></nav>
+
+<sc-if value="{{hasNotice}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 10px; background: #E1F4EC; border: 1px solid #BFE3D3; color: #0A4F3A; font-size: 13.5px; margin-bottom: -8px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8 12.5l2.5 2.5L16 9.5"></path></svg>
+<span style="flex: 1">{{notice}}</span>
+<button class="btn sm" onClick="{{clearNotice}}" style="background: transparent; border-color: #BFE3D3; color: #0A4F3A">Undo</button>
+</div>
+</sc-if>
+
+<!-- Banner -->
+<section aria-label="Facility summary" style="display: flex; flex-direction: column">
+<div class="ph" style="height: 240px; border-radius: 14px; border: 1px solid #D5DEE6">
+<svg width="420" height="200" viewBox="0 0 420 200" fill="none" stroke="#B7C4D1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="position: absolute; right: 6%; bottom: 0; opacity: .9"><path d="M0 199h420"></path><path d="M30 199V96h80v103"></path><path d="M110 199V48l70-26v177"></path><path d="M180 199V70h96v129"></path><path d="M276 199v-82h70v82"></path><path d="M346 199v-50h50v50"></path><path d="M126 70h12M150 70h12M126 94h12M150 94h12M126 118h12M150 118h12M126 142h12M150 142h12"></path><path d="M198 92h14M226 92h14M254 92h10M198 118h14M226 118h14M254 118h10M198 144h14M226 144h14M254 144h10"></path><path d="M46 116h12M72 116h12M46 140h12M72 140h12"></path><path d="M292 136h12M316 136h12M292 160h12M316 160h12"></path><path d="M210 199v-28h30v28"></path></svg>
+<span style="position: absolute; left: 22px; top: 20px; display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #4A5668"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="11" r="2"></circle><path d="M21 16l-5-5-8 8"></path></svg>Facility photo · Research Complex B (sample)</span>
+<button class="btn sm" onClick="{{openUpload}}" style="position: absolute; right: 18px; top: 16px; background: rgba(255,255,255,.92)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"></path></svg>Upload image</button>
+</div>
+<div class="card" style="margin: -72px 20px 0; position: relative; padding: 20px 22px; box-shadow: 0 10px 30px rgba(14,23,38,.08); display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-end; justify-content: space-between">
+<div style="display: flex; flex-direction: column; gap: 8px; min-width: 0; flex: 1 1 420px">
+<div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+<h1 style="font-size: 26px; font-weight: 600; letter-spacing: -.02em">Qatar Foundation</h1>
+<span class="b g-poc" style="height: 26px; font-size: 12.5px">POC · Day 5 of 61</span>
+<span class="t t-poc">POC</span>
+</div>
+<div style="display: flex; gap: 8px 18px; flex-wrap: wrap; font-size: 13px; color: #3B4758">
+<span style="display: flex; align-items: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M5 21V7l7-4v18M12 21V10l7 3v8"></path></svg>Client: <strong style="font-weight: 500; color: #0E1726">Qatar Foundation</strong></span>
+<span style="display: flex; align-items: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>Education City, Doha, Qatar</span>
+<span style="display: flex; align-items: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10l8-6 8 6v10"></path><path d="M9 20v-6h6v6"></path></svg>Education campus · Research Complex B</span>
+<span style="display: flex; align-items: center; gap: 6px"><span class="av" style="width: 20px; height: 20px; flex-basis: 20px; font-size: 9px; background: #E3E7EC">OH</span>Primary contact: <strong style="font-weight: 500; color: #0E1726">Omar H.</strong> · Facilities Manager</span>
+</div>
+</div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; position: relative">
+<button class="btn" onClick="{{openEdit}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg>Edit facility</button>
+<button class="btn ic" aria-label="More actions" aria-haspopup="menu" aria-expanded="{{moreExp}}" onClick="{{toggleMore}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h.01M12 12h.01M19 12h.01"></path></svg></button>
+<a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3z"></path><path d="M14 10h4l3 3v3h-7"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>Deploy equipment</a>
+<sc-if value="{{moreOpen}}" hint-placeholder-val="{{ false }}">
+<div role="menu" class="card" style="position: absolute; right: 150px; top: 46px; width: 240px; padding: 6px; z-index: 20; box-shadow: 0 12px 32px rgba(14,23,38,.14)">
+<a class="mi" role="menuitem" href="Reports.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"></path></svg>Export facility report</a>
+<a class="mi" role="menuitem" href="AuditLog.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path></svg>View audit trail</a>
+<button class="mi" role="menuitem" onClick="{{openUpload}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="11" r="2"></circle><path d="M21 16l-5-5-8 8"></path></svg>Replace facility photo</button>
+<div style="height: 1px; background: #EEF1F4; margin: 6px 4px"></div>
+<button class="mi" role="menuitem" onClick="{{askArchive}}" style="color: #A3201F"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"></rect><path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8"></path><path d="M10 12h4"></path></svg>Archive facility…</button>
+</div>
+</sc-if>
+</div>
+</div>
+</section>
+
+<!-- KPIs -->
+<section aria-label="Facility metrics" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="5">
+<div class="card kpi">
+<span style="display: flex; align-items: center; justify-content: space-between"><span class="muted" style="font-size: 13px">{{k.label}}</span><span style="width: 8px; height: 8px; border-radius: 50%; background: {{k.dot}}"></span></span>
+<span class="n">{{k.value}}</span>
+<span class="muted" style="font-size: 12.5px">{{k.sub}}</span>
+</div>
+</sc-for>
+</section>
+
+<!-- Lifecycle stepper -->
+<section class="card" aria-label="Project lifecycle" style="padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px">
+<div><h2 class="h2">Project lifecycle</h2><p class="muted" style="font-size: 13px; margin-top: 2px">Stage 3 of 7 · POC running 01 Oct – 30 Nov 2026 · 56 days remaining</p></div>
+<button class="btn sm" onClick="{{goProject}}">Stage details</button>
+</div>
+<div class="tw">
+<div style="min-width: 860px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase">
+<span style="grid-column: span 2; color: #5E6B7D; padding-left: 8px">Pre-POC</span>
+<span style="grid-column: span 2; color: #5B32B4; padding-left: 8px">POC phase · equipment tracked as POC</span>
+<span style="grid-column: span 3; color: #0A6648; padding-left: 8px">Contract phase</span>
+</div>
+<ol style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr))">
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="7">
+<li style="display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 14px 6px; background: {{s.band}}; border-radius: {{s.rad}}" aria-current="{{s.aria}}">
+<div style="display: flex; align-items: center; width: 100%">
+<span style="flex: 1; height: 2px; background: {{s.lineL}}"></span>
+<span style="width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; flex: 0 0 34px; background: {{s.cbg}}; border: 2px solid {{s.cbd}}; color: {{s.cfg}}; box-shadow: {{s.ring}}">
+<sc-if value="{{s.done}}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+<sc-if value="{{s.nd}}" hint-placeholder-val="{{ true }}">{{s.n}}</sc-if>
+</span>
+<span style="flex: 1; height: 2px; background: {{s.lineR}}"></span>
+</div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 3px; text-align: center">
+<span style="font-size: 13px; font-weight: {{s.fw}}; color: {{s.lc}}">{{s.label}}</span>
+<span class="muted" style="font-size: 12px">{{s.date}}</span>
+<sc-if value="{{s.cur}}" hint-placeholder-val="{{ false }}"><span style="font-size: 11px; font-weight: 600; color: #fff; background: #7A5AF8; border-radius: 999px; padding: 1px 8px; margin-top: 2px">Current</span></sc-if>
+<sc-if value="{{s.hasWho}}" hint-placeholder-val="{{ false }}"><span style="font-size: 11.5px; color: #3B4758">{{s.who}}</span></sc-if>
+</div>
+</li>
+</sc-for>
+</ol>
+</div>
+</div>
+</section>
+
+<!-- Tabs + rail -->
+<div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start">
+<section class="card" style="flex: 3 1 640px; min-width: 0">
+<div role="tablist" aria-label="Facility sections" class="tw" style="display: flex; gap: 22px; padding: 0 22px; border-bottom: 1px solid #E3E7EC">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="8"><button role="tab" aria-selected="{{t.sel}}" class="{{t.cls}}" onClick="{{t.pick}}">{{t.label}}<sc-if value="{{t.hasN}}" hint-placeholder-val="{{ false }}"><span class="cn">{{t.n}}</span></sc-if></button></sc-for>
+</div>
+
+<!-- Overview -->
+<sc-if value="{{tOverview}}" hint-placeholder-val="{{ true }}">
+<div class="pn" role="tabpanel" aria-label="Overview">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<h3 class="h2">About this facility</h3>
+<p style="font-size: 13.5px; color: #1B2638; max-width: 760px">Research Complex B on the Education City campus. The Exergio POC targets CO₂-based demand-controlled ventilation on 6 of the 14 AHUs, integrating with the existing BMS over BACnet/IP through a Teltonika RUT956 installed in plant room B1.</p>
+</div>
+<dl class="kv">
+<div><dt>Client</dt><dd>Qatar Foundation</dd></div>
+<div><dt>Facility type</dt><dd>Education campus</dd></div>
+<div><dt>Building</dt><dd>Research Complex B (sample)</dd></div>
+<div><dt>Address</dt><dd>Education City, Al Rayyan, Doha, Qatar</dd></div>
+<div><dt>Facility ID</dt><dd class="mono">FAC-0006</dd></div>
+<div><dt>Project lead</dt><dd style="display: flex; align-items: center; gap: 6px"><span class="av" style="width: 22px; height: 22px; flex-basis: 22px; font-size: 9.5px; background: #E6DDFB">AI</span>Aisha · Operations</dd></div>
+<div><dt>Deployment type</dt><dd><span class="t t-poc">POC</span></dd></div>
+<div><dt>Created</dt><dd>02 Sep 2026 · Chetan</dd></div>
+</dl>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: center"><h3 class="h2">Contacts</h3><button class="btn sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add contact</button></div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px">
+<sc-for list="{{contacts}}" as="c" hint-placeholder-count="2">
+<div style="display: flex; gap: 12px; padding: 14px; border: 1px solid #E3E7EC; border-radius: 10px">
+<span class="av" style="width: 40px; height: 40px; flex-basis: 40px; font-size: 13px; background: #E3E7EC">{{c.ini}}</span>
+<div style="display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1">
+<span style="display: flex; align-items: center; gap: 8px"><strong style="font-weight: 600; font-size: 13.5px">{{c.name}}</strong><sc-if value="{{c.primary}}" hint-placeholder-val="{{ false }}"><span class="b s-ready" style="height: 20px; font-size: 11px">Primary</span></sc-if></span>
+<span class="muted" style="font-size: 12.5px">{{c.role}}</span>
+<span style="display: flex; gap: 14px; font-size: 12.5px; color: #3B4758; margin-top: 4px; flex-wrap: wrap"><span class="mono">{{c.phone}}</span><span>{{c.email}}</span></span>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+<div style="flex: 1 1 300px; display: flex; flex-direction: column; gap: 10px">
+<h3 class="h2">Notes</h3>
+<div style="padding: 14px; background: #F8FAFB; border: 1px solid #EEF1F4; border-radius: 10px; display: flex; flex-direction: column; gap: 8px">
+<p style="font-size: 13px; color: #1B2638">Plant room B1 access requires a QF escort; book 48 hours ahead through Omar. BMS network is on a separate VLAN — do not connect to the campus LAN.</p>
+<span class="muted" style="font-size: 12px">Aisha · 29 Sep 2026</span>
+</div>
+</div>
+<div style="flex: 1 1 300px; display: flex; flex-direction: column; gap: 10px">
+<h3 class="h2">Equipment on site</h3>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{onsite}}" as="o" hint-placeholder-count="5">
+<div style="display: grid; grid-template-columns: 130px 1fr 28px; align-items: center; gap: 10px; font-size: 12.5px"><span style="color: #3B4758">{{o.label}}</span><span style="height: 8px; background: #F1F4F7; border-radius: 4px"><span style="display: block; height: 8px; width: {{o.w}}; background: #7A5AF8; border-radius: 4px"></span></span><strong style="text-align: right; font-weight: 600">{{o.v}}</strong></div>
+</sc-for>
+</div>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; align-items: center"><h3 class="h2">Documents</h3><button class="btn sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"></path></svg>Upload</button></div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px">
+<sc-for list="{{docs}}" as="d" hint-placeholder-count="4">
+<div class="doc">
+<span class="fi">{{d.ext}}</span>
+<span style="flex: 1; min-width: 0"><span style="display: block; font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{d.name}}</span><span class="muted" style="font-size: 12px">{{d.meta}}</span></span>
+<button class="btn ic sm" style="width: 32px" aria-label="Download {{d.name}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"></path></svg></button>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+</sc-if>
+
+<!-- Project -->
+<sc-if value="{{tProject}}" hint-placeholder-val="{{ false }}">
+<div class="pn" role="tabpanel" aria-label="Project">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap"><div><h3 class="h2">Project stages</h3><p class="muted" style="font-size: 13px">Each stage keeps its own date, owner, notes and documents.</p></div><button class="btn sm">Add stage note</button></div>
+<ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column">
+<sc-for list="{{pstages}}" as="p" hint-placeholder-count="7">
+<li style="display: flex; gap: 14px">
+<div style="display: flex; flex-direction: column; align-items: center; flex: 0 0 28px">
+<span style="width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; background: {{p.cbg}}; border: 2px solid {{p.cbd}}; color: {{p.cfg}}">{{p.n}}</span>
+<span style="flex: 1; width: 2px; background: {{p.line}}; min-height: 16px"></span>
+</div>
+<div style="flex: 1; min-width: 0; padding-bottom: 18px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding-top: 3px">
+<strong style="font-size: 14px; font-weight: 600">{{p.label}}</strong>
+<span class="b {{p.cls}}">{{p.st}}</span>
+<span class="muted" style="font-size: 12.5px">{{p.date}}</span>
+<span style="margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: #3B4758"><sc-for list="{{p.team}}" as="m" hint-placeholder-count="2"><span class="av" style="width: 24px; height: 24px; flex-basis: 24px; font-size: 10px; background: {{m.bg}}" title="{{m.name}}">{{m.ini}}</span></sc-for>{{p.names}}</span>
+</div>
+<sc-if value="{{p.hasNote}}" hint-placeholder-val="{{ true }}"><p style="font-size: 13px; color: #3B4758">{{p.note}}</p></sc-if>
+<sc-if value="{{p.hasDoc}}" hint-placeholder-val="{{ false }}"><span style="display: flex; align-items: center; gap: 6px; font-size: 12.5px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path></svg><a href="FacilityDetail.dc.html">{{p.doc}}</a></span></sc-if>
+<sc-if value="{{p.exp}}" hint-placeholder-val="{{ false }}">
+<div style="border: 1px solid #D7C8FA; background: #FAF7FF; border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; font-size: 12.5px; color: #3B4758"><span>01 Oct</span><strong style="color: #5B32B4; font-weight: 600">Day 5 of 61 · 8%</strong><span>30 Nov</span></div>
+<div class="bar" style="background: #E9E1FD"><span style="display: block; height: 8px; width: 8.2%; background: #7A5AF8; border-radius: 4px"></span></div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; font-size: 12.5px">
+<span><span class="muted" style="display: block; font-size: 12px">Devices installed</span><strong style="font-weight: 600">12 of 14 planned</strong></span>
+<span><span class="muted" style="display: block; font-size: 12px">Next milestone</span><strong style="font-weight: 600">08 Oct · 2 × EM500-CO2</strong></span>
+<span><span class="muted" style="display: block; font-size: 12px">Objectives</span><strong style="font-weight: 600">1 of 4 complete</strong></span>
+</div>
+<div><button class="btn sm" onClick="{{goPoc}}">Open POC details →</button></div>
+</div>
+</sc-if>
+</div>
+</li>
+</sc-for>
+</ol>
+</div>
+</sc-if>
+
+<!-- Site inspection -->
+<sc-if value="{{tInspection}}" hint-placeholder-val="{{ false }}">
+<div class="pn" role="tabpanel" aria-label="Site inspection">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap">
+<div style="display: flex; flex-direction: column; gap: 6px"><div style="display: flex; align-items: center; gap: 10px"><h3 class="h2">Site inspection</h3><span class="b s-deployed">Completed</span></div><span class="ae"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg>Values as recorded by the inspection team · last edited 09 Sep by Aisha</span></div>
+<button class="btn sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg>Edit</button>
+</div>
+<dl class="kv">
+<div><dt>Inspection date</dt><dd>08 Sep 2026</dd></div>
+<div><dt>Inspection team</dt><dd style="display: flex; align-items: center; gap: 6px"><span class="av" style="width: 22px; height: 22px; flex-basis: 22px; font-size: 9.5px; background: #E6DDFB">AI</span><span class="av" style="width: 22px; height: 22px; flex-basis: 22px; font-size: 9.5px; background: #DCE6FB; margin-left: -10px; border: 2px solid #fff">RA</span>Aisha, Rahul</dd></div>
+<div><dt>Areas covered</dt><dd>Plant rooms B1–B2, AHU risers L1–L4</dd></div>
+<div><dt>Systems surveyed</dt><dd>3 · HVAC, lighting control, metering</dd></div>
+</dl>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span class="ov">HVAC (as recorded)</span>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px">
+<div class="stat"><span class="muted" style="font-size: 12px">Chillers</span><span class="n">2</span></div>
+<div class="stat"><span class="muted" style="font-size: 12px">AHUs</span><span class="n">14</span></div>
+<div class="stat"><span class="muted" style="font-size: 12px">FCUs</span><span class="n">60</span></div>
+<div class="stat"><span class="muted" style="font-size: 12px">AHUs in POC scope</span><span class="n" style="color: #5B32B4">6</span></div>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span class="ov">BMS (as recorded)</span>
+<dl class="kv">
+<div><dt>BMS present</dt><dd>Yes · central head-end in B1</dd></div>
+<div><dt>Vendor / system</dt><dd class="muted">[as recorded]</dd></div>
+<div><dt>Network access</dt><dd>Separate BMS VLAN</dd></div>
+<div><dt>Power at panel</dt><dd>Available · 230 V spare outlet</dd></div>
+</dl>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span class="ov">Equipment observations</span>
+<ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #1B2638">
+<li>AHU-01 to AHU-06 run fixed fresh-air schedules; no CO₂ feedback today.</li>
+<li>Cellular signal in plant room B1 is adequate for LTE; external antenna recommended.</li>
+<li>Free DIN-rail space in BMS panel for router and PoE switch.</li>
+</ul>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px"><span class="ov">Notes</span><p style="font-size: 13px; color: #3B4758">Client prefers installation outside teaching hours (after 16:00). Escort required in plant rooms.</p></div>
+<div class="doc" style="max-width: 420px"><span class="fi">PDF</span><span style="flex: 1"><span style="display: block; font-size: 13px; font-weight: 500">Site inspection report.pdf</span><span class="muted" style="font-size: 12px">2.4 MB · Aisha · 09 Sep 2026</span></span><button class="btn ic sm" style="width: 32px" aria-label="Download site inspection report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"></path></svg></button></div>
+</div>
+</sc-if>
+
+<!-- BMS scan -->
+<sc-if value="{{tBms}}" hint-placeholder-val="{{ false }}">
+<div class="pn" role="tabpanel" aria-label="BMS scan">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap">
+<div style="display: flex; flex-direction: column; gap: 6px"><div style="display: flex; align-items: center; gap: 10px"><h3 class="h2">BMS network scan</h3><span class="b s-deployed">Completed</span></div><span class="ae">Values as recorded by Saif during the scan · 22 Sep 2026</span></div>
+<button class="btn sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg>Edit</button>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px">
+<div class="stat"><span class="muted" style="font-size: 12px">Controllers</span><span class="n">18</span></div>
+<div class="stat"><span class="muted" style="font-size: 12px">I/O points</span><span class="n">1,240</span></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Devices discovered</span><span class="n">96</span></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Protocol</span><span class="n" style="font-size: 18px; padding-top: 4px">BACnet/IP</span></div>
+</div>
+<dl class="kv">
+<div><dt>Scan date</dt><dd>22 Sep 2026</dd></div>
+<div><dt>Performed by</dt><dd style="display: flex; align-items: center; gap: 6px"><span class="av" style="width: 22px; height: 22px; flex-basis: 22px; font-size: 9.5px; background: #FBE0DC">SA</span>Saif · BMS specialist</dd></div>
+<div><dt>BMS vendor / system</dt><dd class="muted">[as recorded]</dd></div>
+<div><dt>Network</dt><dd>BMS VLAN · <span class="mono">[as recorded]</span></dd></div>
+<div><dt>Integration point</dt><dd>BMS panel, plant room B1</dd></div>
+<div><dt>Scan status</dt><dd><span class="b s-deployed">Completed</span></dd></div>
+</dl>
+<div style="display: flex; flex-direction: column; gap: 8px"><span class="ov">Notes</span><p style="font-size: 13px; color: #3B4758">All 6 POC-scope AHUs expose supply-fan speed and damper position as writable BACnet objects. Read-only access confirmed for chiller plant.</p></div>
+<div style="display: flex; flex-direction: column; gap: 8px"><span class="ov">Uploaded reports</span>
+<div class="doc" style="max-width: 460px"><span class="fi">PDF</span><span style="flex: 1; min-width: 0"><span class="mono" style="display: block; font-size: 12.5px; font-weight: 500">QF-BMS-Scan-2026-09-22.pdf</span><span class="muted" style="font-size: 12px">5.1 MB · Saif · 22 Sep 2026</span></span><button class="btn ic sm" style="width: 32px" aria-label="Download BMS scan report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"></path></svg></button></div>
+</div>
+</div>
+</sc-if>
+
+<!-- POC -->
+<sc-if value="{{tPoc}}" hint-placeholder-val="{{ false }}">
+<div class="pn" role="tabpanel" aria-label="POC">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap">
+<div style="display: flex; flex-direction: column; gap: 4px"><div style="display: flex; align-items: center; gap: 10px"><h3 class="h2">Proof of concept</h3><span class="b g-poc">In progress</span></div><p class="muted" style="font-size: 13px">01 Oct – 30 Nov 2026 · 61 days · POC equipment is tracked separately from contract stock</p></div>
+<button class="btn" onClick="{{askStudy}}">Move to POC study</button>
+</div>
+<div style="padding: 16px 18px; border: 1px solid #D7C8FA; background: #FAF7FF; border-radius: 12px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px"><strong style="font-size: 20px; font-weight: 600; letter-spacing: -.02em; color: #5B32B4">Day 5 <span style="font-size: 14px; color: #3B4758; font-weight: 500">of 61</span></strong><span style="font-size: 12.5px; color: #3B4758">56 days remaining · study review Dec 2026</span></div>
+<div class="bar" style="background: #E9E1FD; height: 10px; border-radius: 5px"><span style="display: block; height: 10px; width: 8.2%; background: #7A5AF8; border-radius: 5px"></span><span style="position: absolute; left: 11.5%; top: -3px; width: 2px; height: 16px; background: #5B32B4" title="08 Oct · sensor install"></span><span style="position: absolute; left: 23%; top: -3px; width: 2px; height: 16px; background: #5B32B4" title="15 Oct · optimisation on"></span></div>
+<div style="display: flex; justify-content: space-between; font-size: 12px; color: #3B4758; flex-wrap: wrap; gap: 6px"><span>01 Oct · start</span><span>08 Oct · 2 sensors</span><span>15 Oct · optimisation on</span><span>30 Nov · end</span></div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px">
+<div class="stat"><span class="muted" style="font-size: 12px">Devices installed</span><span class="n">12</span><span class="muted" style="font-size: 12px">of 14 planned</span></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Currently deployed</span><span class="n">12</span><span class="muted" style="font-size: 12px">all online</span></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Reserved</span><span class="n">2</span><span class="muted" style="font-size: 12px">EM500-CO2 · 08 Oct</span></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span class="ov">Objectives</span>
+<sc-for list="{{objectives}}" as="o" hint-placeholder-count="4">
+<div style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid #EEF1F4; border-radius: 9px">
+<span style="width: 20px; height: 20px; border-radius: 50%; flex: 0 0 20px; display: flex; align-items: center; justify-content: center; background: {{o.bg}}; border: 2px solid {{o.bd}}; color: #fff"><sc-if value="{{o.done}}" hint-placeholder-val="{{ false }}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if></span>
+<span style="flex: 1; font-size: 13px">{{o.text}}</span>
+<span class="b {{o.cls}}">{{o.st}}</span>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+<div style="flex: 1 1 260px; display: flex; flex-direction: column; gap: 10px"><span class="ov">Responsible team</span>
+<sc-for list="{{team}}" as="m" hint-placeholder-count="3"><span style="display: flex; align-items: center; gap: 10px; font-size: 13px"><span class="av" style="background: {{m.bg}}">{{m.ini}}</span><span><strong style="font-weight: 500">{{m.name}}</strong><span class="muted" style="display: block; font-size: 12px">{{m.role}}</span></span></span></sc-for>
+</div>
+<div style="flex: 1 1 260px; display: flex; flex-direction: column; gap: 8px"><span class="ov">Notes</span><p style="font-size: 13px; color: #3B4758">Baseline logging started on AHU-01 to AHU-06. Optimisation will be enabled after one full week of baseline data. The RUT956 and SIM may remain on site if the client converts to contract.</p></div>
+</div>
+</div>
+</sc-if>
+
+<!-- Contract -->
+<sc-if value="{{tContract}}" hint-placeholder-val="{{ false }}">
+<div class="pn" role="tabpanel" aria-label="Contract" style="align-items: center; text-align: center; padding: 56px 24px">
+<span style="width: 56px; height: 56px; border-radius: 14px; background: #E1F4EC; color: #0A6648; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path><path d="M9 13h6M9 17h4"></path></svg></span>
+<div style="display: flex; flex-direction: column; gap: 6px; align-items: center"><h3 style="font-size: 17px; font-weight: 600">Contract not started</h3><p class="muted" style="font-size: 13.5px; max-width: 480px">The contract stage opens after the POC study. When it starts, the POC Teltonika router, SIM and IP can be retained and re-tagged as contract equipment, so nothing needs to be swapped on site. Additional inventory is then deployed against the contract.</p></div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center"><a class="btn" href="ContractManagement.dc.html">How contracts work</a><button class="btn p" onClick="{{askContract}}">Start contract</button></div>
+<span class="muted" style="font-size: 12px">Only Admins and Operations can start a contract.</span>
+</div>
+</sc-if>
+
+<!-- Deployed inventory -->
+<sc-if value="{{tInventory}}" hint-placeholder-val="{{ false }}">
+<div role="tabpanel" aria-label="Deployed inventory">
+<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 16px 22px">
+<div role="group" aria-label="Category" style="display: flex; gap: 2px; padding: 3px; background: #E9EDF1; border-radius: 10px; flex-wrap: wrap">
+<sc-for list="{{cats}}" as="c" hint-placeholder-count="6"><button class="{{c.cls}}" aria-pressed="{{c.sel}}" onClick="{{c.pick}}">{{c.label}}<span style="margin-left: 6px; font-size: 11.5px; color: #5E6B7D">{{c.n}}</span></button></sc-for>
+</div>
+<span style="flex: 1"></span>
+<a class="btn sm" href="Reports.dc.html">Export list</a>
+</div>
+<div class="tw">
+<table class="tbl">
+<thead><tr><th>Device</th><th>Model</th><th>Serial</th><th>SIM</th><th>IP</th><th>Deployed</th><th>Type</th><th>Placement</th><th>Status</th></tr></thead>
+<tbody>
+<sc-for list="{{devs}}" as="d" hint-placeholder-count="8">
+<tr>
+<td style="font-weight: 500">{{d.dev}}</td>
+<td class="muted">{{d.model}}</td>
+<td><a class="mono" href="DeviceDetail.dc.html">{{d.sn}}</a></td>
+<td class="mono">{{d.sim}}</td>
+<td class="mono">{{d.ip}}</td>
+<td class="muted">{{d.date}}</td>
+<td><span class="t t-poc">POC</span></td>
+<td>{{d.place}}</td>
+<td><span class="b s-deployed">Deployed</span></td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; padding: 12px 22px; border-top: 1px solid #EEF1F4; background: #FAF7FF; font-size: 12.5px; border-radius: 0 0 12px 12px; flex-wrap: wrap">
+<span class="b s-reserved">Reserved</span><span>2 × EM500-CO2 <span class="mono">6136D2470125</span>, <span class="mono">6136D2470126</span> · install 08 Oct · L4 zones</span><a href="Deployments.dc.html" style="margin-left: auto; font-weight: 500">View reservation →</a>
+</div>
+</div>
+</sc-if>
+
+<!-- Activity -->
+<sc-if value="{{tActivity}}" hint-placeholder-val="{{ false }}">
+<div class="pn" role="tabpanel" aria-label="Activity" style="gap: 0">
+<sc-for list="{{activity}}" as="a" hint-placeholder-count="8">
+<div class="tr">
+<div style="display: flex; flex-direction: column; align-items: center; flex: 0 0 30px">
+<span class="av" style="width: 30px; height: 30px; flex-basis: 30px; background: {{a.bg}}">{{a.ini}}</span>
+<span style="flex: 1; width: 2px; background: #EEF1F4; min-height: 14px"></span>
+</div>
+<div style="padding: 4px 0 18px; font-size: 13px; line-height: 1.45; flex: 1; min-width: 0">
+<strong style="font-weight: 600">{{a.who}}</strong> {{a.what}} <a href="{{a.href}}">{{a.obj}}</a>
+<sc-if value="{{a.hasTag}}" hint-placeholder-val="{{ false }}"><span class="t {{a.tcls}}" style="margin-left: 6px">{{a.tag}}</span></sc-if>
+<span class="muted" style="display: block; font-size: 12px">{{a.when}}</span>
+</div>
+</div>
+</sc-for>
+<a href="AuditLog.dc.html" style="font-size: 13px; font-weight: 500; padding-left: 42px">Full audit log →</a>
+</div>
+</sc-if>
+</section>
+
+<!-- Right rail -->
+<aside style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+<div class="card" style="padding: 18px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px"><h2 class="h2">Traceability</h2><span class="muted" style="font-size: 12px">Main router</span></div>
+<p class="muted" style="font-size: 12.5px; margin-bottom: 14px">Follow this site's Teltonika back to its supplier.</p>
+<ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column">
+<sc-for list="{{trace}}" as="t" hint-placeholder-count="5">
+<li style="display: flex; gap: 12px">
+<div style="display: flex; flex-direction: column; align-items: center; flex: 0 0 30px">
+<span style="width: 30px; height: 30px; border-radius: 8px; background: {{t.bg}}; color: {{t.fg}}; display: flex; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 700">{{t.ab}}</span>
+<span style="flex: 1; width: 2px; background: {{t.line}}; min-height: 12px"></span>
+</div>
+<div style="padding-bottom: 14px; min-width: 0; display: flex; flex-direction: column; gap: 1px">
+<span class="ov" style="font-size: 11px">{{t.kind}}</span>
+<a href="{{t.href}}" class="{{t.vcls}}" style="font-weight: 500; font-size: 13px">{{t.value}}</a>
+<span class="muted" style="font-size: 12px">{{t.sub}}</span>
+</div>
+</li>
+</sc-for>
+</ol>
+<div style="display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; padding: 10px 12px; background: #F8FAFB; border-radius: 9px; font-size: 12px">
+<span class="muted">IMEI</span><span class="mono" style="font-size: 12px">860548043912901</span>
+<span class="muted">SIM</span><a class="mono" style="font-size: 12px" href="SimInventory.dc.html">8996802026093001435</a>
+<span class="muted">IP</span><span class="mono" style="font-size: 12px">10.64.12.41</span>
+</div>
+</div>
+
+<div class="card">
+<div style="padding: 16px 18px 10px"><h2 class="h2">Coming up</h2></div>
+<sc-for list="{{upcoming}}" as="u" hint-placeholder-count="3">
+<div class="row" style="padding: 10px 18px">
+<span style="width: 42px; flex: 0 0 42px; border: 1px solid #E3E7EC; border-radius: 8px; text-align: center; padding: 3px 0; line-height: 1.1"><span style="display: block; font-size: 10.5px; color: #5E6B7D; text-transform: uppercase">{{u.mon}}</span><span style="display: block; font-size: 15px; font-weight: 600">{{u.day}}</span></span>
+<span style="flex: 1; min-width: 0"><span style="display: block; font-weight: 500; font-size: 13px">{{u.title}}</span><span class="muted" style="font-size: 12px">{{u.sub}}</span></span>
+</div>
+</sc-for>
+</div>
+
+<div class="card" style="padding: 16px 18px; display: flex; flex-direction: column; gap: 10px">
+<h2 class="h2">Team</h2>
+<sc-for list="{{team}}" as="m" hint-placeholder-count="3"><span style="display: flex; align-items: center; gap: 10px; font-size: 13px"><span class="av" style="background: {{m.bg}}">{{m.ini}}</span><span><strong style="font-weight: 500">{{m.name}}</strong><span class="muted" style="display: block; font-size: 12px">{{m.role}}</span></span></span></sc-for>
+<p class="muted" style="font-size: 12px; padding-top: 8px; border-top: 1px solid #EEF1F4">You are signed in as Admin: you can edit, deploy and archive. Technicians can deploy but not edit facility details.</p>
+</div>
+</aside>
+</div>
+</main>
+</div>
+</div>
+
+<!-- Confirm dialog -->
+<sc-if value="{{cfOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; background: rgba(14,23,38,.45); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 60">
+<div class="card" role="alertdialog" aria-modal="true" aria-labelledby="cfT" style="width: 100%; max-width: 460px; padding: 22px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 24px 64px rgba(14,23,38,.25)">
+<span style="width: 40px; height: 40px; border-radius: 10px; background: {{cf.ibg}}; color: {{cf.ifg}}; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"></rect><path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8"></path><path d="M10 12h4"></path></svg></span>
+<div><h2 id="cfT" style="font-size: 17px; font-weight: 600">{{cf.title}}</h2><p class="muted" style="font-size: 13.5px; margin-top: 6px">{{cf.body}}</p></div>
+<div style="display: flex; justify-content: flex-end; gap: 8px"><button class="btn" onClick="{{cfCancel}}">Cancel</button><button class="btn {{cf.btnCls}}" onClick="{{cfOk}}">{{cf.ok}}</button></div>
+</div>
+</div>
+</sc-if>
+
+<!-- Upload image modal -->
+<sc-if value="{{uploadOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; background: rgba(14,23,38,.45); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 60">
+<div class="card" role="dialog" aria-modal="true" aria-labelledby="upT" style="width: 100%; max-width: 520px; padding: 22px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 24px 64px rgba(14,23,38,.25)">
+<div style="display: flex; justify-content: space-between; align-items: flex-start"><div><h2 id="upT" style="font-size: 17px; font-weight: 600">Upload facility photo</h2><p class="muted" style="font-size: 13px; margin-top: 2px">Shown on the facility card and this banner.</p></div><button class="btn ic sm" style="width: 32px" aria-label="Close" onClick="{{closeUpload}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<label style="display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 32px 18px; border: 1.5px dashed #C3CCD7; border-radius: 12px; background: #FAFBFC; cursor: pointer; text-align: center">
+<span style="width: 48px; height: 48px; border-radius: 12px; background: #DCE4EA; color: #4A5668; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"></path></svg></span>
+<span style="font-size: 13.5px"><strong style="color: #0B7A6B; font-weight: 600">Choose an image</strong> or drag it here</span>
+<span class="muted" style="font-size: 12px">JPG or PNG · landscape works best · up to 10 MB</span>
+<input class="sr" type="file" accept="image/*">
+</label>
+<div style="display: flex; justify-content: flex-end; gap: 8px"><button class="btn" onClick="{{closeUpload}}">Cancel</button><button class="btn p" onClick="{{closeUpload}}">Upload</button></div>
+</div>
+</div>
+</sc-if>
+
+<!-- Edit drawer -->
+<sc-if value="{{editOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; background: rgba(14,23,38,.45); display: flex; justify-content: flex-end; z-index: 60">
+<div role="dialog" aria-modal="true" aria-labelledby="edT" style="width: 100%; max-width: 460px; height: 100%; background: #fff; display: flex; flex-direction: column; box-shadow: -12px 0 40px rgba(14,23,38,.2)">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 22px; border-bottom: 1px solid #EEF1F4"><h2 id="edT" style="font-size: 17px; font-weight: 600">Edit facility</h2><button class="btn ic sm" style="width: 32px" aria-label="Close" onClick="{{closeEdit}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<div style="flex: 1; overflow-y: auto; padding: 18px 22px; display: flex; flex-direction: column; gap: 14px">
+<label class="fld">Facility name<input class="in" type="text" value="Qatar Foundation"></label>
+<label class="fld">Client<input class="in" type="text" value="Qatar Foundation"></label>
+<label class="fld">Building<input class="in" type="text" value="Research Complex B"></label>
+<label class="fld">Location<input class="in" type="text" value="Education City, Doha, Qatar"></label>
+<label class="fld">Facility type<select class="in"><option>Education campus</option><option>Corporate HQ</option><option>Retail</option><option>Commercial office</option><option>Warehouse</option><option>Healthcare</option></select></label>
+<label class="fld">Project lead<select class="in"><option>Aisha · Operations</option><option>Nitin · Operations</option><option>Chetan · Admin</option></select></label>
+<label class="fld">Primary contact<select class="in"><option>Omar H. · Facilities Manager</option><option>Lina S. · Sustainability Lead</option></select></label>
+</div>
+<div style="display: flex; justify-content: flex-end; gap: 8px; padding: 14px 22px; border-top: 1px solid #EEF1F4; background: #F8FAFB"><button class="btn" onClick="{{closeEdit}}">Cancel</button><button class="btn p" onClick="{{closeEdit}}">Save changes</button></div>
+</div>
+</div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2100}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { tab: 'overview', cat: 'all', more: false, confirm: null, upload: false, edit: false, notice: '' }; }
+  renderVals() {
+    const s = this.state;
+    const kpis = [
+      { label: 'Devices deployed', value: '12', sub: '5 categories · all online', dot: '#12A374' },
+      { label: 'POC devices', value: '12', sub: 'tracked as POC equipment', dot: '#7A5AF8' },
+      { label: 'Contract devices', value: '0', sub: 'contract not started', dot: '#8A96A8' },
+      { label: 'Last deployment', value: '03 Oct', sub: 'DEP-0148 · Rahul', dot: '#3B4758' },
+      { label: 'Reserved', value: '2', sub: 'EM500-CO2 · install 08 Oct', dot: '#7C4DDB' }
+    ];
+    const sd = [
+      ['Site inspection', '08 Sep 2026', 'done', 'pre', 'Aisha, Rahul'],
+      ['BMS network scan', '22 Sep 2026', 'done', 'pre', 'Saif'],
+      ['POC', '01 Oct – 30 Nov', 'cur', 'poc', ''],
+      ['POC study', 'Dec 2026', 'up', 'poc', 'Scheduled'],
+      ['Contract', 'Not started', 'up', 'con', ''],
+      ['Deployment', '—', 'up', 'con', ''],
+      ['Active operations', '—', 'up', 'con', '']
+    ];
+    const bands = { pre: 'transparent', poc: '#FAF7FF', con: '#F4FBF8' };
+    const rads = ['0', '0', '10px 0 0 10px', '0 10px 10px 0', '10px 0 0 10px', '0', '0 10px 10px 0'];
+    const steps = sd.map(([label, date, st, ph, who], i) => {
+      const done = st === 'done', cur = st === 'cur', accent = ph === 'poc' ? '#7A5AF8' : '#0B7A6B', tint = ph === 'poc' ? '#E9E1FD' : '#D5F0E6';
+      const prevDone = i > 0 && sd[i - 1][2] === 'done';
+      return {
+        n: i + 1, label, date, who, hasWho: !!who && !cur, done, nd: !done, cur, aria: cur ? 'step' : 'false',
+        band: bands[ph], rad: rads[i],
+        cbg: done ? '#0B7A6B' : '#fff', cbd: done ? '#0B7A6B' : cur ? accent : '#D5DBE3', cfg: done ? '#fff' : cur ? accent : '#5E6B7D',
+        ring: cur ? '0 0 0 5px ' + tint : 'none',
+        lineL: i === 0 ? 'transparent' : (done || cur) && prevDone ? '#0B7A6B' : '#E3E7EC',
+        lineR: i === sd.length - 1 ? 'transparent' : done ? '#0B7A6B' : '#E3E7EC',
+        fw: cur ? '600' : '500', lc: cur ? '#5B32B4' : done ? '#0E1726' : '#5E6B7D'
+      };
+    });
+    const T = [['overview', 'Overview'], ['project', 'Project'], ['inspection', 'Site inspection'], ['bms', 'BMS scan'], ['poc', 'POC'], ['contract', 'Contract'], ['inventory', 'Deployed inventory', 12], ['activity', 'Activity']];
+    const tabs = T.map(([id, label, n]) => ({ label, n, hasN: !!n, sel: s.tab === id ? 'true' : 'false', cls: 'tab' + (s.tab === id ? ' on' : ''), pick: () => this.setState({ tab: id }) }));
+    const contacts = [
+      { ini: 'OH', name: 'Omar H.', role: 'Facilities Manager · Qatar Foundation', phone: '+974 •••• ••••', email: '[email]', primary: true },
+      { ini: 'LS', name: 'Lina S.', role: 'Sustainability Lead · Qatar Foundation', phone: '+974 •••• ••••', email: '[email]', primary: false }
+    ];
+    const onsite = [['CO₂ sensors', 8], ['Teltonika router', 1], ['LoRaWAN gateway', 1], ['SIM card', 1], ['Network switch', 1]].map(([label, v]) => ({ label, v, w: (v / 8 * 100) + '%' }));
+    const docs = [
+      { ext: 'PDF', name: 'Site inspection report.pdf', meta: '2.4 MB · Aisha · 09 Sep 2026' },
+      { ext: 'PDF', name: 'QF-BMS-Scan-2026-09-22.pdf', meta: '5.1 MB · Saif · 22 Sep 2026' },
+      { ext: 'PDF', name: 'POC plan · CO₂ ventilation.pdf', meta: '1.2 MB · Aisha · 28 Sep 2026' },
+      { ext: 'PDF', name: 'NDA · Qatar Foundation.pdf', meta: '380 KB · Chetan · 03 Sep 2026' }
+    ];
+    const P = { AI: ['Aisha', '#E6DDFB'], RA: ['Rahul', '#DCE6FB'], SA: ['Saif', '#FBE0DC'], CH: ['Chetan', '#CDEFE7'] };
+    const tm = arr => arr.map(k => ({ ini: k, name: P[k][0], bg: P[k][1] }));
+    const ps = [
+      ['Site inspection', 'Completed', 's-deployed', '08 Sep 2026', ['AI', 'RA'], 'Walkthrough of plant rooms B1–B2 and AHU risers. HVAC inventory recorded by the team.', 'Site inspection report.pdf', 'done'],
+      ['BMS network scan', 'Completed', 's-deployed', '22 Sep 2026', ['SA'], 'BACnet/IP network scanned: 18 controllers, 1,240 I/O points, 96 devices discovered.', 'QF-BMS-Scan-2026-09-22.pdf', 'done'],
+      ['POC', 'In progress', 'g-poc', '01 Oct – 30 Nov 2026', ['AI', 'RA'], 'Validate CO₂-based ventilation optimisation on 6 AHUs; compare baseline vs optimised energy.', 'POC plan · CO₂ ventilation.pdf', 'cur'],
+      ['POC study', 'Scheduled', 's-ready', 'Dec 2026', ['AI'], 'Evaluation of POC results with Exergio and the client; decision on contract.', '', 'up'],
+      ['Contract', 'Not started', 's-unconf', '—', [], '', '', 'up'],
+      ['Deployment', 'Not started', 's-unconf', '—', [], '', '', 'up'],
+      ['Active operations', 'Not started', 's-unconf', '—', [], '', '', 'up']
+    ];
+    const pstages = ps.map(([label, st, cls, date, team, note, doc, k], i) => ({
+      n: i + 1, label, st, cls, date, team: tm(team), names: team.length ? team.map(x => P[x][0]).join(', ') : 'Unassigned',
+      note, hasNote: !!note, doc, hasDoc: !!doc, exp: k === 'cur',
+      cbg: k === 'done' ? '#0B7A6B' : '#fff', cbd: k === 'done' ? '#0B7A6B' : k === 'cur' ? '#7A5AF8' : '#D5DBE3', cfg: k === 'done' ? '#fff' : k === 'cur' ? '#5B32B4' : '#5E6B7D',
+      line: i === ps.length - 1 ? 'transparent' : k === 'done' ? '#0B7A6B' : '#E3E7EC'
+    }));
+    const objectives = [
+      ['Install CO₂ sensors in POC zones (8 of 10)', 'In progress', 's-prep', false],
+      ['Baseline energy logging on AHU-01 to AHU-06', 'Done', 's-deployed', true],
+      ['Enable CO₂-based ventilation optimisation (from 15 Oct)', 'Not started', 's-unconf', false],
+      ['Baseline vs optimised energy comparison (Nov)', 'Not started', 's-unconf', false]
+    ].map(([text, st, cls, done]) => ({ text, st, cls, done, bg: done ? '#0B7A6B' : '#fff', bd: done ? '#0B7A6B' : '#C3CCD7' }));
+    const team = [
+      { ini: 'AI', bg: '#E6DDFB', name: 'Aisha', role: 'Project lead · Operations' },
+      { ini: 'RA', bg: '#DCE6FB', name: 'Rahul', role: 'Technician · installation' },
+      { ini: 'SA', bg: '#FBE0DC', name: 'Saif', role: 'BMS specialist' }
+    ];
+    const co2 = [['6136D2470112', '01 Oct 2026', 'L1 · AHU-01 zone'], ['6136D2470113', '01 Oct 2026', 'L1 · AHU-02 zone'], ['6136D2470114', '01 Oct 2026', 'L2 · AHU-03 zone'], ['6136D2470115', '01 Oct 2026', 'L2 · AHU-04 zone'], ['6136D2470121', '03 Oct 2026', 'L3 · AHU-05 zone'], ['6136D2470122', '03 Oct 2026', 'L3 · AHU-05 return'], ['6136D2470123', '03 Oct 2026', 'L4 · AHU-06 zone'], ['6136D2470124', '03 Oct 2026', 'L4 · AHU-06 return']];
+    const D = [
+      { cat: 'router', dev: 'LTE router', model: 'Teltonika RUT956', sn: '1108675311', sim: '…093001435', ip: '10.64.12.41', date: '01 Oct 2026', place: 'Plant room B1 · BMS panel' },
+      { cat: 'sim', dev: 'M2M SIM', model: 'Omantel M2M', sn: '8996802026093001435', sim: '—', ip: '—', date: '01 Oct 2026', place: 'In RUT956 1108675311' },
+      { cat: 'gw', dev: 'LoRaWAN gateway', model: 'Milesight UG65', sn: '6247B1820041', sim: '—', ip: '10.64.12.42', date: '01 Oct 2026', place: 'Plant room B1 · wall' },
+      { cat: 'net', dev: 'PoE switch', model: 'UniFi Switch Lite 8 PoE', sn: 'F4E2C6A10B37', sim: '—', ip: '10.64.12.43', date: '01 Oct 2026', place: 'Plant room B1 · BMS panel' }
+    ].concat(co2.map(([sn, date, place]) => ({ cat: 'co2', dev: 'CO₂ sensor', model: 'Milesight EM500-CO2', sn, sim: '—', ip: '—', date, place })));
+    const C = [['all', 'All'], ['co2', 'CO₂ sensors'], ['router', 'Teltonika'], ['gw', 'Gateways'], ['sim', 'SIM'], ['net', 'Network']];
+    const cats = C.map(([id, label]) => ({ label, n: id === 'all' ? D.length : D.filter(d => d.cat === id).length, sel: s.cat === id ? 'true' : 'false', cls: 'chip' + (s.cat === id ? ' on' : ''), pick: () => this.setState({ cat: id }) }));
+    const devs = D.filter(d => s.cat === 'all' || d.cat === s.cat);
+    const activity = [
+      { ini: 'AI', bg: '#E6DDFB', who: 'Aisha', what: 'added a POC note on', obj: 'baseline logging', href: 'FacilityDetail.dc.html', when: 'Today, 09:12', tag: '', tcls: '' },
+      { ini: 'RA', bg: '#DCE6FB', who: 'Rahul', what: 'deployed EM500-CO2 × 4 ·', obj: 'DEP-0148', href: 'Deployments.dc.html', when: 'Sat 3 Oct, 14:10', tag: 'POC', tcls: 't-poc' },
+      { ini: 'CH', bg: '#CDEFE7', who: 'Chetan', what: 'reserved EM500-CO2 × 2 for install on', obj: '08 Oct', href: 'Deployments.dc.html', when: 'Fri 2 Oct, 11:30', tag: '', tcls: '' },
+      { ini: 'CH', bg: '#CDEFE7', who: 'Chetan', what: 'deployed RUT956 1108675311 + UG65 + switch + CO2 × 4 ·', obj: 'DEP-0147', href: 'Deployments.dc.html', when: 'Thu 1 Oct, 16:40', tag: 'POC', tcls: 't-poc' },
+      { ini: 'AI', bg: '#E6DDFB', who: 'Aisha', what: 'moved the project to', obj: 'POC', href: 'PocManagement.dc.html', when: 'Thu 1 Oct, 08:05', tag: '', tcls: '' },
+      { ini: 'SA', bg: '#FBE0DC', who: 'Saif', what: 'uploaded', obj: 'QF-BMS-Scan-2026-09-22.pdf', href: 'FacilityDetail.dc.html', when: 'Tue 22 Sep, 17:20', tag: '', tcls: '' },
+      { ini: 'AI', bg: '#E6DDFB', who: 'Aisha', what: 'completed', obj: 'Site inspection', href: 'FacilityDetail.dc.html', when: 'Tue 8 Sep, 15:45', tag: '', tcls: '' },
+      { ini: 'CH', bg: '#CDEFE7', who: 'Chetan', what: 'created facility', obj: 'Qatar Foundation', href: 'FacilityDetail.dc.html', when: 'Wed 2 Sep, 10:02', tag: '', tcls: '' }
+    ].map(a => Object.assign(a, { hasTag: !!a.tag }));
+    const trace = [
+      { ab: 'FAC', kind: 'Facility', value: 'Qatar Foundation', sub: 'Plant room B1 · BMS panel', href: 'FacilityDetail.dc.html', bg: '#F0EAFE', fg: '#5B32B4', vcls: '' },
+      { ab: 'DEP', kind: 'Deployment', value: 'DEP-0147', sub: '01 Oct 2026 · POC · Chetan', href: 'Deployments.dc.html', bg: '#F1F4F7', fg: '#3B4758', vcls: 'mono' },
+      { ab: 'RUT', kind: 'Teltonika RUT956', value: '1108675311', sub: 'Deployed · configured 29 Sep', href: 'DeviceDetail.dc.html', bg: '#E1F4EC', fg: '#0A6648', vcls: 'mono' },
+      { ab: 'BAT', kind: 'Batch', value: 'TEL-2026-004', sub: '20 units · received 22 Sep 2026', href: 'BatchDetail.dc.html', bg: '#E3F2F6', fg: '#0E5E73', vcls: 'mono' },
+      { ab: 'SUP', kind: 'Supplier', value: 'Al Noor Technologies', sub: 'Muscat · PO-2026-118', href: 'Batches.dc.html', bg: '#FFF3DC', fg: '#8A4B00', vcls: '' }
+    ].map((t, i, a) => Object.assign(t, { line: i === a.length - 1 ? 'transparent' : '#E3E7EC' }));
+    const upcoming = [
+      { mon: 'Oct', day: '08', title: 'Install 2 × EM500-CO2', sub: 'L4 zones · Rahul · reserved' },
+      { mon: 'Oct', day: '15', title: 'Enable optimisation', sub: 'AHU-01 to AHU-06 · Saif' },
+      { mon: 'Nov', day: '30', title: 'POC ends', sub: 'Study review in December' }
+    ];
+    const CF = {
+      archive: { title: 'Archive Qatar Foundation?', body: 'The facility will be hidden from active lists. Its 12 deployed devices, deployments and documents stay linked and fully traceable. Devices are not returned automatically. You can restore it from Settings at any time.', ok: 'Archive facility', btnCls: 'danger', ibg: '#FDEBEA', ifg: '#A3201F', notice: 'Qatar Foundation was archived. History is preserved.' },
+      study: { title: 'Move to POC study?', body: 'The POC is on day 5 of 61. Moving now ends the POC early and starts the evaluation stage. All 12 devices stay on site as POC equipment.', ok: 'Move to POC study', btnCls: 'p', ibg: '#FFF3DC', ifg: '#8A4B00', notice: 'Project moved to POC study.' },
+      contract: { title: 'Start contract?', body: 'The contract normally starts after the POC study. Starting it lets you re-tag the RUT956, SIM and IP as contract equipment and plan additional deployments.', ok: 'Start contract', btnCls: 'p', ibg: '#E1F4EC', ifg: '#0A6648', notice: 'Contract stage started.' }
+    };
+    const cf = s.confirm ? CF[s.confirm] : CF.archive;
+    return {
+      kpis, steps, tabs, contacts, onsite, docs, pstages, objectives, team, cats, devs, activity, trace, upcoming,
+      tOverview: s.tab === 'overview', tProject: s.tab === 'project', tInspection: s.tab === 'inspection', tBms: s.tab === 'bms', tPoc: s.tab === 'poc', tContract: s.tab === 'contract', tInventory: s.tab === 'inventory', tActivity: s.tab === 'activity',
+      goProject: () => this.setState({ tab: 'project' }), goPoc: () => this.setState({ tab: 'poc' }),
+      moreOpen: s.more, moreExp: s.more ? 'true' : 'false', toggleMore: () => this.setState({ more: !s.more }),
+      askArchive: () => this.setState({ confirm: 'archive', more: false }), askStudy: () => this.setState({ confirm: 'study' }), askContract: () => this.setState({ confirm: 'contract' }),
+      cfOpen: !!s.confirm, cf, cfCancel: () => this.setState({ confirm: null }), cfOk: () => this.setState({ confirm: null, notice: cf.notice }),
+      hasNotice: !!s.notice, notice: s.notice, clearNotice: () => this.setState({ notice: '' }),
+      uploadOpen: s.upload, openUpload: () => this.setState({ upload: true, more: false }), closeUpload: () => this.setState({ upload: false }),
+      editOpen: s.edit, openEdit: () => this.setState({ edit: true }), closeEdit: () => this.setState({ edit: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Contracts · MRD Inventory</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F6F8;color:#0E1726;font-family:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#0B7A6B;text-decoration:none}a:hover{color:#075C51}
+h1,h2,h3,h4,p{margin:0}
+.mono{font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;letter-spacing:-.01em}
+.muted{color:#5E6B7D}
+.side{flex:0 0 248px;background:#0C1424;padding:18px 12px 16px;display:flex;flex-direction:column;gap:1px}
+.nav{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:8px;color:#B3BDCB;font-size:13.5px}
+.nav:hover{background:#152036;color:#fff}
+.nav.on{background:#1C2A42;color:#fff;box-shadow:inset 2px 0 0 #2BC4A8}
+.nav svg{flex:0 0 16px;width:16px;height:16px}
+.nav .ct{margin-left:auto;font-size:11px;font-weight:600;background:#2BC4A8;color:#04211C;border-radius:999px;padding:1px 7px}
+.sec{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#7F8CA0;padding:16px 10px 6px;font-weight:500}
+.mtop{display:none}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 32px;background:#fff;border-bottom:1px solid #E3E7EC}
+.srch{flex:1 1 320px;max-width:560px;display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border:1px solid #DCE1E8;border-radius:10px;background:#F8FAFB;color:#5E6B7D;font-size:13.5px}
+.srch:hover{border-color:#B9C2CE;color:#3B4758}
+.kbd{margin-left:auto;font-family:'Geist Mono',monospace;font-size:11px;border:1px solid #DCE1E8;border-radius:5px;padding:1px 6px;background:#fff;color:#5E6B7D}
+.main{padding:28px 32px 48px;max-width:1400px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+.card{background:#fff;border:1px solid #E3E7EC;border-radius:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 14px;border-radius:9px;border:1px solid #D5DBE3;background:#fff;color:#1B2638;font:inherit;font-size:13.5px;font-weight:500;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#F4F6F8;color:#0E1726}
+.btn.p{background:#0B7A6B;border-color:#0B7A6B;color:#fff}.btn.p:hover{background:#08695C;color:#fff}
+.btn.sm{height:32px;padding:0 10px;font-size:12.5px;border-radius:8px}
+.btn.ic{width:40px;padding:0}
+.btn svg{width:16px;height:16px}
+.b{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;background:#EEF1F5;color:#3E4A5C}
+.b::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.s-unconf{background:#EEF1F5;color:#3E4A5C}.s-prep{background:#FFF3DC;color:#8A4B00}.s-ready{background:#E6EEFF;color:#1D4FB8}.s-reserved{background:#F0EAFE;color:#5B32B4}.s-deployed{background:#E1F4EC;color:#0A6648}.s-stock{background:#E3F2F6;color:#0E5E73}.s-maint{background:#FFEDE3;color:#9A3D0B}.s-damaged{background:#FDEBEA;color:#A3201F}.s-transit{background:#E9EDFC;color:#3346A8}.s-returned{background:#F1EEE8;color:#5E554A}.s-retired{background:#EFF0F2;color:#646C79}
+.g-insp{background:#EEF1F5;color:#3E4A5C}.g-bms{background:#E3F2F6;color:#0E5E73}.g-poc{background:#F0EAFE;color:#5B32B4}.g-study{background:#FFF3DC;color:#8A4B00}.g-cpend{background:#E6EEFF;color:#1D4FB8}.g-contract{background:#E1F4EC;color:#0A6648}.g-ops{background:#0B7A6B;color:#fff}.g-done{background:#EFF0F2;color:#646C79}.g-hold{background:#FDEBEA;color:#A3201F}
+.t{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:6px;font-size:11.5px;font-weight:600;letter-spacing:.02em;border:1px solid}
+.t-poc{color:#5B32B4;border-color:#D7C8FA;background:#FAF7FF}.t-con{color:#0A6648;border-color:#BFE3D3;background:#F4FBF8}.t-rep{color:#8A4B00;border-color:#F3D9A6;background:#FFFBF2}.t-add{color:#1D4FB8;border-color:#C8D8FA;background:#F6F9FF}
+.tw{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-weight:500;color:#5E6B7D;font-size:12px;padding:10px 14px;border-bottom:1px solid #E3E7EC;background:#F8FAFB;white-space:nowrap}
+.tbl td{padding:11px 14px;border-bottom:1px solid #EEF1F4;white-space:nowrap;vertical-align:middle}
+.tbl tr:hover td{background:#F8FAFB}
+.tbl tr:last-child td{border-bottom:0}
+.ov{font-size:12px;font-weight:500;color:#5E6B7D;text-transform:uppercase;letter-spacing:.06em}
+.kpi{padding:16px 18px;display:flex;flex-direction:column;gap:6px;color:#0E1726}
+.kpi:hover{border-color:#B9C2CE;color:#0E1726}
+.kpi .n{font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
+.seg{display:flex;gap:2px;height:8px;border-radius:4px;overflow:hidden}
+.seg span{display:block;height:100%}
+.row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-top:1px solid #EEF1F4;color:#0E1726}
+.row:hover{background:#F8FAFB;color:#0E1726}
+.chip{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;border:0;background:transparent;font:inherit;font-size:13px;color:#3B4758;cursor:pointer}
+.chip.on{background:#fff;color:#0E1726;box-shadow:0 1px 2px rgba(14,23,38,.12)}
+.bc{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px;color:#5E6B7D}
+.bc a{color:#5E6B7D}.bc a:hover{color:#0E1726}
+.h1{font-size:26px;font-weight:600;letter-spacing:-.02em}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.dg{color:#A3201F;border-color:#F1C4C2}.btn.dg:hover{background:#FDEBEA;color:#8A1A19}
+.btn.dgs{background:#B42318;border-color:#B42318;color:#fff}.btn.dgs:hover{background:#991D14;color:#fff}
+.cc{display:flex;flex-direction:column;gap:12px;padding:16px;border:1px solid #E3E7EC;border-radius:12px;background:#fff;font:inherit;text-align:left;cursor:pointer;color:#0E1726;width:100%}
+.cc:hover{border-color:#B9C2CE}
+.cc.on{border-color:#0B7A6B;box-shadow:0 0 0 1px #0B7A6B}
+.av{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:600;color:#0E1726;flex:0 0 26px}
+.dl{display:grid;grid-template-columns:120px minmax(0,1fr);gap:9px 12px;font-size:13px}
+.dl dt{color:#5E6B7D}.dl dd{margin:0;font-weight:500}
+.stat{padding:12px 14px;border-radius:10px;background:#F8FAFB;border:1px solid #EEF1F4;display:flex;flex-direction:column;gap:2px}
+.stat .v{font-size:20px;font-weight:600;letter-spacing:-.01em}
+.tl{display:flex;flex-direction:column}
+.tli{display:grid;grid-template-columns:62px 18px minmax(0,1fr);gap:0 10px;position:relative}
+.tli .dot{width:12px;height:12px;border-radius:50%;margin:4px auto 0;position:relative;z-index:1}
+.tli .ln{position:absolute;left:81px;top:16px;bottom:-4px;width:2px;background:#E3E7EC}
+.tli:last-child .ln{display:none}
+.doc{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #E3E7EC;border-radius:10px}
+.ovl{position:fixed;inset:0;background:rgba(14,23,38,.45);z-index:60;display:flex;align-items:center;justify-content:center;padding:16px}
+.dlg{background:#fff;border-radius:14px;width:100%;max-width:540px;box-shadow:0 24px 60px rgba(14,23,38,.3);display:flex;flex-direction:column;max-height:calc(100vh - 32px);overflow:auto}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid #DCE1E8;border-radius:10px;cursor:pointer}
+.opt.on{border-color:#0B7A6B;box-shadow:0 0 0 1px #0B7A6B;background:#F6FBFA}
+.opt input{margin:2px 0 0;width:16px;height:16px;accent-color:#0B7A6B}
+.lbl{font-size:12.5px;font-weight:500;color:#3B4758}
+.inp{height:40px;border:1px solid #D5DBE3;border-radius:9px;padding:0 12px;font:inherit;font-size:13.5px;color:#0E1726;background:#fff;width:100%}
+textarea.inp{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
+.inp:focus{outline:2px solid #2BC4A8;outline-offset:-1px}
+@media (max-width:900px){.side{display:none}.mtop{display:flex}.main{padding:20px 16px 40px}.top{padding:12px 16px}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh; background: #F4F6F8">
+<nav class="side" aria-label="Primary">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 2px 8px 14px; color: #fff">
+<span style="width: 32px; height: 32px; border-radius: 9px; background: #0B7A6B; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4a8 8 0 1 0 4 11.5A6.5 6.5 0 0 1 16 4z"></path><path d="M6 18l2.5-2.5"></path></svg></span>
+<span style="display: flex; flex-direction: column; line-height: 1.15"><span style="font-weight: 600; font-size: 14px">Moonrock R&amp;D</span><span style="font-size: 11.5px; color: #8D99AC">Inventory × Exergio</span></span>
+</a>
+<a class="nav" href="Main.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>Dashboard</a>
+<div class="sec">Inventory</div>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"></path><path d="M3 8v8l9 5 9-5V8"></path><path d="M12 13v8"></path></svg>All inventory</a>
+<a class="nav" href="Products.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg>Products</a>
+<a class="nav" href="Batches.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l10 5-10 5L2 7l10-5z"></path><path d="M2 12l10 5 10-5"></path><path d="M2 17l10 5 10-5"></path></svg>Batches</a>
+<a class="nav" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive stock</a>
+<div class="sec">Devices</div>
+<a class="nav" href="DevicePrep.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg>Device preparation<span class="ct">15</span></a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="18" height="7" rx="2"></rect><path d="M7 16.5h.01M11 16.5h.01"></path><path d="M17 13V5"></path><path d="M14 7.5a4 4 0 0 1 6 0"></path></svg>Teltonika</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h11a3 3 0 1 0-3-3"></path><path d="M3 12h16a3 3 0 1 1-3 3"></path><path d="M3 16h7"></path></svg>CO₂ sensors</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"></circle><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7M5.6 5.6a9 9 0 0 0 0 12.8M18.4 5.6a9 9 0 0 1 0 12.8"></path></svg>LoRaWAN gateways</a>
+<a class="nav" href="SimInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"></path><rect x="8.5" y="11" width="7" height="6" rx="1"></rect></svg>SIM cards</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"></rect><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"></path></svg>Other equipment</a>
+<div class="sec">Facilities &amp; projects</div>
+<a class="nav" href="Facilities.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"></rect><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1"></path></svg>Facilities</a>
+<a class="nav" href="PocManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6L4.5 18.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3"></path><path d="M7 15h10"></path></svg>POC projects</a>
+<a class="nav on" href="ContractManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path><path d="M9 13h6M9 17h4"></path></svg>Contracts</a>
+<div class="sec">Deployments</div>
+<a class="nav" href="Deployments.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3z"></path><path d="M14 10h4l3 3v3h-7"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>Deployments</a>
+<a class="nav" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>New deployment</a>
+<div class="sec">Insights &amp; admin</div>
+<a class="nav" href="Reports.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M10 20V5M16 20v-6M21 20H3"></path></svg>Reports</a>
+<a class="nav" href="AuditLog.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l3 2"></path></svg>Audit log</a>
+<a class="nav" href="Users.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20a6.5 6.5 0 0 1 13 0"></path><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"></path></svg>Users &amp; roles</a>
+<a class="nav" href="Settings.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Settings</a>
+<div style="margin-top: auto; padding: 16px 8px 0; display: flex; align-items: center; gap: 10px; border-top: 1px solid #1C2A42">
+<span style="width: 32px; height: 32px; border-radius: 50%; background: #2BC4A8; color: #04211C; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600">CH</span>
+<span style="display: flex; flex-direction: column; line-height: 1.2"><span style="color: #fff; font-size: 13px; font-weight: 500">Chetan</span><span style="color: #8D99AC; font-size: 11.5px">Admin · MRD Office</span></span>
+</div>
+</nav>
+
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+<div class="mtop" style="align-items: center; justify-content: space-between; padding: 12px 16px; background: #0C1424; color: #fff">
+<span style="font-weight: 600">Moonrock R&amp;D</span>
+<button class="btn sm" aria-label="Open menu" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
+</div>
+<header class="top">
+<a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
+<span style="flex: 1"></span>
+<span class="b s-prep" title="All records shown are sample data">Sample data</span>
+<a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
+<a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
+<button class="btn ic" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg></button>
+</header>
+
+<main class="main">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<nav class="bc" aria-label="Breadcrumb"><a href="Main.dc.html">Dashboard</a><span aria-hidden="true">/</span><a href="Facilities.dc.html">Facilities &amp; projects</a><span aria-hidden="true">/</span><span style="color: #0E1726">Contracts</span></nav>
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 class="h1">Contracts</h1>
+<p class="muted" style="font-size: 14px">Signed Exergio contracts, the equipment they cover, and what was carried over from each POC.</p>
+</div>
+<div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+<a class="btn" href="Reports.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"></path></svg>Contract equipment report</a>
+<a class="btn" href="PocManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h12M12 6l6 6-6 6"></path></svg>Convert a POC</a>
+</div>
+</div>
+</div>
+
+<section aria-label="Contract summary" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="4">
+<div class="card kpi">
+<span style="display: flex; align-items: center; justify-content: space-between"><span class="muted" style="font-size: 13px">{{k.label}}</span><span style="width: 8px; height: 8px; border-radius: 50%; background: {{k.dot}}"></span></span>
+<span class="n">{{k.value}}</span>
+<span class="muted" style="font-size: 12.5px">{{k.sub}}</span>
+</div>
+</sc-for>
+</section>
+
+<sc-if value="{{ended}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 10px; background: #FFF8EB; border: 1px solid #F3D9A6; color: #6B3D00; font-size: 13.5px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg>
+<span style="flex: 1">{{endMsg}}</span>
+<button class="btn sm" onClick="{{undoEnd}}" style="background: transparent; border-color: #F3D9A6; color: #6B3D00">Undo</button>
+</div>
+</sc-if>
+
+<div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start">
+<!-- Left: contract list -->
+<div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+<span class="ov">2 contracts</span>
+<sc-for list="{{list}}" as="c" hint-placeholder-count="2">
+<button class="{{c.cls}}" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}">
+<span style="display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; width: 100%"><span style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-weight: 600; font-size: 14.5px">{{c.name}}</span><span class="mono muted">{{c.ref}}</span></span><span class="b {{c.bcls}}">{{c.status}}</span></span>
+<span style="font-size: 12.5px; color: #3B4758">{{c.line}}</span>
+<span style="display: flex; flex-direction: column; gap: 5px; width: 100%">
+<span class="seg" style="height: 6px; background: #EEF1F5"><span style="width: {{c.pct}}; background: {{c.barc}}"></span></span>
+<span style="display: flex; justify-content: space-between; font-size: 12px" class="muted"><span>{{c.from}}</span><span>{{c.to}}</span></span>
+</span>
+<span style="display: flex; gap: 14px; font-size: 12.5px; color: #3B4758; flex-wrap: wrap"><span><strong style="color: #0E1726">{{c.dev}}</strong> devices</span><span>{{c.meta}}</span></span>
+</button>
+</sc-for>
+
+<div class="card" style="padding: 16px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; align-items: center"><h2 style="font-size: 14px; font-weight: 600">Next in the pipeline</h2><a href="PocManagement.dc.html" style="font-size: 12.5px; font-weight: 500">POC projects →</a></div>
+<a href="FacilityDetail.dc.html" style="display: flex; gap: 10px; align-items: center; color: #0E1726">
+<span style="flex: 1; min-width: 0"><span style="display: block; font-weight: 500; font-size: 13px">Qatar Foundation</span><span class="muted" style="font-size: 12px">POC ends 30 Nov 2026 · 12 devices</span></span><span class="b g-poc">POC</span></a>
+<a href="FacilityDetail.dc.html" style="display: flex; gap: 10px; align-items: center; color: #0E1726">
+<span style="flex: 1; min-width: 0"><span style="display: block; font-weight: 500; font-size: 13px">Al Khuwair Business Tower</span><span class="muted" style="font-size: 12px">POC kit 20 Oct · after BMS scan</span></span><span class="b g-bms">BMS scan</span></a>
+</div>
+
+<div class="card" style="padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: center"><h2 style="font-size: 14px; font-weight: 600">Notes</h2><span class="muted" style="font-size: 12px">{{selShort}}</span></div>
+<sc-for list="{{notes}}" as="n" hint-placeholder-count="2">
+<div style="display: flex; gap: 10px">
+<span class="av" style="background: {{n.bg}}">{{n.ini}}</span>
+<span style="font-size: 13px; line-height: 1.45"><strong style="font-weight: 600">{{n.who}}</strong> <span class="muted" style="font-size: 12px">· {{n.when}}</span><span style="display: block; color: #3B4758">{{n.text}}</span></span>
+</div>
+</sc-for>
+<label for="cnote" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Add a note</label>
+<textarea id="cnote" class="inp" placeholder="Add a note for the team…" value="{{draft}}" onChange="{{onDraft}}" style="min-height: 60px"></textarea>
+<div style="display: flex; justify-content: flex-end"><button class="btn sm" onClick="{{addNote}}" disabled="{{noDraft}}">Add note</button></div>
+</div>
+</div>
+
+<!-- Right: detail -->
+<section class="card" style="flex: 2.6 1 620px; min-width: 0; display: flex; flex-direction: column" aria-label="Contract detail">
+
+<sc-if value="{{isBM}}" hint-placeholder-val="{{ true }}">
+<div style="padding: 20px 22px; display: flex; flex-direction: column; gap: 16px; border-bottom: 1px solid #EEF1F4">
+<div style="display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: flex-start">
+<div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+<span style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span class="b s-deployed">Active</span><span class="b g-ops">Active operations</span></span>
+<h2 style="font-size: 20px; font-weight: 600; letter-spacing: -.01em"><a href="FacilityDetail.dc.html" style="color: #0E1726">Bank Muscat Head Office</a></h2>
+<span class="muted" style="font-size: 13px"><span class="mono" style="color: #0E1726">CN-EXG-BM-2026-01</span> · Airport Heights, Muscat · signed 24 Jun 2026</span>
+</div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<button class="btn sm" onClick="{{openEdit}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg>Edit contract</button>
+<a class="btn sm p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add equipment</a>
+<button class="btn sm dg" onClick="{{openEnd}}">End contract</button>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between; font-size: 12.5px; gap: 8px; flex-wrap: wrap"><span><span class="muted">Start</span> <strong style="font-weight: 600">01 Jul 2026</strong></span><span style="color: #0A6648; font-weight: 500">Month 4 of 36 · 999 days remaining</span><span><span class="muted">End</span> <strong style="font-weight: 600">30 Jun 2029</strong></span></div>
+<div style="position: relative; height: 10px; border-radius: 5px; background: #EEF1F5" role="img" aria-label="Contract term 8.8% elapsed">
+<span style="position: absolute; left: 0; top: 0; bottom: 0; width: 8.8%; background: #0E8A78; border-radius: 5px" title="96 of 1,095 days elapsed"></span>
+<span style="position: absolute; left: 8.8%; top: -4px; width: 2px; height: 18px; background: #0E1726" title="Today · 05 Oct 2026"></span>
+</div>
+<div style="display: flex; justify-content: space-between; font-size: 12px" class="muted"><span>Today · 05 Oct 2026</span><span>Renewal review from 01 Jan 2029</span></div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px">
+<div class="stat"><span class="muted" style="font-size: 12px">Devices under contract</span><span class="v">35</span></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Retained from POC</span><span class="v" style="color: #5B32B4">14</span></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Added since</span><span class="v">21</span></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Last deployment</span><span class="v" style="font-size: 16px; padding-top: 3px">28 Sep 2026</span></div>
+</div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 0">
+<div style="padding: 18px 22px; display: flex; flex-direction: column; gap: 14px; border-right: 1px solid #EEF1F4">
+<h3 style="font-size: 14px; font-weight: 600">Contract details</h3>
+<dl class="dl" style="margin: 0">
+<dt>Reference</dt><dd class="mono">CN-EXG-BM-2026-01</dd>
+<dt>Client</dt><dd>Bank Muscat · via Exergio</dd>
+<dt>Signed</dt><dd>24 Jun 2026</dd>
+<dt>Term</dt><dd>01 Jul 2026 – 30 Jun 2029 · 36 months</dd>
+<dt>Preceded by</dt><dd>POC 01 Apr – 31 May 2026</dd>
+<dt>Scope</dt><dd style="font-weight: 400; color: #5E6B7D; font-style: italic">[contract scope as entered]</dd>
+<dt>Owner</dt><dd>Aisha · Operations</dd>
+</dl>
+<h3 style="font-size: 14px; font-weight: 600; margin-top: 4px">Documents</h3>
+<div class="doc">
+<span style="width: 34px; height: 34px; border-radius: 8px; background: #FDEBEA; color: #A3201F; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex: 0 0 34px">PDF</span>
+<span style="flex: 1; min-width: 0"><span class="mono" style="display: block; color: #0E1726">CN-EXG-BM-2026-01_signed.pdf</span><span class="muted" style="font-size: 12px">Signed contract · 2.4 MB · Aisha, 24 Jun</span></span>
+<button class="btn sm ic" style="width: 32px" aria-label="Download signed contract"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"></path></svg></button>
+</div>
+<div class="doc">
+<span style="width: 34px; height: 34px; border-radius: 8px; background: #FDEBEA; color: #A3201F; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex: 0 0 34px">PDF</span>
+<span style="flex: 1; min-width: 0"><span class="mono" style="display: block; color: #0E1726">BM-POC-study-final.pdf</span><span class="muted" style="font-size: 12px">POC study report · 5.1 MB · Chetan, 10 Jun</span></span>
+<button class="btn sm ic" style="width: 32px" aria-label="Download POC study report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"></path></svg></button>
+</div>
+</div>
+<div style="padding: 18px 22px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: center"><h3 style="font-size: 14px; font-weight: 600">Contract deployment timeline</h3><a href="Deployments.dc.html" style="font-size: 12.5px; font-weight: 500">All deployments →</a></div>
+<div class="tl">
+<sc-for list="{{timeline}}" as="e" hint-placeholder-count="7">
+<div class="tli" style="padding-bottom: 12px">
+<span class="muted" style="font-size: 12px; text-align: right; padding-top: 1px">{{e.date}}</span>
+<span class="dot" style="background: {{e.dot}}; border: 2px solid {{e.ring}}"></span>
+<span class="ln" aria-hidden="true"></span>
+<span style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+<span style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span style="font-weight: 500; font-size: 13px">{{e.title}}</span><span class="t {{e.tcls}}">{{e.tag}}</span></span>
+<span class="muted" style="font-size: 12px"><span class="mono">{{e.ref}}</span> · {{e.sub}}</span>
+</span>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+
+<div style="border-top: 1px solid #EEF1F4">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 22px 12px; gap: 8px; flex-wrap: wrap">
+<div><h3 style="font-size: 14px; font-weight: 600">Deployed equipment by category</h3><p class="muted" style="font-size: 12.5px">35 serialised devices · plus 462 quantity-tracked items (cables, accessories)</p></div>
+<a href="FacilityDetail.dc.html" style="font-size: 12.5px; font-weight: 500">View all at facility →</a>
+</div>
+<div class="tw">
+<table class="tbl">
+<thead><tr><th>Category</th><th>Product</th><th style="text-align: right">Deployed</th><th style="text-align: right">Retained from POC</th><th style="text-align: right">Added under contract</th><th>Status</th></tr></thead>
+<tbody>
+<sc-for list="{{equip}}" as="q" hint-placeholder-count="6">
+<tr><td style="font-weight: 500">{{q.cat}}</td><td><a href="ProductDetail.dc.html" style="color: #0E1726">{{q.prod}}</a></td><td style="text-align: right; font-weight: 600">{{q.dep}}</td><td style="text-align: right"><span style="color: #5B32B4; font-weight: 500">{{q.ret}}</span></td><td style="text-align: right">{{q.add}}</td><td><span class="b {{q.scls}}">{{q.st}}</span></td></tr>
+</sc-for>
+<tr><td style="font-weight: 600">Total</td><td></td><td style="text-align: right; font-weight: 600">35</td><td style="text-align: right; font-weight: 600; color: #5B32B4">14</td><td style="text-align: right; font-weight: 600">21</td><td></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{isLulu}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 20px 22px; display: flex; flex-direction: column; gap: 16px; border-bottom: 1px solid #EEF1F4">
+<div style="display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: flex-start">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span class="b g-cpend">Contract pending</span><span class="b g-study">POC study</span></span>
+<h2 style="font-size: 20px; font-weight: 600; letter-spacing: -.01em"><a href="FacilityDetail.dc.html" style="color: #0E1726">Lulu Hypermarket</a></h2>
+<span class="muted" style="font-size: 13px"><span class="mono" style="color: #0E1726">CN-EXG-LU-2026-D1</span> · draft · Bausher, Muscat</span>
+</div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<button class="btn sm" onClick="{{openEdit}}">Edit draft terms</button>
+<a class="btn sm" href="PocManagement.dc.html">Open POC study</a>
+<span title="Available once the POC study decision is recorded"><button class="btn sm p" disabled="{{yes}}">Convert to contract</button></span>
+</div>
+</div>
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; background: #F6F9FF; border: 1px solid #C8D8FA; color: #1D3F8F; font-size: 13px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>
+<span>Awaiting POC study decision on <strong>Wed 14 Oct 2026</strong>. The 8 POC devices stay recorded as POC until the contract is signed.</span>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr))">
+<div style="padding: 18px 22px; display: flex; flex-direction: column; gap: 14px; border-right: 1px solid #EEF1F4">
+<h3 style="font-size: 14px; font-weight: 600">Draft terms</h3>
+<dl class="dl" style="margin: 0">
+<dt>Draft ref</dt><dd class="mono">CN-EXG-LU-2026-D1</dd>
+<dt>Proposed term</dt><dd>36 months from 01 Nov 2026</dd>
+<dt>POC</dt><dd>15 Jul – 15 Sep 2026 · study in progress</dd>
+<dt>Scope</dt><dd style="font-weight: 400; color: #5E6B7D; font-style: italic">[proposed scope as entered]</dd>
+<dt>Owner</dt><dd>Aisha · Operations</dd>
+</dl>
+</div>
+<div style="padding: 18px 22px; display: flex; flex-direction: column; gap: 10px">
+<h3 style="font-size: 14px; font-weight: 600">Proposed equipment</h3>
+<sc-for list="{{proposed}}" as="p" hint-placeholder-count="5">
+<div style="display: flex; justify-content: space-between; gap: 10px; font-size: 13px; padding: 6px 0; border-bottom: 1px solid #EEF1F4"><span>{{p.item}}</span><span><span style="color: #5B32B4">{{p.ret}}</span><span class="muted"> retained · </span><strong>{{p.add}}</strong><span class="muted"> new</span></span></div>
+</sc-for>
+<p class="muted" style="font-size: 12.5px">Stock check: 29 EM500-CO2 available in office, 0 UG65 ready (2 need preparation).</p>
+</div>
+</div>
+</sc-if>
+</section>
+</div>
+
+<!-- End contract dialog -->
+<sc-if value="{{endOpen}}" hint-placeholder-val="{{ false }}">
+<div class="ovl">
+<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="endt">
+<div style="padding: 20px 22px 0; display: flex; gap: 14px; align-items: flex-start">
+<span style="width: 40px; height: 40px; border-radius: 50%; background: #FDEBEA; color: #A3201F; display: flex; align-items: center; justify-content: center; flex: 0 0 40px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9.5 17H2.5z"></path><path d="M12 10v4M12 17h.01"></path></svg></span>
+<div style="display: flex; flex-direction: column; gap: 4px"><h2 id="endt" style="font-size: 17px; font-weight: 600">End contract CN-EXG-BM-2026-01?</h2><p class="muted" style="font-size: 13px">Bank Muscat Head Office · 35 devices under contract</p></div>
+</div>
+<div style="padding: 16px 22px; display: flex; flex-direction: column; gap: 14px">
+<div style="padding: 11px 14px; border-radius: 10px; background: #FFF8EB; border: 1px solid #F3D9A6; color: #6B3D00; font-size: 13px">Equipment stays recorded. Nothing is deleted: every device keeps its history and the audit log records this change. Choose what happens to the 35 devices.</div>
+<div role="radiogroup" aria-label="Equipment after contract ends" style="display: flex; flex-direction: column; gap: 8px">
+<label class="{{optRetain}}"><input type="radio" name="endc" checked="{{isRetain}}" onChange="{{pickRetain}}"><span><strong style="display: block; font-size: 13.5px; font-weight: 600">Retain at facility</strong><span class="muted" style="font-size: 12.5px">Devices stay at Bank Muscat, marked out of contract. No return trip needed.</span></span></label>
+<label class="{{optReturn}}"><input type="radio" name="endc" checked="{{isReturn}}" onChange="{{pickReturn}}"><span><strong style="display: block; font-size: 13.5px; font-weight: 600">Return to MRD Office</strong><span class="muted" style="font-size: 12.5px">Creates a return record for each device. Status becomes Returned when they arrive.</span></span></label>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 6px"><label class="lbl" for="endd">Effective date</label><input id="endd" class="inp" type="date" value="{{endDate}}" onChange="{{onEndDate}}"></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><label class="lbl" for="endr">Reason</label><select id="endr" class="inp"><option>Term completed</option><option>Terminated by client</option><option>Replaced by new contract</option><option>Other</option></select></div>
+</div>
+<p class="muted" style="font-size: 12px">Only Admins can end a contract. This action will be signed as Chetan (Admin).</p>
+</div>
+<div style="padding: 14px 22px; border-top: 1px solid #EEF1F4; display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap">
+<button class="btn" onClick="{{closeEnd}}">Cancel</button>
+<button class="btn dgs" onClick="{{doEnd}}">End contract</button>
+</div>
+</div>
+</div>
+</sc-if>
+
+<!-- Edit dialog -->
+<sc-if value="{{editOpen}}" hint-placeholder-val="{{ false }}">
+<div class="ovl">
+<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="editt">
+<div style="padding: 20px 22px 4px; display: flex; justify-content: space-between; align-items: center"><h2 id="editt" style="font-size: 17px; font-weight: 600">Edit contract</h2><button class="btn sm ic" style="width: 32px" onClick="{{closeEdit}}" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<div style="padding: 12px 22px 18px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 6px"><label class="lbl" for="eref">Contract reference</label><input id="eref" class="inp mono" type="text" value="{{editRef}}" readOnly="{{yes}}"></div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 6px"><label class="lbl" for="es">Start date</label><input id="es" class="inp" type="date" value="{{editStart}}" readOnly="{{yes}}"></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><label class="lbl" for="ee">End date</label><input id="ee" class="inp" type="date" value="{{editEnd}}" readOnly="{{yes}}"></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px"><label class="lbl" for="esc">Scope</label><textarea id="esc" class="inp" placeholder="[contract scope as entered]"></textarea></div>
+<p class="muted" style="font-size: 12px">Changes are versioned. The previous terms stay visible in the audit log.</p>
+</div>
+<div style="padding: 14px 22px; border-top: 1px solid #EEF1F4; display: flex; justify-content: flex-end; gap: 10px">
+<button class="btn" onClick="{{closeEdit}}">Cancel</button>
+<button class="btn p" onClick="{{saveEdit}}">Save changes</button>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="position: fixed; right: 24px; bottom: 24px; z-index: 50; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; background: #0E1726; color: #fff; font-size: 13px; box-shadow: 0 8px 24px rgba(14,23,38,.25)">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2BC4A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+<span>{{toast}}</span>
+<button class="btn sm" onClick="{{closeToast}}" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Dismiss</button>
+</div>
+</sc-if>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1340}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { sel: 'bm', endOpen: false, endChoice: 'retain', endDate: '2029-06-30', ended: false, editOpen: false, toast: '', draft: '', extraNotes: [] };
+  }
+  renderVals() {
+    const st = this.state;
+    const kpis = [
+      { label: 'Active contracts', value: '1', sub: 'Bank Muscat Head Office', dot: '#12A374' },
+      { label: 'Pending', value: '1', sub: 'Lulu Hypermarket · draft terms', dot: '#2F6FE4' },
+      { label: 'Contract devices', value: '35', sub: '14 retained from POC · 21 added', dot: '#0E8A78' },
+      { label: 'Renewals in next 12 months', value: '0', sub: 'Next term end 30 Jun 2029', dot: '#8A96A8' }
+    ];
+    const C = [
+      { id: 'bm', name: 'Bank Muscat Head Office', ref: 'CN-EXG-BM-2026-01', status: 'Active', bcls: 's-deployed', line: 'Active operations · converted from POC on 01 Jul 2026', pct: '8.8%', barc: '#0E8A78', from: '01 Jul 2026', to: '30 Jun 2029', dev: 35, meta: '14 retained · 21 added · last 28 Sep' },
+      { id: 'lulu', name: 'Lulu Hypermarket', ref: 'CN-EXG-LU-2026-D1', status: 'Contract pending', bcls: 'g-cpend', line: 'Awaiting POC study decision · 14 Oct 2026', pct: '0%', barc: '#2F6FE4', from: 'Proposed 01 Nov 2026', to: '36 months', dev: 8, meta: 'POC devices · proposed +27' }
+    ];
+    const list = C.map(c => Object.assign({}, c, { cls: 'cc' + (st.sel === c.id ? ' on' : ''), pressed: st.sel === c.id ? 'true' : 'false', pick: () => this.setState({ sel: c.id }) }));
+    const timeline = [
+      ['01 Apr', 'POC kit installed', 'DEP-0120', '14 devices · Chetan', 'POC', 't-poc', '#7A5AF8', '#E6DDFB'],
+      ['24 Jun', 'Contract signed', 'CN-EXG-BM-2026-01', 'signed PDF attached', 'Contract', 't-con', '#0E8A78', '#CDEFE7'],
+      ['01 Jul', 'POC → contract conversion', 'DEP-0139', '14 devices retained · Aisha', 'Contract', 't-con', '#0E8A78', '#CDEFE7'],
+      ['02 Sep', 'ABB ACS580 VFD × 2', 'DEP-0142', 'AHU-1, AHU-2 · Saif', 'Contract', 't-con', '#0E8A78', '#CDEFE7'],
+      ['24 Sep', 'Milesight EM500-CO2 × 6', 'DEP-0145', 'Floors 3–5 · Rahul', 'Contract', 't-con', '#0E8A78', '#CDEFE7'],
+      ['28 Sep', 'Teltonika RUT956 · 1108675302', 'DEP-0146', 'Plant room B1 · Saif', 'Additional', 't-add', '#2F6FE4', '#DCE6FB'],
+      ['27 Oct', 'Replacement scheduled', 'DEP-0151', 'ABB ACS580 × 2 for Danfoss units in maintenance', 'Replacement', 't-rep', '#fff', '#E08A00']
+    ].map(([date, title, ref, sub, tag, tcls, dot, ring]) => ({ date, title, ref, sub, tag, tcls, dot, ring }));
+    const equip = [
+      ['Teltonika routers', 'Teltonika RUT956', 8, 2, 6, 'Online 8/8', 's-deployed'],
+      ['CO₂ sensors', 'Milesight EM500-CO2', 12, 6, 6, 'Reporting 12/12', 's-deployed'],
+      ['LoRaWAN gateways', 'Milesight UG65', 2, 2, 0, 'Online 2/2', 's-deployed'],
+      ['SIM cards', 'Omantel M2M SIM', 8, 2, 6, 'Active 8/8', 's-deployed'],
+      ['Network switches', 'UniFi Switch Lite 8 PoE', 3, 2, 1, 'Deployed', 's-deployed'],
+      ['VFDs', 'ABB ACS580 VFD', 2, 0, 2, '2 replacements 27 Oct', 's-reserved']
+    ].map(([cat, prod, dep, ret, add, stt, scls]) => ({ cat, prod, dep, ret, add, st: stt, scls }));
+    const proposed = [['Teltonika RUT956', 1, 1], ['Milesight EM500-CO2', 5, 24], ['Milesight UG65', 1, 2], ['Omantel M2M SIM', 1, 1], ['Cat6 patch cable 3 m', 0, 40]].map(([item, ret, add]) => ({ item, ret, add }));
+    const baseNotes = st.sel === 'bm' ? [
+      { ini: 'AI', bg: '#E6DDFB', who: 'Aisha', when: '29 Sep', text: 'Client asked for CO₂ coverage on floors 6–7 next quarter. Will raise as additional deployment.' },
+      { ini: 'SA', bg: '#FBE0DC', who: 'Saif', when: '22 Sep', text: 'Two Danfoss VFDs on AHU-3/4 under maintenance. ABB replacements reserved.' }
+    ] : [
+      { ini: 'AI', bg: '#E6DDFB', who: 'Aisha', when: '29 Sep', text: 'Moved to POC study. Exergio presenting energy savings on 14 Oct.' }
+    ];
+    const notes = st.extraNotes.filter(n => n.sel === st.sel).concat(baseNotes);
+    const isBM = st.sel === 'bm';
+    return {
+      yes: true, kpis, list, timeline, equip, proposed, notes,
+      isBM, isLulu: st.sel === 'lulu', selShort: isBM ? 'Bank Muscat' : 'Lulu Hypermarket',
+      draft: st.draft, noDraft: !st.draft.trim(),
+      onDraft: (e) => this.setState({ draft: e && e.target ? e.target.value : '' }),
+      addNote: () => { if (st.draft.trim()) this.setState({ extraNotes: [{ sel: st.sel, ini: 'CH', bg: '#CDEFE7', who: 'Chetan', when: 'Just now', text: st.draft.trim() }].concat(st.extraNotes), draft: '' }); },
+      endOpen: st.endOpen, openEnd: () => this.setState({ endOpen: true }), closeEnd: () => this.setState({ endOpen: false }),
+      isRetain: st.endChoice === 'retain', isReturn: st.endChoice === 'return',
+      optRetain: 'opt' + (st.endChoice === 'retain' ? ' on' : ''), optReturn: 'opt' + (st.endChoice === 'return' ? ' on' : ''),
+      pickRetain: () => this.setState({ endChoice: 'retain' }), pickReturn: () => this.setState({ endChoice: 'return' }),
+      endDate: st.endDate, onEndDate: (e) => this.setState({ endDate: e && e.target ? e.target.value : st.endDate }),
+      doEnd: () => this.setState({ endOpen: false, ended: true }),
+      ended: st.ended,
+      endMsg: 'Contract CN-EXG-BM-2026-01 set to end on ' + st.endDate + '. Equipment will be ' + (st.endChoice === 'retain' ? 'retained at the facility (out of contract).' : 'returned to the MRD Office with 35 return records.'),
+      undoEnd: () => this.setState({ ended: false }),
+      editOpen: st.editOpen, openEdit: () => this.setState({ editOpen: true }), closeEdit: () => this.setState({ editOpen: false }),
+      editRef: isBM ? 'CN-EXG-BM-2026-01' : 'CN-EXG-LU-2026-D1', editStart: isBM ? '2026-07-01' : '2026-11-01', editEnd: isBM ? '2029-06-30' : '2029-10-31',
+      saveEdit: () => this.setState({ editOpen: false, toast: 'Contract saved · previous version kept in audit log' }),
+      hasToast: !!st.toast, toast: st.toast, closeToast: () => this.setState({ toast: '' })
+    };
+  }
+}
+</script>
+</body>
+</html>

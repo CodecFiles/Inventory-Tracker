@@ -1,0 +1,400 @@
+{
+  "v": 3,
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-10-05T07:20:00Z"
+  },
+  "title": "MRD Inventory & Deployment",
+  "launch": {
+    "view": "canvas",
+    "page": "overview"
+  },
+  "pages": [
+    {
+      "id": "overview",
+      "name": "Dashboard & Search"
+    },
+    {
+      "id": "foundation",
+      "name": "Design System & Login"
+    },
+    {
+      "id": "inventory",
+      "name": "Inventory & Batches"
+    },
+    {
+      "id": "devices",
+      "name": "Devices & Preparation"
+    },
+    {
+      "id": "facilities",
+      "name": "Facilities & Projects"
+    },
+    {
+      "id": "deployments",
+      "name": "Deployments"
+    },
+    {
+      "id": "admin",
+      "name": "Reports & Admin"
+    },
+    {
+      "id": "mobile",
+      "name": "Mobile"
+    }
+  ],
+  "boards": {
+    "Main.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 2240,
+      "title": "Dashboard",
+      "page": "overview",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Search.dc.html": {
+      "x": 1520,
+      "y": 0,
+      "w": 1440,
+      "h": 1000,
+      "title": "Global Search",
+      "page": "overview",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "DesignSystem.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 2700,
+      "title": "Design System",
+      "page": "foundation",
+      "expand": "fill"
+    },
+    "Login.dc.html": {
+      "x": 1520,
+      "y": 0,
+      "w": 1440,
+      "h": 900,
+      "title": "Login",
+      "page": "foundation",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Inventory.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 1560,
+      "title": "Inventory Overview",
+      "page": "inventory",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "InventoryItem.dc.html": {
+      "x": 1520,
+      "y": 0,
+      "w": 1440,
+      "h": 1400,
+      "title": "Inventory Detail",
+      "page": "inventory",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Products.dc.html": {
+      "x": 3040,
+      "y": 0,
+      "w": 1440,
+      "h": 1360,
+      "title": "Products",
+      "page": "inventory",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "ProductDetail.dc.html": {
+      "x": 4560,
+      "y": 0,
+      "w": 1440,
+      "h": 1560,
+      "title": "Product Detail",
+      "page": "inventory",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Batches.dc.html": {
+      "x": 0,
+      "y": 1680,
+      "w": 1440,
+      "h": 1300,
+      "title": "Batches",
+      "page": "inventory",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "BatchDetail.dc.html": {
+      "x": 1520,
+      "y": 1680,
+      "w": 1440,
+      "h": 1900,
+      "title": "Batch Detail",
+      "page": "inventory",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "ReceiveInventory.dc.html": {
+      "x": 3040,
+      "y": 1680,
+      "w": 1440,
+      "h": 1500,
+      "title": "Receive Inventory",
+      "page": "inventory",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "DevicePrep.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 1480,
+      "title": "Device Preparation",
+      "page": "devices",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "DeviceDetail.dc.html": {
+      "x": 1520,
+      "y": 0,
+      "w": 1440,
+      "h": 1760,
+      "title": "Device Detail",
+      "page": "devices",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "SimInventory.dc.html": {
+      "x": 3040,
+      "y": 0,
+      "w": 1440,
+      "h": 1360,
+      "title": "SIM Inventory",
+      "page": "devices",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Facilities.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 1560,
+      "title": "Facilities Overview",
+      "page": "facilities",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "FacilityDetail.dc.html": {
+      "x": 1520,
+      "y": 0,
+      "w": 1440,
+      "h": 2100,
+      "title": "Facility Detail",
+      "page": "facilities",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "PocManagement.dc.html": {
+      "x": 3040,
+      "y": 0,
+      "w": 1440,
+      "h": 1440,
+      "title": "POC Management",
+      "page": "facilities",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "ContractManagement.dc.html": {
+      "x": 4560,
+      "y": 0,
+      "w": 1440,
+      "h": 1340,
+      "title": "Contract Management",
+      "page": "facilities",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Deployments.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 1500,
+      "title": "Deployment Management",
+      "page": "deployments",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "CreateDeployment.dc.html": {
+      "x": 1520,
+      "y": 0,
+      "w": 1440,
+      "h": 1300,
+      "title": "Create Deployment",
+      "page": "deployments",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Reports.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 1320,
+      "title": "Reports",
+      "page": "admin",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "AuditLog.dc.html": {
+      "x": 1520,
+      "y": 0,
+      "w": 1440,
+      "h": 1500,
+      "title": "Audit Log",
+      "page": "admin",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Settings.dc.html": {
+      "x": 3040,
+      "y": 0,
+      "w": 1440,
+      "h": 1500,
+      "title": "Admin Settings",
+      "page": "admin",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Users.dc.html": {
+      "x": 4560,
+      "y": 0,
+      "w": 1440,
+      "h": 1400,
+      "title": "User Management",
+      "page": "admin",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "MobileDevice.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 1640,
+      "title": "Mobile · Device Detail",
+      "page": "mobile",
+      "radius": 28
+    },
+    "MobileFacility.dc.html": {
+      "x": 470,
+      "y": 0,
+      "w": 390,
+      "h": 1600,
+      "title": "Mobile · Facility Detail",
+      "page": "mobile",
+      "radius": 28
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "Search.dc.html",
+    "DesignSystem.dc.html",
+    "Login.dc.html",
+    "Inventory.dc.html",
+    "InventoryItem.dc.html",
+    "Products.dc.html",
+    "ProductDetail.dc.html",
+    "Batches.dc.html",
+    "BatchDetail.dc.html",
+    "ReceiveInventory.dc.html",
+    "DevicePrep.dc.html",
+    "DeviceDetail.dc.html",
+    "SimInventory.dc.html",
+    "Facilities.dc.html",
+    "FacilityDetail.dc.html",
+    "PocManagement.dc.html",
+    "ContractManagement.dc.html",
+    "Deployments.dc.html",
+    "CreateDeployment.dc.html",
+    "Reports.dc.html",
+    "AuditLog.dc.html",
+    "Settings.dc.html",
+    "Users.dc.html",
+    "MobileDevice.dc.html",
+    "MobileFacility.dc.html"
+  ],
+  "notes": {
+    "t-overview": {
+      "x": 0,
+      "y": -300,
+      "text": "Command center & global search",
+      "kind": "title1",
+      "maxW": 2960,
+      "page": "overview"
+    },
+    "t-foundation": {
+      "x": 0,
+      "y": -300,
+      "text": "Foundation: tokens, status system, components",
+      "kind": "title1",
+      "maxW": 2960,
+      "page": "foundation"
+    },
+    "t-inventory": {
+      "x": 0,
+      "y": -300,
+      "text": "Inventory: products, batches, receiving",
+      "kind": "title1",
+      "maxW": 6000,
+      "page": "inventory"
+    },
+    "t-devices": {
+      "x": 0,
+      "y": -300,
+      "text": "Devices: preparation, records, SIMs",
+      "kind": "title1",
+      "maxW": 4480,
+      "page": "devices"
+    },
+    "t-facilities": {
+      "x": 0,
+      "y": -300,
+      "text": "Facilities & project lifecycle",
+      "kind": "title1",
+      "maxW": 6000,
+      "page": "facilities"
+    },
+    "t-deployments": {
+      "x": 0,
+      "y": -300,
+      "text": "Deployments",
+      "kind": "title1",
+      "maxW": 2960,
+      "page": "deployments"
+    },
+    "t-admin": {
+      "x": 0,
+      "y": -300,
+      "text": "Reports, audit & administration",
+      "kind": "title1",
+      "maxW": 6000,
+      "page": "admin"
+    },
+    "t-mobile": {
+      "x": 0,
+      "y": -300,
+      "text": "Mobile field views",
+      "kind": "title1",
+      "maxW": 860,
+      "page": "mobile"
+    }
+  },
+  "designSystems": []
+}

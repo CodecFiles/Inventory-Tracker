@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Teltonika RUT956 · MRD Inventory</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F6F8;color:#0E1726;font-family:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#0B7A6B;text-decoration:none}a:hover{color:#075C51}
+h1,h2,h3,h4,p{margin:0}
+.mono{font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;letter-spacing:-.01em}
+.muted{color:#5E6B7D}
+.side{flex:0 0 248px;background:#0C1424;padding:18px 12px 16px;display:flex;flex-direction:column;gap:1px}
+.nav{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:8px;color:#B3BDCB;font-size:13.5px}
+.nav:hover{background:#152036;color:#fff}
+.nav.on{background:#1C2A42;color:#fff;box-shadow:inset 2px 0 0 #2BC4A8}
+.nav svg{flex:0 0 16px;width:16px;height:16px}
+.nav .ct{margin-left:auto;font-size:11px;font-weight:600;background:#2BC4A8;color:#04211C;border-radius:999px;padding:1px 7px}
+.sec{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#7F8CA0;padding:16px 10px 6px;font-weight:500}
+.mtop{display:none}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 32px;background:#fff;border-bottom:1px solid #E3E7EC}
+.srch{flex:1 1 320px;max-width:560px;display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border:1px solid #DCE1E8;border-radius:10px;background:#F8FAFB;color:#5E6B7D;font-size:13.5px}
+.srch:hover{border-color:#B9C2CE;color:#3B4758}
+.kbd{margin-left:auto;font-family:'Geist Mono',monospace;font-size:11px;border:1px solid #DCE1E8;border-radius:5px;padding:1px 6px;background:#fff;color:#5E6B7D}
+.main{padding:28px 32px 48px;max-width:1400px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+.card{background:#fff;border:1px solid #E3E7EC;border-radius:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 14px;border-radius:9px;border:1px solid #D5DBE3;background:#fff;color:#1B2638;font:inherit;font-size:13.5px;font-weight:500;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#F4F6F8;color:#0E1726}
+.btn.p{background:#0B7A6B;border-color:#0B7A6B;color:#fff}.btn.p:hover{background:#08695C;color:#fff}
+.btn.sm{height:32px;padding:0 10px;font-size:12.5px;border-radius:8px}
+.btn.ic{width:40px;padding:0}
+.btn svg{width:16px;height:16px}
+.b{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;background:#EEF1F5;color:#3E4A5C}
+.b::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.s-unconf{background:#EEF1F5;color:#3E4A5C}.s-prep{background:#FFF3DC;color:#8A4B00}.s-ready{background:#E6EEFF;color:#1D4FB8}.s-reserved{background:#F0EAFE;color:#5B32B4}.s-deployed{background:#E1F4EC;color:#0A6648}.s-stock{background:#E3F2F6;color:#0E5E73}.s-maint{background:#FFEDE3;color:#9A3D0B}.s-damaged{background:#FDEBEA;color:#A3201F}.s-transit{background:#E9EDFC;color:#3346A8}.s-returned{background:#F1EEE8;color:#5E554A}.s-retired{background:#EFF0F2;color:#646C79}
+.g-insp{background:#EEF1F5;color:#3E4A5C}.g-bms{background:#E3F2F6;color:#0E5E73}.g-poc{background:#F0EAFE;color:#5B32B4}.g-study{background:#FFF3DC;color:#8A4B00}.g-cpend{background:#E6EEFF;color:#1D4FB8}.g-contract{background:#E1F4EC;color:#0A6648}.g-ops{background:#0B7A6B;color:#fff}.g-done{background:#EFF0F2;color:#646C79}.g-hold{background:#FDEBEA;color:#A3201F}
+.t{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:6px;font-size:11.5px;font-weight:600;letter-spacing:.02em;border:1px solid}
+.t-poc{color:#5B32B4;border-color:#D7C8FA;background:#FAF7FF}.t-con{color:#0A6648;border-color:#BFE3D3;background:#F4FBF8}.t-rep{color:#8A4B00;border-color:#F3D9A6;background:#FFFBF2}.t-add{color:#1D4FB8;border-color:#C8D8FA;background:#F6F9FF}
+.tw{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-weight:500;color:#5E6B7D;font-size:12px;padding:10px 14px;border-bottom:1px solid #E3E7EC;background:#F8FAFB;white-space:nowrap}
+.tbl td{padding:11px 14px;border-bottom:1px solid #EEF1F4;white-space:nowrap;vertical-align:middle}
+.tbl tr:hover td{background:#F8FAFB}
+.tbl tr:last-child td{border-bottom:0}
+.ov{font-size:12px;font-weight:500;color:#5E6B7D;text-transform:uppercase;letter-spacing:.06em}
+.kpi{padding:16px 18px;display:flex;flex-direction:column;gap:6px;color:#0E1726}
+.kpi:hover{border-color:#B9C2CE;color:#0E1726}
+.kpi .n{font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
+.seg{display:flex;gap:2px;height:8px;border-radius:4px;overflow:hidden}
+.seg span{display:block;height:100%}
+.row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-top:1px solid #EEF1F4;color:#0E1726}
+.row:hover{background:#F8FAFB;color:#0E1726}
+.chip{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;border:0;background:transparent;font:inherit;font-size:13px;color:#3B4758;cursor:pointer}
+.chip.on{background:#fff;color:#0E1726;box-shadow:0 1px 2px rgba(14,23,38,.12)}
+.pill{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 9px;border-radius:6px;font-size:12px;font-weight:500;background:#F1F4F7;color:#3B4758;border:1px solid #E3E7EC}
+.pill svg{width:13px;height:13px}
+.pill.ser{color:#1D4FB8;border-color:#C8D8FA;background:#F6F9FF}.pill.cfg{color:#8A4B00;border-color:#F3D9A6;background:#FFFBF2}
+.tab{display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 2px;border:0;border-bottom:2px solid transparent;background:none;font:inherit;font-size:14px;color:#5E6B7D;cursor:pointer;white-space:nowrap}
+.tab:hover{color:#0E1726}
+.tab.on{color:#0E1726;border-bottom-color:#0B7A6B;font-weight:500}
+.tab .n{font-size:11.5px;background:#EEF1F5;color:#3E4A5C;border-radius:999px;padding:0 7px;line-height:18px}
+.ch{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:16px 18px 12px}
+.ch h2{font-size:15px;font-weight:600}
+.stat{display:flex;flex-direction:column;gap:2px;padding:0 20px;border-left:1px solid #EEF1F4}
+.stat:first-child{padding-left:0;border-left:0}
+.stat strong{font-size:20px;font-weight:600;letter-spacing:-.01em}
+.fchip{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 12px;border-radius:999px;border:1px solid #DCE1E8;background:#fff;font:inherit;font-size:12.5px;color:#3B4758;cursor:pointer;white-space:nowrap}
+.fchip.on{border-color:#0B7A6B;background:#ECF7F4;color:#075C51;box-shadow:inset 0 0 0 1px #0B7A6B}
+.fchip strong{font-weight:600;color:#0E1726}
+.lg{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;border:0;background:none;font:inherit;font-size:13px;color:#3B4758;cursor:pointer;text-align:left}
+.lg:hover{background:#F4F6F8}
+.lg strong{margin-left:auto;color:#0E1726;font-weight:600}
+.bar{height:8px;background:#F1F4F7;border-radius:4px;overflow:hidden}
+.bar span{display:block;height:100%;background:#0E8A78;border-radius:4px}
+.pg{display:inline-flex;align-items:center;justify-content:center;min-width:32px;height:32px;padding:0 8px;border-radius:8px;border:1px solid transparent;background:none;font:inherit;font-size:13px;color:#3B4758;cursor:pointer}
+.pg.on{border-color:#D5DBE3;background:#fff;color:#0E1726;font-weight:600}
+.lock{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#5E6B7D}
+.sw{position:relative;width:40px;height:24px;flex:0 0 40px;border-radius:999px;border:0;background:#C9D1DB;cursor:pointer;padding:0}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(14,23,38,.2)}
+.sw.on{background:#0B7A6B}.sw.on::after{left:19px}
+.rc{display:flex;flex-direction:column;gap:4px;padding:12px;border-radius:10px;border:1px solid #D5DBE3;background:#fff;font-size:12.5px}
+.rc.on{border-color:#0B7A6B;box-shadow:inset 0 0 0 1px #0B7A6B;background:#F4FBF8}
+.in{height:40px;border:1px solid #D5DBE3;border-radius:9px;padding:0 12px;font:inherit;font-size:13.5px;background:#fff;color:#0E1726}
+.in:focus{outline:2px solid rgba(11,122,107,.25);border-color:#0B7A6B}
+.step{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border:1px solid #E3E7EC;border-radius:10px;background:#fff}
+.num{width:24px;height:24px;flex:0 0 24px;border-radius:50%;background:#ECF7F4;color:#075C51;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.ovl{position:fixed;inset:0;background:rgba(14,23,38,.45);z-index:50;display:flex;align-items:center;justify-content:center;padding:16px}
+.dlg{background:#fff;border-radius:14px;width:100%;max-width:460px;box-shadow:0 24px 60px rgba(14,23,38,.25)}
+@media (max-width:900px){.side{display:none}.mtop{display:flex}.main{padding:20px 16px 40px}.top{padding:12px 16px}.stat{padding:0 12px}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh; background: #F4F6F8">
+<nav class="side" aria-label="Primary">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 2px 8px 14px; color: #fff">
+<span style="width: 32px; height: 32px; border-radius: 9px; background: #0B7A6B; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4a8 8 0 1 0 4 11.5A6.5 6.5 0 0 1 16 4z"></path><path d="M6 18l2.5-2.5"></path></svg></span>
+<span style="display: flex; flex-direction: column; line-height: 1.15"><span style="font-weight: 600; font-size: 14px">Moonrock R&amp;D</span><span style="font-size: 11.5px; color: #8D99AC">Inventory × Exergio</span></span>
+</a>
+<a class="nav" href="Main.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>Dashboard</a>
+<div class="sec">Inventory</div>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"></path><path d="M3 8v8l9 5 9-5V8"></path><path d="M12 13v8"></path></svg>All inventory</a>
+<a class="nav on" href="Products.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg>Products</a>
+<a class="nav" href="Batches.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l10 5-10 5L2 7l10-5z"></path><path d="M2 12l10 5 10-5"></path><path d="M2 17l10 5 10-5"></path></svg>Batches</a>
+<a class="nav" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive stock</a>
+<div class="sec">Devices</div>
+<a class="nav" href="DevicePrep.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg>Device preparation<span class="ct">15</span></a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="18" height="7" rx="2"></rect><path d="M7 16.5h.01M11 16.5h.01"></path><path d="M17 13V5"></path><path d="M14 7.5a4 4 0 0 1 6 0"></path></svg>Teltonika</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h11a3 3 0 1 0-3-3"></path><path d="M3 12h16a3 3 0 1 1-3 3"></path><path d="M3 16h7"></path></svg>CO₂ sensors</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"></circle><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7M5.6 5.6a9 9 0 0 0 0 12.8M18.4 5.6a9 9 0 0 1 0 12.8"></path></svg>LoRaWAN gateways</a>
+<a class="nav" href="SimInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"></path><rect x="8.5" y="11" width="7" height="6" rx="1"></rect></svg>SIM cards</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"></rect><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"></path></svg>Other equipment</a>
+<div class="sec">Facilities &amp; projects</div>
+<a class="nav" href="Facilities.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"></rect><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1"></path></svg>Facilities</a>
+<a class="nav" href="PocManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6L4.5 18.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3"></path><path d="M7 15h10"></path></svg>POC projects</a>
+<a class="nav" href="ContractManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path><path d="M9 13h6M9 17h4"></path></svg>Contracts</a>
+<div class="sec">Deployments</div>
+<a class="nav" href="Deployments.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3z"></path><path d="M14 10h4l3 3v3h-7"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>Deployments</a>
+<a class="nav" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>New deployment</a>
+<div class="sec">Insights &amp; admin</div>
+<a class="nav" href="Reports.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M10 20V5M16 20v-6M21 20H3"></path></svg>Reports</a>
+<a class="nav" href="AuditLog.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l3 2"></path></svg>Audit log</a>
+<a class="nav" href="Users.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20a6.5 6.5 0 0 1 13 0"></path><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"></path></svg>Users &amp; roles</a>
+<a class="nav" href="Settings.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Settings</a>
+<div style="margin-top: auto; padding: 16px 8px 0; display: flex; align-items: center; gap: 10px; border-top: 1px solid #1C2A42">
+<span style="width: 32px; height: 32px; border-radius: 50%; background: #2BC4A8; color: #04211C; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600">CH</span>
+<span style="display: flex; flex-direction: column; line-height: 1.2"><span style="color: #fff; font-size: 13px; font-weight: 500">Chetan</span><span style="color: #8D99AC; font-size: 11.5px">Admin · MRD Office</span></span>
+</div>
+</nav>
+
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+<div class="mtop" style="align-items: center; justify-content: space-between; padding: 12px 16px; background: #0C1424; color: #fff">
+<span style="font-weight: 600">Moonrock R&amp;D</span>
+<button class="btn sm" aria-label="Open menu" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
+</div>
+<header class="top">
+<a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
+<span style="flex: 1"></span>
+<span class="b s-prep" title="All records shown are sample data">Sample data</span>
+<a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
+<a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
+<button class="btn ic" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg></button>
+</header>
+
+<main class="main">
+<div style="display: flex; flex-direction: column; gap: 14px">
+<nav aria-label="Breadcrumb" class="muted" style="font-size: 13px; display: flex; gap: 6px; flex-wrap: wrap"><a href="Main.dc.html">Dashboard</a><span aria-hidden="true">/</span><a href="Products.dc.html">Products</a><span aria-hidden="true">/</span><a href="Products.dc.html">Teltonika Devices</a><span aria-hidden="true">/</span><span style="color: #0E1726">Teltonika RUT956</span></nav>
+
+<section class="card" style="padding: 20px; display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start">
+<div style="width: 132px; height: 132px; flex: 0 0 132px; border-radius: 12px; background: #E9EEF2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: #3B4758">
+<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="18" height="7" rx="2"></rect><path d="M7 16.5h.01M11 16.5h.01"></path><path d="M17 13V5"></path><path d="M14 7.5a4 4 0 0 1 6 0"></path></svg>
+<span style="font-size: 11.5px; color: #5E6B7D">Product photo · Upload</span>
+</div>
+<div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="font-size: 26px; font-weight: 600; letter-spacing: -.02em">Teltonika RUT956</h1>
+<p class="muted" style="font-size: 14px">Teltonika · <span class="mono">RUT956</span> · industrial 4G LTE router, the BMS gateway for every Exergio site</p>
+</div>
+<div style="display: flex; gap: 10px; flex-wrap: wrap">
+<button class="btn" onClick="{{goSettings}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg>Edit</button>
+<button class="btn" onClick="{{openArchive}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1"></rect><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"></path><path d="M10 13h4"></path></svg>Archive</button>
+<a class="btn p" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive stock</a>
+</div>
+</div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center">
+<span class="pill">Teltonika Devices</span>
+<span class="pill ser"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5h2M18 5h2v2M20 17v2h-2M6 19H4v-2"></path><path d="M8 9v6M11 9v6M14 9v6M17 9v6"></path></svg>Serialised</span>
+<span class="pill cfg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg>Requires configuration</span>
+<span class="b s-deployed">Active</span>
+<span class="lock" style="margin-left: 4px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Edit &amp; archive: Admin only</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 12px 0; padding-top: 4px">
+<div class="stat"><span class="muted" style="font-size: 12px">Total units</span><strong>30</strong></div>
+<div class="stat"><span class="muted" style="font-size: 12px">In MRD Office</span><strong>20</strong></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Deployed</span><strong>10</strong></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Ready / min</span><strong style="color: #A3201F">4 <span style="font-size: 14px; color: #5E6B7D; font-weight: 500">/ 5</span></strong></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Batches</span><strong>2</strong></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Last received</span><strong style="font-size: 15px; padding-top: 4px">22 Sep 2026</strong></div>
+</div>
+</div>
+</section>
+</div>
+
+<div role="tablist" aria-label="Product sections" style="display: flex; gap: 26px; border-bottom: 1px solid #E3E7EC; margin-top: -8px; overflow-x: auto">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="4"><button class="{{t.cls}}" role="tab" aria-selected="{{t.sel}}" onClick="{{t.pick}}">{{t.label}}<span class="n">{{t.n}}</span></button></sc-for>
+</div>
+
+<!-- OVERVIEW -->
+<sc-if value="{{isOverview}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<section class="card" style="padding: 18px 20px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px">
+<div><h2 style="font-size: 15px; font-weight: 600">Status of all 30 units</h2><p class="muted" style="font-size: 12.5px">Click a status to see those units</p></div>
+<a href="DevicePrep.dc.html" style="font-size: 13px; font-weight: 500">Preparation queue →</a>
+</div>
+<div class="seg" style="height: 14px; border-radius: 7px" role="img" aria-label="14 unconfigured, 1 in preparation, 4 ready, 10 deployed, 1 under maintenance">
+<sc-for list="{{dist}}" as="d" hint-placeholder-count="5"><span style="width: {{d.w}}; background: {{d.c}}" title="{{d.label}} · {{d.v}} units"></span></sc-for>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 4px">
+<sc-for list="{{dist}}" as="d" hint-placeholder-count="5"><button class="lg" onClick="{{d.pick}}"><span style="width: 10px; height: 10px; border-radius: 3px; background: {{d.c}}"></span>{{d.label}}<strong>{{d.v}}</strong></button></sc-for>
+</div>
+<div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-radius: 10px; background: #FFF8EB; border: 1px solid #F3D9A6; color: #6B3D00; font-size: 13px">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9.5 17H2.5z"></path><path d="M12 10v4M12 17h.01"></path></svg>
+<span style="flex: 1 1 300px"><strong style="font-weight: 600">4 ready, minimum is 5.</strong> The Al Khuwair POC kit (20 Oct) needs 1 more router; 14 unconfigured units are on Shelf A1–A2.</span>
+<a class="btn sm" href="DevicePrep.dc.html" style="background: transparent; border-color: #F3D9A6; color: #6B3D00">Prepare units</a>
+</div>
+</section>
+
+<section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px">
+<div class="card">
+<div class="ch"><h2>Stock by location</h2><span class="muted" style="font-size: 12.5px">20 in office</span></div>
+<div style="padding: 0 18px 18px; display: flex; flex-direction: column; gap: 14px">
+<sc-for list="{{locs}}" as="l" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; gap: 6px" title="{{l.label}}: {{l.v}} units">
+<div style="display: flex; justify-content: space-between; font-size: 13px"><span>{{l.label}}<span class="muted" style="font-size: 12px"> · {{l.sub}}</span></span><strong style="font-weight: 600">{{l.v}}</strong></div>
+<div class="bar"><span style="width: {{l.w}}"></span></div>
+</div>
+</sc-for>
+</div>
+</div>
+
+<div class="card">
+<div class="ch"><h2>Units by facility</h2><span class="muted" style="font-size: 12.5px">10 deployed</span></div>
+<sc-for list="{{facs}}" as="f" hint-placeholder-count="3">
+<a class="row" href="FacilityDetail.dc.html">
+<span style="width: 34px; height: 34px; flex: 0 0 34px; border-radius: 8px; background: #F1F4F7; display: flex; align-items: center; justify-content: center; color: #3B4758"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"></rect><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1"></path></svg></span>
+<span style="flex: 1; min-width: 0"><span style="display: block; font-weight: 500; font-size: 13.5px">{{f.name}}</span><span class="muted" style="font-size: 12px">{{f.sub}}</span></span>
+<span class="t {{f.tcls}}">{{f.type}}</span>
+<strong style="width: 24px; text-align: right">{{f.v}}</strong>
+</a>
+</sc-for>
+<div style="padding: 12px 18px; border-top: 1px solid #EEF1F4; font-size: 12.5px" class="muted">Bank Muscat: 7 contract + 1 additional (28 Sep)</div>
+</div>
+
+<div class="card" style="display: flex; flex-direction: column">
+<div class="ch"><h2>Specifications</h2></div>
+<dl style="margin: 0; padding: 0 18px 14px; display: grid; grid-template-columns: 110px 1fr; gap: 8px 12px; font-size: 13px">
+<dt class="muted">Cellular</dt><dd style="margin: 0">LTE Cat 4</dd>
+<dt class="muted">SIM</dt><dd style="margin: 0">Dual SIM</dd>
+<dt class="muted">Positioning</dt><dd style="margin: 0">GNSS</dd>
+</dl>
+<div style="border-top: 1px solid #EEF1F4; padding: 14px 18px 18px; display: flex; flex-direction: column; gap: 10px">
+<span class="ov">Tracked identity fields</span>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{idFields}}" as="f" hint-placeholder-count="7"><span class="pill" title="{{f.hint}}">{{f.name}}<span class="muted" style="font-size: 11px">{{f.when}}</span></span></sc-for>
+</div>
+</div>
+</div>
+</section>
+
+<section style="display: flex; flex-wrap: wrap; gap: 16px">
+<div class="card" style="flex: 3 1 560px; min-width: 0">
+<div class="ch"><div><h2>Ready for deployment</h2><p class="muted" style="font-size: 12.5px">Configured, tested and labelled · MRD Office, Shelf A2</p></div><a class="btn sm p" href="CreateDeployment.dc.html">Deploy</a></div>
+<div class="tw">
+<table class="tbl">
+<thead><tr><th>S/N</th><th>Device ID</th><th>SIM (ICCID)</th><th>IP</th><th>Configured</th></tr></thead>
+<tbody>
+<sc-for list="{{readyUnits}}" as="u" hint-placeholder-count="4">
+<tr><td><a class="mono" href="DeviceDetail.dc.html" style="font-weight: 500">{{u.sn}}</a></td><td class="mono">{{u.dev}}</td><td class="mono">{{u.iccid}}</td><td class="mono">{{u.ip}}</td><td class="muted">{{u.when}}</td></tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+</div>
+<div class="card" style="flex: 2 1 340px; min-width: 0">
+<div class="ch"><h2>Recent activity</h2><a href="AuditLog.dc.html" style="font-size: 13px; font-weight: 500">Audit log →</a></div>
+<div style="padding: 0 18px 14px; display: flex; flex-direction: column">
+<sc-for list="{{activity}}" as="a" hint-placeholder-count="5">
+<div style="display: flex; gap: 12px; padding: 8px 0">
+<span style="width: 28px; height: 28px; border-radius: 50%; background: {{a.bg}}; color: #0E1726; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex: 0 0 28px">{{a.ini}}</span>
+<span style="font-size: 13px; line-height: 1.4"><strong style="font-weight: 600">{{a.who}}</strong> {{a.what}} <span class="mono" style="color: #0B7A6B">{{a.obj}}</span><span class="muted" style="display: block; font-size: 12px">{{a.when}}</span></span>
+</div>
+</sc-for>
+</div>
+</div>
+</section>
+</div>
+</sc-if>
+
+<!-- UNITS -->
+<sc-if value="{{isUnits}}" hint-placeholder-val="{{ false }}">
+<section class="card" style="min-width: 0">
+<div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 14px 18px">
+<sc-for list="{{unitChips}}" as="c" hint-placeholder-count="6"><button class="{{c.cls}}" aria-pressed="{{c.pressed}}" onClick="{{c.pick}}">{{c.label}}<strong>{{c.n}}</strong></button></sc-for>
+<span style="flex: 1"></span>
+<button class="btn sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"></path></svg>Export units</button>
+</div>
+<div class="tw" style="border-top: 1px solid #E3E7EC">
+<table class="tbl">
+<thead><tr><th>S/N</th><th>IMEI</th><th>Device ID</th><th>SIM (ICCID)</th><th>IP</th><th>Status</th><th>Location / facility</th><th>Batch</th></tr></thead>
+<tbody>
+<sc-for list="{{units}}" as="u" hint-placeholder-count="10">
+<tr>
+<td><a class="mono" href="DeviceDetail.dc.html" style="font-weight: 500">{{u.sn}}</a></td>
+<td class="mono">{{u.imei}}</td>
+<td class="mono">{{u.dev}}</td>
+<td class="mono"><span style="color: {{u.simColor}}">{{u.iccid}}</span></td>
+<td class="mono"><span style="color: {{u.simColor}}">{{u.ip}}</span></td>
+<td><span class="b {{u.cls}}">{{u.status}}</span></td>
+<td><sc-if value="{{u.atFac}}" hint-placeholder-val="{{ false }}"><a href="FacilityDetail.dc.html" style="color: #0E1726">{{u.where}}</a> <span class="t {{u.tcls}}" style="margin-left: 4px">{{u.type}}</span></sc-if><sc-if value="{{u.inOffice}}" hint-placeholder-val="{{ true }}"><span>{{u.where}}</span></sc-if></td>
+<td><a class="mono" href="BatchDetail.dc.html">{{u.batch}}</a></td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 12px 18px; border-top: 1px solid #E3E7EC; font-size: 13px">
+<span class="muted">{{unitFooter}}</span>
+<div style="display: flex; gap: 4px; align-items: center">
+<button class="pg" aria-label="Previous page" onClick="{{prevPage}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg></button>
+<sc-for list="{{pages}}" as="p" hint-placeholder-count="3"><button class="{{p.cls}}" onClick="{{p.pick}}">{{p.label}}</button></sc-for>
+<button class="pg" aria-label="Next page" onClick="{{nextPage}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></button>
+</div>
+</div>
+</section>
+</sc-if>
+
+<!-- BATCHES -->
+<sc-if value="{{isBatches}}" hint-placeholder-val="{{ false }}">
+<section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 16px">
+<sc-for list="{{batches}}" as="b" hint-placeholder-count="2">
+<article class="card" style="padding: 18px 20px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px">
+<div><a class="mono" href="BatchDetail.dc.html" style="font-size: 15px; font-weight: 600">{{b.id}}</a><p class="muted" style="font-size: 12.5px; margin-top: 2px">Received {{b.date}} by {{b.by}}</p></div>
+<div style="text-align: right"><div style="font-size: 22px; font-weight: 600; line-height: 1">{{b.qty}}</div><div class="muted" style="font-size: 11.5px">units</div></div>
+</div>
+<div class="seg" style="height: 10px; border-radius: 5px">
+<sc-for list="{{b.parts}}" as="p" hint-placeholder-count="3"><span style="width: {{p.w}}; background: {{p.c}}" title="{{p.label}} · {{p.v}}"></span></sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: #3B4758">
+<sc-for list="{{b.parts}}" as="p" hint-placeholder-count="3"><span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 2px; background: {{p.c}}"></span>{{p.label}} <strong style="color: #0E1726">{{p.v}}</strong></span></sc-for>
+</div>
+<dl style="margin: 0; display: grid; grid-template-columns: 110px 1fr; gap: 6px 12px; font-size: 13px; padding-top: 12px; border-top: 1px solid #EEF1F4">
+<dt class="muted">Supplier</dt><dd style="margin: 0">{{b.supplier}}</dd>
+<dt class="muted">Purchase order</dt><dd style="margin: 0" class="mono">{{b.po}}</dd>
+<dt class="muted">Invoice</dt><dd style="margin: 0" class="mono">{{b.inv}}</dd>
+<dt class="muted">Serial range</dt><dd style="margin: 0" class="mono">{{b.range}}</dd>
+<dt class="muted">Damaged</dt><dd style="margin: 0">0</dd>
+</dl>
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap">
+<span class="muted" style="font-size: 12.5px">{{b.note}}</span>
+<a class="btn sm" href="BatchDetail.dc.html">Open batch</a>
+</div>
+</article>
+</sc-for>
+</section>
+</sc-if>
+
+<!-- SETTINGS -->
+<sc-if value="{{isSettings}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; background: #fff; border: 1px solid #E3E7EC; font-size: 13px">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>
+<span style="flex: 1">Product settings can be changed by <strong style="font-weight: 600">Admins only</strong>. Operations and Technician roles see this tab read-only. Changes apply to future units and are logged.</span>
+</div>
+<section style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+<div style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+<div class="card" style="padding: 18px 20px; display: flex; flex-direction: column; gap: 12px">
+<h2 style="font-size: 15px; font-weight: 600">Tracking method</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px">
+<div class="rc on"><strong style="font-size: 13px">Serialised</strong><span class="muted">Each unit has its own S/N</span></div>
+<div class="rc" style="opacity: .6"><strong style="font-size: 13px">Hybrid</strong><span class="muted">Batch first, serials later</span></div>
+<div class="rc" style="opacity: .6"><strong style="font-size: 13px">Quantity</strong><span class="muted">Counted only</span></div>
+</div>
+<span class="muted" style="font-size: 12px">Locked: 30 serialised units exist. Archive and create a new product to change it.</span>
+</div>
+<div class="card" style="padding: 18px 20px; display: flex; gap: 12px; align-items: flex-start">
+<button class="{{cfgSw}}" role="switch" aria-checked="{{cfgAria}}" aria-labelledby="cfg-l" onClick="{{toggleCfg}}"></button>
+<span style="display: flex; flex-direction: column; gap: 2px"><span id="cfg-l" style="font-weight: 500">Requires configuration before deployment</span><span class="muted" style="font-size: 12.5px">New units start as Unconfigured and must finish the checklist before they can be marked Ready.</span></span>
+</div>
+<div class="card" style="padding: 18px 20px; display: flex; flex-direction: column; gap: 12px">
+<h2 style="font-size: 15px; font-weight: 600">Minimum stock</h2>
+<div style="display: flex; gap: 14px; flex-wrap: wrap">
+<div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px"><label for="min-ready" style="font-weight: 500">Ready for deployment</label><input id="min-ready" class="in" type="number" value="{{minReady}}" onChange="{{onMin}}" style="width: 140px"></div>
+<div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px"><label for="min-total" style="font-weight: 500">Total in office</label><input id="min-total" class="in" type="number" value="10" style="width: 140px"></div>
+</div>
+<span class="muted" style="font-size: 12px">Alerts go to Admins and Operations when stock drops below either level.</span>
+</div>
+</div>
+
+<div style="flex: 1.4 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+<div class="card">
+<div class="ch"><div><h2>Required fields per unit</h2><p class="muted" style="font-size: 12.5px">Captured at receiving or during preparation</p></div><button class="btn sm">Add field</button></div>
+<div class="tw">
+<table class="tbl">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Unique</th><th>Captured at</th></tr></thead>
+<tbody>
+<sc-for list="{{reqFields}}" as="f" hint-placeholder-count="7">
+<tr><td style="font-weight: 500">{{f.name}}</td><td class="muted">{{f.type}}</td><td>{{f.req}}</td><td>{{f.uniq}}</td><td class="muted">{{f.when}}</td></tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+</div>
+<div class="card" style="padding: 18px 20px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap"><div><h2 style="font-size: 15px; font-weight: 600">Preparation checklist template</h2><p class="muted" style="font-size: 12.5px">Every RUT956 goes through these steps on the prep bench</p></div><button class="btn sm">Add step</button></div>
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="6">
+<div class="step">
+<span class="num">{{s.n}}</span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 500; font-size: 13.5px">{{s.title}}</span><span class="muted" style="font-size: 12.5px">{{s.desc}}</span></span>
+<span class="pill" style="height: 22px; font-size: 11.5px">{{s.tag}}</span>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; justify-content: flex-end; gap: 10px"><button class="btn" onClick="{{goOverview}}">Cancel</button><button class="btn p" onClick="{{goOverview}}">Save settings</button></div>
+</div>
+</section>
+</div>
+</sc-if>
+</main>
+</div>
+</div>
+
+<sc-if value="{{showArchive}}" hint-placeholder-val="{{ false }}">
+<div class="ovl">
+<div class="dlg" role="alertdialog" aria-modal="true" aria-labelledby="ar-t">
+<div style="padding: 22px 22px 8px; display: flex; flex-direction: column; gap: 12px">
+<span style="width: 40px; height: 40px; border-radius: 10px; background: #F1F4F7; display: flex; align-items: center; justify-content: center; color: #3B4758"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1"></rect><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"></path><path d="M10 13h4"></path></svg></span>
+<h2 id="ar-t" style="font-size: 17px; font-weight: 600">Archive Teltonika RUT956?</h2>
+<p style="font-size: 13.5px; color: #3B4758">Archiving hides this product from receiving, preparation and new deployments. Nothing is deleted: all 30 units, 2 batches and the deployment history at 3 facilities stay searchable.</p>
+<p style="font-size: 12.5px; color: #8A4B00; background: #FFF8EB; border: 1px solid #F3D9A6; border-radius: 8px; padding: 8px 10px">20 units are still in the MRD Office and 10 are deployed. Deployed routers keep working and stay linked to their facilities.</p>
+</div>
+<div style="display: flex; justify-content: flex-end; gap: 10px; padding: 14px 22px 20px">
+<button class="btn" onClick="{{closeArchive}}">Cancel</button>
+<button class="btn p" onClick="{{closeArchive}}">Archive product</button>
+</div>
+</div>
+</div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1560}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { tab: 'overview', uf: 'all', page: 0, arch: false, cfg: true, minReady: '5' }; }
+  renderVals() {
+    const S = this.state;
+    const ST = { unconf: ['Unconfigured', 's-unconf', '#8A96A8'], prep: ['In preparation', 's-prep', '#E08A00'], ready: ['Ready for deployment', 's-ready', '#2F6FE4'], deployed: ['Deployed', 's-deployed', '#12A374'], maint: ['Under maintenance', 's-maint', '#E86A1C'] };
+    const pad = (n, l) => { let s = String(n); while (s.length < l) s = '0' + s; return s; };
+    const all = [];
+    const r4 = { 4: ['3001424', '10.64.12.34', '05 Oct, 08:20'], 6: ['3001425', '10.64.12.35', '02 Oct, 15:10'], 9: ['3001427', '10.64.12.37', '05 Oct, 09:40'], 13: ['3001429', '10.64.12.39', '30 Sep, 11:45'] };
+    let unconfSeen = 0;
+    for (let i = 0; i < 20; i++) {
+      let st = 'unconf', iccid = '—', ip = '—', where = '', fac = '', type = '', tcls = '';
+      const imei = i === 9 ? '860548043912877' : (i === 11 ? '860548043912901' : '8605480439128' + pad(10 + i * 4, 2));
+      if (r4[i]) { st = 'ready'; iccid = '8996802026093' + r4[i][0].slice(1); ip = r4[i][1]; where = 'MRD Office · Shelf A2'; }
+      else if (i === 11) { st = 'deployed'; iccid = '8996802026093001435'; ip = '10.64.12.41'; where = 'Qatar Foundation'; type = 'POC'; tcls = 't-poc'; }
+      else if (i === 2) { st = 'deployed'; iccid = '8996802026093001419'; ip = '10.64.12.33'; where = 'Bank Muscat Head Office'; type = 'Additional'; tcls = 't-add'; }
+      else { unconfSeen++; where = 'MRD Office · ' + (unconfSeen <= 10 ? 'Shelf A1' : 'Shelf A2'); }
+      all.push({ sn: String(1108675300 + i), imei, dev: 'MRD-TEL-0' + (408 + i), iccid, ip, st, where, type, tcls, batch: 'TEL-2026-004' });
+    }
+    for (let i = 0; i < 10; i++) {
+      let st = 'deployed', iccid = '8996802026093001' + (380 + i), ip = '10.64.12.' + (20 + i), where = 'Bank Muscat Head Office', type = 'Contract', tcls = 't-con';
+      if (i === 9) { st = 'prep'; iccid = 'Awaiting SIM'; ip = '—'; where = 'MRD Office · Prep bench'; type = ''; tcls = ''; }
+      if (i === 3) { st = 'maint'; iccid = 'Removed'; ip = '—'; where = 'MRD Office · Repair bench'; type = ''; tcls = ''; }
+      if (i === 7) { iccid = '8996803026052000118'; ip = '10.72.4.18'; where = 'Lulu Hypermarket'; type = 'POC'; tcls = 't-poc'; }
+      all.push({ sn: String(1107442100 + i), imei: '8605480439129' + pad(20 + i * 3, 2), dev: 'MRD-TEL-0' + (398 + i), iccid, ip, st, where, type, tcls, batch: 'TEL-2026-003' });
+    }
+    const order = { ready: 0, prep: 1, maint: 2, unconf: 3, deployed: 4 };
+    const filtered = all.filter(u => S.uf === 'all' || u.st === S.uf).sort((a, b) => order[a.st] - order[b.st]);
+    const per = 10, pageCount = Math.max(1, Math.ceil(filtered.length / per));
+    const page = Math.min(S.page, pageCount - 1);
+    const units = filtered.slice(page * per, page * per + per).map(u => Object.assign({}, u, {
+      status: ST[u.st][0], cls: ST[u.st][1], atFac: u.st === 'deployed', inOffice: u.st !== 'deployed',
+      simColor: (u.iccid === '—' || u.iccid === 'Awaiting SIM' || u.iccid === 'Removed') ? '#5E6B7D' : '#0E1726'
+    }));
+    const cnt = k => all.filter(u => u.st === k).length;
+    const goUnits = k => () => this.setState({ tab: 'units', uf: k, page: 0 });
+    const dist = ['unconf', 'prep', 'ready', 'deployed', 'maint'].map(k => ({ label: ST[k][0], c: ST[k][2], v: cnt(k), w: (cnt(k) / 30 * 100).toFixed(1) + '%', pick: goUnits(k) }));
+    const unitChips = [['all', 'All', all.length]].concat(['unconf', 'prep', 'ready', 'deployed', 'maint'].map(k => [k, ST[k][0], cnt(k)])).map(([id, label, n]) => ({ label, n, cls: 'fchip' + (S.uf === id ? ' on' : ''), pressed: S.uf === id ? 'true' : 'false', pick: () => this.setState({ uf: id, page: 0 }) }));
+    const pages = [];
+    for (let p = 0; p < pageCount; p++) pages.push({ label: String(p + 1), cls: 'pg' + (p === page ? ' on' : ''), pick: (n => () => this.setState({ page: n }))(p) });
+    const tabs = [['overview', 'Overview', ''], ['units', 'Units', '30'], ['batches', 'Batches', '2'], ['settings', 'Settings', '']].map(([id, label, n]) => ({ label, n, cls: 'tab' + (S.tab === id ? ' on' : ''), sel: S.tab === id ? 'true' : 'false', pick: () => this.setState({ tab: id }) }));
+    const locs = [['Shelf A1', 'MRD Office', 10, 'unconfigured'], ['Shelf A2', 'MRD Office', 8, '4 ready · 4 unconfigured'], ['Prep bench', 'MRD Office', 1, 'awaiting SIM'], ['Repair bench', 'MRD Office', 1, 'LTE modem fault']].map(([label, x, v, sub]) => ({ label, v, sub, w: (v / 10 * 100) + '%' }));
+    const facs = [
+      { name: 'Bank Muscat Head Office', sub: 'Airport Heights, Muscat · Active operations', type: 'Contract', tcls: 't-con', v: 8 },
+      { name: 'Qatar Foundation', sub: 'Plant room B1 · since 01 Oct 2026', type: 'POC', tcls: 't-poc', v: 1 },
+      { name: 'Lulu Hypermarket', sub: 'Bausher, Muscat · POC study', type: 'POC', tcls: 't-poc', v: 1 }
+    ];
+    const idFields = [['S/N', 'receiving'], ['IMEI', 'receiving'], ['MAC', 'receiving'], ['Device ID', 'labelling'], ['Firmware', 'prep'], ['SIM', 'prep'], ['IP', 'prep']].map(([name, when]) => ({ name, when: '· ' + when, hint: name + ' is captured at ' + when }));
+    const readyUnits = all.filter(u => u.st === 'ready').map(u => ({ sn: u.sn, dev: u.dev, iccid: u.iccid, ip: u.ip, when: r4[parseInt(u.sn.slice(-2), 10)][2] + ' · Chetan' }));
+    const activity = [
+      { ini: 'CH', bg: '#CDEFE7', who: 'Chetan', what: 'marked Ready', obj: '1108675309', when: 'Today, 09:42' },
+      { ini: 'CH', bg: '#CDEFE7', who: 'Chetan', what: 'assigned IP 10.64.12.37 to', obj: '1108675309', when: 'Today, 09:39' },
+      { ini: 'CH', bg: '#CDEFE7', who: 'Chetan', what: 'deployed to Qatar Foundation', obj: '1108675311', when: 'Thu 1 Oct, 13:20' },
+      { ini: 'SA', bg: '#FBE0DC', who: 'Saif', what: 'deployed to Bank Muscat HO', obj: '1108675302', when: 'Mon 28 Sep, 10:05' },
+      { ini: 'NI', bg: '#F6E3C4', who: 'Nitin', what: 'received 20 units in', obj: 'TEL-2026-004', when: 'Tue 22 Sep, 11:30' }
+    ];
+    const mk = parts => parts.map(([label, v, c, t]) => ({ label, v, c, w: (v / t * 100) + '%' }));
+    const batches = [
+      { id: 'TEL-2026-004', date: '22 Sep 2026', by: 'Nitin', qty: 20, supplier: 'Al Noor Technologies LLC', po: 'PO-MRD-2026-0412', inv: 'INV-AN-88213', range: '1108675300 – 1108675319', note: '6 of 20 prepared (30%)', parts: mk([['Unconfigured', 14, '#8A96A8', 20], ['Ready', 4, '#2F6FE4', 20], ['Deployed', 2, '#12A374', 20]]) },
+      { id: 'TEL-2026-003', date: '12 Aug 2026', by: 'Nitin', qty: 10, supplier: 'Al Noor Technologies LLC', po: 'PO-MRD-2026-0288', inv: 'INV-AN-87540', range: '1107442100 – 1107442109', note: '8 of 10 deployed (80%)', parts: mk([['Deployed', 8, '#12A374', 10], ['In preparation', 1, '#E08A00', 10], ['Under maintenance', 1, '#E86A1C', 10]]) }
+    ];
+    const reqFields = [['Serial number (S/N)', 'Text', 'Required', 'Unique', 'Receiving'], ['IMEI', 'Text · 15 digits', 'Required', 'Unique', 'Receiving'], ['MAC address', 'MAC address', 'Required', 'Unique', 'Receiving'], ['Device ID', 'Auto · MRD-TEL-####', 'Required', 'Unique', 'Labelling'], ['Firmware', 'Text', 'Required', '—', 'Preparation'], ['SIM', 'Link to SIM', 'Required', 'Unique', 'Preparation'], ['IP address', 'IP address', 'Required', 'Unique', 'Preparation']].map(([name, type, req, uniq, when]) => ({ name, type, req, uniq, when }));
+    const steps = [
+      ['Firmware update', 'Flash the approved release, currently RUT9M_R_00.07.08.3', 'Firmware'],
+      ['Apply config profile', 'Load "Exergio BMS gateway v2.3" (VPN, Modbus, firewall)', 'Profile'],
+      ['Insert SIM', 'Pick an available Omantel or Ooredoo M2M SIM and scan its ICCID', 'SIM'],
+      ['Assign IP', 'Reserve a static IP from the SIM operator range (10.64.12.x / 10.72.4.x)', 'IP'],
+      ['Connectivity test', 'Ping the Exergio cloud and check RSSI; attach the result', 'Test'],
+      ['Label', 'Print and stick the Device ID / S/N label, store on Shelf A2', 'Label']
+    ].map(([title, desc, tag], i) => ({ n: i + 1, title, desc, tag }));
+    const t = S.tab;
+    return {
+      tabs, isOverview: t === 'overview', isUnits: t === 'units', isBatches: t === 'batches', isSettings: t === 'settings',
+      dist, locs, facs, idFields, readyUnits, activity, batches, reqFields, steps,
+      units, unitChips, pages,
+      unitFooter: filtered.length ? ('Showing ' + (page * per + 1) + '–' + Math.min(filtered.length, page * per + per) + ' of ' + filtered.length + ' units') : 'No units',
+      prevPage: () => this.setState({ page: Math.max(0, page - 1) }), nextPage: () => this.setState({ page: Math.min(pageCount - 1, page + 1) }),
+      goSettings: () => this.setState({ tab: 'settings' }), goOverview: () => this.setState({ tab: 'overview' }),
+      openArchive: () => this.setState({ arch: true }), closeArchive: () => this.setState({ arch: false }), showArchive: S.arch,
+      cfgSw: 'sw' + (S.cfg ? ' on' : ''), cfgAria: S.cfg ? 'true' : 'false', toggleCfg: () => this.setState({ cfg: !this.state.cfg }),
+      minReady: S.minReady, onMin: e => this.setState({ minReady: e.target.value })
+    };
+  }
+}
+</script>
+</body>
+</html>

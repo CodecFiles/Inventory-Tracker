@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SIM Cards · MRD Inventory</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F6F8;color:#0E1726;font-family:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#0B7A6B;text-decoration:none}a:hover{color:#075C51}
+h1,h2,h3,h4,p{margin:0}
+.mono{font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;letter-spacing:-.01em}
+.muted{color:#5E6B7D}
+.side{flex:0 0 248px;background:#0C1424;padding:18px 12px 16px;display:flex;flex-direction:column;gap:1px}
+.nav{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:8px;color:#B3BDCB;font-size:13.5px}
+.nav:hover{background:#152036;color:#fff}
+.nav.on{background:#1C2A42;color:#fff;box-shadow:inset 2px 0 0 #2BC4A8}
+.nav svg{flex:0 0 16px;width:16px;height:16px}
+.nav .ct{margin-left:auto;font-size:11px;font-weight:600;background:#2BC4A8;color:#04211C;border-radius:999px;padding:1px 7px}
+.sec{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#7F8CA0;padding:16px 10px 6px;font-weight:500}
+.mtop{display:none}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 32px;background:#fff;border-bottom:1px solid #E3E7EC}
+.srch{flex:1 1 320px;max-width:560px;display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border:1px solid #DCE1E8;border-radius:10px;background:#F8FAFB;color:#5E6B7D;font-size:13.5px}
+.srch:hover{border-color:#B9C2CE;color:#3B4758}
+.kbd{margin-left:auto;font-family:'Geist Mono',monospace;font-size:11px;border:1px solid #DCE1E8;border-radius:5px;padding:1px 6px;background:#fff;color:#5E6B7D}
+.main{padding:28px 32px 48px;max-width:1400px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+.card{background:#fff;border:1px solid #E3E7EC;border-radius:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 14px;border-radius:9px;border:1px solid #D5DBE3;background:#fff;color:#1B2638;font:inherit;font-size:13.5px;font-weight:500;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#F4F6F8;color:#0E1726}
+.btn.p{background:#0B7A6B;border-color:#0B7A6B;color:#fff}.btn.p:hover{background:#08695C;color:#fff}
+.btn.sm{height:32px;padding:0 10px;font-size:12.5px;border-radius:8px}
+.btn.ic{width:40px;padding:0}
+.btn svg{width:16px;height:16px}
+.b{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;background:#EEF1F5;color:#3E4A5C}
+.b::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.s-unconf{background:#EEF1F5;color:#3E4A5C}.s-prep{background:#FFF3DC;color:#8A4B00}.s-ready{background:#E6EEFF;color:#1D4FB8}.s-reserved{background:#F0EAFE;color:#5B32B4}.s-deployed{background:#E1F4EC;color:#0A6648}.s-stock{background:#E3F2F6;color:#0E5E73}.s-maint{background:#FFEDE3;color:#9A3D0B}.s-damaged{background:#FDEBEA;color:#A3201F}.s-transit{background:#E9EDFC;color:#3346A8}.s-returned{background:#F1EEE8;color:#5E554A}.s-retired{background:#EFF0F2;color:#646C79}
+.g-insp{background:#EEF1F5;color:#3E4A5C}.g-bms{background:#E3F2F6;color:#0E5E73}.g-poc{background:#F0EAFE;color:#5B32B4}.g-study{background:#FFF3DC;color:#8A4B00}.g-cpend{background:#E6EEFF;color:#1D4FB8}.g-contract{background:#E1F4EC;color:#0A6648}.g-ops{background:#0B7A6B;color:#fff}.g-done{background:#EFF0F2;color:#646C79}.g-hold{background:#FDEBEA;color:#A3201F}
+.t{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:6px;font-size:11.5px;font-weight:600;letter-spacing:.02em;border:1px solid}
+.t-poc{color:#5B32B4;border-color:#D7C8FA;background:#FAF7FF}.t-con{color:#0A6648;border-color:#BFE3D3;background:#F4FBF8}.t-rep{color:#8A4B00;border-color:#F3D9A6;background:#FFFBF2}.t-add{color:#1D4FB8;border-color:#C8D8FA;background:#F6F9FF}
+.tw{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-weight:500;color:#5E6B7D;font-size:12px;padding:10px 14px;border-bottom:1px solid #E3E7EC;background:#F8FAFB;white-space:nowrap}
+.tbl td{padding:11px 14px;border-bottom:1px solid #EEF1F4;white-space:nowrap;vertical-align:middle}
+.tbl tr:hover td{background:#F8FAFB}
+.tbl tr:last-child td{border-bottom:0}
+.ov{font-size:12px;font-weight:500;color:#5E6B7D;text-transform:uppercase;letter-spacing:.06em}
+.kpi{padding:16px 18px;display:flex;flex-direction:column;gap:6px;color:#0E1726}
+.kpi:hover{border-color:#B9C2CE;color:#0E1726}
+.kpi .n{font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
+.seg{display:flex;gap:2px;height:8px;border-radius:4px;overflow:hidden}
+.seg span{display:block;height:100%}
+.row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-top:1px solid #EEF1F4;color:#0E1726}
+.row:hover{background:#F8FAFB;color:#0E1726}
+.chip{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;border:0;background:transparent;font:inherit;font-size:13px;color:#3B4758;cursor:pointer}
+.chip.on{background:#fff;color:#0E1726;box-shadow:0 1px 2px rgba(14,23,38,.12)}
+.cg{display:flex;flex-wrap:wrap;gap:2px;padding:3px;background:#E9EDF1;border-radius:10px}
+.chip .cn{margin-left:6px;font-size:11.5px;color:#5E6B7D;font-weight:500}
+.fgp{display:flex;flex-direction:column;gap:6px}
+.fgp > span{font-size:12px;color:#5E6B7D;font-weight:500}
+.inp{height:38px;border:1px solid #D5DBE3;border-radius:9px;padding:0 12px;font:inherit;font-size:13px;background:#fff;color:#0E1726;width:100%}
+.inp:focus{outline:2px solid #2BC4A8;outline-offset:0;border-color:#0B7A6B}
+.inp.err{border-color:#D92D20;background:#FFF8F7}
+.lg{display:inline-flex;align-items:center;gap:6px}
+.lg i{width:8px;height:8px;border-radius:2px;display:inline-block}
+.dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13px;margin:0}
+.dl dt{color:#5E6B7D}.dl dd{margin:0;color:#0E1726}
+.ovl{position:fixed;inset:0;background:rgba(14,23,38,.45);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+.pnl{background:#fff;border-radius:14px;width:100%;max-width:560px;max-height:calc(100vh - 32px);overflow:auto;box-shadow:0 20px 50px rgba(14,23,38,.25);display:flex;flex-direction:column}
+.opt{display:flex;align-items:center;gap:12px;width:100%;padding:11px 12px;border:1px solid #E3E7EC;border-radius:10px;background:#fff;font:inherit;text-align:left;cursor:pointer;color:#0E1726}
+.opt:hover{border-color:#B9C2CE}
+.opt.on{border-color:#0B7A6B;box-shadow:inset 0 0 0 1px #0B7A6B;background:#F4FBF8}
+.rd{width:16px;height:16px;border-radius:50%;border:1.5px solid #9AA5B4;flex:0 0 16px;display:flex;align-items:center;justify-content:center}
+.opt.on .rd{border-color:#0B7A6B}
+.opt.on .rd::after{content:"";width:8px;height:8px;border-radius:50%;background:#0B7A6B}
+.sw{width:40px;height:24px;border-radius:12px;border:0;background:#C5CCD6;position:relative;cursor:pointer;flex:0 0 40px;padding:0}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(14,23,38,.25)}
+.sw.on{background:#0B7A6B}.sw.on::after{left:19px}
+.tbl.cp td{padding:8px 14px}
+.toast{position:fixed;right:24px;bottom:24px;z-index:60;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;background:#0E1726;color:#fff;font-size:13px;box-shadow:0 10px 30px rgba(14,23,38,.3)}
+@media (max-width:900px){.side{display:none}.mtop{display:flex}.main{padding:20px 16px 40px}.top{padding:12px 16px}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh; background: #F4F6F8">
+<nav class="side" aria-label="Primary">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 2px 8px 14px; color: #fff">
+<span style="width: 32px; height: 32px; border-radius: 9px; background: #0B7A6B; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4a8 8 0 1 0 4 11.5A6.5 6.5 0 0 1 16 4z"></path><path d="M6 18l2.5-2.5"></path></svg></span>
+<span style="display: flex; flex-direction: column; line-height: 1.15"><span style="font-weight: 600; font-size: 14px">Moonrock R&amp;D</span><span style="font-size: 11.5px; color: #8D99AC">Inventory × Exergio</span></span>
+</a>
+<a class="nav" href="Main.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>Dashboard</a>
+<div class="sec">Inventory</div>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"></path><path d="M3 8v8l9 5 9-5V8"></path><path d="M12 13v8"></path></svg>All inventory</a>
+<a class="nav" href="Products.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg>Products</a>
+<a class="nav" href="Batches.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l10 5-10 5L2 7l10-5z"></path><path d="M2 12l10 5 10-5"></path><path d="M2 17l10 5 10-5"></path></svg>Batches</a>
+<a class="nav" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive stock</a>
+<div class="sec">Devices</div>
+<a class="nav" href="DevicePrep.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg>Device preparation<span class="ct">15</span></a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="18" height="7" rx="2"></rect><path d="M7 16.5h.01M11 16.5h.01"></path><path d="M17 13V5"></path><path d="M14 7.5a4 4 0 0 1 6 0"></path></svg>Teltonika</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h11a3 3 0 1 0-3-3"></path><path d="M3 12h16a3 3 0 1 1-3 3"></path><path d="M3 16h7"></path></svg>CO₂ sensors</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"></circle><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7M5.6 5.6a9 9 0 0 0 0 12.8M18.4 5.6a9 9 0 0 1 0 12.8"></path></svg>LoRaWAN gateways</a>
+<a class="nav on" href="SimInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"></path><rect x="8.5" y="11" width="7" height="6" rx="1"></rect></svg>SIM cards</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"></rect><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"></path></svg>Other equipment</a>
+<div class="sec">Facilities &amp; projects</div>
+<a class="nav" href="Facilities.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"></rect><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1"></path></svg>Facilities</a>
+<a class="nav" href="PocManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6L4.5 18.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3"></path><path d="M7 15h10"></path></svg>POC projects</a>
+<a class="nav" href="ContractManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path><path d="M9 13h6M9 17h4"></path></svg>Contracts</a>
+<div class="sec">Deployments</div>
+<a class="nav" href="Deployments.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3z"></path><path d="M14 10h4l3 3v3h-7"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>Deployments</a>
+<a class="nav" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>New deployment</a>
+<div class="sec">Insights &amp; admin</div>
+<a class="nav" href="Reports.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M10 20V5M16 20v-6M21 20H3"></path></svg>Reports</a>
+<a class="nav" href="AuditLog.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l3 2"></path></svg>Audit log</a>
+<a class="nav" href="Users.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20a6.5 6.5 0 0 1 13 0"></path><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"></path></svg>Users &amp; roles</a>
+<a class="nav" href="Settings.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Settings</a>
+<div style="margin-top: auto; padding: 16px 8px 0; display: flex; align-items: center; gap: 10px; border-top: 1px solid #1C2A42">
+<span style="width: 32px; height: 32px; border-radius: 50%; background: #2BC4A8; color: #04211C; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600">CH</span>
+<span style="display: flex; flex-direction: column; line-height: 1.2"><span style="color: #fff; font-size: 13px; font-weight: 500">Chetan</span><span style="color: #8D99AC; font-size: 11.5px">Admin · MRD Office</span></span>
+</div>
+</nav>
+
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+<div class="mtop" style="align-items: center; justify-content: space-between; padding: 12px 16px; background: #0C1424; color: #fff">
+<span style="font-weight: 600">Moonrock R&amp;D</span>
+<button class="btn sm" aria-label="Open menu" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
+</div>
+<header class="top">
+<a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
+<span style="flex: 1"></span>
+<span class="b s-prep" title="All records shown are sample data">Sample data</span>
+<a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
+<a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
+<button class="btn ic" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg></button>
+</header>
+
+<main class="main">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<nav aria-label="Breadcrumb" style="font-size: 13px; color: #5E6B7D"><a href="Main.dc.html">Dashboard</a> / <a href="Inventory.dc.html">Devices</a> / <span style="color: #0E1726">SIM cards</span></nav>
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="font-size: 26px; font-weight: 600; letter-spacing: -.02em">SIM cards</h1>
+<p class="muted" style="font-size: 14px">80 M2M SIMs across 2 carriers: ICCID, number, static IP and the router each one lives in.</p>
+</div>
+<div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+<button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"></path></svg>Export</button>
+<a class="btn" href="Settings.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="6" rx="1.5"></rect><rect x="3" y="14" width="18" height="6" rx="1.5"></rect><path d="M7 7h.01M7 17h.01"></path></svg>IP pools</a>
+<a class="btn p" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive SIMs</a>
+</div>
+</div>
+</div>
+
+<section aria-label="SIM summary" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="5">
+<button class="card kpi" onClick="{{k.pick}}" style="text-align: left; font: inherit; cursor: pointer">
+<span style="display: flex; align-items: center; justify-content: space-between; width: 100%"><span class="muted" style="font-size: 13px">{{k.label}}</span><span style="width: 8px; height: 8px; border-radius: 50%; background: {{k.dot}}"></span></span>
+<span class="n">{{k.value}}</span>
+<span class="muted" style="font-size: 12.5px">{{k.sub}}</span>
+</button>
+</sc-for>
+</section>
+
+<section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 16px" aria-label="Carriers and IP pools">
+<sc-for list="{{carriers}}" as="c" hint-placeholder-count="2">
+<div class="card" style="padding: 18px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px">
+<div style="display: flex; gap: 12px; align-items: center">
+<span style="width: 40px; height: 40px; border-radius: 10px; background: {{c.tint}}; color: {{c.ink}}; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700">{{c.abbr}}</span>
+<div><h2 style="font-size: 15px; font-weight: 600">{{c.name}}</h2><p class="muted" style="font-size: 12.5px">{{c.plan}} · APN <span class="mono">{{c.apn}}</span></p></div>
+</div>
+<div style="text-align: right"><div style="font-size: 22px; font-weight: 600; line-height: 1">{{c.total}}</div><div class="muted" style="font-size: 11.5px">SIMs</div></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div class="seg" role="img" aria-label="{{c.aria}}"><sc-for list="{{c.parts}}" as="p" hint-placeholder-count="3"><span style="width: {{p.w}}; background: {{p.c}}" title="{{p.label}} · {{p.v}}"></span></sc-for></div>
+<div style="display: flex; gap: 16px; flex-wrap: wrap; font-size: 12.5px; color: #3B4758"><sc-for list="{{c.parts}}" as="p" hint-placeholder-count="3"><span class="lg"><i style="background: {{p.c}}"></i>{{p.label}} <strong style="color: #0E1726">{{p.v}}</strong></span></sc-for></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-radius: 10px; background: #F8FAFB">
+<div style="display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 13px"><span>IP pool <span class="mono" style="font-weight: 500">{{c.pool}}</span></span><span><strong>{{c.used}}</strong> <span class="muted">of 254 used · {{c.pct}}</span></span></div>
+<div style="height: 10px; background: #E9EDF1; border-radius: 5px" title="{{c.used}} of 254 addresses assigned"><span style="display: block; height: 10px; width: {{c.usedW}}; min-width: 4px; background: #0E8A78; border-radius: 5px"></span></div>
+<div style="display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 12px" class="muted"><span>Next free <span class="mono" style="color: #0E1726; font-weight: 500">{{c.next}}</span></span><span>{{c.reserved}}</span></div>
+</div>
+</div>
+</sc-for>
+</section>
+
+<section class="card" style="min-width: 0">
+<div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 14px; flex-wrap: wrap; padding: 16px 18px">
+<div style="display: flex; gap: 14px; flex-wrap: wrap">
+<div class="fgp"><span>Carrier</span><div class="cg" role="group" aria-label="Carrier"><sc-for list="{{fCarrier}}" as="f" hint-placeholder-count="3"><button class="{{f.cls}}" aria-pressed="{{f.pressed}}" onClick="{{f.pick}}">{{f.label}}<span class="cn">{{f.n}}</span></button></sc-for></div></div>
+<div class="fgp"><span>Activation</span><div class="cg" role="group" aria-label="Activation status"><sc-for list="{{fStatus}}" as="f" hint-placeholder-count="4"><button class="{{f.cls}}" aria-pressed="{{f.pressed}}" onClick="{{f.pick}}">{{f.label}}<span class="cn">{{f.n}}</span></button></sc-for></div></div>
+<div class="fgp"><span>Assignment</span><div class="cg" role="group" aria-label="Assignment"><sc-for list="{{fAsg}}" as="f" hint-placeholder-count="3"><button class="{{f.cls}}" aria-pressed="{{f.pressed}}" onClick="{{f.pick}}">{{f.label}}<span class="cn">{{f.n}}</span></button></sc-for></div></div>
+</div>
+<label style="flex: 0 1 300px; position: relative; min-width: 220px">
+<span style="position: absolute; left: -9999px">Search SIMs</span>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="1.8" stroke-linecap="round" style="position: absolute; left: 11px; top: 11px" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input class="inp" style="padding-left: 34px" type="search" placeholder="ICCID, MSISDN, IP or serial" value="{{q}}" onChange="{{onQ}}">
+</label>
+</div>
+<div class="tw">
+<table class="tbl cp">
+<thead><tr><th>ICCID</th><th>MSISDN</th><th>Carrier · plan</th><th>Activation</th><th>Assigned device</th><th>IP address</th><th>Facility / location</th><th>Batch</th><th>Last change</th><th><span style="position: absolute; left: -9999px">Actions</span></th></tr></thead>
+<tbody>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="12">
+<tr>
+<td class="mono" style="font-weight: 500">{{r.iccid}}</td>
+<td class="mono">{{r.msisdn}}</td>
+<td>{{r.carrier}}<div class="muted" style="font-size: 12px">{{r.plan}}</div></td>
+<td><span class="b {{r.cls}}">{{r.status}}</span></td>
+<td><sc-if value="{{r.hasDev}}" hint-placeholder-val="{{ true }}"><a class="mono" href="DeviceDetail.dc.html" style="font-weight: 500">{{r.dev}}</a><div class="muted" style="font-size: 12px">{{r.devSub}}</div></sc-if><sc-if value="{{r.noDev}}" hint-placeholder-val="{{ false }}"><span class="muted">Unassigned</span></sc-if></td>
+<td class="mono">{{r.ip}}</td>
+<td><a href="{{r.facHref}}" style="color: #0E1726">{{r.fac}}</a></td>
+<td><a class="mono" href="BatchDetail.dc.html">{{r.batch}}</a></td>
+<td style="font-size: 12.5px">{{r.last}}<div class="muted" style="font-size: 12px">{{r.lastSub}}</div></td>
+<td style="text-align: right">
+<sc-if value="{{r.canAssign}}" hint-placeholder-val="{{ false }}"><button class="btn sm" onClick="{{r.assign}}">Assign to device</button></sc-if>
+<sc-if value="{{r.hasDev}}" hint-placeholder-val="{{ true }}"><a class="btn sm" href="DeviceDetail.dc.html">View device</a></sc-if>
+<sc-if value="{{r.isDeact}}" hint-placeholder-val="{{ false }}"><span class="muted" style="font-size: 12px; display: inline-flex; align-items: center; gap: 5px" title="Only Admins can reactivate a SIM with the carrier"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>Admin only</span></sc-if>
+</td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+<sc-if value="{{empty}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 40px 16px; text-align: center; border-top: 1px solid #EEF1F4">
+<span style="width: 44px; height: 44px; border-radius: 12px; background: #F1F4F7; color: #3B4758; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"></path><rect x="8.5" y="11" width="7" height="6" rx="1"></rect></svg></span>
+<span style="font-weight: 500">No SIMs match these filters.</span>
+<button class="btn sm p" onClick="{{reset}}">Clear filters</button>
+</div>
+</sc-if>
+<div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 12px 18px; border-top: 1px solid #EEF1F4; font-size: 12.5px" class="muted">
+<span>Showing {{shown}} of 12 sample rows · 80 SIMs in total</span>
+<span>Bank Muscat routers moved from Ooredoo to the Omantel pooled plan on 02 Oct</span>
+</div>
+</section>
+</main>
+</div>
+</div>
+
+<sc-if value="{{modalOpen}}" hint-placeholder-val="{{ false }}">
+<div class="ovl" role="dialog" aria-modal="true" aria-labelledby="as-t">
+<div class="pnl">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 18px 22px; border-bottom: 1px solid #EEF1F4">
+<div><h2 id="as-t" style="font-size: 17px; font-weight: 600">Assign SIM to device</h2><p class="muted" style="font-size: 13px"><span class="mono">{{m.iccid}}</span> · {{m.carrier}} · {{m.msisdn}}</p></div>
+<button class="btn ic sm" aria-label="Close" onClick="{{closeModal}}" style="width: 32px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<div style="padding: 18px 22px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 8px" role="radiogroup" aria-label="Device">
+<span style="font-size: 12.5px; font-weight: 500; color: #3B4758">Device <span class="muted" style="font-weight: 400">· Teltonika routers in preparation or unconfigured, without a SIM</span></span>
+<sc-for list="{{devOpts}}" as="d" hint-placeholder-count="4">
+<button class="{{d.cls}}" role="radio" aria-checked="{{d.checked}}" onClick="{{d.pick}}">
+<span class="rd"></span>
+<span style="flex: 1; min-width: 0"><span style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap"><span class="mono" style="font-weight: 600">{{d.sn}}</span><span class="muted" style="font-size: 12.5px">RUT956 · {{d.batch}}</span></span><span class="muted" style="font-size: 12px">{{d.where}}</span></span>
+<span class="b {{d.scls}}">{{d.status}}</span>
+</button>
+</sc-for>
+</div>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; font-weight: 500; color: #3B4758">Static IP address
+<input class="{{ipCls}}" style="font-family: 'Geist Mono', ui-monospace, monospace" value="{{ip}}" onChange="{{onIp}}">
+<span style="font-size: 12px; font-weight: 400; color: {{ipMsgColor}}">{{ipMsg}}</span>
+</label>
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid #E3E7EC; border-radius: 10px">
+<span style="flex: 1"><span style="display: block; font-size: 13.5px; font-weight: 500">Activate with carrier now</span><span class="muted" style="font-size: 12px">{{actSub}}</span></span>
+<button class="{{swCls}}" role="switch" aria-checked="{{actStr}}" aria-label="Activate SIM" onClick="{{toggleAct}}"></button>
+</div>
+<div style="display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 9px; background: #F8FAFB; font-size: 12.5px; color: #3B4758">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 16px; margin-top: 1px" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg>
+<span>The device moves to <strong>In preparation</strong> and the SIM, IP and APN are recorded on it. Logged to the audit trail as Chetan.</span>
+</div>
+</div>
+<div style="display: flex; justify-content: flex-end; gap: 10px; padding: 14px 22px; border-top: 1px solid #EEF1F4; background: #F8FAFB; border-radius: 0 0 14px 14px; flex-wrap: wrap">
+<button class="btn" onClick="{{closeModal}}">Cancel</button>
+<sc-if value="{{ipOk}}" hint-placeholder-val="{{ true }}"><button class="btn p" onClick="{{confirmAssign}}">Assign SIM</button></sc-if>
+<sc-if value="{{ipBad}}" hint-placeholder-val="{{ false }}"><button class="btn p" disabled="disabled" aria-disabled="true" title="Fix the IP address first" style="opacity: .45; cursor: not-allowed">Assign SIM</button></sc-if>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
+<div class="toast" role="status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2BC4A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg><span>{{toast}}</span><button class="btn sm" onClick="{{clearToast}}" style="background: transparent; border-color: #3B4758; color: #fff; height: 26px">OK</button></div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1360}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { carrier: 'all', status: 'all', asg: 'all', q: '', modal: '', dev: '', ip: '', active: true, assigned: {}, toast: '' };
+  }
+  renderVals() {
+    const S = this.state;
+    const OM = 'M2M Pooled 5 GB', OO = 'M2M Fixed 2 GB';
+    const base = [
+      ['8996802026093001427', '+968 7912 3045', 'Omantel', OM, 'active', '1108675309', 'Ready · Shelf A2', '10.64.12.37', 'MRD Office · Shelf A2', 'Inventory.dc.html', 'SIM-2026-005', '05 Oct, 09:38', 'Assigned by Chetan'],
+      ['8996802026093001435', '+968 7912 3053', 'Omantel', OM, 'active', '1108675311', 'Deployed · POC', '10.64.12.41', 'Qatar Foundation', 'FacilityDetail.dc.html', 'SIM-2026-005', '01 Oct, 13:20', 'Deployed by Chetan'],
+      ['8996802026093001419', '+968 7912 3037', 'Omantel', OM, 'active', '1108675302', 'Deployed · Additional', '10.64.12.33', 'Bank Muscat Head Office', 'FacilityDetail.dc.html', 'SIM-2026-005', '28 Sep, 11:30', 'Deployed by Saif'],
+      ['8996802026093001421', '+968 7912 3039', 'Omantel', OM, 'active', '1108675304', 'Ready · Shelf A2', '10.64.12.34', 'MRD Office · Shelf A2', 'Inventory.dc.html', 'SIM-2026-005', '05 Oct, 09:20', 'Assigned by Chetan'],
+      ['8996802026093001430', '+968 7912 3048', 'Omantel', OM, 'active', '1108675313', 'Ready · Shelf A2', '10.64.12.36', 'MRD Office · Shelf A2', 'Inventory.dc.html', 'SIM-2026-005', '05 Oct, 09:31', 'Assigned by Chetan'],
+      ['8996802026093001402', '+968 7912 3020', 'Omantel', OM, 'active', '1107442100', 'Deployed · Contract', '10.64.12.26', 'Bank Muscat Head Office', 'FacilityDetail.dc.html', 'SIM-2026-005', '02 Oct, 15:05', 'Migrated from Ooredoo · Saif'],
+      ['8996803026052000114', '+968 7208 4411', 'Ooredoo', OO, 'active', '1107442108', 'Deployed · POC', '10.72.4.11', 'Lulu Hypermarket', 'FacilityDetail.dc.html', 'SIM-2026-002', '19 Aug, 10:40', 'Deployed by Saif'],
+      ['8996802026093001438', '+968 7912 3056', 'Omantel', OM, 'avail', '', '', '—', 'MRD Office · Shelf C2', 'Inventory.dc.html', 'SIM-2026-005', '30 Sep, 11:02', 'Received by Nitin'],
+      ['8996802026093001439', '+968 7912 3057', 'Omantel', OM, 'avail', '', '', '—', 'MRD Office · Shelf C2', 'Inventory.dc.html', 'SIM-2026-005', '30 Sep, 11:02', 'Received by Nitin'],
+      ['8996803026052000121', '+968 7208 4418', 'Ooredoo', OO, 'avail', '', '', '—', 'MRD Office · Shelf C2', 'Inventory.dc.html', 'SIM-2026-002', '02 Oct, 15:05', 'Returned after migration'],
+      ['8996803026052000103', '+968 7208 4400', 'Ooredoo', OO, 'deact', '', '', '—', 'Retired', 'AuditLog.dc.html', 'SIM-2026-002', '11 Jul, 09:15', 'Lost in transit · Aisha'],
+      ['8996803026052000108', '+968 7208 4405', 'Ooredoo', OO, 'deact', '', '', '—', 'Retired', 'AuditLog.dc.html', 'SIM-2026-002', '03 Aug, 14:48', 'Damaged · Rahul']
+    ];
+    const A = S.assigned;
+    const usedIps = {};
+    base.forEach(r => { if (r[7] !== '—') usedIps[r[7]] = r[5]; });
+    ['10.64.12.35','10.64.12.27','10.64.12.28','10.64.12.29','10.64.12.30','10.64.12.31','10.64.12.32'].forEach(ip => { usedIps[ip] = 'Bank Muscat router'; });
+    Object.keys(A).forEach(k => { usedIps[A[k].ip] = A[k].dev; });
+    const nextFree = c => {
+      const pre = c === 'Omantel' ? '10.64.12.' : '10.72.4.';
+      for (let i = c === 'Omantel' ? 38 : 12; i < 255; i++) { if (!usedIps[pre + i]) return pre + i; }
+      return '';
+    };
+    const all = base.map(r => {
+      const a = A[r[0]];
+      let st = r[4], dev = r[5], devSub = r[6], ip = r[7], fac = r[8], facHref = r[9], last = r[11], lastSub = r[12];
+      if (a) { st = a.active ? 'active' : 'assigned'; dev = a.dev; devSub = 'In preparation · Prep bench'; ip = a.ip; fac = 'MRD Office · Prep bench'; facHref = 'Inventory.dc.html'; last = '05 Oct, now'; lastSub = 'Assigned by Chetan'; }
+      const lab = { active: ['Active', 's-deployed'], avail: ['Available', 's-stock'], deact: ['Deactivated', 's-retired'], assigned: ['Assigned', 's-ready'] }[st];
+      return { iccid: r[0], msisdn: r[1], carrier: r[2], plan: r[3], st, status: lab[0], cls: lab[1], dev, devSub, ip, fac, facHref, batch: r[10], last, lastSub,
+        hasDev: !!dev, noDev: !dev, canAssign: st === 'avail', isDeact: st === 'deact',
+        assign: () => { const d0 = this.freeDevs()[0]; this.setState({ modal: r[0], dev: d0 ? d0.sn : '', ip: nextFree(r[2]), active: true }); } };
+    });
+    const q = S.q.trim().toLowerCase();
+    const list = all.filter(r => (S.carrier === 'all' || r.carrier === S.carrier)
+      && (S.status === 'all' || r.st === S.status || (S.status === 'active' && r.st === 'active'))
+      && (S.asg === 'all' || (S.asg === 'yes' ? r.hasDev : !r.hasDev))
+      && (!q || (r.iccid + ' ' + r.msisdn + ' ' + r.ip + ' ' + r.dev + ' ' + r.fac).toLowerCase().indexOf(q) >= 0));
+    const n = Object.keys(A).length, nAct = Object.keys(A).filter(k => A[k].active).length;
+    const chips = (defs, key) => defs.map(([id, label, cnt]) => ({ label, n: cnt, cls: 'chip' + (S[key] === id ? ' on' : ''), pressed: S[key] === id ? 'true' : 'false', pick: () => { const o = {}; o[key] = id; this.setState(o); } }));
+    const fCarrier = chips([['all', 'All', 80], ['Omantel', 'Omantel', 50], ['Ooredoo', 'Ooredoo', 30]], 'carrier');
+    const fStatus = chips([['all', 'All', 80], ['active', 'Active', 14 + nAct], ['avail', 'Available', 64 - n], ['deact', 'Deactivated', 2]], 'status');
+    const fAsg = chips([['all', 'All', 80], ['yes', 'Assigned', 14 + n], ['no', 'Unassigned', 66 - n]], 'asg');
+    const kpis = [
+      { label: 'Total SIMs', value: '80', sub: 'Omantel 50 · Ooredoo 30', dot: '#3B4758', pick: () => this.setState({ carrier: 'all', status: 'all', asg: 'all' }) },
+      { label: 'Available', value: '' + (64 - n), sub: 'in office, not assigned', dot: '#1A8FAD', pick: () => this.setState({ status: 'avail', asg: 'all' }) },
+      { label: 'Assigned to devices', value: '' + (14 + n), sub: '10 deployed · ' + (4 + n) + ' in office routers', dot: '#2F6FE4', pick: () => this.setState({ asg: 'yes', status: 'all' }) },
+      { label: 'Active', value: '' + (14 + nAct), sub: 'billing on carrier plan', dot: '#12A374', pick: () => this.setState({ status: 'active', asg: 'all' }) },
+      { label: 'Deactivated', value: '2', sub: 'Ooredoo · lost 1, damaged 1', dot: '#8A96A8', pick: () => this.setState({ status: 'deact', asg: 'all' }) }
+    ];
+    const omUsed = 13 + Object.keys(A).filter(k => A[k].carrier === 'Omantel').length;
+    const ooUsed = 1 + Object.keys(A).filter(k => A[k].carrier === 'Ooredoo').length;
+    const omAs = 13 + Object.keys(A).filter(k => A[k].carrier === 'Omantel').length;
+    const ooAs = 1 + Object.keys(A).filter(k => A[k].carrier === 'Ooredoo').length;
+    const mkC = (name, abbr, tint, ink, plan, apn, total, parts, pool, used, next, reserved) => ({
+      name, abbr, tint, ink, plan, apn, total, pool, used, next, reserved,
+      pct: (used / 254 * 100).toFixed(1) + '%', usedW: (used / 254 * 100).toFixed(1) + '%',
+      parts: parts.filter(p => p[1] > 0).map(([label, v, c]) => ({ label, v, c, w: (v / total * 100).toFixed(1) + '%' })),
+      aria: parts.map(p => p[0] + ' ' + p[1]).join(', ')
+    });
+    const carriers = [
+      mkC('Omantel Business', 'OM', '#E1F4EC', '#0A6648', OM, 'mrd.m2m', 50, [['Available', 50 - omAs, '#1A8FAD'], ['Assigned, active', omAs, '#12A374'], ['Deactivated', 0, '#8A96A8']], '10.64.12.0/24', omUsed, nextFree('Omantel'), '.1–.25 reserved for gateway & VPN'),
+      mkC('Ooredoo Business', 'OO', '#FDEBEA', '#A3201F', OO, 'ooredoo.m2m', 30, [['Available', 27 - (ooAs - 1), '#1A8FAD'], ['Assigned, active', ooAs, '#12A374'], ['Deactivated', 2, '#8A96A8']], '10.72.4.0/24', ooUsed, nextFree('Ooredoo'), '.1–.10 reserved for gateway & VPN')
+    ];
+    // modal
+    const mrow = all.filter(r => r.iccid === S.modal)[0];
+    const m = mrow ? { iccid: mrow.iccid, carrier: mrow.carrier, msisdn: mrow.msisdn } : { iccid: '', carrier: '', msisdn: '' };
+    const devOpts = this.freeDevs().map(d => ({ sn: d.sn, batch: d.batch, where: d.where, status: d.status, scls: d.scls, cls: 'opt' + (S.dev === d.sn ? ' on' : ''), checked: S.dev === d.sn ? 'true' : 'false', pick: () => this.setState({ dev: d.sn }) }));
+    const pre = m.carrier === 'Ooredoo' ? '10.72.4.' : '10.64.12.';
+    const ipT = S.ip.trim();
+    const last = parseInt(ipT.slice(pre.length), 10);
+    let ipMsg = 'Next free address in ' + (m.carrier === 'Ooredoo' ? '10.72.4.0/24' : '10.64.12.0/24') + ' · suggested automatically';
+    let ipOk = true;
+    if (ipT.indexOf(pre) !== 0 || isNaN(last) || last < 1 || last > 254 || ('' + last) !== ipT.slice(pre.length)) { ipOk = false; ipMsg = 'Must be inside the ' + m.carrier + ' pool ' + pre + '0/24'; }
+    else if (usedIps[ipT]) { ipOk = false; ipMsg = 'Already assigned to ' + usedIps[ipT]; }
+    if (!S.dev) { ipOk = false; ipMsg = 'Choose a device first'; }
+    return {
+      kpis, carriers, fCarrier, fStatus, fAsg, rows: list, shown: list.length, empty: list.length === 0,
+      q: S.q, onQ: e => this.setState({ q: e.target.value }),
+      reset: () => this.setState({ carrier: 'all', status: 'all', asg: 'all', q: '' }),
+      modalOpen: !!S.modal, m, devOpts, ip: S.ip, onIp: e => this.setState({ ip: e.target.value }),
+      ipCls: 'inp' + (ipOk ? '' : ' err'), ipMsg, ipMsgColor: ipOk ? '#5E6B7D' : '#B42318', ipOk, ipBad: !ipOk,
+      swCls: 'sw' + (S.active ? ' on' : ''), actStr: S.active ? 'true' : 'false',
+      actSub: S.active ? 'Data starts flowing once the router comes online' : 'SIM is reserved for this device but stays inactive (no billing)',
+      toggleAct: () => this.setState({ active: !S.active }),
+      closeModal: () => this.setState({ modal: '' }),
+      confirmAssign: () => {
+        const na = Object.assign({}, A);
+        na[S.modal] = { dev: S.dev, ip: ipT, active: S.active, carrier: m.carrier };
+        this.setState({ assigned: na, modal: '', toast: 'SIM …' + S.modal.slice(-4) + ' assigned to ' + S.dev + ' · ' + ipT + (S.active ? ' · activation requested' : '') });
+      },
+      hasToast: S.toast !== '', toast: S.toast, clearToast: () => this.setState({ toast: '' })
+    };
+  }
+  freeDevs() {
+    const A = this.state.assigned;
+    const taken = {};
+    Object.keys(A).forEach(k => { taken[A[k].dev] = true; });
+    return [
+      { sn: '1107442109', batch: 'TEL-2026-003', where: 'Prep bench · awaiting SIM since 28 Sep', status: 'In preparation', scls: 's-prep' },
+      { sn: '1108675300', batch: 'TEL-2026-004', where: 'MRD Office · Shelf A1', status: 'Unconfigured', scls: 's-unconf' },
+      { sn: '1108675301', batch: 'TEL-2026-004', where: 'MRD Office · Shelf A1', status: 'Unconfigured', scls: 's-unconf' },
+      { sn: '1108675303', batch: 'TEL-2026-004', where: 'MRD Office · Shelf A1', status: 'Unconfigured', scls: 's-unconf' }
+    ].filter(d => !taken[d.sn]);
+  }
+}
+</script>
+</body>
+</html>

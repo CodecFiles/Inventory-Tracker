@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>All inventory · MRD Inventory</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F6F8;color:#0E1726;font-family:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#0B7A6B;text-decoration:none}a:hover{color:#075C51}
+h1,h2,h3,h4,p{margin:0}
+.mono{font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;letter-spacing:-.01em}
+.muted{color:#5E6B7D}
+.side{flex:0 0 248px;background:#0C1424;padding:18px 12px 16px;display:flex;flex-direction:column;gap:1px}
+.nav{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:8px;color:#B3BDCB;font-size:13.5px}
+.nav:hover{background:#152036;color:#fff}
+.nav.on{background:#1C2A42;color:#fff;box-shadow:inset 2px 0 0 #2BC4A8}
+.nav svg{flex:0 0 16px;width:16px;height:16px}
+.nav .ct{margin-left:auto;font-size:11px;font-weight:600;background:#2BC4A8;color:#04211C;border-radius:999px;padding:1px 7px}
+.sec{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#7F8CA0;padding:16px 10px 6px;font-weight:500}
+.mtop{display:none}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 32px;background:#fff;border-bottom:1px solid #E3E7EC}
+.srch{flex:1 1 320px;max-width:560px;display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border:1px solid #DCE1E8;border-radius:10px;background:#F8FAFB;color:#5E6B7D;font-size:13.5px}
+.srch:hover{border-color:#B9C2CE;color:#3B4758}
+.kbd{margin-left:auto;font-family:'Geist Mono',monospace;font-size:11px;border:1px solid #DCE1E8;border-radius:5px;padding:1px 6px;background:#fff;color:#5E6B7D}
+.main{padding:28px 32px 48px;max-width:1400px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+.card{background:#fff;border:1px solid #E3E7EC;border-radius:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 14px;border-radius:9px;border:1px solid #D5DBE3;background:#fff;color:#1B2638;font:inherit;font-size:13.5px;font-weight:500;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#F4F6F8;color:#0E1726}
+.btn.p{background:#0B7A6B;border-color:#0B7A6B;color:#fff}.btn.p:hover{background:#08695C;color:#fff}
+.btn.sm{height:32px;padding:0 10px;font-size:12.5px;border-radius:8px}
+.btn.ic{width:40px;padding:0}
+.btn svg{width:16px;height:16px}
+.b{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;background:#EEF1F5;color:#3E4A5C}
+.b::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.s-unconf{background:#EEF1F5;color:#3E4A5C}.s-prep{background:#FFF3DC;color:#8A4B00}.s-ready{background:#E6EEFF;color:#1D4FB8}.s-reserved{background:#F0EAFE;color:#5B32B4}.s-deployed{background:#E1F4EC;color:#0A6648}.s-stock{background:#E3F2F6;color:#0E5E73}.s-maint{background:#FFEDE3;color:#9A3D0B}.s-damaged{background:#FDEBEA;color:#A3201F}.s-transit{background:#E9EDFC;color:#3346A8}.s-returned{background:#F1EEE8;color:#5E554A}.s-retired{background:#EFF0F2;color:#646C79}
+.g-insp{background:#EEF1F5;color:#3E4A5C}.g-bms{background:#E3F2F6;color:#0E5E73}.g-poc{background:#F0EAFE;color:#5B32B4}.g-study{background:#FFF3DC;color:#8A4B00}.g-cpend{background:#E6EEFF;color:#1D4FB8}.g-contract{background:#E1F4EC;color:#0A6648}.g-ops{background:#0B7A6B;color:#fff}.g-done{background:#EFF0F2;color:#646C79}.g-hold{background:#FDEBEA;color:#A3201F}
+.t{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:6px;font-size:11.5px;font-weight:600;letter-spacing:.02em;border:1px solid}
+.t-poc{color:#5B32B4;border-color:#D7C8FA;background:#FAF7FF}.t-con{color:#0A6648;border-color:#BFE3D3;background:#F4FBF8}.t-rep{color:#8A4B00;border-color:#F3D9A6;background:#FFFBF2}.t-add{color:#1D4FB8;border-color:#C8D8FA;background:#F6F9FF}
+.tw{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-weight:500;color:#5E6B7D;font-size:12px;padding:10px 14px;border-bottom:1px solid #E3E7EC;background:#F8FAFB;white-space:nowrap}
+.tbl td{padding:11px 14px;border-bottom:1px solid #EEF1F4;white-space:nowrap;vertical-align:middle}
+.tbl tr:hover td{background:#F8FAFB}
+.tbl tr:last-child td{border-bottom:0}
+.ov{font-size:12px;font-weight:500;color:#5E6B7D;text-transform:uppercase;letter-spacing:.06em}
+.kpi{padding:16px 18px;display:flex;flex-direction:column;gap:6px;color:#0E1726}
+.kpi:hover{border-color:#B9C2CE;color:#0E1726}
+.kpi .n{font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
+.seg{display:flex;gap:2px;height:8px;border-radius:4px;overflow:hidden}
+.seg span{display:block;height:100%}
+.row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-top:1px solid #EEF1F4;color:#0E1726}
+.row:hover{background:#F8FAFB;color:#0E1726}
+.chip{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;border:0;background:transparent;font:inherit;font-size:13px;color:#3B4758;cursor:pointer}
+.chip.on{background:#fff;color:#0E1726;box-shadow:0 1px 2px rgba(14,23,38,.12)}
+.cb{width:18px;height:18px;flex:0 0 18px;border-radius:5px;border:1.5px solid #B9C2CE;background:#fff;display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer;color:transparent}
+.cb.on{background:#0B7A6B;border-color:#0B7A6B;color:#fff}
+.cb svg{width:12px;height:12px}
+.tbl tr.sel td{background:#F1FAF7}
+.fchip{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 12px;border-radius:999px;border:1px solid #DCE1E8;background:#fff;font:inherit;font-size:13px;color:#3B4758;cursor:pointer;white-space:nowrap}
+.fchip:hover{border-color:#B9C2CE}
+.fchip.on{border-color:#0B7A6B;background:#ECF7F4;color:#075C51;box-shadow:inset 0 0 0 1px #0B7A6B}
+.fchip strong{font-weight:600;color:#0E1726}
+.ctab{display:inline-flex;align-items:center;gap:6px;height:46px;padding:0 2px;border:0;border-bottom:2px solid transparent;background:none;font:inherit;font-size:13.5px;color:#5E6B7D;cursor:pointer;white-space:nowrap}
+.ctab:hover{color:#0E1726}
+.ctab.on{color:#0E1726;border-bottom-color:#0B7A6B;font-weight:500}
+.ctab .n{font-size:11.5px;background:#EEF1F5;color:#3E4A5C;border-radius:999px;padding:0 7px;line-height:18px}
+.inp{height:40px;border:1px solid #DCE1E8;border-radius:9px;padding:0 12px 0 36px;font:inherit;font-size:13.5px;width:100%;background:#fff;color:#0E1726}
+.inp:focus{outline:2px solid rgba(11,122,107,.25);border-color:#0B7A6B}
+.dd svg{width:14px;height:14px;color:#5E6B7D}
+.vt{display:inline-flex;align-items:center;justify-content:center;width:34px;height:32px;border:0;border-radius:7px;background:transparent;color:#5E6B7D;cursor:pointer}
+.vt.on{background:#fff;color:#0E1726;box-shadow:0 1px 2px rgba(14,23,38,.12)}
+.vt svg{width:16px;height:16px}
+.gcard{padding:16px;display:flex;flex-direction:column;gap:12px}
+.gcard.sel{border-color:#0B7A6B;box-shadow:inset 0 0 0 1px #0B7A6B}
+.tile{width:44px;height:44px;flex:0 0 44px;border-radius:10px;background:#E9EEF2;display:flex;align-items:center;justify-content:center;color:#3B4758}
+.kv{display:grid;grid-template-columns:78px 1fr;gap:5px 10px;font-size:12.5px}
+.kv dt{color:#5E6B7D}.kv dd{margin:0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pg{display:inline-flex;align-items:center;justify-content:center;min-width:32px;height:32px;padding:0 8px;border-radius:8px;border:1px solid transparent;background:none;font:inherit;font-size:13px;color:#3B4758;cursor:pointer}
+.pg.on{border-color:#D5DBE3;background:#fff;color:#0E1726;font-weight:600}
+.sel-s{height:32px;border:1px solid #D5DBE3;border-radius:8px;padding:0 8px;font:inherit;font-size:13px;background:#fff;color:#0E1726}
+.low{display:inline-flex;align-items:center;height:18px;padding:0 6px;border-radius:5px;background:#FDEBEA;color:#A3201F;font-size:11px;font-weight:600;margin-left:6px}
+@media (max-width:900px){.side{display:none}.mtop{display:flex}.main{padding:20px 16px 40px}.top{padding:12px 16px}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh; background: #F4F6F8">
+<nav class="side" aria-label="Primary">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 2px 8px 14px; color: #fff">
+<span style="width: 32px; height: 32px; border-radius: 9px; background: #0B7A6B; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4a8 8 0 1 0 4 11.5A6.5 6.5 0 0 1 16 4z"></path><path d="M6 18l2.5-2.5"></path></svg></span>
+<span style="display: flex; flex-direction: column; line-height: 1.15"><span style="font-weight: 600; font-size: 14px">Moonrock R&amp;D</span><span style="font-size: 11.5px; color: #8D99AC">Inventory × Exergio</span></span>
+</a>
+<a class="nav" href="Main.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>Dashboard</a>
+<div class="sec">Inventory</div>
+<a class="nav on" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"></path><path d="M3 8v8l9 5 9-5V8"></path><path d="M12 13v8"></path></svg>All inventory</a>
+<a class="nav" href="Products.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg>Products</a>
+<a class="nav" href="Batches.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l10 5-10 5L2 7l10-5z"></path><path d="M2 12l10 5 10-5"></path><path d="M2 17l10 5 10-5"></path></svg>Batches</a>
+<a class="nav" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive stock</a>
+<div class="sec">Devices</div>
+<a class="nav" href="DevicePrep.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg>Device preparation<span class="ct">15</span></a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="18" height="7" rx="2"></rect><path d="M7 16.5h.01M11 16.5h.01"></path><path d="M17 13V5"></path><path d="M14 7.5a4 4 0 0 1 6 0"></path></svg>Teltonika</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h11a3 3 0 1 0-3-3"></path><path d="M3 12h16a3 3 0 1 1-3 3"></path><path d="M3 16h7"></path></svg>CO₂ sensors</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"></circle><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7M5.6 5.6a9 9 0 0 0 0 12.8M18.4 5.6a9 9 0 0 1 0 12.8"></path></svg>LoRaWAN gateways</a>
+<a class="nav" href="SimInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"></path><rect x="8.5" y="11" width="7" height="6" rx="1"></rect></svg>SIM cards</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"></rect><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"></path></svg>Other equipment</a>
+<div class="sec">Facilities &amp; projects</div>
+<a class="nav" href="Facilities.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"></rect><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1"></path></svg>Facilities</a>
+<a class="nav" href="PocManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6L4.5 18.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3"></path><path d="M7 15h10"></path></svg>POC projects</a>
+<a class="nav" href="ContractManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path><path d="M9 13h6M9 17h4"></path></svg>Contracts</a>
+<div class="sec">Deployments</div>
+<a class="nav" href="Deployments.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3z"></path><path d="M14 10h4l3 3v3h-7"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>Deployments</a>
+<a class="nav" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>New deployment</a>
+<div class="sec">Insights &amp; admin</div>
+<a class="nav" href="Reports.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M10 20V5M16 20v-6M21 20H3"></path></svg>Reports</a>
+<a class="nav" href="AuditLog.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l3 2"></path></svg>Audit log</a>
+<a class="nav" href="Users.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20a6.5 6.5 0 0 1 13 0"></path><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"></path></svg>Users &amp; roles</a>
+<a class="nav" href="Settings.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Settings</a>
+<div style="margin-top: auto; padding: 16px 8px 0; display: flex; align-items: center; gap: 10px; border-top: 1px solid #1C2A42">
+<span style="width: 32px; height: 32px; border-radius: 50%; background: #2BC4A8; color: #04211C; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600">CH</span>
+<span style="display: flex; flex-direction: column; line-height: 1.2"><span style="color: #fff; font-size: 13px; font-weight: 500">Chetan</span><span style="color: #8D99AC; font-size: 11.5px">Admin · MRD Office</span></span>
+</div>
+</nav>
+
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+<div class="mtop" style="align-items: center; justify-content: space-between; padding: 12px 16px; background: #0C1424; color: #fff">
+<span style="font-weight: 600">Moonrock R&amp;D</span>
+<button class="btn sm" aria-label="Open menu" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
+</div>
+<header class="top">
+<a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
+<span style="flex: 1"></span>
+<span class="b s-prep" title="All records shown are sample data">Sample data</span>
+<a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
+<a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
+<button class="btn ic" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg></button>
+</header>
+
+<main class="main">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<nav aria-label="Breadcrumb" class="muted" style="font-size: 13px; display: flex; gap: 6px; flex-wrap: wrap"><a href="Main.dc.html">Dashboard</a><span aria-hidden="true">/</span><span>Inventory</span><span aria-hidden="true">/</span><span style="color: #0E1726">All inventory</span></nav>
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="font-size: 26px; font-weight: 600; letter-spacing: -.02em">All inventory</h1>
+<p class="muted" style="font-size: 14px">1,284 items across 18 products · 244 serialised units, 1,040 quantity-tracked pieces</p>
+</div>
+<div style="display: flex; gap: 10px; flex-wrap: wrap">
+<button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path><path d="M12 18v-6M9 15l3-3 3 3"></path></svg>Import CSV</button>
+<button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"></path></svg>Export</button>
+<a class="btn p" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive stock</a>
+</div>
+</div>
+</div>
+
+<!-- Status summary -->
+<section class="card" aria-label="Filter by status" style="padding: 16px 18px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap">
+<span class="ov">By status</span>
+<span class="muted" style="font-size: 12px">Click a status to filter the list below</span>
+</div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<sc-for list="{{statusChips}}" as="c" hint-placeholder-count="9">
+<button class="{{c.cls}}" aria-pressed="{{c.pressed}}" onClick="{{c.pick}}"><span style="width: 8px; height: 8px; border-radius: 50%; background: {{c.dot}}"></span>{{c.label}}<strong>{{c.n}}</strong></button>
+</sc-for>
+</div>
+</section>
+
+<!-- List card -->
+<section class="card" style="min-width: 0">
+<div role="tablist" aria-label="Category" style="display: flex; gap: 22px; padding: 0 18px; border-bottom: 1px solid #E3E7EC; overflow-x: auto">
+<sc-for list="{{catTabs}}" as="t" hint-placeholder-count="8">
+<button class="{{t.cls}}" role="tab" aria-selected="{{t.pressed}}" onClick="{{t.pick}}">{{t.label}}<span class="n">{{t.n}}</span></button>
+</sc-for>
+</div>
+
+<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 14px 18px">
+<div style="position: relative; flex: 1 1 280px; max-width: 380px">
+<label for="inv-q" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search inventory</label>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="2" stroke-linecap="round" style="position: absolute; left: 12px; top: 12px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input id="inv-q" class="inp" type="search" placeholder="Filter by product, serial, batch, facility…" value="{{q}}" onChange="{{onQ}}">
+</div>
+<sc-for list="{{dropdowns}}" as="d" hint-placeholder-count="6">
+<button class="btn sm dd" aria-haspopup="listbox">{{d.label}}<span style="color: #0B7A6B">{{d.val}}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+</sc-for>
+<span style="flex: 1"></span>
+<button class="btn sm" onClick="{{flipSort}}" aria-label="Toggle sort order"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v16M3 16l4 4 4-4"></path><path d="M14 6h7M14 11h5M14 16h3"></path></svg>Last updated · {{sortLabel}}</button>
+<button class="btn sm" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M9 4v16M15 4v16"></path></svg>Columns</button>
+<div role="group" aria-label="View" style="display: flex; gap: 2px; padding: 3px; background: #E9EDF1; border-radius: 9px">
+<button class="{{tableBtn}}" aria-label="Table view" aria-pressed="{{tablePressed}}" onClick="{{toTable}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+<button class="{{gridBtn}}" aria-label="Grid view" aria-pressed="{{gridPressed}}" onClick="{{toGrid}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="1.5"></rect><rect x="13" y="4" width="7" height="7" rx="1.5"></rect><rect x="4" y="13" width="7" height="7" rx="1.5"></rect><rect x="13" y="13" width="7" height="7" rx="1.5"></rect></svg></button>
+</div>
+</div>
+
+<sc-if value="{{hasFilter}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 0 18px 12px; font-size: 12.5px">
+<span class="muted">{{filterText}}</span>
+<button class="btn sm" onClick="{{clearFilters}}" style="height: 26px">Clear filters</button>
+</div>
+</sc-if>
+
+<sc-if value="{{hasSel}}" hint-placeholder-val="{{ false }}">
+<div role="region" aria-label="Bulk actions" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0 18px 12px; padding: 8px 10px 8px 14px; border-radius: 10px; background: #0C1424; color: #fff">
+<span style="font-size: 13px; font-weight: 500">{{selCount}} selected</span>
+<span style="flex: 1"></span>
+<a class="btn sm" href="CreateDeployment.dc.html" style="background: #1C2A42; border-color: #2A3A56; color: #fff">Assign to facility</a>
+<button class="btn sm" style="background: #1C2A42; border-color: #2A3A56; color: #fff">Move location</button>
+<button class="btn sm" style="background: #1C2A42; border-color: #2A3A56; color: #fff">Change status</button>
+<button class="btn sm" style="background: #1C2A42; border-color: #2A3A56; color: #fff">Export</button>
+<button class="btn sm" onClick="{{clearSel}}" style="background: transparent; border-color: transparent; color: #B3BDCB">Clear</button>
+</div>
+</sc-if>
+
+<sc-if value="{{showTable}}" hint-placeholder-val="{{ true }}">
+<div class="tw" style="border-top: 1px solid #E3E7EC">
+<table class="tbl">
+<thead><tr>
+<th style="width: 44px"><button class="{{allCb}}" role="checkbox" aria-checked="{{allAria}}" aria-label="Select all rows" onClick="{{toggleAll}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></button></th>
+<th>Product</th><th>Brand / model</th><th>Batch</th><th>Serial / qty</th><th>Status</th><th>Location</th><th>Facility</th><th>Type</th><th>Received</th>
+<th><button onClick="{{flipSort}}" style="border: 0; background: none; padding: 0; font: inherit; color: #0E1726; cursor: pointer; display: inline-flex; align-items: center; gap: 4px">Last updated <span aria-hidden="true">{{sortArrow}}</span></button></th>
+</tr></thead>
+<tbody>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="14">
+<tr class="{{r.trCls}}">
+<td><button class="{{r.cbCls}}" role="checkbox" aria-checked="{{r.aria}}" aria-label="Select {{r.name}} {{r.ident}}" onClick="{{r.toggle}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></button></td>
+<td><a href="ProductDetail.dc.html" style="color: #0E1726; font-weight: 500">{{r.name}}</a><div class="muted" style="font-size: 12px">{{r.catLabel}} · {{r.track}}</div></td>
+<td><span>{{r.brand}}</span><div class="muted" style="font-size: 12px">{{r.model}}</div></td>
+<td><a class="mono" href="BatchDetail.dc.html">{{r.batch}}</a></td>
+<td><a class="mono" href="{{r.href}}" style="color: #0E1726; font-weight: 500">{{r.ident}}</a><sc-if value="{{r.low}}" hint-placeholder-val="{{ false }}"><span class="low">Low</span></sc-if><div class="muted mono" style="font-size: 11.5px">{{r.sub}}</div></td>
+<td><span class="b {{r.stc}}">{{r.stl}}</span></td>
+<td><span>{{r.loc}}</span><div class="muted" style="font-size: 12px">{{r.loc2}}</div></td>
+<td><sc-if value="{{r.hasFac}}" hint-placeholder-val="{{ true }}"><a href="FacilityDetail.dc.html" style="color: #0E1726">{{r.fac}}</a></sc-if><sc-if value="{{r.noFac}}" hint-placeholder-val="{{ false }}"><span class="muted">—</span></sc-if></td>
+<td><sc-if value="{{r.hasType}}" hint-placeholder-val="{{ true }}"><span class="t {{r.tcls}}">{{r.type}}</span></sc-if><sc-if value="{{r.noType}}" hint-placeholder-val="{{ false }}"><span class="muted">—</span></sc-if></td>
+<td class="muted">{{r.recv}}</td>
+<td class="muted">{{r.upd}}</td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+</sc-if>
+
+<sc-if value="{{showGrid}}" hint-placeholder-val="{{ false }}">
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; padding: 4px 18px 18px">
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="8">
+<article class="card gcard {{r.gSel}}">
+<div style="display: flex; gap: 12px; align-items: flex-start">
+<span class="tile" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"></path><path d="M3 8v8l9 5 9-5V8"></path><path d="M12 13v8"></path></svg></span>
+<div style="flex: 1; min-width: 0"><a href="{{r.href}}" style="display: block; color: #0E1726; font-weight: 600; font-size: 14px">{{r.name}}</a><span class="muted" style="font-size: 12px">{{r.catLabel}} · {{r.track}}</span></div>
+<button class="{{r.cbCls}}" role="checkbox" aria-checked="{{r.aria}}" aria-label="Select {{r.name}} {{r.ident}}" onClick="{{r.toggle}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></button>
+</div>
+<div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap"><span class="b {{r.stc}}">{{r.stl}}</span><sc-if value="{{r.hasType}}" hint-placeholder-val="{{ false }}"><span class="t {{r.tcls}}">{{r.type}}</span></sc-if><sc-if value="{{r.low}}" hint-placeholder-val="{{ false }}"><span class="low" style="margin-left: 0">Low stock</span></sc-if></div>
+<dl class="kv" style="margin: 0">
+<dt>{{r.identLabel}}</dt><dd class="mono">{{r.ident}}</dd>
+<dt>Batch</dt><dd><a class="mono" href="BatchDetail.dc.html">{{r.batch}}</a></dd>
+<dt>Location</dt><dd>{{r.loc}}</dd>
+<dt>Facility</dt><dd>{{r.facText}}</dd>
+</dl>
+<div style="display: flex; justify-content: space-between; font-size: 12px; border-top: 1px solid #EEF1F4; padding-top: 10px" class="muted"><span>Received {{r.recv}}</span><span>{{r.upd}}</span></div>
+</article>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{isEmpty}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 56px 18px; text-align: center; border-top: 1px solid #E3E7EC">
+<span class="tile" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg></span>
+<span style="font-weight: 600">No items match these filters</span>
+<span class="muted" style="font-size: 13px">Try another serial, batch or facility, or clear the filters.</span>
+<button class="btn p sm" onClick="{{clearFilters}}">Clear filters</button>
+</div>
+</sc-if>
+
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 12px 18px; border-top: 1px solid #E3E7EC; font-size: 13px">
+<span class="muted">{{footer}}</span>
+<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+<label for="inv-size" class="muted">Rows per page</label>
+<select id="inv-size" class="sel-s" value="{{size}}" onChange="{{onSize}}"><option value="25">25</option><option value="50">50</option><option value="100">100</option></select>
+<span style="width: 8px"></span>
+<button class="pg" aria-label="Previous page" disabled><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg></button>
+<button class="pg on" aria-current="page">1</button><button class="pg">2</button><button class="pg">3</button><span class="muted">…</span><button class="pg">52</button>
+<button class="pg" aria-label="Next page"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></button>
+</div>
+</div>
+</section>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1560}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { q: '', status: 'all', cat: 'all', view: 'table', sel: { r1: true, r6: true }, desc: true, size: '25' }; }
+  renderVals() {
+    const S = this.state;
+    const ST = { unconf: ['Unconfigured', 's-unconf', '#8A96A8'], prep: ['In preparation', 's-prep', '#E08A00'], ready: ['Ready for deployment', 's-ready', '#2F6FE4'], reserved: ['Reserved', 's-reserved', '#7C4DDB'], stock: ['In stock', 's-stock', '#1A8FAD'], deployed: ['Deployed', 's-deployed', '#12A374'], maint: ['Under maintenance', 's-maint', '#E86A1C'], transit: ['In transit', 's-transit', '#5468E0'] };
+    const TT = { POC: 't-poc', Contract: 't-con', Replacement: 't-rep', Additional: 't-add' };
+    const data = [
+      { id: 'r1', name: 'Teltonika RUT956', cat: 'tel', catLabel: 'Teltonika Devices', track: 'Serialised', brand: 'Teltonika', model: 'RUT956', batch: 'TEL-2026-004', ident: '1108675309', identLabel: 'S/N', sub: 'IMEI 860548043912877', st: 'ready', loc: 'MRD Office', loc2: 'Shelf A2', fac: '', type: '', recv: '22 Sep 2026', upd: 'Today, 09:42', href: 'DeviceDetail.dc.html' },
+      { id: 'r2', name: 'Omantel M2M SIM', cat: 'sim', catLabel: 'M2M SIM Cards', track: 'Serialised', brand: 'Omantel', model: 'M2M Pooled 5 GB', batch: 'SIM-2026-005', ident: '8996802026093001427', identLabel: 'ICCID', sub: '+968 7912 3045 · 10.64.12.37', st: 'ready', loc: 'In RUT956', loc2: '1108675309 · Shelf A2', fac: '', type: '', recv: '30 Sep 2026', upd: 'Today, 09:38', href: 'SimInventory.dc.html' },
+      { id: 'r3', name: 'Teltonika RUT956', cat: 'tel', catLabel: 'Teltonika Devices', track: 'Serialised', brand: 'Teltonika', model: 'RUT956', batch: 'TEL-2026-003', ident: '1107442109', identLabel: 'S/N', sub: 'IMEI 860548043912947', st: 'prep', loc: 'MRD Office', loc2: 'Prep bench · awaiting SIM', fac: '', type: '', recv: '12 Aug 2026', upd: 'Today, 08:15', href: 'DeviceDetail.dc.html' },
+      { id: 'r4', name: 'Cat6 patch cable 1 m', cat: 'cab', catLabel: 'Cables & Accessories', track: 'Quantity', brand: 'Generic', model: 'Cat6 U/UTP · 1 m', batch: 'CAB-2026-004', ident: '18 pcs', identLabel: 'Qty', sub: 'min 25 · 4 reserved', st: 'stock', loc: 'MRD Office', loc2: 'Shelf C1 · 4 with Rahul', fac: '', type: '', recv: '12 Aug 2026', upd: 'Today, 08:55', href: 'InventoryItem.dc.html', low: true },
+      { id: 'r5', name: 'Milesight EM500-CO2', cat: 'co2', catLabel: 'CO₂ Sensors', track: 'Hybrid', brand: 'Milesight', model: 'EM500-CO2', batch: 'CO2-2026-002', ident: '× 2 units', identLabel: 'Qty', sub: 'install 08 Oct', st: 'reserved', loc: 'MRD Office', loc2: 'Shelf B2', fac: 'Qatar Foundation', type: 'POC', recv: '03 Sep 2026', upd: '04 Oct 2026', href: 'BatchDetail.dc.html' },
+      { id: 'r6', name: 'Milesight EM500-CO2', cat: 'co2', catLabel: 'CO₂ Sensors', track: 'Hybrid', brand: 'Milesight', model: 'EM500-CO2', batch: 'CO2-2026-002', ident: '× 7 units', identLabel: 'Qty', sub: 'join-key provisioning', st: 'prep', loc: 'MRD Office', loc2: 'Prep bench', fac: '', type: '', recv: '03 Sep 2026', upd: '04 Oct 2026', href: 'DevicePrep.dc.html' },
+      { id: 'r7', name: 'Milesight EM500-CO2', cat: 'co2', catLabel: 'CO₂ Sensors', track: 'Hybrid', brand: 'Milesight', model: 'EM500-CO2', batch: 'CO2-2026-002', ident: '× 23 units', identLabel: 'Qty', sub: 'not yet serialised', st: 'stock', loc: 'MRD Office', loc2: 'Shelf B2', fac: '', type: '', recv: '03 Sep 2026', upd: '03 Oct 2026', href: 'BatchDetail.dc.html' },
+      { id: 'r8', name: 'Teltonika RUT956', cat: 'tel', catLabel: 'Teltonika Devices', track: 'Serialised', brand: 'Teltonika', model: 'RUT956', batch: 'TEL-2026-004', ident: '1108675311', identLabel: 'S/N', sub: 'IP 10.64.12.41', st: 'deployed', loc: 'Plant room B1', loc2: 'BMS panel', fac: 'Qatar Foundation', type: 'POC', recv: '22 Sep 2026', upd: '01 Oct 2026', href: 'DeviceDetail.dc.html' },
+      { id: 'r9', name: 'Cat6 patch cable 3 m', cat: 'cab', catLabel: 'Cables & Accessories', track: 'Quantity', brand: 'Generic', model: 'Cat6 U/UTP · 3 m', batch: 'CAB-2026-007', ident: '600 pcs', identLabel: 'Qty', sub: '+200 on 01 Oct', st: 'stock', loc: 'MRD Office', loc2: 'Shelf C1', fac: '', type: '', recv: '01 Oct 2026', upd: '01 Oct 2026', href: 'InventoryItem.dc.html' },
+      { id: 'r10', name: 'Teltonika RUT956', cat: 'tel', catLabel: 'Teltonika Devices', track: 'Serialised', brand: 'Teltonika', model: 'RUT956', batch: 'TEL-2026-004', ident: '1108675302', identLabel: 'S/N', sub: 'IP 10.64.12.33', st: 'deployed', loc: 'Floor 4', loc2: 'Comms room', fac: 'Bank Muscat Head Office', type: 'Additional', recv: '22 Sep 2026', upd: '28 Sep 2026', href: 'DeviceDetail.dc.html' },
+      { id: 'r11', name: 'Milesight EM500-CO2', cat: 'co2', catLabel: 'CO₂ Sensors', track: 'Hybrid', brand: 'Milesight', model: 'EM500-CO2', batch: 'CO2-2026-001', ident: '× 12 units', identLabel: 'Qty', sub: '12 serialised', st: 'deployed', loc: 'Floors 1–6', loc2: 'Open office zones', fac: 'Bank Muscat Head Office', type: 'Contract', recv: '10 Jun 2026', upd: '24 Sep 2026', href: 'BatchDetail.dc.html' },
+      { id: 'r12', name: 'ABB ACS580 VFD', cat: 'vfd', catLabel: 'VFDs', track: 'Serialised', brand: 'ABB', model: 'ACS580-01 · 7.5 kW', batch: 'VFD-2026-001', ident: '3AXD50000731121', identLabel: 'S/N', sub: 'for AHU-3 · 27 Oct', st: 'reserved', loc: 'MRD Office', loc2: 'Shelf C3', fac: 'Bank Muscat Head Office', type: 'Replacement', recv: '18 Sep 2026', upd: '22 Sep 2026', href: 'DeviceDetail.dc.html' },
+      { id: 'r13', name: 'Milesight UG65', cat: 'gw', catLabel: 'LoRaWAN Gateways', track: 'Serialised', brand: 'Milesight', model: 'UG65', batch: 'GW-2026-001', ident: '6247B1820045', identLabel: 'S/N', sub: 'EUI 24E124FFFEF51A07', st: 'deployed', loc: 'Roof plant', loc2: 'Mast 2', fac: 'Lulu Hypermarket', type: 'POC', recv: '15 Jul 2026', upd: '16 Sep 2026', href: 'DeviceDetail.dc.html' },
+      { id: 'r14', name: 'Teltonika RUT956', cat: 'tel', catLabel: 'Teltonika Devices', track: 'Serialised', brand: 'Teltonika', model: 'RUT956', batch: 'TEL-2026-003', ident: '1107442103', identLabel: 'S/N', sub: 'LTE modem fault', st: 'maint', loc: 'MRD Office', loc2: 'Repair bench', fac: '', type: '', recv: '12 Aug 2026', upd: '14 Sep 2026', href: 'DeviceDetail.dc.html' }
+    ];
+    const q = S.q.trim().toLowerCase();
+    let list = data.filter(r => (S.cat === 'all' || r.cat === S.cat) && (S.status === 'all' || r.st === S.status) && (!q || [r.name, r.ident, r.sub, r.batch, r.fac, r.loc, r.loc2, r.brand, r.model].join(' ').toLowerCase().indexOf(q) > -1));
+    if (!S.desc) list = list.slice().reverse();
+    const sel = S.sel;
+    const rows = list.map(r => {
+      const on = !!sel[r.id]; const s = ST[r.st];
+      return Object.assign({}, r, {
+        stl: s[0], stc: s[1], tcls: TT[r.type] || '', hasType: !!r.type, noType: !r.type, hasFac: !!r.fac, noFac: !r.fac, facText: r.fac || '—', low: !!r.low,
+        cbCls: on ? 'cb on' : 'cb', aria: on ? 'true' : 'false', trCls: on ? 'sel' : '', gSel: on ? 'sel' : '',
+        toggle: () => { const n = Object.assign({}, this.state.sel); if (n[r.id]) delete n[r.id]; else n[r.id] = true; this.setState({ sel: n }); }
+      });
+    });
+    const allOn = rows.length > 0 && rows.every(r => sel[r.id]);
+    const toggleAll = () => { const n = Object.assign({}, this.state.sel); if (allOn) rows.forEach(r => { delete n[r.id]; }); else rows.forEach(r => { n[r.id] = true; }); this.setState({ sel: n }); };
+    const counts = [['all', 'All items', '#3B4758', '1,284'], ['unconf', 'Unconfigured', '', '31'], ['prep', 'In preparation', '', '9'], ['ready', 'Ready', '', '46'], ['reserved', 'Reserved', '', '8'], ['stock', 'In stock', '', '624'], ['deployed', 'Deployed', '', '538'], ['maint', 'Under maintenance', '', '7'], ['transit', 'In transit', '', '12']];
+    const statusChips = counts.map(([id, label, dot, n]) => ({ label, n, dot: dot || ST[id][2], cls: 'fchip' + (S.status === id ? ' on' : ''), pressed: S.status === id ? 'true' : 'false', pick: () => this.setState({ status: id }) }));
+    const catTabs = [['all', 'All', '1,284'], ['tel', 'Teltonika', '30'], ['co2', 'CO₂ sensors', '60'], ['gw', 'Gateways', '6'], ['sim', 'SIM cards', '80'], ['net', 'Network', '16'], ['vfd', 'VFDs', '12'], ['cab', 'Cables', '1,040']].map(([id, label, n]) => ({ label, n, cls: 'ctab' + (S.cat === id ? ' on' : ''), pressed: S.cat === id ? 'true' : 'false', pick: () => this.setState({ cat: id }) }));
+    const stName = S.status === 'all' ? '' : ': ' + ST[S.status][0];
+    const dropdowns = [['Brand', ''], ['Status', stName], ['Location', ''], ['Facility', ''], ['Batch', ''], ['Date received', '']].map(([label, val]) => ({ label, val }));
+    const hasFilter = S.status !== 'all' || S.cat !== 'all' || !!q;
+    const selCount = Object.keys(sel).length;
+    const view = S.view;
+    return {
+      q: S.q, onQ: e => this.setState({ q: e.target.value }),
+      statusChips, catTabs, dropdowns, rows,
+      hasFilter, filterText: rows.length + (rows.length === 1 ? ' item matches' : ' items match') + ' on this page',
+      clearFilters: () => this.setState({ q: '', status: 'all', cat: 'all' }),
+      hasSel: selCount > 0, selCount, clearSel: () => this.setState({ sel: {} }),
+      allCb: allOn ? 'cb on' : 'cb', allAria: allOn ? 'true' : 'false', toggleAll,
+      flipSort: () => this.setState({ desc: !this.state.desc }), sortArrow: S.desc ? '↓' : '↑', sortLabel: S.desc ? 'newest first' : 'oldest first',
+      tableBtn: 'vt' + (view === 'table' ? ' on' : ''), gridBtn: 'vt' + (view === 'grid' ? ' on' : ''),
+      tablePressed: view === 'table' ? 'true' : 'false', gridPressed: view === 'grid' ? 'true' : 'false',
+      toTable: () => this.setState({ view: 'table' }), toGrid: () => this.setState({ view: 'grid' }),
+      showTable: view === 'table' && rows.length > 0, showGrid: view === 'grid' && rows.length > 0, isEmpty: rows.length === 0,
+      footer: hasFilter ? 'Showing ' + rows.length + ' of 14 on this page · 1,284 items in total' : 'Showing 1–14 of 1,284 items',
+      size: S.size, onSize: e => this.setState({ size: e.target.value })
+    };
+  }
+}
+</script>
+</body>
+</html>

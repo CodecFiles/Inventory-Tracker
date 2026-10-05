@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sign in · MRD Inventory</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F6F8;color:#0E1726;font-family:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#0B7A6B;text-decoration:none}a:hover{color:#075C51}
+h1,h2,h3,h4,p{margin:0}
+.mono{font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;letter-spacing:-.01em}
+.muted{color:#5E6B7D}
+.side{flex:0 0 248px;background:#0C1424;padding:18px 12px 16px;display:flex;flex-direction:column;gap:1px}
+.nav{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:8px;color:#B3BDCB;font-size:13.5px}
+.nav:hover{background:#152036;color:#fff}
+.nav.on{background:#1C2A42;color:#fff;box-shadow:inset 2px 0 0 #2BC4A8}
+.nav svg{flex:0 0 16px;width:16px;height:16px}
+.nav .ct{margin-left:auto;font-size:11px;font-weight:600;background:#2BC4A8;color:#04211C;border-radius:999px;padding:1px 7px}
+.sec{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#7F8CA0;padding:16px 10px 6px;font-weight:500}
+.mtop{display:none}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 32px;background:#fff;border-bottom:1px solid #E3E7EC}
+.srch{flex:1 1 320px;max-width:560px;display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border:1px solid #DCE1E8;border-radius:10px;background:#F8FAFB;color:#5E6B7D;font-size:13.5px}
+.srch:hover{border-color:#B9C2CE;color:#3B4758}
+.kbd{margin-left:auto;font-family:'Geist Mono',monospace;font-size:11px;border:1px solid #DCE1E8;border-radius:5px;padding:1px 6px;background:#fff;color:#5E6B7D}
+.main{padding:28px 32px 48px;max-width:1400px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+.card{background:#fff;border:1px solid #E3E7EC;border-radius:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 14px;border-radius:9px;border:1px solid #D5DBE3;background:#fff;color:#1B2638;font:inherit;font-size:13.5px;font-weight:500;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#F4F6F8;color:#0E1726}
+.btn.p{background:#0B7A6B;border-color:#0B7A6B;color:#fff}.btn.p:hover{background:#08695C;color:#fff}
+.btn.sm{height:32px;padding:0 10px;font-size:12.5px;border-radius:8px}
+.btn.ic{width:40px;padding:0}
+.btn svg{width:16px;height:16px}
+.b{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;background:#EEF1F5;color:#3E4A5C}
+.b::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.s-unconf{background:#EEF1F5;color:#3E4A5C}.s-prep{background:#FFF3DC;color:#8A4B00}.s-ready{background:#E6EEFF;color:#1D4FB8}.s-reserved{background:#F0EAFE;color:#5B32B4}.s-deployed{background:#E1F4EC;color:#0A6648}.s-stock{background:#E3F2F6;color:#0E5E73}.s-maint{background:#FFEDE3;color:#9A3D0B}.s-damaged{background:#FDEBEA;color:#A3201F}.s-transit{background:#E9EDFC;color:#3346A8}.s-returned{background:#F1EEE8;color:#5E554A}.s-retired{background:#EFF0F2;color:#646C79}
+.g-insp{background:#EEF1F5;color:#3E4A5C}.g-bms{background:#E3F2F6;color:#0E5E73}.g-poc{background:#F0EAFE;color:#5B32B4}.g-study{background:#FFF3DC;color:#8A4B00}.g-cpend{background:#E6EEFF;color:#1D4FB8}.g-contract{background:#E1F4EC;color:#0A6648}.g-ops{background:#0B7A6B;color:#fff}.g-done{background:#EFF0F2;color:#646C79}.g-hold{background:#FDEBEA;color:#A3201F}
+.t{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:6px;font-size:11.5px;font-weight:600;letter-spacing:.02em;border:1px solid}
+.t-poc{color:#5B32B4;border-color:#D7C8FA;background:#FAF7FF}.t-con{color:#0A6648;border-color:#BFE3D3;background:#F4FBF8}.t-rep{color:#8A4B00;border-color:#F3D9A6;background:#FFFBF2}.t-add{color:#1D4FB8;border-color:#C8D8FA;background:#F6F9FF}
+.tw{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-weight:500;color:#5E6B7D;font-size:12px;padding:10px 14px;border-bottom:1px solid #E3E7EC;background:#F8FAFB;white-space:nowrap}
+.tbl td{padding:11px 14px;border-bottom:1px solid #EEF1F4;white-space:nowrap;vertical-align:middle}
+.tbl tr:hover td{background:#F8FAFB}
+.tbl tr:last-child td{border-bottom:0}
+.ov{font-size:12px;font-weight:500;color:#5E6B7D;text-transform:uppercase;letter-spacing:.06em}
+.kpi{padding:16px 18px;display:flex;flex-direction:column;gap:6px;color:#0E1726}
+.kpi:hover{border-color:#B9C2CE;color:#0E1726}
+.kpi .n{font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
+.seg{display:flex;gap:2px;height:8px;border-radius:4px;overflow:hidden}
+.seg span{display:block;height:100%}
+.row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-top:1px solid #EEF1F4;color:#0E1726}
+.row:hover{background:#F8FAFB;color:#0E1726}
+.chip{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;border:0;background:transparent;font:inherit;font-size:13px;color:#3B4758;cursor:pointer}
+.chip.on{background:#fff;color:#0E1726;box-shadow:0 1px 2px rgba(14,23,38,.12)}
+.brand{flex:1.15 1 520px;background:#0C1424;color:#fff;padding:40px 56px;display:flex;flex-direction:column;justify-content:space-between;gap:40px;position:relative;overflow:hidden}
+.brand .lite{color:#B3BDCB}
+.life{display:flex;align-items:flex-start;gap:0}
+.nd{display:flex;flex-direction:column;align-items:center;gap:10px;flex:0 0 auto;width:76px;text-align:center}
+.nd .c{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#152036;border:1.5px solid #2B3A55;color:#B3BDCB}
+.nd .c svg{width:17px;height:17px}
+.nd.done .c{background:#0B7A6B;border-color:#0B7A6B;color:#fff}
+.nd.live .c{background:#2BC4A8;border-color:#2BC4A8;color:#04211C;box-shadow:0 0 0 6px rgba(43,196,168,.16)}
+.nd .l{font-size:12.5px;font-weight:500;color:#fff}
+.nd .s{font-size:11.5px;color:#8D99AC;margin-top:-6px}
+.cn{flex:1 1 0;height:2px;background:#2B3A55;margin-top:17px;min-width:12px}
+.cn.done{background:#0B7A6B}
+.tr{display:inline-flex;align-items:center;height:26px;padding:0 9px;border-radius:6px;background:#152036;border:1px solid #1C2A42;color:#D3DAE4;font-size:12px}
+.lbl{display:block;font-size:13px;font-weight:500;color:#1B2638;margin-bottom:6px}
+.fld{width:100%;height:44px;border:1px solid #D5DBE3;border-radius:10px;background:#fff;padding:0 12px;font:inherit;font-size:14px;color:#0E1726}
+.fld:focus{outline:2px solid #0B7A6B;outline-offset:1px;border-color:#0B7A6B}
+.fld.err{border-color:#B42318;box-shadow:0 0 0 1px #B42318}
+.pw{position:relative}
+.pw .fld{padding-right:76px}
+.pw button{position:absolute;right:6px;top:6px;height:32px;padding:0 10px;border:0;border-radius:7px;background:transparent;font:inherit;font-size:12.5px;font-weight:500;color:#3B4758;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.pw button:hover{background:#F1F4F7}
+.lnk{border:0;background:transparent;padding:0;font:inherit;font-size:13px;font-weight:500;color:#0B7A6B;cursor:pointer}
+.lnk:hover{color:#075C51;text-decoration:underline}
+@media (max-width:900px){.brand{padding:24px 20px;gap:18px;flex-basis:100%}.brand h1{font-size:24px !important}.brand .hide-sm{display:none}}
+@media (max-width:900px){.side{display:none}.mtop{display:flex}.main{padding:20px 16px 40px}.top{padding:12px 16px}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh; background: #F4F6F8">
+
+<section class="brand" aria-label="About MRD Inventory">
+<svg class="hide-sm" aria-hidden="true" width="520" height="520" viewBox="0 0 24 24" fill="none" stroke="#152036" stroke-width=".5" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: -160px; bottom: -150px"><path d="M16 4a8 8 0 1 0 4 11.5A6.5 6.5 0 0 1 16 4z"></path></svg>
+<div style="display: flex; align-items: center; gap: 12px; position: relative">
+<span style="width: 40px; height: 40px; border-radius: 11px; background: #0B7A6B; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 4a8 8 0 1 0 4 11.5A6.5 6.5 0 0 1 16 4z"></path><path d="M6 18l2.5-2.5"></path></svg></span>
+<span style="display: flex; flex-direction: column; line-height: 1.2"><span style="font-weight: 600; font-size: 15.5px">Moonrock R&amp;D × Exergio</span><span style="font-size: 12.5px; color: #8D99AC">Inventory &amp; Device Deployment</span></span>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 28px; position: relative; max-width: 560px">
+<div style="display: flex; flex-direction: column; gap: 14px">
+<span style="font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: #2BC4A8; font-weight: 500">From supplier to live facility</span>
+<h1 style="font-size: 38px; line-height: 1.12; font-weight: 600; letter-spacing: -.025em">Every device. Every facility. Fully traceable.</h1>
+<p class="lite" style="font-size: 15px; max-width: 460px">Receive batches, prepare Teltonika routers with SIMs and IPs, and follow each unit through POC and contract deployments.</p>
+</div>
+
+<div class="hide-sm" style="display: flex; flex-direction: column; gap: 18px; padding: 22px 22px 18px; border-radius: 14px; background: rgba(21,32,54,.6); border: 1px solid #1C2A42">
+<div class="life" role="img" aria-label="Device lifecycle: Received, Prepared, POC, Contract, Active">
+<div class="nd done"><span class="c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M4 17v3h16v-3"></path></svg></span><span class="l">Received</span><span class="s">Batch</span></div>
+<span class="cn done"></span>
+<div class="nd done"><span class="c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg></span><span class="l">Prepared</span><span class="s">SIM · IP</span></div>
+<span class="cn done"></span>
+<div class="nd done"><span class="c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6L4.5 18.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3"></path></svg></span><span class="l">POC</span><span class="s">Trial</span></div>
+<span class="cn done"></span>
+<div class="nd done"><span class="c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8zM14 3v5h5M9 13h6M9 17h4"></path></svg></span><span class="l">Contract</span><span class="s">Signed</span></div>
+<span class="cn"></span>
+<div class="nd live"><span class="c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-7 4 14 3-7h4"></path></svg></span><span class="l">Active</span><span class="s">Live site</span></div>
+</div>
+<div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding-top: 14px; border-top: 1px solid #1C2A42">
+<span style="font-size: 11.5px; color: #8D99AC; margin-right: 4px">Trace</span>
+<span class="tr">Supplier</span><span style="color: #5E6B7D" aria-hidden="true">→</span><span class="tr mono">TEL-2026-004</span><span style="color: #5E6B7D" aria-hidden="true">→</span><span class="tr mono">1108675309</span><span style="color: #5E6B7D" aria-hidden="true">→</span><span class="tr mono">…3001427</span><span style="color: #5E6B7D" aria-hidden="true">→</span><span class="tr mono">10.64.12.37</span><span style="color: #5E6B7D" aria-hidden="true">→</span><span class="tr">Facility</span>
+</div>
+</div>
+</div>
+
+<div style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #8D99AC; position: relative">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+Internal system · authorised MRD staff only
+</div>
+</section>
+
+<section style="flex: 1 1 460px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 40px 20px">
+<div class="card" style="width: min(420px, 100%); padding: 32px; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 1px 2px rgba(14,23,38,.04), 0 12px 32px rgba(14,23,38,.06)">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h2 style="font-size: 22px; font-weight: 600; letter-spacing: -.015em">Sign in</h2>
+<p class="muted" style="font-size: 13.5px">Use your MRD work account.</p>
+</div>
+
+<sc-if value="{{err}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 10px; background: #FDEBEA; border: 1px solid #F5C2BF; color: #8C1C13; font-size: 13px">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: 0 0 16px; margin-top: 2px"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg>
+<span><strong style="font-weight: 600">We couldn't sign you in.</strong> {{errText}}</span>
+</div>
+</sc-if>
+<sc-if value="{{resetSent}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="padding: 12px 14px; border-radius: 10px; background: #F4FBF8; border: 1px solid #BFE3D3; color: #0A6648; font-size: 13px">If an account exists for that email, a reset link is on its way. It expires in 30 minutes.</div>
+</sc-if>
+
+<div style="display: flex; flex-direction: column; gap: 16px">
+<div>
+<label class="lbl" for="em">Work email</label>
+<input id="em" class="{{emCls}}" type="email" autocomplete="username" placeholder="name@moonrock.om" value="{{email}}" onChange="{{onEmail}}" aria-invalid="{{emInvalid}}">
+<sc-if value="{{emErr}}" hint-placeholder-val="{{ false }}"><p style="font-size: 12.5px; color: #B42318; margin-top: 6px">Enter your work email.</p></sc-if>
+</div>
+<div>
+<div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px"><label class="lbl" for="pw" style="margin: 0">Password</label><button class="lnk" onClick="{{forgot}}">Forgot password?</button></div>
+<div class="pw">
+<input id="pw" class="{{pwCls}}" type="{{pwType}}" autocomplete="current-password" value="{{pw}}" onChange="{{onPw}}" aria-invalid="{{pwInvalid}}" aria-describedby="pwerr">
+<button aria-label="{{toggleLabel}}" aria-pressed="{{showPressed}}" onClick="{{toggleShow}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{eyeIcon}}"></path></svg>{{toggleText}}</button>
+</div>
+<sc-if value="{{pwErr}}" hint-placeholder-val="{{ false }}"><p id="pwerr" style="font-size: 12.5px; color: #B42318; margin-top: 6px">Enter your password to sign in.</p></sc-if>
+</div>
+<label for="keep" style="display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: #1B2638; cursor: pointer"><input id="keep" type="checkbox" style="width: 16px; height: 16px; accent-color: #0B7A6B; margin: 0">Keep me signed in on this device</label>
+</div>
+
+<sc-if value="{{needCheck}}" hint-placeholder-val="{{ true }}"><button class="btn p" style="width: 100%; height: 44px; font-size: 14px" onClick="{{trySignIn}}">Sign in</button></sc-if>
+<sc-if value="{{canGo}}" hint-placeholder-val="{{ false }}"><a class="btn p" href="Main.dc.html" style="width: 100%; height: 44px; font-size: 14px">Sign in</a></sc-if>
+
+<div style="display: flex; align-items: center; gap: 12px; color: #5E6B7D; font-size: 12.5px" role="separator" aria-label="or"><span style="flex: 1; height: 1px; background: #E3E7EC"></span>or<span style="flex: 1; height: 1px; background: #E3E7EC"></span></div>
+
+<a class="btn" href="Main.dc.html" style="width: 100%; height: 44px; font-size: 14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"></circle><path d="M10.8 12.2L20 3M16 7l3 3M14 9l2 2"></path></svg>Continue with Microsoft 365</a>
+
+<p class="muted" style="font-size: 12.5px; display: flex; gap: 8px; align-items: flex-start; padding-top: 4px; border-top: 1px solid #EEF1F4"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: 0 0 14px; margin-top: 7px"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"></path></svg><span style="padding-top: 4px">Access is role-based: Admin, Operations, Technician, Viewer. Need access? Ask an MRD administrator for an invite.</span></p>
+</div>
+<p class="muted" style="font-size: 12px; text-align: center">© 2026 Moonrock Research &amp; Development · Muscat, Oman</p>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { email: 'chetan@moonrock.om', pw: '', show: false, err: false, reset: false }; }
+  renderVals() {
+    const S = this.state;
+    const hasPw = (S.pw || '').length > 0;
+    const hasEm = (S.email || '').trim().length > 0;
+    const pwErr = S.err && !hasPw, emErr = S.err && !hasEm;
+    const canGo = hasPw && hasEm;
+    return {
+      email: S.email, pw: S.pw,
+      onEmail: (e) => this.setState({ email: e.target.value, err: false }),
+      onPw: (e) => this.setState({ pw: e.target.value, err: false }),
+      pwType: S.show ? 'text' : 'password',
+      toggleShow: () => this.setState({ show: !S.show }),
+      toggleText: S.show ? 'Hide' : 'Show', toggleLabel: S.show ? 'Hide password' : 'Show password', showPressed: S.show ? 'true' : 'false',
+      eyeIcon: S.show ? 'M3 3l18 18M10.6 6.1A9.8 9.8 0 0 1 12 6c6 0 9.5 6 9.5 6a17 17 0 0 1-3 3.6M6.6 7.6C4 9.4 2.5 12 2.5 12s3.5 6 9.5 6c1.6 0 3-.4 4.2-1M9.9 9.9a3 3 0 0 0 4.2 4.2' : 'M2.5 12S6 6 12 6s9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6zM12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6z',
+      err: S.err && (pwErr || emErr), errText: emErr ? 'Enter your work email and password.' : 'Your password is missing. Check your email and password and try again.',
+      pwErr, emErr, pwCls: 'fld' + (pwErr ? ' err' : ''), emCls: 'fld' + (emErr ? ' err' : ''),
+      pwInvalid: pwErr ? 'true' : 'false', emInvalid: emErr ? 'true' : 'false',
+      needCheck: !canGo, canGo,
+      trySignIn: () => this.setState({ err: true, reset: false }),
+      resetSent: S.reset, forgot: () => this.setState({ reset: true, err: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

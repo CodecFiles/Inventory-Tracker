@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Qatar Foundation · Mobile</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F6F8;color:#0E1726;font-family:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#0B7A6B;text-decoration:none}a:hover{color:#075C51}
+h1,h2,h3,h4,p{margin:0}
+.mono{font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;letter-spacing:-.01em}
+.muted{color:#5E6B7D}
+.card{background:#fff;border:1px solid #E3E7EC;border-radius:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 14px;border-radius:9px;border:1px solid #D5DBE3;background:#fff;color:#1B2638;font:inherit;font-size:13.5px;font-weight:500;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#F4F6F8;color:#0E1726}
+.btn.p{background:#0B7A6B;border-color:#0B7A6B;color:#fff}.btn.p:hover{background:#08695C;color:#fff}
+.btn.sm{height:32px;padding:0 10px;font-size:12.5px;border-radius:8px}
+.btn.ic{width:40px;padding:0}
+.btn svg{width:16px;height:16px}
+.b{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;background:#EEF1F5;color:#3E4A5C}
+.b::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.s-unconf{background:#EEF1F5;color:#3E4A5C}.s-prep{background:#FFF3DC;color:#8A4B00}.s-ready{background:#E6EEFF;color:#1D4FB8}.s-reserved{background:#F0EAFE;color:#5B32B4}.s-deployed{background:#E1F4EC;color:#0A6648}.s-stock{background:#E3F2F6;color:#0E5E73}.s-maint{background:#FFEDE3;color:#9A3D0B}.s-damaged{background:#FDEBEA;color:#A3201F}.s-transit{background:#E9EDFC;color:#3346A8}.s-returned{background:#F1EEE8;color:#5E554A}.s-retired{background:#EFF0F2;color:#646C79}
+.g-insp{background:#EEF1F5;color:#3E4A5C}.g-bms{background:#E3F2F6;color:#0E5E73}.g-poc{background:#F0EAFE;color:#5B32B4}.g-study{background:#FFF3DC;color:#8A4B00}.g-cpend{background:#E6EEFF;color:#1D4FB8}.g-contract{background:#E1F4EC;color:#0A6648}.g-ops{background:#0B7A6B;color:#fff}.g-done{background:#EFF0F2;color:#646C79}.g-hold{background:#FDEBEA;color:#A3201F}
+.t{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:6px;font-size:11.5px;font-weight:600;letter-spacing:.02em;border:1px solid}
+.t-poc{color:#5B32B4;border-color:#D7C8FA;background:#FAF7FF}.t-con{color:#0A6648;border-color:#BFE3D3;background:#F4FBF8}.t-rep{color:#8A4B00;border-color:#F3D9A6;background:#FFFBF2}.t-add{color:#1D4FB8;border-color:#C8D8FA;background:#F6F9FF}
+.ov{font-size:12px;font-weight:500;color:#5E6B7D;text-transform:uppercase;letter-spacing:.06em}
+.chip{display:inline-flex;align-items:center;justify-content:center;height:36px;padding:0 12px;border-radius:8px;border:0;background:transparent;font:inherit;font-size:13.5px;color:#3B4758;cursor:pointer}
+.chip.on{background:#fff;color:#0E1726;font-weight:500;box-shadow:0 1px 2px rgba(14,23,38,.12)}
+.ph{position:relative;background:#DCE4EA;background-image:linear-gradient(135deg,#E4EAEF 0%,#D2DCE5 100%);display:flex;align-items:center;justify-content:center;color:#8494A6;overflow:hidden}
+.ib{width:44px;height:44px;border-radius:10px;border:0;background:transparent;color:#0E1726;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.ib:hover{background:#F1F4F7;color:#0E1726}
+.qa{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:64px;border-radius:12px;border:1px solid #E3E7EC;background:#fff;font:inherit;font-size:12.5px;font-weight:500;color:#1B2638;cursor:pointer}
+.qa:hover{border-color:#B9C2CE;color:#0E1726}
+.sc{display:flex;gap:8px;overflow-x:auto;padding:0 16px;scrollbar-width:none}
+.dr{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid #EEF1F4;color:#0E1726;min-height:62px}
+.dr:hover{background:#F8FAFB;color:#0E1726}
+.av{width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#0E1726;flex:0 0 30px}
+.tb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:56px;font-size:11px;font-weight:500;color:#5E6B7D}
+.tb:hover{color:#0E1726}
+.tb.on{color:#0B7A6B}
+</style>
+</helmet>
+<div style="width: 390px; height: 1600px; position: relative; overflow: hidden; background: #F4F6F8; display: flex; flex-direction: column">
+<!-- App bar -->
+<header style="flex: 0 0 56px; display: flex; align-items: center; gap: 4px; padding: 0 6px; background: #fff; border-bottom: 1px solid #E3E7EC">
+<a class="ib" href="Facilities.dc.html" aria-label="Back to facilities"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></a>
+<div style="flex: 1; min-width: 0; text-align: center; line-height: 1.2">
+<span style="display: block; font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Qatar Foundation</span>
+<span class="muted" style="font-size: 11.5px">Facility</span>
+</div>
+<button class="ib" aria-label="More actions" onClick="{{toggleMore}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h.01M12 12h.01M19 12h.01"></path></svg></button>
+</header>
+
+<sc-if value="{{moreOpen}}" hint-placeholder-val="{{ false }}">
+<div role="menu" class="card" style="position: absolute; right: 10px; top: 56px; width: 220px; padding: 6px; z-index: 30; box-shadow: 0 12px 32px rgba(14,23,38,.16)">
+<a role="menuitem" href="FacilityDetail.dc.html" style="display: flex; align-items: center; height: 44px; padding: 0 12px; border-radius: 8px; color: #1B2638; font-size: 14px">Open full details</a>
+<button role="menuitem" onClick="{{toggleMore}}" style="display: flex; align-items: center; width: 100%; height: 44px; padding: 0 12px; border: 0; background: none; border-radius: 8px; font: inherit; font-size: 14px; color: #1B2638; cursor: pointer">Upload facility photo</button>
+<a role="menuitem" href="AuditLog.dc.html" style="display: flex; align-items: center; height: 44px; padding: 0 12px; border-radius: 8px; color: #1B2638; font-size: 14px">Audit trail</a>
+</div>
+</sc-if>
+
+<div style="flex: 1; overflow-y: auto; padding-bottom: 96px; display: flex; flex-direction: column; gap: 16px">
+<!-- Photo -->
+<div class="ph" style="height: 180px; flex: 0 0 180px">
+<svg width="300" height="130" viewBox="0 0 300 130" fill="none" stroke="#B7C4D1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="position: absolute; right: 16px; bottom: 0"><path d="M0 129h300"></path><path d="M20 129V64h56v65"></path><path d="M76 129V30l50-18v117"></path><path d="M126 129V46h70v83"></path><path d="M196 129V76h50v53"></path><path d="M246 129V96h36v33"></path><path d="M88 48h8M106 48h8M88 66h8M106 66h8M88 84h8M106 84h8M88 102h8M106 102h8"></path><path d="M140 64h10M162 64h10M140 84h10M162 84h10M140 104h10M162 104h10"></path><path d="M210 92h8M228 92h8M210 110h8M228 110h8"></path></svg>
+<span style="position: absolute; left: 16px; bottom: 12px; display: flex; align-items: center; gap: 6px; font-size: 12px; color: #4A5668"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="11" r="2"></circle><path d="M21 16l-5-5-8 8"></path></svg>Facility photo</span>
+<button class="btn sm" style="position: absolute; right: 12px; top: 12px; background: rgba(255,255,255,.92); height: 36px">Upload image</button>
+</div>
+
+<!-- Identity -->
+<div style="padding: 0 16px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span class="b g-poc">POC · Day 5 of 61</span><span class="t t-poc">POC</span></div>
+<h1 style="font-size: 22px; font-weight: 600; letter-spacing: -.02em">Qatar Foundation</h1>
+<div style="display: flex; flex-direction: column; gap: 3px; font-size: 13px; color: #3B4758">
+<span>Client: Qatar Foundation · Education campus</span>
+<span style="display: flex; align-items: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>Education City, Doha, Qatar</span>
+</div>
+</div>
+
+<!-- Lifecycle chips -->
+<section aria-label="Project lifecycle" style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; justify-content: space-between; padding: 0 16px; align-items: baseline"><span class="ov">Lifecycle</span><span class="muted" style="font-size: 12px">Stage 3 of 7</span></div>
+<ol class="sc" style="list-style: none; margin: 0; padding-bottom: 4px">
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="7">
+<li style="flex: 0 0 auto; display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px 0 6px; border-radius: 999px; background: {{s.bg}}; border: 1.5px solid {{s.bd}}; color: {{s.fg}}; font-size: 13px; font-weight: {{s.fw}}" aria-current="{{s.aria}}">
+<span style="width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11.5px; font-weight: 600; background: {{s.cbg}}; color: {{s.cfg}}">
+<sc-if value="{{s.done}}" hint-placeholder-val="{{ false }}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+<sc-if value="{{s.nd}}" hint-placeholder-val="{{ true }}">{{s.n}}</sc-if>
+</span>
+<span style="white-space: nowrap">{{s.label}}</span>
+<span style="font-size: 11.5px; font-weight: 400; color: {{s.dc}}; white-space: nowrap">{{s.date}}</span>
+</li>
+</sc-for>
+</ol>
+</section>
+
+<!-- Quick actions -->
+<section aria-label="Quick actions" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 0 16px">
+<button class="qa"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B7A6B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"></path></svg>Call contact</button>
+<button class="qa"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B7A6B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l18-8-8 18-2-8z"></path></svg>Directions</button>
+<a class="qa" href="CreateDeployment.dc.html" style="background: #0B7A6B; border-color: #0B7A6B; color: #fff"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h11v10H3z"></path><path d="M14 10h4l3 3v3h-7"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>Deploy</a>
+</section>
+
+<!-- KPI chips -->
+<section aria-label="Facility metrics" class="sc">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="4">
+<div class="card" style="flex: 0 0 auto; min-width: 104px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px">
+<span class="muted" style="font-size: 11.5px; white-space: nowrap">{{k.label}}</span>
+<span style="font-size: 19px; font-weight: 600; letter-spacing: -.02em; color: {{k.c}}">{{k.value}}</span>
+</div>
+</sc-for>
+</section>
+
+<!-- Tabs -->
+<div style="padding: 0 16px">
+<div role="tablist" aria-label="Facility sections" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 3px; background: #E9EDF1; border-radius: 10px">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="3"><button role="tab" aria-selected="{{t.sel}}" class="{{t.cls}}" onClick="{{t.pick}}" style="height: 40px">{{t.label}}</button></sc-for>
+</div>
+</div>
+
+<!-- Devices -->
+<sc-if value="{{tDevices}}" hint-placeholder-val="{{ true }}">
+<section aria-label="Devices" style="padding: 0 16px">
+<div class="card" style="overflow: hidden">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px"><span style="font-size: 13.5px; font-weight: 600">12 deployed · 2 reserved</span><span class="t t-poc">POC equipment</span></div>
+<sc-for list="{{devices}}" as="d" hint-placeholder-count="10">
+<a class="dr" href="DeviceDetail.dc.html">
+<span style="width: 38px; height: 38px; border-radius: 10px; background: {{d.ibg}}; color: {{d.ifg}}; display: flex; align-items: center; justify-content: center; flex: 0 0 38px; font-size: 10.5px; font-weight: 700; letter-spacing: .02em">{{d.ab}}</span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px">
+<span style="font-size: 13.5px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{d.name}}</span>
+<span class="mono" style="font-size: 12px; color: #3B4758">{{d.sn}}</span>
+<span class="muted" style="font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{d.place}}</span>
+</span>
+<span class="b {{d.cls}}">{{d.st}}</span>
+</a>
+</sc-for>
+</div>
+</section>
+</sc-if>
+
+<!-- Overview -->
+<sc-if value="{{tOverview}}" hint-placeholder-val="{{ false }}">
+<section aria-label="Overview" style="padding: 0 16px; display: flex; flex-direction: column; gap: 12px">
+<div class="card" style="padding: 14px; display: flex; flex-direction: column; gap: 10px; border-color: #D7C8FA; background: #FAF7FF">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><strong style="font-size: 14px; font-weight: 600">POC progress</strong><span style="font-size: 12.5px; color: #5B32B4; font-weight: 600">Day 5 of 61</span></div>
+<div style="height: 8px; background: #E9E1FD; border-radius: 4px"><span style="display: block; height: 8px; width: 8.2%; background: #7A5AF8; border-radius: 4px"></span></div>
+<div style="display: flex; justify-content: space-between; font-size: 12px; color: #3B4758"><span>01 Oct</span><span>56 days left</span><span>30 Nov</span></div>
+<p style="font-size: 13px; color: #1B2638">Validate CO₂-based ventilation optimisation on 6 AHUs; compare baseline vs optimised energy.</p>
+</div>
+<div class="card" style="padding: 4px 0">
+<span class="ov" style="display: block; padding: 10px 14px 4px">Contacts</span>
+<sc-for list="{{contacts}}" as="c" hint-placeholder-count="2">
+<div class="dr" style="border-top: 0">
+<span class="av" style="background: #E3E7EC">{{c.ini}}</span>
+<span style="flex: 1; min-width: 0"><span style="display: block; font-size: 13.5px; font-weight: 500">{{c.name}}</span><span class="muted" style="font-size: 12px">{{c.role}} · <span class="mono" style="font-size: 11.5px">+974 •••• ••••</span></span></span>
+<button class="ib" aria-label="Call {{c.name}}" style="color: #0B7A6B"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"></path></svg></button>
+</div>
+</sc-for>
+</div>
+<div class="card" style="padding: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
+<span><span class="muted" style="display: block; font-size: 12px">Building</span><span style="font-size: 13px; font-weight: 500">Research Complex B</span></span>
+<span><span class="muted" style="display: block; font-size: 12px">Project lead</span><span style="font-size: 13px; font-weight: 500">Aisha</span></span>
+<span><span class="muted" style="display: block; font-size: 12px">Site inspection</span><span style="font-size: 13px; font-weight: 500">08 Sep 2026</span></span>
+<span><span class="muted" style="display: block; font-size: 12px">BMS scan</span><span style="font-size: 13px; font-weight: 500">22 Sep · BACnet/IP</span></span>
+</div>
+<div class="card" style="padding: 14px; display: flex; flex-direction: column; gap: 6px">
+<span class="ov">Site note</span>
+<p style="font-size: 13px; color: #1B2638">Plant room B1 access requires a QF escort; book 48 hours ahead through Omar.</p>
+<span class="muted" style="font-size: 12px">Aisha · 29 Sep</span>
+</div>
+</section>
+</sc-if>
+
+<!-- Activity -->
+<sc-if value="{{tActivity}}" hint-placeholder-val="{{ false }}">
+<section aria-label="Activity" style="padding: 0 16px">
+<div class="card" style="padding: 14px 14px 4px">
+<sc-for list="{{activity}}" as="a" hint-placeholder-count="6">
+<div style="display: flex; gap: 12px">
+<div style="display: flex; flex-direction: column; align-items: center; flex: 0 0 30px"><span class="av" style="background: {{a.bg}}">{{a.ini}}</span><span style="flex: 1; width: 2px; background: #EEF1F4; min-height: 10px"></span></div>
+<div style="padding: 4px 0 16px; font-size: 13px; line-height: 1.45"><strong style="font-weight: 600">{{a.who}}</strong> {{a.what}}<span class="muted" style="display: block; font-size: 12px">{{a.when}}</span></div>
+</div>
+</sc-for>
+</div>
+</section>
+</sc-if>
+</div>
+
+<!-- Bottom tab bar -->
+<nav aria-label="App" style="position: absolute; left: 0; right: 0; bottom: 0; height: 76px; padding: 4px 8px 12px; background: #fff; border-top: 1px solid #E3E7EC; display: flex; align-items: center">
+<a class="tb" href="Main.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10l8-6 8 6v10a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"></path></svg>Home</a>
+<a class="tb" href="Search.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search</a>
+<a class="tb" href="Search.dc.html" aria-label="Scan barcode or QR"><span style="width: 52px; height: 52px; border-radius: 16px; background: #0B7A6B; color: #fff; display: flex; align-items: center; justify-content: center; margin-top: -18px; box-shadow: 0 6px 16px rgba(11,122,107,.35)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"></path><path d="M4 12h16"></path></svg></span><span style="color: #0E1726">Scan</span></a>
+<a class="tb on" href="Facilities.dc.html" aria-current="page"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="1.5"></rect><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1"></path></svg>Facilities</a>
+<a class="tb" href="Settings.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>Me</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1600}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { tab: 'devices', more: false }; }
+  renderVals() {
+    const s = this.state;
+    const sd = [['Site inspection', '08 Sep', 'done'], ['BMS scan', '22 Sep', 'done'], ['POC', 'Current', 'cur'], ['POC study', 'Dec', 'up'], ['Contract', '', 'up'], ['Deployment', '', 'up'], ['Active ops', '', 'up']];
+    const steps = sd.map(([label, date, st], i) => {
+      const done = st === 'done', cur = st === 'cur', poc = i === 2 || i === 3;
+      return {
+        n: i + 1, label, date, done, nd: !done, aria: cur ? 'step' : 'false',
+        bg: cur ? '#F0EAFE' : '#fff', bd: cur ? '#7A5AF8' : done ? '#BFE3D3' : (poc ? '#D7C8FA' : '#E3E7EC'),
+        fg: cur ? '#5B32B4' : done ? '#0A6648' : '#3B4758', fw: cur ? '600' : '500',
+        cbg: done ? '#0B7A6B' : cur ? '#7A5AF8' : '#EEF1F5', cfg: done || cur ? '#fff' : '#5E6B7D',
+        dc: cur ? '#5B32B4' : '#5E6B7D'
+      };
+    });
+    const kpis = [
+      { label: 'Deployed', value: '12', c: '#0E1726' },
+      { label: 'POC devices', value: '12', c: '#5B32B4' },
+      { label: 'Contract', value: '0', c: '#0E1726' },
+      { label: 'Reserved', value: '2', c: '#0E1726' },
+      { label: 'Last deploy', value: '03 Oct', c: '#0E1726' }
+    ];
+    const tabs = [['overview', 'Overview'], ['devices', 'Devices'], ['activity', 'Activity']].map(([id, label]) => ({ label, sel: s.tab === id ? 'true' : 'false', cls: 'chip' + (s.tab === id ? ' on' : ''), pick: () => this.setState({ tab: id }) }));
+    const ic = { RUT: ['#E1F4EC', '#0A6648'], SIM: ['#E3F2F6', '#0E5E73'], GW: ['#E6EEFF', '#1D4FB8'], SW: ['#F1F4F7', '#3B4758'], CO2: ['#F0EAFE', '#5B32B4'] };
+    const mk = (ab, name, sn, place, st, cls) => ({ ab, name, sn, place, st, cls, ibg: ic[ab][0], ifg: ic[ab][1] });
+    const devices = [
+      mk('RUT', 'Teltonika RUT956', '1108675311', 'Plant room B1 · IP 10.64.12.41', 'Deployed', 's-deployed'),
+      mk('SIM', 'Omantel M2M SIM', '8996802026093001435', 'In RUT956 1108675311', 'Deployed', 's-deployed'),
+      mk('GW', 'Milesight UG65', '6247B1820041', 'Plant room B1 · wall', 'Deployed', 's-deployed'),
+      mk('SW', 'UniFi Switch Lite 8 PoE', 'F4E2C6A10B37', 'Plant room B1 · BMS panel', 'Deployed', 's-deployed'),
+      mk('CO2', 'EM500-CO2', '6136D2470112', 'L1 · AHU-01 zone · 01 Oct', 'Deployed', 's-deployed'),
+      mk('CO2', 'EM500-CO2', '6136D2470113', 'L1 · AHU-02 zone · 01 Oct', 'Deployed', 's-deployed'),
+      mk('CO2', 'EM500-CO2', '6136D2470114', 'L2 · AHU-03 zone · 01 Oct', 'Deployed', 's-deployed'),
+      mk('CO2', 'EM500-CO2', '6136D2470115', 'L2 · AHU-04 zone · 01 Oct', 'Deployed', 's-deployed'),
+      mk('CO2', 'EM500-CO2', '6136D2470121', 'L3 · AHU-05 zone · 03 Oct', 'Deployed', 's-deployed'),
+      mk('CO2', 'EM500-CO2', '6136D2470122', 'L3 · AHU-05 return · 03 Oct', 'Deployed', 's-deployed'),
+      mk('CO2', 'EM500-CO2', '6136D2470123', 'L4 · AHU-06 zone · 03 Oct', 'Deployed', 's-deployed'),
+      mk('CO2', 'EM500-CO2', '6136D2470124', 'L4 · AHU-06 return · 03 Oct', 'Deployed', 's-deployed'),
+      mk('CO2', 'EM500-CO2', '6136D2470125', 'Install 08 Oct · L4', 'Reserved', 's-reserved'),
+      mk('CO2', 'EM500-CO2', '6136D2470126', 'Install 08 Oct · L4', 'Reserved', 's-reserved')
+    ];
+    const contacts = [{ ini: 'OH', name: 'Omar H.', role: 'Facilities Manager' }, { ini: 'LS', name: 'Lina S.', role: 'Sustainability Lead' }];
+    const activity = [
+      { ini: 'AI', bg: '#E6DDFB', who: 'Aisha', what: 'added a POC note on baseline logging', when: 'Today, 09:12' },
+      { ini: 'RA', bg: '#DCE6FB', who: 'Rahul', what: 'deployed EM500-CO2 × 4 · DEP-0148', when: 'Sat 3 Oct, 14:10' },
+      { ini: 'CH', bg: '#CDEFE7', who: 'Chetan', what: 'reserved EM500-CO2 × 2 for 08 Oct', when: 'Fri 2 Oct, 11:30' },
+      { ini: 'CH', bg: '#CDEFE7', who: 'Chetan', what: 'deployed RUT956 1108675311 + UG65 + switch + CO2 × 4 · DEP-0147', when: 'Thu 1 Oct, 16:40' },
+      { ini: 'AI', bg: '#E6DDFB', who: 'Aisha', what: 'moved the project to POC', when: 'Thu 1 Oct, 08:05' },
+      { ini: 'SA', bg: '#FBE0DC', who: 'Saif', what: 'uploaded the BMS scan report', when: 'Tue 22 Sep, 17:20' }
+    ];
+    return {
+      steps, kpis, tabs, devices, contacts, activity,
+      tDevices: s.tab === 'devices', tOverview: s.tab === 'overview', tActivity: s.tab === 'activity',
+      moreOpen: s.more, toggleMore: () => this.setState({ more: !s.more })
+    };
+  }
+}
+</script>
+</body>
+</html>

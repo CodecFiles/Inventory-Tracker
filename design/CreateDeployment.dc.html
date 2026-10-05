@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>New deployment · MRD Inventory</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F6F8;color:#0E1726;font-family:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#0B7A6B;text-decoration:none}a:hover{color:#075C51}
+h1,h2,h3,h4,p{margin:0}
+.mono{font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;letter-spacing:-.01em}
+.muted{color:#5E6B7D}
+.side{flex:0 0 248px;background:#0C1424;padding:18px 12px 16px;display:flex;flex-direction:column;gap:1px}
+.nav{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:8px;color:#B3BDCB;font-size:13.5px}
+.nav:hover{background:#152036;color:#fff}
+.nav.on{background:#1C2A42;color:#fff;box-shadow:inset 2px 0 0 #2BC4A8}
+.nav svg{flex:0 0 16px;width:16px;height:16px}
+.nav .ct{margin-left:auto;font-size:11px;font-weight:600;background:#2BC4A8;color:#04211C;border-radius:999px;padding:1px 7px}
+.sec{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#7F8CA0;padding:16px 10px 6px;font-weight:500}
+.mtop{display:none}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 32px;background:#fff;border-bottom:1px solid #E3E7EC}
+.srch{flex:1 1 320px;max-width:560px;display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border:1px solid #DCE1E8;border-radius:10px;background:#F8FAFB;color:#5E6B7D;font-size:13.5px}
+.srch:hover{border-color:#B9C2CE;color:#3B4758}
+.kbd{margin-left:auto;font-family:'Geist Mono',monospace;font-size:11px;border:1px solid #DCE1E8;border-radius:5px;padding:1px 6px;background:#fff;color:#5E6B7D}
+.main{padding:28px 32px 48px;max-width:1400px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+.card{background:#fff;border:1px solid #E3E7EC;border-radius:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 14px;border-radius:9px;border:1px solid #D5DBE3;background:#fff;color:#1B2638;font:inherit;font-size:13.5px;font-weight:500;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#F4F6F8;color:#0E1726}
+.btn.p{background:#0B7A6B;border-color:#0B7A6B;color:#fff}.btn.p:hover{background:#08695C;color:#fff}
+.btn.sm{height:32px;padding:0 10px;font-size:12.5px;border-radius:8px}
+.btn.ic{width:40px;padding:0}
+.btn svg{width:16px;height:16px}
+.b{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;background:#EEF1F5;color:#3E4A5C}
+.b::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.s-unconf{background:#EEF1F5;color:#3E4A5C}.s-prep{background:#FFF3DC;color:#8A4B00}.s-ready{background:#E6EEFF;color:#1D4FB8}.s-reserved{background:#F0EAFE;color:#5B32B4}.s-deployed{background:#E1F4EC;color:#0A6648}.s-stock{background:#E3F2F6;color:#0E5E73}.s-maint{background:#FFEDE3;color:#9A3D0B}.s-damaged{background:#FDEBEA;color:#A3201F}.s-transit{background:#E9EDFC;color:#3346A8}.s-returned{background:#F1EEE8;color:#5E554A}.s-retired{background:#EFF0F2;color:#646C79}
+.g-insp{background:#EEF1F5;color:#3E4A5C}.g-bms{background:#E3F2F6;color:#0E5E73}.g-poc{background:#F0EAFE;color:#5B32B4}.g-study{background:#FFF3DC;color:#8A4B00}.g-cpend{background:#E6EEFF;color:#1D4FB8}.g-contract{background:#E1F4EC;color:#0A6648}.g-ops{background:#0B7A6B;color:#fff}.g-done{background:#EFF0F2;color:#646C79}.g-hold{background:#FDEBEA;color:#A3201F}
+.t{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:6px;font-size:11.5px;font-weight:600;letter-spacing:.02em;border:1px solid}
+.t-poc{color:#5B32B4;border-color:#D7C8FA;background:#FAF7FF}.t-con{color:#0A6648;border-color:#BFE3D3;background:#F4FBF8}.t-rep{color:#8A4B00;border-color:#F3D9A6;background:#FFFBF2}.t-add{color:#1D4FB8;border-color:#C8D8FA;background:#F6F9FF}
+.tw{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-weight:500;color:#5E6B7D;font-size:12px;padding:10px 14px;border-bottom:1px solid #E3E7EC;background:#F8FAFB;white-space:nowrap}
+.tbl td{padding:11px 14px;border-bottom:1px solid #EEF1F4;white-space:nowrap;vertical-align:middle}
+.tbl tr:hover td{background:#F8FAFB}
+.tbl tr:last-child td{border-bottom:0}
+.ov{font-size:12px;font-weight:500;color:#5E6B7D;text-transform:uppercase;letter-spacing:.06em}
+.kpi{padding:16px 18px;display:flex;flex-direction:column;gap:6px;color:#0E1726}
+.kpi:hover{border-color:#B9C2CE;color:#0E1726}
+.kpi .n{font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
+.seg{display:flex;gap:2px;height:8px;border-radius:4px;overflow:hidden}
+.seg span{display:block;height:100%}
+.row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-top:1px solid #EEF1F4;color:#0E1726}
+.row:hover{background:#F8FAFB;color:#0E1726}
+.chip{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;border:0;background:transparent;font:inherit;font-size:13px;color:#3B4758;cursor:pointer}
+.chip.on{background:#fff;color:#0E1726;box-shadow:0 1px 2px rgba(14,23,38,.12)}
+.bc{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px;color:#5E6B7D}
+.bc a{color:#5E6B7D}.bc a:hover{color:#0E1726}
+.h1{font-size:26px;font-weight:600;letter-spacing:-.02em}
+.h2{font-size:16px;font-weight:600}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.p:disabled{background:#0B7A6B}
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));overflow:hidden}
+.stp{display:flex;align-items:center;gap:12px;padding:14px 18px;border:0;border-bottom:3px solid #E3E7EC;background:transparent;font:inherit;text-align:left;cursor:pointer;color:#5E6B7D;min-width:0}
+.stp + .stp{border-left:1px solid #EEF1F4}
+.stp.cur{color:#0E1726;border-bottom-color:#0B7A6B;background:#FBFDFC}
+.stp.done{color:#0E1726;border-bottom-color:#8FD3C4}
+.stp:disabled{cursor:default}
+.num{width:28px;height:28px;border-radius:50%;border:1.5px solid #C9D0D9;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:600;flex:0 0 28px;background:#fff}
+.stp.cur .num{background:#0B7A6B;border-color:#0B7A6B;color:#fff}
+.stp.done .num{background:#E1F4EC;border-color:#BFE3D3;color:#0A6648}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.fc{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:14px;border:1px solid #DCE1E8;border-radius:10px;background:#fff;font:inherit;text-align:left;cursor:pointer;color:#0E1726;min-width:0}
+.fc:hover{border-color:#B9C2CE}
+.fc.on{border-color:#0B7A6B;box-shadow:0 0 0 1px #0B7A6B;background:#F6FBFA}
+.fc:disabled{cursor:not-allowed;background:#F8FAFB;color:#5E6B7D}
+.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.rc{display:flex;gap:12px;align-items:flex-start;padding:14px;border:1px solid #DCE1E8;border-radius:10px;background:#fff;cursor:pointer}
+.rc:hover{border-color:#B9C2CE}
+.rc.on{border-color:#0B7A6B;box-shadow:0 0 0 1px #0B7A6B;background:#F6FBFA}
+.rc.dis{cursor:not-allowed;background:#F8FAFB}
+.rc input{margin:2px 0 0;width:16px;height:16px;accent-color:#0B7A6B;flex:0 0 16px}
+.lbl{font-size:12.5px;font-weight:500;color:#3B4758}
+.fld{display:flex;flex-direction:column;gap:6px;min-width:0}
+.inp{height:40px;border:1px solid #D5DBE3;border-radius:9px;padding:0 12px;font:inherit;font-size:13.5px;color:#0E1726;background:#fff;width:100%}
+textarea.inp{height:auto;min-height:84px;padding:10px 12px;resize:vertical}
+.inp:focus{outline:2px solid #2BC4A8;outline-offset:-1px}
+.pp{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 12px;border:1px solid #DCE1E8;border-radius:10px;background:#fff;font:inherit;text-align:left;cursor:pointer;color:#0E1726;min-width:0;position:relative}
+.pp:hover{border-color:#B9C2CE}
+.pp.on{border-color:#0B7A6B;box-shadow:0 0 0 1px #0B7A6B;background:#F6FBFA}
+.pp .cnt{position:absolute;top:8px;right:8px;font-size:11px;font-weight:600;background:#0B7A6B;color:#fff;border-radius:999px;padding:1px 7px}
+.utbl td,.utbl th{padding:9px 10px}
+.utbl tr.dis td{background:#FAFBFC;color:#5E6B7D}
+.utbl input{width:16px;height:16px;accent-color:#0B7A6B}
+.qs{display:inline-flex;align-items:center;border:1px solid #D5DBE3;border-radius:9px;overflow:hidden;background:#fff}
+.qs button{width:34px;height:34px;border:0;background:#F8FAFB;font:inherit;font-size:16px;color:#1B2638;cursor:pointer}
+.qs button:hover{background:#EEF1F5}
+.qs input{width:64px;height:34px;border:0;border-left:1px solid #E3E7EC;border-right:1px solid #E3E7EC;text-align:center;font:inherit;font-size:13.5px;font-weight:600}
+.tc{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 12px 0 5px;border-radius:999px;border:1px solid #D5DBE3;background:#fff;font:inherit;font-size:13px;color:#3B4758;cursor:pointer}
+.tc.on{border-color:#0B7A6B;background:#E8F6F2;color:#0A6648}
+.av{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:600;color:#0E1726;flex:0 0 26px}
+.ba{border:1px solid #E3E7EC;border-radius:10px;overflow:hidden}
+.bar{display:grid;grid-template-columns:110px minmax(0,1fr) 24px minmax(0,1fr);gap:10px;align-items:center;padding:9px 14px;border-top:1px solid #EEF1F4;font-size:13px}
+.rl{display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:7px 0}
+.ell{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+@media (max-width:700px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}.bar{grid-template-columns:1fr;gap:2px}.bar .ar{display:none}}
+@media (max-width:900px){.side{display:none}.mtop{display:flex}.main{padding:20px 16px 40px}.top{padding:12px 16px}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh; background: #F4F6F8">
+<nav class="side" aria-label="Primary">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 2px 8px 14px; color: #fff">
+<span style="width: 32px; height: 32px; border-radius: 9px; background: #0B7A6B; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4a8 8 0 1 0 4 11.5A6.5 6.5 0 0 1 16 4z"></path><path d="M6 18l2.5-2.5"></path></svg></span>
+<span style="display: flex; flex-direction: column; line-height: 1.15"><span style="font-weight: 600; font-size: 14px">Moonrock R&amp;D</span><span style="font-size: 11.5px; color: #8D99AC">Inventory × Exergio</span></span>
+</a>
+<a class="nav" href="Main.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>Dashboard</a>
+<div class="sec">Inventory</div>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"></path><path d="M3 8v8l9 5 9-5V8"></path><path d="M12 13v8"></path></svg>All inventory</a>
+<a class="nav" href="Products.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg>Products</a>
+<a class="nav" href="Batches.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l10 5-10 5L2 7l10-5z"></path><path d="M2 12l10 5 10-5"></path><path d="M2 17l10 5 10-5"></path></svg>Batches</a>
+<a class="nav" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive stock</a>
+<div class="sec">Devices</div>
+<a class="nav" href="DevicePrep.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg>Device preparation<span class="ct">15</span></a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="18" height="7" rx="2"></rect><path d="M7 16.5h.01M11 16.5h.01"></path><path d="M17 13V5"></path><path d="M14 7.5a4 4 0 0 1 6 0"></path></svg>Teltonika</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h11a3 3 0 1 0-3-3"></path><path d="M3 12h16a3 3 0 1 1-3 3"></path><path d="M3 16h7"></path></svg>CO₂ sensors</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"></circle><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7M5.6 5.6a9 9 0 0 0 0 12.8M18.4 5.6a9 9 0 0 1 0 12.8"></path></svg>LoRaWAN gateways</a>
+<a class="nav" href="SimInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"></path><rect x="8.5" y="11" width="7" height="6" rx="1"></rect></svg>SIM cards</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"></rect><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"></path></svg>Other equipment</a>
+<div class="sec">Facilities &amp; projects</div>
+<a class="nav" href="Facilities.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"></rect><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1"></path></svg>Facilities</a>
+<a class="nav" href="PocManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6L4.5 18.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3"></path><path d="M7 15h10"></path></svg>POC projects</a>
+<a class="nav" href="ContractManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path><path d="M9 13h6M9 17h4"></path></svg>Contracts</a>
+<div class="sec">Deployments</div>
+<a class="nav" href="Deployments.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3z"></path><path d="M14 10h4l3 3v3h-7"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>Deployments</a>
+<a class="nav on" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>New deployment</a>
+<div class="sec">Insights &amp; admin</div>
+<a class="nav" href="Reports.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M10 20V5M16 20v-6M21 20H3"></path></svg>Reports</a>
+<a class="nav" href="AuditLog.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l3 2"></path></svg>Audit log</a>
+<a class="nav" href="Users.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20a6.5 6.5 0 0 1 13 0"></path><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"></path></svg>Users &amp; roles</a>
+<a class="nav" href="Settings.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Settings</a>
+<div style="margin-top: auto; padding: 16px 8px 0; display: flex; align-items: center; gap: 10px; border-top: 1px solid #1C2A42">
+<span style="width: 32px; height: 32px; border-radius: 50%; background: #2BC4A8; color: #04211C; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600">CH</span>
+<span style="display: flex; flex-direction: column; line-height: 1.2"><span style="color: #fff; font-size: 13px; font-weight: 500">Chetan</span><span style="color: #8D99AC; font-size: 11.5px">Admin · MRD Office</span></span>
+</div>
+</nav>
+
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+<div class="mtop" style="align-items: center; justify-content: space-between; padding: 12px 16px; background: #0C1424; color: #fff">
+<span style="font-weight: 600">Moonrock R&amp;D</span>
+<button class="btn sm" aria-label="Open menu" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
+</div>
+<header class="top">
+<a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
+<span style="flex: 1"></span>
+<span class="b s-prep" title="All records shown are sample data">Sample data</span>
+<a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
+<a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
+<button class="btn ic" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg></button>
+</header>
+
+<main class="main">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<nav class="bc" aria-label="Breadcrumb"><a href="Main.dc.html">Dashboard</a><span aria-hidden="true">/</span><a href="Deployments.dc.html">Deployments</a><span aria-hidden="true">/</span><span style="color: #0E1726">New deployment</span></nav>
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 class="h1">New deployment</h1>
+<p class="muted" style="font-size: 14px">Move prepared equipment from the MRD Office to a facility. Nothing changes in inventory until you confirm.</p>
+</div>
+<div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+<span class="muted" style="font-size: 12.5px">Draft ref <span class="mono" style="color: #0E1726">DEP-0152</span></span>
+<button class="btn" onClick="{{saveDraft}}">Save draft</button>
+<a class="btn" href="Deployments.dc.html">Cancel</a>
+</div>
+</div>
+</div>
+
+<sc-if value="{{notDone}}" hint-placeholder-val="{{ true }}">
+<nav class="card steps" aria-label="Deployment steps">
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="4">
+<button class="stp {{s.cls}}" onClick="{{s.go}}" disabled="{{s.locked}}" aria-current="{{s.aria}}">
+<span class="num"><sc-if value="{{s.isDone}}" hint-placeholder-val="{{ false }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if><sc-if value="{{s.notDone}}" hint-placeholder-val="{{ true }}">{{s.n}}</sc-if></span>
+<span style="min-width: 0"><span style="display: block; font-size: 11.5px" class="muted">Step {{s.n}} of 4</span><span class="ell" style="display: block; font-weight: 600; font-size: 13.5px">{{s.label}}</span></span>
+</button>
+</sc-for>
+</nav>
+
+<div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start">
+<section class="card" style="flex: 3 1 600px; min-width: 0; display: flex; flex-direction: column" aria-label="{{stepTitle}}">
+<div style="padding: 22px; display: flex; flex-direction: column; gap: 22px">
+
+<!-- STEP 1 -->
+<sc-if value="{{s1}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<div><h2 class="h2">Where is the equipment going?</h2><p class="muted" style="font-size: 13px">The facility stage sets a sensible default deployment type.</p></div>
+<div class="fgrid">
+<sc-for list="{{facs}}" as="f" hint-placeholder-count="6">
+<button class="{{f.cls}}" onClick="{{f.pick}}" disabled="{{f.disabled}}" aria-pressed="{{f.pressed}}">
+<span style="display: flex; width: 100%; justify-content: space-between; gap: 8px; align-items: flex-start"><span style="font-weight: 600; font-size: 14px">{{f.name}}</span><span class="b {{f.g}}">{{f.stage}}</span></span>
+<span class="muted" style="font-size: 12.5px">{{f.loc}}</span>
+<span style="font-size: 12.5px; color: #3B4758">{{f.info}}</span>
+</button>
+</sc-for>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-radius: 10px; background: #F4FBF8; border: 1px solid #BFE3D3; font-size: 13px; color: #0A4F3F; flex-wrap: wrap">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg>
+<span><strong style="font-weight: 600">{{fac.name}}</strong> · Stage: {{fac.stage}} → default type <strong style="font-weight: 600">{{defType}}</strong></span>
+<span style="flex: 1"></span>
+<a href="FacilityDetail.dc.html" style="font-size: 12.5px; font-weight: 500">View facility</a>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<div><h2 class="h2">Deployment type</h2><p class="muted" style="font-size: 13px">Decides how the equipment is counted: POC trial, contract scope, swap or top-up.</p></div>
+<div class="rgrid" role="radiogroup" aria-label="Deployment type">
+<sc-for list="{{types}}" as="t" hint-placeholder-count="4">
+<label class="{{t.cls}}">
+<input type="radio" name="dtype" checked="{{t.on}}" disabled="{{t.dis}}" onChange="{{t.pick}}">
+<span style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+<span style="display: flex; align-items: center; gap: 8px"><span class="t {{t.tcls}}">{{t.short}}</span><span style="font-weight: 600; font-size: 13.5px">{{t.label}}</span></span>
+<span class="muted" style="font-size: 12.5px">{{t.desc}}</span>
+<sc-if value="{{t.dis}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; color: #9A3D0B">{{t.reason}}</span></sc-if>
+</span>
+</label>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<!-- STEP 2 -->
+<sc-if value="{{s2}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap">
+<div><h2 class="h2">Choose equipment</h2><p class="muted" style="font-size: 13px">Only units that are Ready for deployment or In stock can be selected.</p></div>
+<div role="group" aria-label="Product kind" style="display: flex; gap: 2px; padding: 3px; background: #E9EDF1; border-radius: 10px">
+<button class="{{serCls}}" onClick="{{pickSer}}">Serialised</button>
+<button class="{{qtyCls}}" onClick="{{pickQty}}">Quantity</button>
+</div>
+</div>
+<sc-if value="{{isSer}}" hint-placeholder-val="{{ true }}">
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px">
+<sc-for list="{{prods}}" as="p" hint-placeholder-count="5">
+<button class="{{p.cls}}" onClick="{{p.pick}}" aria-pressed="{{p.pressed}}">
+<span style="font-weight: 600; font-size: 13px; padding-right: 22px">{{p.name}}</span>
+<span class="muted" style="font-size: 12px">{{p.avail}}</span>
+<sc-if value="{{p.hasSel}}" hint-placeholder-val="{{ false }}"><span class="cnt">{{p.nsel}}</span></sc-if>
+</button>
+</sc-for>
+</div>
+<div class="card tw" style="border-radius: 10px">
+<table class="tbl utbl">
+<thead><tr><th><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Select</span></th><th>Serial no.</th><th>SIM ICCID</th><th>IP address</th><th>Location</th><th>Status</th></tr></thead>
+<tbody>
+<sc-for list="{{units}}" as="u" hint-placeholder-count="6">
+<tr class="{{u.rcls}}">
+<td><input type="checkbox" checked="{{u.on}}" disabled="{{u.blocked}}" onChange="{{u.toggle}}" aria-label="Select {{u.sn}}"></td>
+<td><a class="mono" href="DeviceDetail.dc.html" style="font-weight: 500">{{u.sn}}</a></td>
+<td class="mono">{{u.sim}}</td>
+<td class="mono">{{u.ip}}</td>
+<td style="font-size: 12.5px">{{u.loc}}</td>
+<td><span class="b {{u.scls}}">{{u.st}}</span><sc-if value="{{u.needsPrep}}" hint-placeholder-val="{{ false }}"><span style="display: block; font-size: 12px; margin-top: 3px; color: #9A3D0B">Needs preparation → <a href="DevicePrep.dc.html" style="font-weight: 500">Prepare</a></span></sc-if><sc-if value="{{u.other}}" hint-placeholder-val="{{ false }}"><span class="muted" style="display: block; font-size: 12px; margin-top: 3px">{{u.reason}}</span></sc-if></td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+<p class="muted" style="font-size: 12.5px">Routers carry their assigned SIM and static IP with them; the SIM moves to the facility automatically.</p>
+</sc-if>
+<sc-if value="{{isQty}}" hint-placeholder-val="{{ false }}">
+<div class="card" style="border-radius: 10px">
+<sc-for list="{{qtys}}" as="q" hint-placeholder-count="5">
+<div style="display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-top: 1px solid #EEF1F4; flex-wrap: wrap">
+<span style="flex: 1 1 200px; min-width: 0"><span style="display: block; font-weight: 500; font-size: 13.5px">{{q.name}}</span><span class="muted" style="font-size: 12px">{{q.avail}} {{q.unit}} available · MRD Office · {{q.loc}}</span></span>
+<sc-if value="{{q.low}}" hint-placeholder-val="{{ false }}"><span class="b s-maint">Low stock</span></sc-if>
+<span class="qs"><button onClick="{{q.dec}}" aria-label="Decrease {{q.name}}">−</button><input type="number" min="0" max="{{q.avail}}" value="{{q.n}}" onChange="{{q.set}}" aria-label="Quantity of {{q.name}}"><button onClick="{{q.inc}}" aria-label="Increase {{q.name}}">+</button></span>
+</div>
+</sc-for>
+</div>
+</sc-if>
+</sc-if>
+
+<!-- STEP 3 -->
+<sc-if value="{{s3}}" hint-placeholder-val="{{ false }}">
+<div><h2 class="h2">Deployment details</h2><p class="muted" style="font-size: 13px">Who is installing it, when, and exactly where at {{fac.name}}.</p></div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px">
+<div class="fld"><label class="lbl" for="ddate">Deployment date</label><input id="ddate" class="inp" type="date" value="{{date}}" onChange="{{onDate}}"><span class="muted" style="font-size: 12px">{{dateHint}}</span></div>
+<div class="fld"><label class="lbl" for="darea">Placement at facility</label><select id="darea" class="inp" value="{{area}}" onChange="{{onArea}}"><sc-for list="{{areas}}" as="a" hint-placeholder-count="4"><option value="{{a.v}}">{{a.v}}</option></sc-for></select><span class="muted" style="font-size: 12px">Locations come from the facility record</span></div>
+</div>
+<div class="fld"><span class="lbl" id="techlbl">Technician / team</span>
+<div role="group" aria-labelledby="techlbl" style="display: flex; gap: 8px; flex-wrap: wrap">
+<sc-for list="{{techs}}" as="t" hint-placeholder-count="5"><button class="{{t.cls}}" onClick="{{t.toggle}}" aria-pressed="{{t.pressed}}"><span class="av" style="background: {{t.bg}}">{{t.ini}}</span>{{t.name}}<span class="muted" style="font-size: 11.5px">{{t.role}}</span></button></sc-for>
+</div>
+</div>
+<div class="fld"><label class="lbl" for="dspot">Exact position (optional)</label><input id="dspot" class="inp" type="text" value="{{spot}}" onChange="{{onSpot}}" placeholder="e.g. Rack 2, top shelf"></div>
+<div class="fld"><label class="lbl" for="dnotes">Notes</label><textarea id="dnotes" class="inp" placeholder="Access instructions, contact on site, anything the next technician should know" value="{{notes}}" onChange="{{onNotes}}"></textarea></div>
+<div class="fld"><span class="lbl">Attachments</span>
+<div style="border: 1.5px dashed #C9D0D9; border-radius: 10px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; background: #FBFCFD">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.5l-8.5 8.5a5 5 0 0 1-7-7L14 5.5a3.3 3.3 0 0 1 4.7 4.7L10.2 18.7a1.7 1.7 0 0 1-2.4-2.4L15.5 8.6"></path></svg>
+<span class="muted" style="font-size: 13px; flex: 1 1 200px">Delivery note, photos of the installation, signed handover. PDF, JPG, PNG up to 20 MB.</span>
+<button class="btn sm" onClick="{{addFile}}">Add files</button>
+</div>
+<sc-for list="{{files}}" as="fl" hint-placeholder-count="1">
+<div style="display: flex; align-items: center; gap: 10px; padding: 8px 12px; border: 1px solid #E3E7EC; border-radius: 8px; font-size: 13px">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B4758" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path></svg>
+<span class="mono" style="flex: 1; min-width: 0">{{fl.name}}</span><span class="muted" style="font-size: 12px">{{fl.size}}</span>
+<button class="btn sm ic" style="width: 32px" onClick="{{fl.remove}}" aria-label="Remove {{fl.name}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<!-- STEP 4 -->
+<sc-if value="{{s4}}" hint-placeholder-val="{{ false }}">
+<div><h2 class="h2">Review &amp; confirm</h2><p class="muted" style="font-size: 13px">Check every change below. Confirming updates inventory, locations and the facility record in one step.</p></div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px">
+<sc-for list="{{recap}}" as="r" hint-placeholder-count="4"><div style="padding: 10px 12px; border-radius: 10px; background: #F8FAFB; border: 1px solid #EEF1F4"><span class="muted" style="display: block; font-size: 12px">{{r.k}}</span><span style="font-weight: 600; font-size: 13.5px">{{r.v}}</span></div></sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span class="ov">Before → After</span>
+<sc-for list="{{panels}}" as="p" hint-placeholder-count="2">
+<div class="ba">
+<div style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #F8FAFB"><span style="font-weight: 600; font-size: 13.5px">{{p.title}}</span><span class="mono" style="color: #0B7A6B">{{p.ref}}</span></div>
+<sc-for list="{{p.rows}}" as="r" hint-placeholder-count="3">
+<div class="bar"><span class="muted" style="font-size: 12.5px">{{r.k}}</span><span class="muted ell" title="{{r.b}}">{{r.b}}</span><span class="ar" aria-hidden="true" style="color: #0B7A6B; text-align: center">→</span><span class="ell" style="font-weight: 500" title="{{r.a}}">{{r.a}}</span></div>
+</sc-for>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; gap: 10px; padding: 12px 14px; border-radius: 10px; background: #FFF8EB; border: 1px solid #F3D9A6; color: #6B3D00; font-size: 13px; align-items: flex-start">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: 0 0 16px; margin-top: 2px"><path d="M12 3l9.5 17H2.5z"></path><path d="M12 10v4M12 17h.01"></path></svg>
+<span>This will update inventory automatically and record <strong>{{auditN}} audit entries</strong>. Previous states are preserved and a deployment can be reversed with a return record.</span>
+</div>
+<label style="display: flex; gap: 10px; align-items: center; padding: 12px 14px; border: 1px solid #D5DBE3; border-radius: 10px; cursor: pointer; font-size: 13.5px; font-weight: 500">
+<input type="checkbox" checked="{{confirm}}" onChange="{{toggleConfirm}}" style="width: 18px; height: 18px; accent-color: #0B7A6B">
+I confirm the equipment has physically left the MRD office
+</label>
+</sc-if>
+</div>
+
+<div style="display: flex; align-items: center; gap: 10px; padding: 14px 22px; border-top: 1px solid #E3E7EC; flex-wrap: wrap; background: #FBFCFD; border-radius: 0 0 12px 12px">
+<button class="btn" onClick="{{back}}" disabled="{{noBack}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg>Back</button>
+<span class="muted" style="font-size: 12.5px">{{hint}}</span>
+<span style="flex: 1"></span>
+<sc-if value="{{notLast}}" hint-placeholder-val="{{ true }}"><button class="btn p" onClick="{{next}}" disabled="{{noNext}}">{{nextLabel}}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></button></sc-if>
+<sc-if value="{{isLast}}" hint-placeholder-val="{{ false }}"><button class="btn p" onClick="{{doConfirm}}" disabled="{{noConfirm}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirm deployment</button></sc-if>
+</div>
+</section>
+
+<!-- Right rail -->
+<aside class="card" style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column" aria-label="Deployment summary">
+<div style="padding: 16px 18px 12px; display: flex; justify-content: space-between; align-items: center"><h2 style="font-size: 15px; font-weight: 600">Summary</h2><span class="mono muted">DEP-0152 · Draft</span></div>
+<div style="padding: 0 18px 12px; display: flex; flex-direction: column">
+<div class="rl"><span class="muted">Facility</span><span style="text-align: right; font-weight: 500">{{fac.name}}</span></div>
+<div class="rl"><span class="muted">Stage</span><span class="b {{fac.g}}">{{fac.stage}}</span></div>
+<div class="rl"><span class="muted">Type</span><span class="t {{typeTcls}}">{{typeShort}}</span></div>
+<div class="rl"><span class="muted">Date</span><span style="font-weight: 500">{{dateLabel}}</span></div>
+<div class="rl"><span class="muted">Placement</span><span style="font-weight: 500; text-align: right">{{area}}</span></div>
+<div class="rl" style="align-items: center"><span class="muted">Team</span><span style="display: flex; gap: 4px"><sc-for list="{{team}}" as="m" hint-placeholder-count="2"><span class="av" style="background: {{m.bg}}" title="{{m.name}}">{{m.ini}}</span></sc-for></span></div>
+</div>
+<div style="border-top: 1px solid #EEF1F4; padding: 14px 18px 8px; display: flex; justify-content: space-between; align-items: center">
+<span style="font-weight: 600; font-size: 13.5px">Selected items</span><span class="b s-ready">{{trayCount}}</span>
+</div>
+<sc-for list="{{tray}}" as="t" hint-placeholder-count="2">
+<div style="display: flex; align-items: center; gap: 10px; padding: 8px 18px">
+<span style="width: 32px; height: 32px; border-radius: 8px; background: #F1F4F7; display: flex; align-items: center; justify-content: center; color: #3B4758; flex: 0 0 32px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"></path><path d="M3 8v8l9 5 9-5V8"></path></svg></span>
+<span style="flex: 1; min-width: 0"><span style="display: block; font-size: 13px; font-weight: 500">{{t.name}} <span class="mono" style="color: #0B7A6B">{{t.ref}}</span></span><span class="muted" style="font-size: 12px">{{t.sub}}</span></span>
+<button class="btn sm ic" style="width: 30px; height: 30px" onClick="{{t.remove}}" aria-label="Remove {{t.name}} {{t.ref}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-for>
+<sc-if value="{{trayEmpty}}" hint-placeholder-val="{{ false }}">
+<div class="muted" style="padding: 8px 18px 12px; font-size: 13px">No equipment selected yet. Pick Ready units in step 2.</div>
+</sc-if>
+<div style="border-top: 1px solid #EEF1F4; margin-top: 8px; padding: 14px 18px; display: flex; flex-direction: column; gap: 8px; font-size: 12.5px">
+<span class="ov">Safety checks</span>
+<sc-for list="{{checks}}" as="c" hint-placeholder-count="4">
+<span style="display: flex; gap: 8px; align-items: flex-start; color: #3B4758"><span style="width: 16px; height: 16px; border-radius: 50%; background: {{c.bg}}; color: {{c.fg}}; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 16px; margin-top: 1px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>{{c.label}}</span>
+</sc-for>
+</div>
+<div style="border-top: 1px solid #EEF1F4; padding: 12px 18px 16px; font-size: 12px" class="muted">Technicians can create drafts; confirming requires Operations or Admin. You are signed in as <strong style="color: #0E1726">Admin</strong>.</div>
+</aside>
+</div>
+</sc-if>
+
+<!-- SUCCESS -->
+<sc-if value="{{done}}" hint-placeholder-val="{{ false }}">
+<section class="card" style="padding: 40px 28px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center">
+<span style="width: 56px; height: 56px; border-radius: 50%; background: #E1F4EC; color: #0A6648; display: flex; align-items: center; justify-content: center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>
+<h2 style="font-size: 22px; font-weight: 600; letter-spacing: -.01em">Deployment <span class="mono" style="font-size: 20px">DEP-0152</span> confirmed</h2>
+<p class="muted" style="font-size: 14px; max-width: 560px">{{trayCount}} moved to {{fac.name}} · {{area}} as <strong style="color: #0E1726">{{typeShort}}</strong>. Inventory and the facility record are updated, and {{auditN}} audit entries were recorded.</p>
+<div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 6px">
+<a class="btn p" href="FacilityDetail.dc.html">View facility</a>
+<a class="btn" href="DeviceDetail.dc.html">View device</a>
+<a class="btn" href="AuditLog.dc.html">Audit entries</a>
+<button class="btn" onClick="{{reset}}">New deployment</button>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="position: fixed; right: 24px; bottom: 24px; z-index: 50; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; background: #0E1726; color: #fff; font-size: 13px; box-shadow: 0 8px 24px rgba(14,23,38,.25)">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2BC4A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+<span>{{toast}}</span>
+<button class="btn sm" onClick="{{closeToast}}" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Dismiss</button>
+</div>
+</sc-if>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = this.initial();
+  }
+  initial() {
+    return { step: 1, fac: 'qf', type: 'poc', ptab: 'ser', prod: 'rut', sel: { '1108675309': true }, qty: { cat3: 6 }, techs: { RA: true, CH: true }, date: '2026-10-05', area: 'Plant room B1', spot: 'Rack 2, top shelf', notes: '', files: [{ name: 'QF-plantroom-B1-rack.jpg', size: '1.8 MB' }], confirm: false, done: false, toast: '' };
+  }
+  renderVals() {
+    const st = this.state;
+    const FAC = [
+      { id: 'qf', name: 'Qatar Foundation', loc: 'Education City, Doha', stage: 'POC', g: 'g-poc', def: 'poc', devices: 12, info: 'POC 01 Oct – 30 Nov 2026 · 12 devices', areas: ['Plant room B1', 'Library, Level 1', 'Level 2 classrooms', 'Roof, north'] },
+      { id: 'bm', name: 'Bank Muscat Head Office', loc: 'Airport Heights, Muscat', stage: 'Active operations', g: 'g-ops', def: 'add', devices: 35, contract: true, info: 'Contract CN-EXG-BM-2026-01 · 35 devices', areas: ['Plant room B1', 'AHU-3 plant room', 'AHU-4 plant room', 'Floors 3–5 open office'] },
+      { id: 'lulu', name: 'Lulu Hypermarket', loc: 'Bausher, Muscat', stage: 'POC study', g: 'g-study', def: 'poc', devices: 8, info: 'Decision pending 14 Oct · 8 devices', areas: ['Electrical room G', 'Roof plant area', 'Sales floor'] },
+      { id: 'akb', name: 'Al Khuwair Business Tower', loc: 'Al Khuwair, Muscat', stage: 'BMS scan', g: 'g-bms', def: 'poc', devices: 0, info: 'POC kit planned 20 Oct', areas: ['Level 1 BMS room', 'Roof plant area'] },
+      { id: 'sohar', name: 'Sohar Logistics Hub', loc: 'Sohar', stage: 'Site inspection', g: 'g-insp', def: 'poc', devices: 0, info: 'No equipment on site yet', areas: ['Main warehouse', 'Plant room'] },
+      { id: 'ruwi', name: 'Ruwi Medical Centre', loc: 'Ruwi, Muscat', stage: 'On hold', g: 'g-hold', def: 'poc', devices: 0, disabled: true, info: 'On hold · deployments paused', areas: ['Plant room'] }
+    ];
+    const f = FAC.find(x => x.id === st.fac) || FAC[0];
+    const TY = [
+      { id: 'poc', short: 'POC', label: 'Proof of concept', tcls: 't-poc', desc: 'Trial equipment. Stays POC until converted to contract or returned.' },
+      { id: 'con', short: 'Contract', label: 'Contract', tcls: 't-con', desc: 'Equipment under a signed contract. Counts toward contract scope.' },
+      { id: 'rep', short: 'Replacement', label: 'Replacement', tcls: 't-rep', desc: 'Swaps a faulty or maintenance unit and links the unit it replaces.' },
+      { id: 'add', short: 'Additional', label: 'Additional deployment', tcls: 't-add', desc: 'Extra equipment for a site that already has a POC or contract.' }
+    ];
+    const tyDis = (t) => t.id === 'con' && !f.contract ? 'No signed contract here. Convert the POC first.' : ((t.id === 'rep' || t.id === 'add') && f.devices === 0 ? 'No equipment on site yet.' : '');
+    const curT = TY.find(t => t.id === st.type) || TY[0];
+    const facs = FAC.map(x => Object.assign({}, x, { cls: 'fc' + (x.id === st.fac ? ' on' : ''), pressed: x.id === st.fac ? 'true' : 'false', disabled: !!x.disabled, pick: () => { if (!x.disabled) this.setState({ fac: x.id, type: x.def, area: x.areas[0] }); } }));
+    const types = TY.map(t => { const reason = tyDis(t); return Object.assign({}, t, { on: st.type === t.id, dis: !!reason, reason, cls: 'rc' + (st.type === t.id ? ' on' : '') + (reason ? ' dis' : ''), pick: () => { if (!reason) this.setState({ type: t.id }); } }); });
+
+    const PRODS = {
+      rut: { name: 'Teltonika RUT956', avail: '4 ready · 2 unconfigured', units: [
+        { sn: '1108675304', sim: '8996802026093001412', ip: '10.64.12.31', loc: 'Shelf A2', st: 'Ready for deployment', ok: true },
+        { sn: '1108675306', sim: '8996802026093001415', ip: '10.64.12.33', loc: 'Shelf A2', st: 'Ready for deployment', ok: true },
+        { sn: '1108675309', sim: '8996802026093001427', ip: '10.64.12.37', loc: 'Shelf A2', st: 'Ready for deployment', ok: true },
+        { sn: '1108675313', sim: '8996802026093001431', ip: '10.64.12.39', loc: 'Shelf A2', st: 'Ready for deployment', ok: true },
+        { sn: '1108675320', loc: 'Shelf A1', st: 'Unconfigured', prep: true },
+        { sn: '1108675321', loc: 'Shelf A1', st: 'Unconfigured', prep: true } ] },
+      em: { name: 'Milesight EM500-CO2', avail: '29 available · 2 reserved', units: [
+        { sn: '6136D1748210', loc: 'Shelf B2', st: 'In stock', ok: true },
+        { sn: '6136D1748212', loc: 'Shelf B2', st: 'In stock', ok: true },
+        { sn: '6136D1748215', loc: 'Shelf B2', st: 'In stock', ok: true },
+        { sn: '6136D1748219', loc: 'Shelf B2', st: 'In stock', ok: true },
+        { sn: '6136D1748203', loc: 'Shelf B2', st: 'Reserved', reason: 'Reserved for Qatar Foundation' },
+        { sn: '6136D1748207', loc: 'Shelf B2', st: 'Reserved', reason: 'Reserved for Qatar Foundation' } ] },
+      ug: { name: 'Milesight UG65', avail: '0 ready · 2 unconfigured', units: [
+        { sn: '6247B1820048', loc: 'Shelf A3', st: 'Unconfigured', prep: true },
+        { sn: '6247B1820049', loc: 'Shelf A3', st: 'Unconfigured', prep: true } ] },
+      sw: { name: 'UniFi Switch Lite 8 PoE', avail: '2 in stock', units: [
+        { sn: 'FCECDA8E2310', loc: 'Shelf B4', st: 'In stock', ok: true },
+        { sn: 'FCECDA8E2317', loc: 'Shelf B4', st: 'In stock', ok: true } ] },
+      vfd: { name: 'ABB ACS580 VFD', avail: '2 available · 2 reserved', units: [
+        { sn: '3AXD50000731226', loc: 'Shelf D1', st: 'In stock', ok: true },
+        { sn: '3AXD50000731238', loc: 'Shelf D1', st: 'In stock', ok: true },
+        { sn: '3AXD50000731204', loc: 'Shelf D1', st: 'Reserved', reason: 'Reserved for DEP-0151' },
+        { sn: '3AXD50000731211', loc: 'Shelf D1', st: 'Reserved', reason: 'Reserved for DEP-0151' } ] }
+    };
+    const SC = { 'Ready for deployment': 's-ready', 'In stock': 's-stock', 'Unconfigured': 's-unconf', 'Reserved': 's-reserved' };
+    const QTY = [
+      { id: 'cat3', name: 'Cat6 patch cable 3 m', avail: 600, unit: 'pcs', loc: 'Shelf C1' },
+      { id: 'cat1', name: 'Cat6 patch cable 1 m', avail: 18, unit: 'pcs', loc: 'Shelf C1', low: true },
+      { id: 'din', name: 'DIN rail 35 mm · 1 m', avail: 40, unit: 'pcs', loc: 'Shelf C3' },
+      { id: 'psu', name: 'Mean Well 24 V DIN power supply', avail: 12, unit: 'pcs', loc: 'Shelf C3' },
+      { id: 'tie', name: 'Cable ties 200 mm · pack of 100', avail: 35, unit: 'packs', loc: 'Shelf C4' }
+    ];
+    const setSel = (sn, v) => { const s = Object.assign({}, st.sel); if (v) s[sn] = true; else delete s[sn]; this.setState({ sel: s }); };
+    const setQty = (id, n, max) => { const q = Object.assign({}, st.qty); q[id] = Math.max(0, Math.min(max, isNaN(n) ? 0 : n)); this.setState({ qty: q }); };
+
+    const prods = Object.keys(PRODS).map(k => { const nsel = PRODS[k].units.filter(u => st.sel[u.sn]).length; return { name: PRODS[k].name, avail: PRODS[k].avail, nsel, hasSel: nsel > 0, cls: 'pp' + (st.prod === k ? ' on' : ''), pressed: st.prod === k ? 'true' : 'false', pick: () => this.setState({ prod: k }) }; });
+    const units = PRODS[st.prod].units.map(u => ({
+      sn: u.sn, sim: u.sim || '—', ip: u.ip || '—', loc: 'MRD Office · ' + u.loc, st: u.st, scls: SC[u.st] || 's-unconf',
+      on: !!st.sel[u.sn], blocked: !u.ok, needsPrep: !!u.prep, other: !u.ok && !u.prep, reason: u.reason || '', rcls: u.ok ? '' : 'dis',
+      toggle: () => { if (u.ok) setSel(u.sn, !st.sel[u.sn]); }
+    }));
+    const qtys = QTY.map(q => { const n = st.qty[q.id] || 0; return Object.assign({}, q, { n, low: !!q.low, dec: () => setQty(q.id, n - 1, q.avail), inc: () => setQty(q.id, n + 1, q.avail), set: (e) => setQty(q.id, parseInt(e && e.target ? e.target.value : '0', 10), q.avail) }); });
+
+    const selSer = [];
+    Object.keys(PRODS).forEach(k => PRODS[k].units.forEach(u => { if (st.sel[u.sn] && u.ok) selSer.push(Object.assign({ pname: PRODS[k].name }, u)); }));
+    const selQty = QTY.filter(q => (st.qty[q.id] || 0) > 0);
+    const tray = selSer.map(u => ({ name: u.pname, ref: u.sn, sub: u.sim ? 'SIM …' + u.sim.slice(-7) + ' · ' + u.ip : 'MRD Office · ' + u.loc, remove: () => setSel(u.sn, false) }))
+      .concat(selQty.map(q => ({ name: q.name, ref: '× ' + st.qty[q.id], sub: (q.avail - st.qty[q.id]) + ' of ' + q.avail + ' left in office', remove: () => setQty(q.id, 0, q.avail) })));
+    const units_n = selSer.length + selQty.reduce((a, q) => a + st.qty[q.id], 0);
+    const trayCount = units_n + (units_n === 1 ? ' unit' : ' units');
+    const auditN = selSer.length + selSer.filter(u => u.sim).length + selQty.length;
+
+    const M = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], W = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const p = (st.date || '').split('-');
+    let dateLabel = '—';
+    if (p.length === 3) { const d = new Date(+p[0], +p[1] - 1, +p[2]); dateLabel = W[d.getDay()] + ' ' + p[2] + ' ' + M[+p[1] - 1] + ' ' + p[0]; }
+    const U = [['RA', 'Rahul', 'Technician', '#DCE6FB'], ['SA', 'Saif', 'Technician', '#FBE0DC'], ['CH', 'Chetan', 'Admin', '#CDEFE7'], ['NI', 'Nitin', 'Operations', '#F6E3C4'], ['AI', 'Aisha', 'Operations', '#E6DDFB']];
+    const techs = U.map(([ini, name, role, bg]) => ({ ini, name, role, bg, cls: 'tc' + (st.techs[ini] ? ' on' : ''), pressed: st.techs[ini] ? 'true' : 'false', toggle: () => { const t = Object.assign({}, st.techs); t[ini] = !t[ini]; this.setState({ techs: t }); } }));
+    const team = U.filter(u => st.techs[u[0]]).map(([ini, name, role, bg]) => ({ ini, name, bg }));
+
+    const place = f.name + ' · ' + st.area;
+    const depLabel = curT.short + ' · DEP-0152';
+    const panels = selSer.map(u => {
+      const rows = [['Status', u.st, 'Deployed'], ['Location', 'MRD Office · ' + u.loc, place], ['Deployment', '—', depLabel]];
+      if (u.sim) rows.push(['SIM', u.sim + ' · Assigned', 'Assigned, active · ' + u.ip]);
+      return { title: u.pname, ref: u.sn, rows: rows.map(([k, b, a]) => ({ k, b, a })) };
+    }).concat(selQty.map(q => { const n = st.qty[q.id]; return { title: q.name, ref: '× ' + n, rows: [['Office stock', q.avail + ' ' + q.unit + ' · ' + q.loc, (q.avail - n) + ' ' + q.unit], ['At facility', '—', n + ' ' + q.unit + ' · ' + place], ['Deployment', '—', depLabel]].map(([k, b, a]) => ({ k, b, a })) }; }));
+    const recap = [{ k: 'Facility', v: f.name }, { k: 'Type', v: curT.label }, { k: 'Date', v: dateLabel }, { k: 'Team', v: team.map(t => t.name).join(', ') || '—' }];
+
+    const step = st.step;
+    const canNext = step === 1 ? (!f.disabled && !tyDis(curT)) : step === 2 ? units_n > 0 : step === 3 ? (!!st.date && team.length > 0) : true;
+    const labels = ['Facility & type', 'Equipment', 'Details', 'Review & confirm'];
+    const steps = labels.map((label, i) => { const n = i + 1; return { n, label, cls: n === step ? 'cur' : (n < step ? 'done' : ''), isDone: n < step, notDone: n >= step, locked: n > step, aria: n === step ? 'step' : 'false', go: () => { if (n < step) this.setState({ step: n }); } }; });
+    const hints = ['', 'Select a facility and type to continue', 'Select at least one unit', 'Pick a date and at least one technician', 'Tick the confirmation to enable Confirm'];
+    const checks = [
+      { label: 'All selected units are Ready or In stock', ok: true },
+      { label: 'Routers have SIM and static IP assigned', ok: selSer.every(u => u.sn.indexOf('11086753') !== 0 || !!u.sim) },
+      { label: f.name + ' accepts ' + curT.short + ' equipment', ok: !tyDis(curT) },
+      { label: 'Physical hand-over confirmed', ok: st.confirm }
+    ].map(c => ({ label: c.label, bg: c.ok ? '#E1F4EC' : '#EEF1F5', fg: c.ok ? '#0A6648' : '#8A96A8' }));
+    const files = st.files.map((fl, i) => ({ name: fl.name, size: fl.size, remove: () => this.setState({ files: st.files.filter((x, j) => j !== i) }) }));
+
+    return {
+      steps, facs, types, prods, units, qtys, tray, techs, team, panels, recap, checks, files,
+      fac: f, defType: (TY.find(t => t.id === f.def) || TY[0]).short,
+      typeShort: curT.short, typeTcls: curT.tcls,
+      s1: step === 1, s2: step === 2, s3: step === 3, s4: step === 4,
+      stepTitle: labels[step - 1],
+      isSer: st.ptab === 'ser', isQty: st.ptab === 'qty',
+      serCls: 'chip' + (st.ptab === 'ser' ? ' on' : ''), qtyCls: 'chip' + (st.ptab === 'qty' ? ' on' : ''),
+      pickSer: () => this.setState({ ptab: 'ser' }), pickQty: () => this.setState({ ptab: 'qty' }),
+      trayCount, trayEmpty: tray.length === 0, auditN,
+      date: st.date, dateLabel, dateHint: st.date === '2026-10-05' ? 'Today · ' + dateLabel : dateLabel,
+      area: st.area, areas: f.areas.map(v => ({ v })), spot: st.spot, notes: st.notes,
+      onDate: (e) => this.setState({ date: e && e.target ? e.target.value : st.date }),
+      onArea: (e) => this.setState({ area: e && e.target ? e.target.value : st.area }),
+      onSpot: (e) => this.setState({ spot: e && e.target ? e.target.value : '' }),
+      onNotes: (e) => this.setState({ notes: e && e.target ? e.target.value : '' }),
+      addFile: () => this.setState({ files: st.files.concat([{ name: 'delivery-note-DEP-0152.pdf', size: '214 KB' }]) }),
+      confirm: st.confirm, toggleConfirm: () => this.setState({ confirm: !st.confirm }),
+      noBack: step === 1, back: () => { if (step > 1) this.setState({ step: step - 1 }); },
+      notLast: step < 4, isLast: step === 4, noNext: !canNext,
+      nextLabel: step === 3 ? 'Review' : 'Continue',
+      next: () => { if (canNext && step < 4) this.setState({ step: step + 1 }); },
+      hint: canNext && step < 4 ? 'Step ' + step + ' of 4' : hints[step],
+      noConfirm: !st.confirm || units_n === 0,
+      doConfirm: () => { if (st.confirm && units_n > 0) this.setState({ done: true }); },
+      notDone: !st.done, done: st.done,
+      reset: () => this.setState(this.initial()),
+      saveDraft: () => this.setState({ toast: 'Draft DEP-0152 saved · nothing moved yet' }),
+      hasToast: !!st.toast, toast: st.toast, closeToast: () => this.setState({ toast: '' })
+    };
+  }
+}
+</script>
+</body>
+</html>
