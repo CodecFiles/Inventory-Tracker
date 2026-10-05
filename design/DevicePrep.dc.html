@@ -418,8 +418,35 @@ class Component extends DCLogic {
   // Prototype persistence: this screen's data survives reloads and is shared by every screen in this browser.
   componentDidMount() {
     this._init = JSON.parse(JSON.stringify(this.state));
+    this._onStore = e => { if (!e || !e.key || e.key === 'mrd-proto:store') this.forceUpdate(); };
+    try { window.addEventListener('storage', this._onStore); } catch (e) {}
     try { const raw = window.localStorage.getItem('mrd-proto:v1:DevicePrep'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
+    // Counters, SIM pool and statuses are derived from the shared store; keep the local baselines at their sample values.
+    let savedDevs = null; try { const sv = JSON.parse(window.localStorage.getItem('mrd-proto:v1:DevicePrep') || 'null'); savedDevs = sv && sv.devices; } catch (e) {}
+    const initSt = {}; this._init.devices.forEach(d => { initSt[d.sn] = d; });
+    const devices = (savedDevs || this._init.devices).map(d => initSt[d.sn] ? Object.assign({}, d, { status: initSt[d.sn].status, meta: initSt[d.sn].meta, ip: initSt[d.sn].ip, simTail: initSt[d.sn].simTail }) : d);
+    this.setState({ devices, sims: this._init.sims, tel: this._init.tel, ipN: this._init.ipN, poolFree: this._init.poolFree, today: this._init.today });
   }
+  // Shared prototype store: one record in browser storage that every screen reads and writes (key mrd-proto:store).
+  readStore() {
+    const empty = { v: 1, units: {}, added: [], deployments: [], events: [], catalog: {} };
+    try { const s = JSON.parse(window.localStorage.getItem('mrd-proto:store') || 'null'); return Object.assign(empty, s || {}); } catch (e) { return empty; }
+  }
+  writeStore(mutate) {
+    const s = this.readStore(); mutate(s); s.events = s.events.slice(0, 200);
+    try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {}
+    this.forceUpdate(); return s;
+  }
+  nowLabel() { const d = new Date(); return 'Today, ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  patchUnit(s, ident, patch, prevSt) {
+    const cur = s.units[ident] || {};
+    s.units[ident] = Object.assign({}, cur, patch, { st0: cur.st0 !== undefined ? cur.st0 : (prevSt || ''), upd: this.nowLabel() });
+  }
+  logEvent(s, ev) {
+    const d = new Date();
+    s.events.unshift(Object.assign({ id: 'e' + d.getTime() + Math.random().toString(36).slice(2, 6), at: d.getTime(), when: this.nowLabel(), who: 'Chetan', ini: 'CH', role: 'Admin', source: 'Web' }, ev));
+  }
+  componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
     try { const keep = Object.assign({}, this.state); ["scanning", "bulk", "toast"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:DevicePrep', JSON.stringify(keep)); } catch (e) {}
   }
@@ -465,13 +492,59 @@ class Component extends DCLogic {
       checks: { fw: d.status === 'prep', profile: d.status === 'prep', sim: false, conn: false, label: false }
     };
   }
+  // Merge the shared store over this screen's sample devices (status/column, SIM, IP, identity) and add units created elsewhere.
+  mergedDevices(ST0) {
+    const st = this.state;
+    const P = { tel: 'rut', gw: 'ug', co2: 'em' };
+    const base = st.devices.slice();
+    const known = {}; base.forEach(d => { known[d.sn] = true; });
+    (ST0.added || []).forEach(u => {
+      if (!u || !u.ident || known[u.ident] || !P[u.cat]) return;
+      known[u.ident] = true;
+      base.push({ sn: u.ident, p: P[u.cat], product: u.name || '', batch: u.batch || '—', imei: u.imei || '', mac: u.mac || '—', fw: u.fw || '', status: u.st || 'unconf', meta: (u.loc2 || u.loc || 'MRD Office') + ' · received ' + (u.upd || 'recently'), fromStore: true });
+    });
+    return base.map(d => {
+      const u = ST0.units[d.sn];
+      if (!u) return d;
+      const m = Object.assign({}, d);
+      if (u.st) m.status = u.st;
+      if (u.imei) m.imei = u.imei;
+      if (u.mac) m.mac = u.mac;
+      if (u.fw) m.fw = u.fw;
+      if (u.batch) m.batch = u.batch;
+      if (u.ip) m.ip = u.ip;
+      if (u.sim) m.simTail = '…' + String(u.sim).slice(-4);
+      if (u.devId) m.devId = u.devId;
+      if (u.st && u.st !== d.status) {
+        const where = u.loc2 || u.loc || '';
+        m.meta = u.st === 'ready' ? (where || 'Shelf A2') + ' · ' + (u.configuredBy || 'Chetan') + ', ' + (u.upd || 'just now')
+          : u.st === 'prep' ? (where || 'Prep bench') + ' · ' + (m.done ? 'draft saved' : 'in preparation') + ' ' + (u.upd || '')
+          : (where || 'MRD Office') + ' · ' + (u.upd || '');
+      }
+      return m;
+    });
+  }
   renderVals() {
+    const ST0 = this.readStore();
     const st = this.state, f = st.f;
+    const devs = this.mergedDevices(ST0);
+    // Resources derived from the store so they stay right across screens and reloads.
+    const usedIps = {}, usedSims = {};
+    Object.keys(ST0.units).forEach(k => { const u = ST0.units[k] || {}; if (u.ip) usedIps[u.ip] = true; if (u.sim) usedSims[u.sim] = true; if (u.device || u.assigned) usedSims[k] = true; });
+    (ST0.added || []).forEach(u => { if (u && u.ip) usedIps[u.ip] = true; if (u && u.sim) usedSims[u.sim] = true; });
+    devs.forEach(d => { if (d.ip && d.ip !== '—') usedIps[d.ip] = true; });
+    let ipN = st.ipN; while (usedIps['10.64.12.' + ipN] && ipN < 254) ipN++;
+    let ipTaken = 0; Object.keys(usedIps).forEach(ip => { const m = /^10\.64\.12\.(\d+)$/.exec(ip); if (m && +m[1] >= st.ipN) ipTaken++; });
+    const poolFree = Math.max(0, st.poolFree - ipTaken);
+    const freeSims = st.sims.filter(x => !usedSims[x.iccid]);
+    const tel = st.tel + Object.keys(ST0.units).filter(k => /^MRD-TEL-/.test((ST0.units[k] || {}).devId || '')).length;
+    const dayStart = new Date(); dayStart.setHours(0, 0, 0, 0);
+    const today = st.today + ST0.events.filter(e => e.action === 'Configured' && (e.at || 0) >= dayStart.getTime()).length;
     const prodOk = d => st.product === 'all' || d.p === st.product;
     const qq = st.q.trim().toLowerCase();
-    const vis = st.devices.filter(d => prodOk(d) && (!qq || d.sn.toLowerCase().indexOf(qq) >= 0));
+    const vis = devs.filter(d => prodOk(d) && (!qq || d.sn.toLowerCase().indexOf(qq) >= 0));
     const techBg = { Chetan: '#CDEFE7', Nitin: '#F6E3C4', Aisha: '#E6DDFB', Rahul: '#DCE6FB', Saif: '#FBE0DC' };
-    const open = d => () => this.setState({ open: true, sel: d.sn, scanning: false, f: this.formFor(d, st.sims, st.tel, st.ipN) });
+    const open = d => () => this.setState({ open: true, sel: d.sn, scanning: false, f: this.formFor(d, freeSims, tel, ipN) });
     const card = d => ({
       sn: d.sn, product: d.product, batch: d.batch, meta: d.meta, ip: d.ip || '—', simTail: d.simTail || '—', devId: d.devId || '',
       tech: d.tech || '', techIni: (d.tech || '').slice(0, 2).toUpperCase(), techBg: techBg[d.tech] || '#E3E7EC',
@@ -482,7 +555,7 @@ class Component extends DCLogic {
     const unconf = vis.filter(d => d.status === 'unconf').map(card);
     const prep = vis.filter(d => d.status === 'prep').map(card);
     const ready = vis.filter(d => d.status === 'ready').sort((a, b) => (b.fresh ? 1 : 0) - (a.fresh ? 1 : 0)).map(card);
-    const pending = p => st.devices.filter(d => d.status !== 'ready' && (p === 'all' || d.p === p)).length;
+    const pending = p => devs.filter(d => d.status !== 'ready' && (p === 'all' || d.p === p)).length;
     const chips = [['all', 'All products'], ['rut', 'Teltonika RUT956'], ['ug', 'UG65'], ['em', 'EM500-CO2']].map(([id, label]) => ({
       label, n: pending(id), cls: 'chip' + (st.product === id ? ' on' : ''), pressed: st.product === id ? 'true' : 'false', pick: () => this.setState({ product: id })
     }));
@@ -504,41 +577,57 @@ class Component extends DCLogic {
       label, cls: 'ck' + (ck[k] ? ' on' : ''), aria: ck[k] ? 'true' : 'false',
       toggle: () => this.setState({ f: Object.assign({}, this.state.f, { checks: Object.assign({}, this.state.f.checks, { [k]: !this.state.f.checks[k] }) }) })
     }));
-    const simOpts = st.sims.map(s => ({ v: s.iccid, l: s.iccid + ' · ' + s.msisdn }));
+    const simOpts = freeSims.map(s => ({ v: s.iccid, l: s.iccid + ' · ' + s.msisdn }));
     const profiles = (isRut ? ['Exergio BMS gateway v2.3', 'Exergio BMS gateway v2.2 (legacy)', 'Bank Muscat VPN v1.4', 'MRD lab default'] : f.p === 'ug' ? ['Exergio LNS gateway v1.1', 'MRD lab default'] : ['Exergio CO2 room sensor v1.0', 'Exergio CO2 plant room v1.0']).map(v => ({ v }));
     const techs = [['Chetan', 'Chetan · Admin'], ['Nitin', 'Nitin · Operations'], ['Aisha', 'Aisha · Operations'], ['Rahul', 'Rahul · Technician'], ['Saif', 'Saif · Technician']].map(([v, l]) => ({ v, l }));
+    const LBL = { unconf: 'Unconfigured', prep: 'In preparation', ready: 'Ready for deployment', reserved: 'Reserved', stock: 'In stock', deployed: 'Deployed', maint: 'Under maintenance', transit: 'In transit', returned: 'Returned', damaged: 'Damaged', retired: 'Retired' };
     const finish = (status) => {
       const s = this.state, ff = s.f;
       const rutDev = ff.p === 'rut';
-      const devices = s.devices.map(d => {
-        const base = Object.assign({}, d, { fresh: false });
-        if (d.sn !== s.sel) return base;
-        if (status === 'ready') return Object.assign(base, { status: 'ready', fresh: true, meta: 'Shelf A2 · ' + ff.tech + ', just now', ip: rutDev ? ff.ip : '—', simTail: rutDev ? '…' + ff.iccid.slice(-4) : '—', devId: ff.devId });
-        const done = Object.keys(ff.checks).filter(k => ff.checks[k]).length;
-        return Object.assign(base, { status: 'prep', meta: 'Prep bench · draft saved', done, tech: ff.tech });
+      const cur = devs.find(d => d.sn === s.sel) || { status: 'unconf', product: ff.product };
+      const prevSt = cur.status;
+      const item = (cur.product || ff.product) + ' ' + s.sel;
+      // Status, SIM and IP live in the shared store; local state only keeps presentation (highlight, progress, technician).
+      this.writeStore(S => {
+        if (status === 'ready') {
+          const patch = { st: 'ready', imei: ff.imei, mac: ff.mac, fw: ff.fw, profile: ff.profile, configuredBy: ff.tech || 'Chetan', loc: 'MRD Office', loc2: 'Shelf A2', devId: ff.devId, batch: ff.batch, name: cur.product || ff.product };
+          if (rutDev) Object.assign(patch, { sim: ff.iccid, msisdn: ff.msisdn, ip: ff.ip });
+          this.patchUnit(S, s.sel, patch, prevSt);
+          this.logEvent(S, { action: 'Configured', item, itemHref: 'DeviceDetail.dc.html', from: LBL[prevSt] || prevSt, to: LBL.ready, note: ff.profile + ' · firmware ' + ff.fw + (ff.notes ? ' · ' + ff.notes : '') });
+          if (rutDev && ff.iccid) {
+            this.patchUnit(S, ff.iccid, { device: s.sel, ip: ff.ip, msisdn: ff.msisdn, assigned: true }, (S.units[ff.iccid] || {}).st || '');
+            this.logEvent(S, { action: 'SIM assigned', item, itemHref: 'DeviceDetail.dc.html', from: '—', to: ff.iccid, note: ff.msisdn });
+          }
+          if (rutDev && ff.ip) this.logEvent(S, { action: 'IP assigned', item, itemHref: 'DeviceDetail.dc.html', from: '—', to: ff.ip, note: 'Pool 10.64.12.0/24 · static lease' });
+        } else {
+          this.patchUnit(S, s.sel, { st: 'prep', loc: 'MRD Office', loc2: 'Prep bench', name: cur.product || ff.product, batch: ff.batch }, prevSt);
+          this.logEvent(S, { action: 'Status changed', item, itemHref: 'DeviceDetail.dc.html', from: LBL[prevSt] || prevSt, to: LBL.prep, note: 'Draft saved by ' + (ff.tech || 'Chetan') });
+        }
       });
-      const used = rutDev && status === 'ready';
+      const done = Object.keys(ff.checks).filter(k => ff.checks[k]).length;
+      const devices = s.devices.map(d => {
+        const b = Object.assign({}, d, { fresh: false });
+        if (d.sn !== s.sel) return b;
+        return status === 'ready' ? Object.assign(b, { fresh: true, devId: ff.devId }) : Object.assign(b, { done, tech: ff.tech });
+      });
       this.setState({
         devices, open: false, scanning: false,
-        sims: used ? s.sims.filter(x => x.iccid !== ff.iccid) : s.sims,
-        tel: used ? s.tel + 1 : s.tel, ipN: used ? s.ipN + 1 : s.ipN, poolFree: used ? s.poolFree - 1 : s.poolFree,
-        today: status === 'ready' ? s.today + 1 : s.today,
         toast: status === 'ready' ? { text: s.sel + ' is ready for deployment', link: true } : { text: 'Draft saved · ' + s.sel + ' moved to In preparation', link: false }
       });
     };
-    const bulkTargets = st.devices.filter(d => d.p === 'rut' && d.status === 'unconf');
+    const bulkTargets = devs.filter(d => d.p === 'rut' && d.status === 'unconf');
     const bo = st.bulkOpts;
     const bulkOpts = [
       ['fw', 'Update firmware to RUT9M_R_00.07.08.3', 'Pushed over LAN from the prep bench'],
       ['profile', 'Apply profile Exergio BMS gateway v2.3', 'Same profile as the 10 deployed RUT956'],
-      ['sim', 'Auto-assign SIMs from SIM-2026-005', 'Next ' + bulkTargets.length + ' of ' + st.sims.length + '+ available Omantel SIMs, in serial order'],
-      ['ip', 'Reserve IPs from 10.64.12.0/24', 'Sequential from ' + '10.64.12.' + st.ipN]
+      ['sim', 'Auto-assign SIMs from SIM-2026-005', 'Next ' + bulkTargets.length + ' of ' + freeSims.length + '+ available Omantel SIMs, in serial order'],
+      ['ip', 'Reserve IPs from 10.64.12.0/24', 'Sequential from ' + '10.64.12.' + ipN]
     ].map(([k, label, sub]) => ({ label, sub, cls: 'ck' + (bo[k] ? ' on' : ''), aria: bo[k] ? 'true' : 'false', toggle: () => this.setState({ bulkOpts: Object.assign({}, this.state.bulkOpts, { [k]: !this.state.bulkOpts[k] }) }) }));
     return {
       chips, q: st.q, onQ: e => this.setState({ q: e.target.value }),
       unconf, prep, ready, nUnconf: unconf.length, nPrep: prep.length, nReady: ready.length,
       emptyUnconf: unconf.length === 0, emptyPrep: prep.length === 0, emptyReady: ready.length === 0,
-      today: st.today, poolFree: st.poolFree, nextIp: '10.64.12.' + st.ipN, simsFree: 30 + st.sims.length,
+      today, poolFree, nextIp: '10.64.12.' + ipN, simsFree: 30 + freeSims.length,
       open: st.open, close: () => this.setState({ open: false, scanning: false }),
       title: 'Prepare ' + f.product, f, isRut, notRut: !isRut, idLabel: isRut ? 'IMEI' : f.p === 'ug' ? 'Gateway EUI' : 'DevEUI',
       shippedFw: f.shipped, steps, doneN: stepDone.filter(Boolean).length, checks, simOpts, profiles, techs,
@@ -551,7 +640,14 @@ class Component extends DCLogic {
       openBulk: () => this.setState({ bulk: true, open: false }), closeBulk: () => this.setState({ bulk: false }),
       runBulk: () => {
         const n = bulkTargets.length;
-        const devices = this.state.devices.map(d => (d.p === 'rut' && d.status === 'unconf') ? Object.assign({}, d, { status: 'prep', meta: 'Prep bench · bulk prepared', done: 2, tech: 'Chetan', fresh: false }) : d);
+        const ids = {}; bulkTargets.forEach(d => { ids[d.sn] = true; });
+        this.writeStore(S => {
+          bulkTargets.forEach(d => {
+            this.patchUnit(S, d.sn, { st: 'prep', loc: 'MRD Office', loc2: 'Prep bench', name: d.product, batch: d.batch }, d.status);
+            this.logEvent(S, { action: 'Status changed', item: d.product + ' ' + d.sn, itemHref: 'DeviceDetail.dc.html', from: LBL.unconf, to: LBL.prep, note: 'Bulk prepare · ' + d.batch });
+          });
+        });
+        const devices = this.state.devices.map(d => ids[d.sn] ? Object.assign({}, d, { done: 2, tech: 'Chetan', fresh: false }) : d);
         this.setState({ devices, bulk: false, toast: { text: n + ' devices moved to In preparation', link: false } });
       },
       printLabels: () => this.setState({ toast: { text: 'Label job sent · ' + ready.length + ' labels to Prep bench printer', link: false } }),

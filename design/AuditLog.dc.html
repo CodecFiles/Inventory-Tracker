@@ -304,8 +304,30 @@ class Component extends DCLogic {
   // Prototype persistence: this screen's data survives reloads and is shared by every screen in this browser.
   componentDidMount() {
     this._init = JSON.parse(JSON.stringify(this.state));
+    this._onStore = e => { if (!e || !e.key || e.key === 'mrd-proto:store') this.forceUpdate(); };
+    try { window.addEventListener('storage', this._onStore); } catch (e) {}
     try { const raw = window.localStorage.getItem('mrd-proto:v1:AuditLog'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
   }
+  // Shared prototype store: one record in browser storage that every screen reads and writes (key mrd-proto:store).
+  readStore() {
+    const empty = { v: 1, units: {}, added: [], deployments: [], events: [], catalog: {} };
+    try { const s = JSON.parse(window.localStorage.getItem('mrd-proto:store') || 'null'); return Object.assign(empty, s || {}); } catch (e) { return empty; }
+  }
+  writeStore(mutate) {
+    const s = this.readStore(); mutate(s); s.events = s.events.slice(0, 200);
+    try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {}
+    this.forceUpdate(); return s;
+  }
+  nowLabel() { const d = new Date(); return 'Today, ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  patchUnit(s, ident, patch, prevSt) {
+    const cur = s.units[ident] || {};
+    s.units[ident] = Object.assign({}, cur, patch, { st0: cur.st0 !== undefined ? cur.st0 : (prevSt || ''), upd: this.nowLabel() });
+  }
+  logEvent(s, ev) {
+    const d = new Date();
+    s.events.unshift(Object.assign({ id: 'e' + d.getTime() + Math.random().toString(36).slice(2, 6), at: d.getTime(), when: this.nowLabel(), who: 'Chetan', ini: 'CH', role: 'Admin', source: 'Web' }, ev));
+  }
+  componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
     try { const keep = Object.assign({}, this.state); ["sel", "toast"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:AuditLog', JSON.stringify(keep)); } catch (e) {}
   }
@@ -380,6 +402,18 @@ class Component extends DCLogic {
         diff: [['Product state', 'Active', 'Archived'], ['Visible in receiving', 'Yes', 'No'], ['Existing units', '0', '0']],
         rel: [['Product', 'Teltonika RUT240 (sample)', 'ProductDetail.dc.html', false], ['Category', 'Teltonika Devices', 'Settings.dc.html', false]] }
     ];
+    // Shared store: events recorded on any screen of this prototype come first.
+    const ST0 = this.readStore();
+    const CATMAP = { 'Received': 'recv', 'Imported': 'recv', 'Configured': 'cfg', 'SIM assigned': 'simip', 'IP assigned': 'simip', 'Deployed': 'dep', 'Status changed': 'status', 'Moved': 'status', 'Note added': 'status', 'Record corrected': 'corr', 'Settings changed': 'admin' };
+    const ICMAP = { recv: 'recv', cfg: 'cfg', simip: 'sim', dep: 'dep', status: 'status', corr: 'corr', admin: 'role' };
+    const ENTMAP = { 'BatchDetail.dc.html': 'Batch', 'SimInventory.dc.html': 'SIM', 'FacilityDetail.dc.html': 'Facility', 'Settings.dc.html': 'Settings', 'Users.dc.html': 'User', 'Deployments.dc.html': 'Device' };
+    const fromStore = ST0.events.map(ev => {
+      const cat = CATMAP[ev.action] || 'status', ent = ENTMAP[ev.itemHref] || 'Device', mono = /\d{6,}/.test(ev.item || ''), href = ev.itemHref || 'Inventory.dc.html';
+      return { day: '2026-10-05', time: String(ev.when || '').replace('Today, ', '') || '00:00', sec: String(new Date(ev.at || 0).getSeconds()).padStart(2, '0'), who: U[ev.who] ? ev.who : 'Chetan', action: ev.action, cat, icon: IC[ICMAP[cat]] || IC.status, ent, item: ev.item, mono, href,
+        sub: ev.note || 'Recorded on this prototype', prev: ev.from || '—', next: ev.to || '—', src: ev.source || 'Web', note: ev.note || '',
+        diff: [[ev.action === 'Moved' ? 'Location' : ev.action === 'Settings changed' ? 'Setting' : 'Value', ev.from || '—', ev.to || '—']], rel: [[ent, ev.item, href, mono]] };
+    });
+    E.unshift.apply(E, fromStore);
     const DAYS = { '2026-10-05': ['Today · 5 Oct', '05 Oct 2026'], '2026-10-03': ['Sat 3 Oct', '03 Oct 2026'], '2026-10-01': ['Thu 1 Oct', '01 Oct 2026'], '2026-09-30': ['Wed 30 Sep', '30 Sep 2026'], '2026-09-29': ['Tue 29 Sep', '29 Sep 2026'], '2026-09-28': ['Mon 28 Sep', '28 Sep 2026'], '2026-09-27': ['Sun 27 Sep', '27 Sep 2026'], '2026-09-25': ['Fri 25 Sep', '25 Sep 2026'], '2026-09-22': ['Tue 22 Sep', '22 Sep 2026'], '2026-09-18': ['Fri 18 Sep', '18 Sep 2026'] };
     E.forEach((e, i) => { e.id = 'EVT-' + e.day.replace(/-/g, '') + '-' + e.time.replace(':', '') + e.sec; e.idx = i; });
 

@@ -176,17 +176,17 @@ textarea.inp{height:68px;padding:9px 11px;resize:vertical}
 <button class="btn sm" onClick="{{copy}}" aria-label="Copy serial number 1108675309"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a1 1 0 0 1 1-1h10"></path></svg>{{copyLabel}}</button>
 </div>
 <div style="display: flex; gap: 8px 22px; flex-wrap: wrap; padding-top: 4px">
-<span class="fact"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>MRD Office · Shelf A2</span>
+<span class="fact"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>{{locLabel}}</span>
 <span class="fact"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l10 5-10 5L2 7l10-5z"></path><path d="M2 12l10 5 10-5"></path></svg>Batch <a href="BatchDetail.dc.html" class="mono">TEL-2026-004</a></span>
-<span class="fact"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg>Configured by <a href="Users.dc.html">Chetan</a> · 05 Oct 09:40</span>
-<span class="fact"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3z"></path><path d="M14 10h4l3 3v3h-7"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>Deployment: Not yet deployed</span>
+<span class="fact"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg>Configured by <a href="Users.dc.html">{{cfgBy}}</a> · {{cfgWhen}}</span>
+<span class="fact"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3z"></path><path d="M14 10h4l3 3v3h-7"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>Deployment: {{deployFact}}</span>
 </div>
 </div>
 <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; position: relative">
 <a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3z"></path><path d="M14 10h4l3 3v3h-7"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>Deploy</a>
 <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg>Edit</button>
-<button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>Move</button>
-<button class="btn">Change status</button>
+<button class="btn" onClick="{{askMove}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>Move</button>
+<button class="btn" onClick="{{askStatus}}">Change status</button>
 <button class="btn ic" onClick="{{toggleMenu}}" aria-label="More actions" aria-expanded="{{menuAria}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h.01M12 12h.01M19 12h.01"></path></svg></button>
 <sc-if value="{{menu}}" hint-placeholder-val="{{ false }}">
 <div class="menu" role="menu">
@@ -211,7 +211,7 @@ textarea.inp{height:68px;padding:9px 11px;resize:vertical}
 <section class="card" style="padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 16px">
 <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap">
 <h2 style="font-size: 15px; font-weight: 600">Lifecycle</h2>
-<span class="muted" style="font-size: 12.5px">5 of 6 stages complete · next: <a href="CreateDeployment.dc.html">Deploy to a facility</a></span>
+<span class="muted" style="font-size: 12.5px">{{lifeDone}} · next: <a href="{{lifeHref}}">{{lifeNext}}</a></span>
 </div>
 <ol style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px 0">
 <sc-for list="{{stages}}" as="s" hint-placeholder-count="7">
@@ -238,22 +238,30 @@ textarea.inp{height:68px;padding:9px 11px;resize:vertical}
 <div class="card">
 <div class="hd"><h2>Connectivity</h2><a href="SimInventory.dc.html" style="font-size: 13px; font-weight: 500">SIM record →</a></div>
 <div class="kv"><span class="k">SIM carrier</span><span>Omantel M2M</span><span></span></div>
-<div class="kv"><span class="k">ICCID</span><a class="mono" href="SimInventory.dc.html">8996802026093001427</a><button class="cp" aria-label="Copy ICCID"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a1 1 0 0 1 1-1h10"></path></svg></button></div>
-<div class="kv"><span class="k">Phone number</span><span class="mono">+968 7912 3045</span><span></span></div>
+<div class="kv"><span class="k">ICCID</span><a class="mono" href="SimInventory.dc.html">{{simIccid}}</a><button class="cp" aria-label="Copy ICCID"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a1 1 0 0 1 1-1h10"></path></svg></button></div>
+<div class="kv"><span class="k">Phone number</span><span class="mono">{{simMsisdn}}</span><span></span></div>
 <div class="kv"><span class="k">Data plan</span><span>M2M Pooled 5 GB</span><span></span></div>
 <div class="kv"><span class="k">APN</span><span class="mono">mrd.m2m</span><span></span></div>
-<div class="kv"><span class="k">IP address</span><span style="display: flex; align-items: center; gap: 8px"><span class="mono">10.64.12.37</span><span class="t t-add">Static</span></span><button class="cp" aria-label="Copy IP address"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a1 1 0 0 1 1-1h10"></path></svg></button></div>
+<div class="kv"><span class="k">IP address</span><span style="display: flex; align-items: center; gap: 8px"><span class="mono">{{ipAddr}}</span><span class="t t-add">Static</span></span><button class="cp" aria-label="Copy IP address"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a1 1 0 0 1 1-1h10"></path></svg></button></div>
 <div style="padding: 10px 18px 14px; border-top: 1px solid #EEF1F4; font-size: 12px" class="muted">Pool <span class="mono" style="font-size: 11.5px">10.64.12.0/24</span> · connectivity test passed 05 Oct 09:40 · live monitoring not connected</div>
 </div>
 
 <div class="card">
 <div class="hd"><h2>Deployment</h2></div>
+<sc-if value="{{notDeployed}}" hint-placeholder-val="{{ true }}">
 <div style="padding: 8px 18px 22px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px">
 <span style="width: 44px; height: 44px; border-radius: 12px; background: #F1F4F7; color: #5E6B7D; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3z"></path><path d="M14 10h4l3 3v3h-7"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg></span>
 <span style="font-weight: 600">Not deployed yet</span>
 <span class="muted" style="font-size: 13px; max-width: 340px">This router is configured and tested. Deploy it as a POC, Contract, Replacement or Additional unit — facility, placement and project stage are recorded on deployment.</span>
 <a class="btn p sm" href="CreateDeployment.dc.html" style="margin-top: 4px">Deploy device</a>
 </div>
+</sc-if>
+<sc-if value="{{isDeployed}}" hint-placeholder-val="{{ false }}">
+<div class="kv"><span class="k">Facility</span><a href="FacilityDetail.dc.html">{{depFac}}</a><span></span></div>
+<div class="kv"><span class="k">Deployment type</span><span><span class="{{depTypeCls}}">{{depType}}</span></span><span></span></div>
+<div class="kv"><span class="k">Reference</span><a class="mono" href="Deployments.dc.html">{{depRef}}</a><span></span></div>
+<div class="kv"><span class="k">Deployed</span><span>{{depWhen}}</span><span></span></div>
+</sc-if>
 </div>
 </div>
 
@@ -329,16 +337,24 @@ textarea.inp{height:68px;padding:9px 11px;resize:vertical}
 <div onClick="{{cancel}}" style="position: fixed; inset: 0; background: rgba(14,23,38,.45); z-index: 40"></div>
 <div role="alertdialog" aria-modal="true" aria-label="{{dlgTitle}}" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(460px, calc(100% - 32px)); background: #fff; border-radius: 14px; z-index: 41; box-shadow: 0 20px 48px rgba(14,23,38,.25)">
 <div style="padding: 22px 22px 8px; display: flex; gap: 14px">
-<span style="width: 40px; height: 40px; border-radius: 50%; background: #FDEBEA; color: #A3201F; display: flex; align-items: center; justify-content: center; flex: 0 0 40px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9.5 17H2.5z"></path><path d="M12 10v4M12 17h.01"></path></svg></span>
+<span style="width: 40px; height: 40px; border-radius: 50%; background: {{dlgIconBg}}; color: {{dlgIconFg}}; display: flex; align-items: center; justify-content: center; flex: 0 0 40px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9.5 17H2.5z"></path><path d="M12 10v4M12 17h.01"></path></svg></span>
 <div style="display: flex; flex-direction: column; gap: 6px"><h2 style="font-size: 17px; font-weight: 600">{{dlgTitle}}</h2><p class="muted" style="font-size: 13.5px">{{dlgBody}}</p></div>
 </div>
 <div style="padding: 10px 22px 4px 76px; display: flex; flex-direction: column; gap: 6px">
+<sc-if value="{{dlgDanger}}" hint-placeholder-val="{{ true }}">
 <label for="reason" style="font-size: 12.5px; font-weight: 500; color: #3B4758">Reason</label>
-<select id="reason" class="inp"><option>End of life</option><option>Physical damage — not repairable</option><option>Lost or stolen</option><option>Other</option></select>
+<select id="reason" class="inp" value="{{dlgReason}}" onChange="{{onReason}}"><option>End of life</option><option>Physical damage — not repairable</option><option>Lost or stolen</option><option>Other</option></select>
+</sc-if>
+<sc-if value="{{dlgPick}}" hint-placeholder-val="{{ false }}">
+<label for="dlg-pick" style="font-size: 12.5px; font-weight: 500; color: #3B4758">{{dlgPickLabel}}</label>
+<select id="dlg-pick" class="inp" value="{{dlgValue}}" onChange="{{onDlgValue}}"><sc-for list="{{dlgOpts}}" as="o" hint-placeholder-count="6"><option value="{{o.v}}">{{o.l}}</option></sc-for></select>
+<label for="dlg-note" style="font-size: 12.5px; font-weight: 500; color: #3B4758; margin-top: 6px">Note <span style="font-weight: 400; color: #5E6B7D">· optional</span></label>
+<input id="dlg-note" class="inp" value="{{dlgNote}}" onChange="{{onDlgNote}}" placeholder="Why the change?">
+</sc-if>
 </div>
 <div style="padding: 18px 22px; display: flex; justify-content: flex-end; gap: 10px">
 <button class="btn" onClick="{{cancel}}">Cancel</button>
-<button class="btn" onClick="{{confirm}}" style="background: #B42318; border-color: #B42318; color: #fff">{{dlgCta}}</button>
+<button class="btn" onClick="{{confirm}}" style="background: {{dlgCtaBg}}; border-color: {{dlgCtaBg}}; color: #fff">{{dlgCta}}</button>
 </div>
 </div>
 </sc-if>
@@ -348,44 +364,91 @@ class Component extends DCLogic {
   // Prototype persistence: this screen's data survives reloads and is shared by every screen in this browser.
   componentDidMount() {
     this._init = JSON.parse(JSON.stringify(this.state));
+    this._onStore = e => { if (!e || !e.key || e.key === 'mrd-proto:store') this.forceUpdate(); };
+    try { window.addEventListener('storage', this._onStore); } catch (e) {}
     try { const raw = window.localStorage.getItem('mrd-proto:v1:DeviceDetail'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
   }
+  // Shared prototype store: one record in browser storage that every screen reads and writes (key mrd-proto:store).
+  readStore() {
+    const empty = { v: 1, units: {}, added: [], deployments: [], events: [], catalog: {} };
+    try { const s = JSON.parse(window.localStorage.getItem('mrd-proto:store') || 'null'); return Object.assign(empty, s || {}); } catch (e) { return empty; }
+  }
+  writeStore(mutate) {
+    const s = this.readStore(); mutate(s); s.events = s.events.slice(0, 200);
+    try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {}
+    this.forceUpdate(); return s;
+  }
+  nowLabel() { const d = new Date(); return 'Today, ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  patchUnit(s, ident, patch, prevSt) {
+    const cur = s.units[ident] || {};
+    s.units[ident] = Object.assign({}, cur, patch, { st0: cur.st0 !== undefined ? cur.st0 : (prevSt || ''), upd: this.nowLabel() });
+  }
+  logEvent(s, ev) {
+    const d = new Date();
+    s.events.unshift(Object.assign({ id: 'e' + d.getTime() + Math.random().toString(36).slice(2, 6), at: d.getTime(), when: this.nowLabel(), who: 'Chetan', ini: 'CH', role: 'Admin', source: 'Web' }, ev));
+  }
+  componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
     try { const keep = Object.assign({}, this.state); ["copied", "menu", "dialog", "draft"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:DeviceDetail', JSON.stringify(keep)); } catch (e) {}
   }
   constructor(props) {
     super(props);
     this.state = {
-      status: 'ready', copied: false, menu: false, dialog: null, filter: 'all', draft: '',
+      status: 'ready', copied: false, menu: false, dialog: null, filter: 'all', draft: '', reason: 'End of life', dlgValue: '', dlgNote: '',
       notes: [{ who: 'Chetan', when: 'Today, 09:43', text: 'Earmarked for the Al Khuwair Business Tower POC kit (20 Oct). Confirm with Aisha before deploying elsewhere.' }]
     };
   }
   renderVals() {
+    const ST0 = this.readStore();
     const st = this.state;
-    const S = { ready: ['s-ready', 'Ready for deployment'], damaged: ['s-damaged', 'Damaged'], retired: ['s-retired', 'Retired'] }[st.status];
+    const SN = '1108675309', NAME = 'Teltonika RUT956', ITEM = NAME + ' ' + SN;
+    // Sample record for this device; the shared store overlays it.
+    const BASE = { st: 'ready', loc: 'MRD Office', loc2: 'Shelf A2', fac: '', type: '', sim: '8996802026093001427', msisdn: '+968 7912 3045', ip: '10.64.12.37',
+      imei: '860548043912877', mac: '00:1E:42:3A:7C:19', devId: 'MRD-TEL-0417', fw: 'RUT9M_R_00.07.08.3', profile: 'Exergio BMS gateway v2.3', configuredBy: 'Chetan', batch: 'TEL-2026-004' };
+    const P = ST0.units[SN] || {};
+    const U = Object.assign({}, BASE, P);
+    const LBL = { unconf: 'Unconfigured', prep: 'In preparation', ready: 'Ready for deployment', reserved: 'Reserved', stock: 'In stock', deployed: 'Deployed', maint: 'Under maintenance', transit: 'In transit', returned: 'Returned', damaged: 'Damaged', retired: 'Retired' };
+    const stKey = LBL[U.st] ? U.st : 'ready';
+    const S = ['s-' + stKey, LBL[stKey]];
+    const locOf = u => (u.loc || '—') + (u.loc2 ? ' · ' + u.loc2 : '');
+    const locLabel = locOf(U);
+    const simTail = U.sim ? '…' + String(U.sim).slice(-4) : '—';
+    const ipAddr = U.ip || '—';
+    const deployed = stKey === 'deployed';
+    const dep = (ST0.deployments || []).find(d => (d.items || []).some(it => it.ident === SN)) || null;
+    const fac = U.fac || (dep && dep.fac) || (deployed ? U.loc : '');
+    const dtype = U.type || (dep && dep.type) || '';
+    const cfgEvent = ST0.events.find(e => e.action === 'Configured' && String(e.item || '').indexOf(SN) >= 0);
+    const cfgWhen = P.configuredBy && cfgEvent ? cfgEvent.when : '05 Oct 09:40';
     const answers = [
       ['What is it?', 'RUT956 4G router', ''],
-      ['Which batch?', 'TEL-2026-004', 'mono'],
-      ['Where now?', 'MRD Office · Shelf A2', ''],
-      ['Who configured?', 'Chetan · 05 Oct 09:40', ''],
-      ['Which SIM?', 'Omantel …1427', 'mono'],
-      ['What IP?', '10.64.12.37 static', 'mono'],
-      ['Which facility?', '— not deployed', 'muted'],
-      ['POC or Contract?', '— not deployed', 'muted']
+      ['Which batch?', U.batch, 'mono'],
+      ['Where now?', locLabel, ''],
+      ['Who configured?', U.configuredBy + ' · ' + cfgWhen, ''],
+      ['Which SIM?', U.sim ? 'Omantel ' + simTail : '— none', U.sim ? 'mono' : 'muted'],
+      ['What IP?', U.ip ? U.ip + ' static' : '— none', U.ip ? 'mono' : 'muted'],
+      ['Which facility?', fac || '— not deployed', fac ? '' : 'muted'],
+      ['POC or Contract?', dtype || '— not deployed', dtype ? '' : 'muted']
     ].map(([q, a, cls]) => ({ q, a, cls }));
     const CHECK = 'M5 12l5 5 9-10';
+    const atReady = ['ready', 'reserved', 'stock'].indexOf(stKey) >= 0;
+    const afterDeploy = ['returned', 'transit'].indexOf(stKey) >= 0;
+    const depEv = ST0.events.find(e => e.action === 'Deployed' && String(e.item || '').indexOf(SN) >= 0);
     const stages = [
       ['Received', '22 Sep · Nitin', 'done', CHECK],
       ['Configured', '05 Oct 09:40', 'done', CHECK],
-      ['SIM assigned', '05 Oct 09:38', 'done', CHECK],
-      ['IP assigned', '05 Oct 09:39', 'done', CHECK],
-      ['Ready', 'Current · 09:42', 'cur', CHECK],
-      ['Deployed', 'Next step', 'next', 'M12 5v14M5 12h14'],
-      ['Returned / transferred', 'Optional', 'opt', 'M4 12h12M12 8l4 4-4 4']
+      ['SIM assigned', U.sim ? '05 Oct 09:38' : 'Released', U.sim ? 'done' : 'opt', CHECK],
+      ['IP assigned', U.ip ? '05 Oct 09:39' : 'Released', U.ip ? 'done' : 'opt', CHECK],
+      ['Ready', atReady ? 'Current · ' + (P.st ? P.upd || '09:42' : '09:42') : (deployed || afterDeploy ? 'Done · 09:42' : LBL[stKey] + ' · ' + (P.upd || '')), atReady ? 'cur' : 'done', atReady || deployed || afterDeploy ? CHECK : 'M12 8v5M12 16h.01'],
+      ['Deployed', deployed ? (fac || 'Facility') + (dtype ? ' · ' + dtype : '') : afterDeploy ? 'Done' : atReady ? 'Next step' : 'Blocked', deployed ? 'cur' : afterDeploy ? 'done' : 'next', deployed || afterDeploy ? CHECK : 'M12 5v14M5 12h14'],
+      ['Returned / transferred', afterDeploy ? LBL[stKey] + ' · ' + (P.upd || '') : 'Optional', afterDeploy ? 'cur' : 'opt', 'M4 12h12M12 8l4 4-4 4']
     ].map(([label, sub, s, icon], i) => ({ label, sub, icon, cls: 'st ' + s + (i === 6 ? ' last' : '') }));
+    const doneN = stages.slice(0, 6).filter(x => /done|cur/.test(x.cls)).length;
+    const lifeNext = atReady ? 'Deploy to a facility' : deployed ? 'Monitor at facility' : afterDeploy ? 'Re-check and restock' : stKey === 'retired' ? 'None — retired' : 'Repair or re-configure';
+    const lifeHref = atReady ? 'CreateDeployment.dc.html' : deployed ? 'FacilityDetail.dc.html' : 'DevicePrep.dc.html';
     const identity = [
-      ['Serial number', '1108675309', true], ['IMEI', '860548043912877', true], ['MAC address', '00:1E:42:3A:7C:19', true],
-      ['Device ID', 'MRD-TEL-0417', true], ['Firmware', 'RUT9M_R_00.07.08.3', true], ['Config profile', 'Exergio BMS gateway v2.3', false]
+      ['Serial number', SN, true], ['IMEI', U.imei, true], ['MAC address', U.mac, true],
+      ['Device ID', U.devId, true], ['Firmware', U.fw, true], ['Config profile', U.profile, false]
     ].map(([k, v, m]) => ({ k, v, cls: m ? 'mono' : '', aria: 'Copy ' + k }));
     const I = {
       box: 'M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8',
@@ -395,11 +458,11 @@ class Component extends DCLogic {
       sim: 'M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z',
       net: 'M3 12h18M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18',
       check: 'M5 12l5 5 9-10',
-      truck: 'M3 6h11v10H3zM14 10h4l3 3v3h-7'
+      truck: 'M3 6h11v10H3zM14 10h4l3 3v3h-7',
+      warn: 'M12 3l9.5 17H2.5zM12 10v4'
     };
     const NI = ['NI', '#F6E3C4', 'Nitin'], CH = ['CH', '#CDEFE7', 'Chetan'];
-    const all = [
-      { cat: 'status', title: 'Deploy — pending', who: 'Not yet', ini: '··', avbg: '#EEF1F4', when: 'awaiting deployment', icon: I.truck, bg: '#fff', fg: '#2F6FE4', border: '2px dashed #9DB6EC', changes: [{ k: 'Facility', from: 'none', to: 'choose on deploy' }] },
+    const sample = [
       { cat: 'location', title: 'Moved to shelf', u: CH, when: '05 Oct 2026, 09:44', icon: I.move, changes: [{ k: 'Location', from: 'Prep bench', to: 'MRD Office · Shelf A2' }] },
       { cat: 'status', title: 'Marked ready for deployment', u: CH, when: '05 Oct 2026, 09:42', icon: I.check, tone: 'blue', changes: [{ k: 'Status', from: 'In preparation', to: 'Ready for deployment' }] },
       { cat: 'config', title: 'Config profile applied · connectivity test passed', u: CH, when: '05 Oct 2026, 09:40', icon: I.chip, changes: [{ k: 'Profile', from: 'none', to: 'Exergio BMS gateway v2.3' }, { k: 'Test', from: 'untested', to: 'passed · 38 ms' }] },
@@ -409,36 +472,105 @@ class Component extends DCLogic {
       { cat: 'location', title: 'Moved to Prep bench', u: CH, when: '05 Oct 2026, 09:05', icon: I.move, changes: [{ k: 'Location', from: 'Shelf A1', to: 'Prep bench' }, { k: 'Status', from: 'Unconfigured', to: 'In preparation' }] },
       { cat: 'status', title: 'Labelled & inspected', u: NI, when: '23 Sep 2026, 11:20', icon: I.tag, changes: [{ k: 'Label', from: 'none', to: 'MRD-TEL-0417' }, { k: 'Inspection', from: 'pending', to: 'passed' }] },
       { cat: 'location', title: 'Received from Al Noor Technologies LLC', u: NI, when: '22 Sep 2026, 10:15', icon: I.box, changes: [{ k: 'Batch', from: 'none', to: 'TEL-2026-004' }, { k: 'Location', from: 'Supplier', to: 'MRD Office · Shelf A1' }] }
-    ].map(e => Object.assign({ ini: e.u ? e.u[0] : e.ini, avbg: e.u ? e.u[1] : e.avbg, who: e.u ? e.u[2] : e.who, bg: e.bg || (e.tone === 'blue' ? '#E6EEFF' : '#F1F4F7'), fg: e.fg || (e.tone === 'blue' ? '#1D4FB8' : '#3B4758'), border: e.border || '0' }, e));
-    if (st.status !== 'ready') {
-      all.splice(0, 1, { cat: 'status', title: st.status === 'retired' ? 'Retired' : 'Marked damaged', ini: 'CH', avbg: '#CDEFE7', who: 'Chetan', when: 'Just now', icon: 'M12 3l9.5 17H2.5zM12 10v4', bg: '#FDEBEA', fg: '#A3201F', border: '0', changes: [{ k: 'Status', from: 'Ready for deployment', to: S[1] }] });
-    }
+    ];
+    // Store events for this device, newest first, ahead of the sample history.
+    const mine = ST0.events.filter(e => String(e.item || '').indexOf(SN) >= 0);
+    const AV = { CH: '#CDEFE7', NI: '#F6E3C4', AI: '#E6DDFB', RA: '#DCE6FB', SA: '#FBE0DC' };
+    const EV = {
+      'Status changed': ['status', I.check, 'Status'], 'Moved': ['location', I.move, 'Location'], 'Deployed': ['status', I.truck, 'Facility'],
+      'Configured': ['config', I.chip, 'Status'], 'SIM assigned': ['config', I.sim, 'SIM'], 'IP assigned': ['config', I.net, 'IP'],
+      'Record corrected': ['config', I.chip, 'Field'], 'Note added': ['note', I.tag, 'Note'], 'Received': ['location', I.box, 'Location'], 'Imported': ['location', I.box, 'Location']
+    };
+    const storeEvents = mine.map(e => {
+      const m = EV[e.action] || ['status', I.check, 'Change'];
+      const bad = /Damaged|Retired/.test(e.to || '');
+      const isNote = e.action === 'Note added';
+      return {
+        cat: m[0], title: isNote ? 'Note added' : e.action + (e.note ? ' · ' + e.note : ''), ini: e.ini || '··', avbg: AV[e.ini] || '#E3E7EC', who: e.who || '—', when: e.when || '',
+        icon: bad ? I.warn : m[1], bg: bad ? '#FDEBEA' : '#E6EEFF', fg: bad ? '#A3201F' : '#1D4FB8', border: '0',
+        changes: isNote ? [{ k: 'Note', from: '—', to: e.note || '' }] : (e.from || e.to) ? [{ k: m[2], from: e.from || 'none', to: e.to || '—' }] : []
+      };
+    });
+    const pending = atReady ? [{ cat: 'status', title: 'Deploy — pending', who: 'Not yet', ini: '··', avbg: '#EEF1F4', when: 'awaiting deployment', icon: I.truck, bg: '#fff', fg: '#2F6FE4', border: '2px dashed #9DB6EC', changes: [{ k: 'Facility', from: 'none', to: 'choose on deploy' }] }] : [];
+    const all = pending.concat(storeEvents, sample.map(e => Object.assign({ ini: e.u[0], avbg: e.u[1], who: e.u[2], bg: e.tone === 'blue' ? '#E6EEFF' : '#F1F4F7', fg: e.tone === 'blue' ? '#1D4FB8' : '#3B4758', border: '0' }, e)));
     const events = all.filter(e => st.filter === 'all' || e.cat === st.filter);
     const filters = [['all', 'All'], ['status', 'Status'], ['location', 'Location'], ['config', 'Config']].map(([id, label]) => ({
       label, cls: 'chip' + (st.filter === id ? ' on' : ''), pressed: st.filter === id ? 'true' : 'false', pick: () => this.setState({ filter: id })
     }));
     const trail = [
       ['Supplier', 'Al Noor Technologies LLC', 'Batches.dc.html', '', 'solid'],
-      ['Batch', 'TEL-2026-004', 'BatchDetail.dc.html', 'mono', 'solid'],
-      ['Device', '1108675309', 'DeviceDetail.dc.html', 'mono', 'solid'],
-      ['SIM', '…1427', 'SimInventory.dc.html', 'mono', 'solid'],
-      ['IP', '10.64.12.37', 'SimInventory.dc.html', 'mono', 'solid'],
-      ['Facility', 'Pending deployment', 'CreateDeployment.dc.html', 'muted', 'dashed']
+      ['Batch', U.batch, 'BatchDetail.dc.html', 'mono', 'solid'],
+      ['Device', SN, 'DeviceDetail.dc.html', 'mono', 'solid'],
+      ['SIM', simTail, 'SimInventory.dc.html', 'mono', U.sim ? 'solid' : 'dashed'],
+      ['IP', ipAddr, 'SimInventory.dc.html', 'mono', U.ip ? 'solid' : 'dashed'],
+      fac ? ['Facility', fac, 'FacilityDetail.dc.html', '', 'solid'] : ['Facility', 'Pending deployment', 'CreateDeployment.dc.html', 'muted', 'dashed']
     ].map(([k, v, href, cls, bs], i, arr) => ({ k, v, href, cls, bs, arrow: i < arr.length - 1 ? '→' : '' }));
+    // Notes: sample notes plus notes added to the shared store (oldest first).
+    const storeNotes = mine.filter(e => e.action === 'Note added').slice().reverse().map(e => ({ who: e.who || 'Chetan', when: e.when || '', text: e.note || '' }));
+    const notes = (this._init ? this._init.notes : st.notes).concat(storeNotes);
+    // Dialog: damaged / retire / status / move.
     const dlg = st.dialog;
+    const LOCS = [['MRD Office|Shelf A2', 'MRD Office · Shelf A2'], ['MRD Office|Shelf A1', 'MRD Office · Shelf A1'], ['MRD Office|Prep bench', 'MRD Office · Prep bench'], ['In transit|', 'In transit'], ['With technician|', 'With technician']]
+      .concat(['Qatar Foundation', 'Bank Muscat Head Office', 'Lulu Hypermarket', 'Al Khuwair Business Tower', 'Sohar Logistics Hub', 'Ruwi Medical Centre'].map(f => [f + '|', f]));
+    const dlgOpts = dlg === 'status' ? Object.keys(LBL).map(k => ({ v: k, l: LBL[k] })) : dlg === 'move' ? LOCS.map(([v, l]) => ({ v, l })) : [];
+    const dlgValue = st.dlgValue || (dlg === 'status' ? stKey : dlg === 'move' ? (U.loc || '') + '|' + (U.loc2 || '') : '');
+    const danger = dlg === 'retire' || dlg === 'damaged';
+    const confirm = () => {
+      const d = this.state.dialog, val = this.state.dlgValue || dlgValue, note = (this.state.dlgNote || '').trim();
+      this.writeStore(s => {
+        if (d === 'damaged' || d === 'retire') {
+          const to = d === 'retire' ? 'retired' : 'damaged';
+          const patch = { st: to };
+          if (to === 'retired') {
+            Object.assign(patch, { sim: '', ip: '', msisdn: '' });
+            if (U.sim) this.patchUnit(s, U.sim, { device: '', ip: '', assigned: false }, (s.units[U.sim] || {}).st || '');
+          }
+          this.patchUnit(s, SN, patch, stKey);
+          this.logEvent(s, { action: 'Status changed', item: ITEM, itemHref: 'DeviceDetail.dc.html', from: LBL[stKey], to: LBL[to], note: this.state.reason || '' });
+        } else if (d === 'status') {
+          if (val === stKey) return;
+          this.patchUnit(s, SN, { st: val }, stKey);
+          this.logEvent(s, { action: 'Status changed', item: ITEM, itemHref: 'DeviceDetail.dc.html', from: LBL[stKey], to: LBL[val], note });
+        } else if (d === 'move') {
+          const parts = val.split('|'), loc = parts[0], loc2 = parts[1] || '';
+          const to = loc + (loc2 ? ' · ' + loc2 : '');
+          if (to === locLabel) return;
+          this.patchUnit(s, SN, { loc, loc2 }, stKey);
+          this.logEvent(s, { action: 'Moved', item: ITEM, itemHref: 'DeviceDetail.dc.html', from: locLabel, to, note });
+        }
+      });
+      this.setState({ dialog: null, dlgValue: '', dlgNote: '' });
+    };
     return {
-      statusCls: S[0], statusLabel: S[1],
+      statusCls: S[0], statusLabel: S[1], locLabel, cfgBy: U.configuredBy, cfgWhen, deployFact: deployed ? (fac || 'Facility') + (dtype ? ' · ' + dtype : '') : 'Not yet deployed',
       copy: () => this.setState({ copied: true }), copyLabel: st.copied ? 'Copied' : 'Copy',
       menu: st.menu, menuAria: st.menu ? 'true' : 'false', toggleMenu: () => this.setState({ menu: !this.state.menu }),
       askDamaged: () => this.setState({ menu: false, dialog: 'damaged' }), askRetire: () => this.setState({ menu: false, dialog: 'retire' }),
-      dialog: !!dlg, cancel: () => this.setState({ dialog: null }),
-      dlgTitle: dlg === 'retire' ? 'Retire RUT956 1108675309?' : 'Mark 1108675309 as damaged?',
-      dlgBody: dlg === 'retire' ? 'The device leaves active inventory and can no longer be deployed. SIM …1427 and IP 10.64.12.37 are released back to their pools. The record and its history stay in the audit log.' : 'The device is blocked from deployment until repaired. SIM and IP stay assigned so you can test after repair.',
-      dlgCta: dlg === 'retire' ? 'Retire device' : 'Mark damaged',
-      confirm: () => this.setState({ status: this.state.dialog === 'retire' ? 'retired' : 'damaged', dialog: null }),
+      askStatus: () => this.setState({ menu: false, dialog: 'status', dlgValue: '', dlgNote: '' }), askMove: () => this.setState({ menu: false, dialog: 'move', dlgValue: '', dlgNote: '' }),
+      dialog: !!dlg, cancel: () => this.setState({ dialog: null, dlgValue: '', dlgNote: '' }),
+      dlgTitle: dlg === 'retire' ? 'Retire RUT956 ' + SN + '?' : dlg === 'status' ? 'Change status of ' + SN : dlg === 'move' ? 'Move ' + SN : 'Mark ' + SN + ' as damaged?',
+      dlgBody: dlg === 'retire' ? 'The device leaves active inventory and can no longer be deployed. SIM ' + simTail + ' and IP ' + ipAddr + ' are released back to their pools. The record and its history stay in the audit log.'
+        : dlg === 'status' ? 'Currently ' + LBL[stKey] + '. The change is recorded in the device history and audit log.'
+        : dlg === 'move' ? 'Currently at ' + locLabel + '. Status stays ' + LBL[stKey] + '.'
+        : 'The device is blocked from deployment until repaired. SIM and IP stay assigned so you can test after repair.',
+      dlgCta: dlg === 'retire' ? 'Retire device' : dlg === 'status' ? 'Change status' : dlg === 'move' ? 'Move device' : 'Mark damaged',
+      dlgDanger: danger, dlgPick: dlg === 'status' || dlg === 'move', dlgPickLabel: dlg === 'move' ? 'New location' : 'New status',
+      dlgOpts, dlgValue, onDlgValue: e => this.setState({ dlgValue: e.target.value }), dlgNote: st.dlgNote || '', onDlgNote: e => this.setState({ dlgNote: e.target.value }),
+      dlgReason: st.reason || 'End of life', onReason: e => this.setState({ reason: e.target.value }),
+      dlgIconBg: danger ? '#FDEBEA' : '#E6EEFF', dlgIconFg: danger ? '#A3201F' : '#1D4FB8', dlgCtaBg: danger ? '#B42318' : '#0B7A6B',
+      confirm,
       answers, stages, identity, events, eventCount: events.length, filters, trail,
-      notes: st.notes, draft: st.draft, onDraft: e => this.setState({ draft: e.target.value }),
-      addNote: () => { const t = this.state.draft.trim(); if (!t) return; this.setState({ draft: '', notes: this.state.notes.concat([{ who: 'Chetan', when: 'Just now', text: t }]) }); }
+      lifeDone: doneN + ' of 6 stages complete', lifeNext, lifeHref,
+      simIccid: U.sim || '— none', simMsisdn: U.msisdn || '—', ipAddr,
+      notDeployed: !deployed, isDeployed: deployed, depFac: fac || '—', depType: dtype || '—',
+      depTypeCls: dtype === 'POC' ? 't t-poc' : dtype === 'Contract' ? 't t-con' : dtype === 'Replacement' ? 't t-rep' : dtype ? 't t-add' : 'muted',
+      depRef: dep ? dep.ref : '—', depWhen: dep ? (dep.date || '') + (dep.by ? ' · ' + dep.by : '') : depEv ? depEv.when + ' · ' + (depEv.who || '') : (P.upd || '—'),
+      notes, draft: st.draft, onDraft: e => this.setState({ draft: e.target.value }),
+      addNote: () => {
+        const t = this.state.draft.trim(); if (!t) return;
+        this.writeStore(s => { this.logEvent(s, { action: 'Note added', item: ITEM, itemHref: 'DeviceDetail.dc.html', from: '', to: '', note: t }); });
+        this.setState({ draft: '' });
+      }
     };
   }
 }

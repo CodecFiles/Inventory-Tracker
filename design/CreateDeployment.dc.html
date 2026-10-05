@@ -387,8 +387,8 @@ I confirm the equipment has physically left the MRD office
 <sc-if value="{{done}}" hint-placeholder-val="{{ false }}">
 <section class="card" style="padding: 40px 28px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center">
 <span style="width: 56px; height: 56px; border-radius: 50%; background: #E1F4EC; color: #0A6648; display: flex; align-items: center; justify-content: center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>
-<h2 style="font-size: 22px; font-weight: 600; letter-spacing: -.01em">Deployment <span class="mono" style="font-size: 20px">DEP-0152</span> confirmed</h2>
-<p class="muted" style="font-size: 14px; max-width: 560px">{{trayCount}} moved to {{fac.name}} · {{area}} as <strong style="color: #0E1726">{{typeShort}}</strong>. Inventory and the facility record are updated, and {{auditN}} audit entries were recorded.</p>
+<h2 style="font-size: 22px; font-weight: 600; letter-spacing: -.01em">Deployment <span class="mono" style="font-size: 20px">{{doneRef}}</span> confirmed</h2>
+<p class="muted" style="font-size: 14px; max-width: 560px">{{doneCount}} moved to {{fac.name}} · {{area}} as <strong style="color: #0E1726">{{typeShort}}</strong>. Inventory and the facility record are updated, and {{auditN}} audit entries were recorded.</p>
 <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 6px">
 <a class="btn p" href="FacilityDetail.dc.html">View facility</a>
 <a class="btn" href="DeviceDetail.dc.html">View device</a>
@@ -414,8 +414,30 @@ class Component extends DCLogic {
   // Prototype persistence: this screen's data survives reloads and is shared by every screen in this browser.
   componentDidMount() {
     this._init = JSON.parse(JSON.stringify(this.state));
+    this._onStore = e => { if (!e || !e.key || e.key === 'mrd-proto:store') this.forceUpdate(); };
+    try { window.addEventListener('storage', this._onStore); } catch (e) {}
     try { const raw = window.localStorage.getItem('mrd-proto:v1:CreateDeployment'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
   }
+  // Shared prototype store: one record in browser storage that every screen reads and writes (key mrd-proto:store).
+  readStore() {
+    const empty = { v: 1, units: {}, added: [], deployments: [], events: [], catalog: {} };
+    try { const s = JSON.parse(window.localStorage.getItem('mrd-proto:store') || 'null'); return Object.assign(empty, s || {}); } catch (e) { return empty; }
+  }
+  writeStore(mutate) {
+    const s = this.readStore(); mutate(s); s.events = s.events.slice(0, 200);
+    try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {}
+    this.forceUpdate(); return s;
+  }
+  nowLabel() { const d = new Date(); return 'Today, ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  patchUnit(s, ident, patch, prevSt) {
+    const cur = s.units[ident] || {};
+    s.units[ident] = Object.assign({}, cur, patch, { st0: cur.st0 !== undefined ? cur.st0 : (prevSt || ''), upd: this.nowLabel() });
+  }
+  logEvent(s, ev) {
+    const d = new Date();
+    s.events.unshift(Object.assign({ id: 'e' + d.getTime() + Math.random().toString(36).slice(2, 6), at: d.getTime(), when: this.nowLabel(), who: 'Chetan', ini: 'CH', role: 'Admin', source: 'Web' }, ev));
+  }
+  componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
     try { const keep = Object.assign({}, this.state); ["confirm", "done", "toast"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:CreateDeployment', JSON.stringify(keep)); } catch (e) {}
   }
@@ -423,11 +445,34 @@ class Component extends DCLogic {
     super(props);
     this.state = this.initial();
   }
+  overlayUnit(x, p, f, ST_LAB) {
+    // Map a store patch (status keys, loc2, sim/ip) onto this screen's unit shape.
+    const o = Object.assign({}, x);
+    if (p.sim) o.sim = p.sim;
+    if (p.ip) o.ip = p.ip;
+    if (p.loc === 'MRD Office' && p.loc2) o.loc = p.loc2;
+    if (p.st) {
+      o.stKey = p.st; o.st = ST_LAB[p.st] || p.st; o.ok = false; o.prep = false; o.reason = '';
+      if (p.st === 'ready' || p.st === 'stock') o.ok = true;
+      else if (p.st === 'reserved') { if (!p.fac || p.fac === f.name) o.ok = true; else o.reason = 'Reserved for ' + p.fac; }
+      else if (p.st === 'unconf' || p.st === 'prep') o.prep = true;
+      else if (p.st === 'deployed') o.reason = 'Deployed at ' + (p.fac || p.loc || 'a facility') + (p.type ? ' · ' + p.type : '');
+      else o.reason = 'Not available · ' + (ST_LAB[p.st] || p.st) + (p.loc && p.loc !== 'MRD Office' ? ' · ' + p.loc : '');
+    }
+    return o;
+  }
   initial() {
     return { step: 1, fac: 'qf', type: 'poc', ptab: 'ser', prod: 'rut', sel: { '1108675309': true }, qty: { cat3: 6 }, techs: { RA: true, CH: true }, date: '2026-10-05', area: 'Plant room B1', spot: 'Rack 2, top shelf', notes: '', files: [{ name: 'QF-plantroom-B1-rack.jpg', size: '1.8 MB' }], confirm: false, done: false, toast: '' };
   }
   renderVals() {
     const st = this.state;
+    const ST0 = this.readStore();
+    const SU = ST0.units || {};
+    const addedBy = {};
+    (ST0.added || []).forEach(a => { if (a && a.ident) addedBy[a.ident] = a; });
+    const unitOf = id => Object.assign({}, addedBy[id] || {}, SU[id] || {});
+    const storeIds = Object.keys(Object.assign({}, addedBy, SU));
+    const REF = 'DEP-0' + (152 + (ST0.deployments || []).length);
     const FAC = [
       { id: 'qf', name: 'Qatar Foundation', loc: 'Education City, Doha', stage: 'POC', g: 'g-poc', def: 'poc', devices: 12, info: 'POC 01 Oct – 30 Nov 2026 · 12 devices', areas: ['Plant room B1', 'Library, Level 1', 'Level 2 classrooms', 'Roof, north'] },
       { id: 'bm', name: 'Bank Muscat Head Office', loc: 'Airport Heights, Muscat', stage: 'Active operations', g: 'g-ops', def: 'add', devices: 35, contract: true, info: 'Contract CN-EXG-BM-2026-01 · 35 devices', areas: ['Plant room B1', 'AHU-3 plant room', 'AHU-4 plant room', 'Floors 3–5 open office'] },
@@ -436,6 +481,11 @@ class Component extends DCLogic {
       { id: 'sohar', name: 'Sohar Logistics Hub', loc: 'Sohar', stage: 'Site inspection', g: 'g-insp', def: 'poc', devices: 0, info: 'No equipment on site yet', areas: ['Main warehouse', 'Plant room'] },
       { id: 'ruwi', name: 'Ruwi Medical Centre', loc: 'Ruwi, Muscat', stage: 'On hold', g: 'g-hold', def: 'poc', devices: 0, disabled: true, info: 'On hold · deployments paused', areas: ['Plant room'] }
     ];
+    // Units deployed through the store add to each facility's device count.
+    FAC.forEach(x => {
+      const n = storeIds.filter(id => { const u = unitOf(id); return u.st === 'deployed' && u.fac === x.name && u.cat !== 'sim'; }).length;
+      if (n) { x.devices += n; x.info = /\d+ devices/.test(x.info) ? x.info.replace(/\d+ devices/, x.devices + ' devices') : x.info + ' · ' + n + ' deployed'; }
+    });
     const f = FAC.find(x => x.id === st.fac) || FAC[0];
     const TY = [
       { id: 'poc', short: 'POC', label: 'Proof of concept', tcls: 't-poc', desc: 'Trial equipment. Stays POC until converted to contract or returned.' },
@@ -475,7 +525,47 @@ class Component extends DCLogic {
         { sn: '3AXD50000731204', loc: 'Shelf D1', st: 'Reserved', reason: 'Reserved for DEP-0151' },
         { sn: '3AXD50000731211', loc: 'Shelf D1', st: 'Reserved', reason: 'Reserved for DEP-0151' } ] }
     };
-    const SC = { 'Ready for deployment': 's-ready', 'In stock': 's-stock', 'Unconfigured': 's-unconf', 'Reserved': 's-reserved' };
+    const SC = { 'Ready for deployment': 's-ready', 'In stock': 's-stock', 'Unconfigured': 's-unconf', 'Reserved': 's-reserved', 'In preparation': 's-prep', 'Deployed': 's-deployed', 'In maintenance': 's-maint', 'In transit': 's-transit', 'Returned': 's-returned', 'Damaged': 's-damaged', 'Retired': 's-retired' };
+    const ST_LAB = { unconf: 'Unconfigured', prep: 'In preparation', ready: 'Ready for deployment', reserved: 'Reserved', stock: 'In stock', deployed: 'Deployed', maint: 'In maintenance', transit: 'In transit', returned: 'Returned', damaged: 'Damaged', retired: 'Retired' };
+    const LAB_ST = { 'Ready for deployment': 'ready', 'In stock': 'stock', 'Unconfigured': 'unconf', 'Reserved': 'reserved' };
+    const CAT_P = { tel: 'rut', co2: 'em', gw: 'ug', net: 'sw', vfd: 'vfd' };
+    const P_CAT = { rut: 'tel', em: 'co2', ug: 'gw', sw: 'net', vfd: 'vfd' };
+    const prodOf = (id, u) => {
+      if (u.cat && CAT_P[u.cat]) return CAT_P[u.cat];
+      const t = (u.name || '') + ' ' + (u.model || '');
+      if (/RUT|Teltonika/i.test(t) || /^1108675|^110744/.test(id)) return 'rut';
+      if (/EM500|CO2|CO₂/i.test(t) || /^6136D/.test(id)) return 'em';
+      if (/UG6|gateway/i.test(t) || /^6247B/.test(id)) return 'ug';
+      if (/switch|UniFi/i.test(t) || /^FCEC/.test(id)) return 'sw';
+      if (/VFD|ACS/i.test(t) || /^3AXD/.test(id)) return 'vfd';
+      return '';
+    };
+    // Overlay the shared store: status/location/SIM from patches, plus store units (received or prepared elsewhere).
+    const BASE_AV = { rut: { ok: 4, prep: 2, res: 0 }, em: { ok: 29, prep: 0, res: 2 }, ug: { ok: 0, prep: 2, res: 0 }, sw: { ok: 2, prep: 0, res: 0 }, vfd: { ok: 2, prep: 0, res: 2 } };
+    const sampleCnt = {};
+    Object.keys(PRODS).forEach(k => {
+      sampleCnt[k] = { ok: PRODS[k].units.filter(u => u.ok).length, prep: PRODS[k].units.filter(u => u.prep).length, res: PRODS[k].units.filter(u => !u.ok && !u.prep).length };
+      const seen = {};
+      PRODS[k].units = PRODS[k].units.map(u => {
+        seen[u.sn] = true;
+        const p = SU[u.sn];
+        const x = Object.assign({ stKey: LAB_ST[u.st] || 'stock' }, u);
+        if (!p) return x;
+        return this.overlayUnit(x, p, f, ST_LAB);
+      });
+      storeIds.forEach(id => {
+        if (seen[id]) return;
+        const u = unitOf(id);
+        if (u.cat === 'sim' || prodOf(id, u) !== k || !u.st) return;
+        const isAdded = !!addedBy[id];
+        if (!(u.st === 'ready' || u.st === 'reserved' || u.st === 'stock' || (isAdded && (u.st === 'unconf' || u.st === 'prep')))) return;
+        PRODS[k].units.push(this.overlayUnit({ sn: id, loc: u.loc2 || 'Shelf A2', st: 'In stock', stKey: 'stock', fromStore: true }, u, f, ST_LAB));
+      });
+      const c = { ok: PRODS[k].units.filter(u => u.ok).length, prep: PRODS[k].units.filter(u => u.prep).length, res: PRODS[k].units.filter(u => u.stKey === 'reserved').length };
+      const b = BASE_AV[k], sc = sampleCnt[k];
+      const ok = Math.max(0, b.ok + c.ok - sc.ok), pr = Math.max(0, b.prep + c.prep - sc.prep), rs = Math.max(0, b.res + c.res - (k === 'em' || k === 'vfd' ? sc.res : 0));
+      PRODS[k].avail = (k === 'rut' || k === 'ug') ? ok + ' ready · ' + pr + ' unconfigured' : (k === 'sw' ? ok + ' in stock' : ok + ' available · ' + rs + ' reserved');
+    });
     const QTY = [
       { id: 'cat3', name: 'Cat6 patch cable 3 m', avail: 600, unit: 'pcs', loc: 'Shelf C1' },
       { id: 'cat1', name: 'Cat6 patch cable 1 m', avail: 18, unit: 'pcs', loc: 'Shelf C1', low: true },
@@ -495,7 +585,7 @@ class Component extends DCLogic {
     const qtys = QTY.map(q => { const n = st.qty[q.id] || 0; return Object.assign({}, q, { n, low: !!q.low, dec: () => setQty(q.id, n - 1, q.avail), inc: () => setQty(q.id, n + 1, q.avail), set: (e) => setQty(q.id, parseInt(e && e.target ? e.target.value : '0', 10), q.avail) }); });
 
     const selSer = [];
-    Object.keys(PRODS).forEach(k => PRODS[k].units.forEach(u => { if (st.sel[u.sn] && u.ok) selSer.push(Object.assign({ pname: PRODS[k].name }, u)); }));
+    Object.keys(PRODS).forEach(k => PRODS[k].units.forEach(u => { if (st.sel[u.sn] && u.ok) selSer.push(Object.assign({ pname: PRODS[k].name, pkey: k }, u)); }));
     const selQty = QTY.filter(q => (st.qty[q.id] || 0) > 0);
     const tray = selSer.map(u => ({ name: u.pname, ref: u.sn, sub: u.sim ? 'SIM …' + u.sim.slice(-7) + ' · ' + u.ip : 'MRD Office · ' + u.loc, remove: () => setSel(u.sn, false) }))
       .concat(selQty.map(q => ({ name: q.name, ref: '× ' + st.qty[q.id], sub: (q.avail - st.qty[q.id]) + ' of ' + q.avail + ' left in office', remove: () => setQty(q.id, 0, q.avail) })));
@@ -512,7 +602,7 @@ class Component extends DCLogic {
     const team = U.filter(u => st.techs[u[0]]).map(([ini, name, role, bg]) => ({ ini, name, bg }));
 
     const place = f.name + ' · ' + st.area;
-    const depLabel = curT.short + ' · DEP-0152';
+    const depLabel = curT.short + ' · ' + REF;
     const panels = selSer.map(u => {
       const rows = [['Status', u.st, 'Deployed'], ['Location', 'MRD Office · ' + u.loc, place], ['Deployment', '—', depLabel]];
       if (u.sim) rows.push(['SIM', u.sim + ' · Assigned', 'Assigned, active · ' + u.ip]);
@@ -549,7 +639,7 @@ class Component extends DCLogic {
       onArea: (e) => this.setState({ area: e && e.target ? e.target.value : st.area }),
       onSpot: (e) => this.setState({ spot: e && e.target ? e.target.value : '' }),
       onNotes: (e) => this.setState({ notes: e && e.target ? e.target.value : '' }),
-      addFile: () => this.setState({ files: st.files.concat([{ name: 'delivery-note-DEP-0152.pdf', size: '214 KB' }]) }),
+      addFile: () => this.setState({ files: st.files.concat([{ name: 'delivery-note-' + REF + '.pdf', size: '214 KB' }]) }),
       confirm: st.confirm, toggleConfirm: () => this.setState({ confirm: !st.confirm }),
       noBack: step === 1, back: () => { if (step > 1) this.setState({ step: step - 1 }); },
       notLast: step < 4, isLast: step === 4, noNext: !canNext,
@@ -557,10 +647,30 @@ class Component extends DCLogic {
       next: () => { if (canNext && step < 4) this.setState({ step: step + 1 }); },
       hint: canNext && step < 4 ? 'Step ' + step + ' of 4' : hints[step],
       noConfirm: !st.confirm || units_n === 0,
-      doConfirm: () => { if (st.confirm && units_n > 0) this.setState({ done: true }); },
-      notDone: !st.done, done: st.done,
+      doConfirm: () => {
+        if (!st.confirm || units_n === 0) return;
+        const dLabel = p.length === 3 ? p[2] + ' ' + M[+p[1] - 1] + ' ' + p[0] : '05 Oct 2026';
+        let ref = REF;
+        this.writeStore(s => {
+          ref = 'DEP-0' + (152 + (s.deployments || []).length);
+          selSer.forEach(u => {
+            const patch = { st: 'deployed', loc: f.name, loc2: st.area, fac: f.name, type: curT.short };
+            if (!addedBy[u.sn]) { patch.name = u.pname; patch.cat = P_CAT[u.pkey]; }
+            if (u.sim) { patch.sim = u.sim; patch.ip = u.ip; }
+            this.patchUnit(s, u.sn, patch, u.stKey);
+            if (u.sim) this.patchUnit(s, u.sim, { cat: 'sim', device: u.sn, fac: f.name, loc: f.name }, '');
+            this.logEvent(s, { action: 'Deployed', item: u.sn, itemHref: 'DeviceDetail.dc.html', from: 'MRD Office · ' + u.loc, to: f.name + ' · ' + st.area, note: ref + ' · ' + curT.short + ' · ' + u.pname });
+          });
+          s.deployments = s.deployments || [];
+          s.deployments.push({ ref, date: dLabel, fac: f.name, type: curT.short, area: st.area,
+            items: selSer.map(u => ({ ident: u.sn, name: u.pname, sim: u.sim || '', ip: u.ip || '' })).concat(selQty.map(q => ({ ident: q.id, name: q.name, qty: st.qty[q.id], unit: q.unit }))),
+            team: team.map(t => t.name), by: 'Chetan', status: 'Completed' });
+        });
+        this.setState({ done: true, doneRef: ref, doneCount: trayCount, step: 1, sel: {}, qty: {}, confirm: false });
+      },
+      notDone: !st.done, done: st.done, doneRef: st.doneRef || REF, doneCount: st.doneCount || trayCount,
       reset: () => this.setState(this.initial()),
-      saveDraft: () => this.setState({ toast: 'Draft DEP-0152 saved · nothing moved yet' }),
+      saveDraft: () => this.setState({ toast: 'Draft ' + REF + ' saved · nothing moved yet' }),
       hasToast: !!st.toast, toast: st.toast, closeToast: () => this.setState({ toast: '' })
     };
   }

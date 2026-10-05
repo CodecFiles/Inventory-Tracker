@@ -291,14 +291,39 @@ class Component extends DCLogic {
   // Prototype persistence: this screen's data survives reloads and is shared by every screen in this browser.
   componentDidMount() {
     this._init = JSON.parse(JSON.stringify(this.state));
+    this._onStore = e => { if (!e || !e.key || e.key === 'mrd-proto:store') this.forceUpdate(); };
+    try { window.addEventListener('storage', this._onStore); } catch (e) {}
     try { const raw = window.localStorage.getItem('mrd-proto:v1:Search'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
   }
+  // Shared prototype store: one record in browser storage that every screen reads and writes (key mrd-proto:store).
+  readStore() {
+    const empty = { v: 1, units: {}, added: [], deployments: [], events: [], catalog: {} };
+    try { const s = JSON.parse(window.localStorage.getItem('mrd-proto:store') || 'null'); return Object.assign(empty, s || {}); } catch (e) { return empty; }
+  }
+  writeStore(mutate) {
+    const s = this.readStore(); mutate(s); s.events = s.events.slice(0, 200);
+    try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {}
+    this.forceUpdate(); return s;
+  }
+  nowLabel() { const d = new Date(); return 'Today, ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  patchUnit(s, ident, patch, prevSt) {
+    const cur = s.units[ident] || {};
+    s.units[ident] = Object.assign({}, cur, patch, { st0: cur.st0 !== undefined ? cur.st0 : (prevSt || ''), upd: this.nowLabel() });
+  }
+  logEvent(s, ev) {
+    const d = new Date();
+    s.events.unshift(Object.assign({ id: 'e' + d.getTime() + Math.random().toString(36).slice(2, 6), at: d.getTime(), when: this.nowLabel(), who: 'Chetan', ini: 'CH', role: 'Admin', source: 'Web' }, ev));
+  }
+  componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
     try { const keep = Object.assign({}, this.state); [].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:Search', JSON.stringify(keep)); } catch (e) {}
   }
   constructor(props) { super(props); this.state = { q: '8675309', tab: 'all' }; }
   renderVals() {
+    const ST0 = this.readStore();
     const st = this.state;
+    const LBL = { unconf: 'Unconfigured', prep: 'In preparation', ready: 'Ready for deployment', reserved: 'Reserved', stock: 'In stock', deployed: 'Deployed', maint: 'Under maintenance', transit: 'In transit', returned: 'Returned', damaged: 'Damaged', retired: 'Retired' };
+    const isSimUnit = (id, u) => !!u && (u.cat === 'sim' || u.device !== undefined || u.assigned !== undefined || /^89\d{16,18}$/.test(String(id)));
     const raw = st.q.trim();
     const m = raw.match(/^([a-z]+):\s*(.*)$/i);
     const scope = m ? m[1].toLowerCase() : '';
@@ -314,6 +339,24 @@ class Component extends DCLogic {
       { sn: '1107442103', product: 'Teltonika RUT956', status: 'Under maintenance', cls: 's-maint', imei: '860548043912949', mac: '00:1E:42:3A:7B:DF', devId: 'MRD-TEL-0399', ip: '10.64.12.22', iccid: '8996802026093001402', loc: 'MRD Office · Repair bench', batch: 'TEL-2026-003', canDeploy: false, fw: 'RUT9M_R_00.07.06' },
       { sn: '6247B1820051', product: 'Milesight UG65', status: 'Unconfigured', cls: 's-unconf', imei: '', mac: '24:E1:24:F5:1A:07', devId: 'GW EUI 24E124FFFEF51A07', ip: '', iccid: '', loc: 'MRD Office · Shelf B3', batch: 'GW-2026-001', canDeploy: false, fw: '60.0.0.42' }
     ];
+    // Overlay the shared store on the sample devices, then add store units this screen has no sample row for.
+    const locOf = u => u.fac && (u.st === 'deployed' || !u.loc || u.loc === u.fac) ? u.fac : (u.loc || 'MRD Office') + (u.loc2 ? ' · ' + u.loc2 : '');
+    const overlay = (d, u) => {
+      if (!u) return d;
+      const m = Object.assign({}, d);
+      if (u.st && LBL[u.st]) { m.status = LBL[u.st]; m.cls = 's-' + u.st; m.canDeploy = u.st === 'ready'; }
+      ['imei', 'mac', 'devId', 'fw', 'batch'].forEach(k => { if (u[k]) m[k] = u[k]; });
+      if (u.name) m.product = u.name.replace(/ gateway$/, '');
+      if (u.ip !== undefined) m.ip = u.ip || '';
+      if (u.sim !== undefined) m.iccid = u.sim || '';
+      if (u.loc || u.fac) m.loc = locOf(u);
+      return m;
+    };
+    const seen = {}; devs.forEach(d => { seen[d.sn] = true; });
+    const fromStore = u => ({ sn: u.ident, product: u.name || 'Device', status: LBL[u.st] || LBL.stock, cls: 's-' + (LBL[u.st] ? u.st : 'stock'), imei: u.imei || '', mac: u.mac || '', devId: u.devId || '', ip: u.ip || '', iccid: u.sim || '', loc: locOf(u), batch: u.batch || '—', canDeploy: u.st === 'ready', fw: u.fw || '—', fromStore: true });
+    (ST0.added || []).forEach(u => { if (u && u.ident && !seen[u.ident] && !isSimUnit(u.ident, u)) { seen[u.ident] = true; devs.push(fromStore(u)); } });
+    Object.keys(ST0.units).forEach(id => { const u = ST0.units[id]; if (!seen[id] && !isSimUnit(id, u)) { seen[id] = true; devs.push(fromStore(Object.assign({ ident: id }, u))); } });
+    for (let i = 0; i < devs.length; i++) devs[i] = overlay(devs[i], ST0.units[devs[i].sn]);
     const fieldDefs = [['sn', 'Serial number', 'serial'], ['imei', 'IMEI', 'imei'], ['mac', 'MAC address', 'mac'], ['devId', 'Device ID', 'id'], ['ip', 'IP address', 'ip'], ['iccid', 'SIM ICCID', 'iccid']];
     const devHits = [];
     if (t.length >= 2 && (!scope || ['serial', 'imei', 'mac', 'id', 'ip', 'iccid'].indexOf(scope) >= 0)) {
@@ -323,6 +366,10 @@ class Component extends DCLogic {
           const s = d[k] ? split(d[k]) : null;
           if (s) { devHits.push(Object.assign({}, d, s, { field: label, key: k })); break; }
         }
+        // Units created or changed on other screens also match on name and batch.
+        if (d.fromStore && !scope && !devHits.some(h => h.sn === d.sn)) {
+          for (const [k, label] of [['product', 'Name'], ['batch', 'Batch']]) { const s = d[k] ? split(d[k]) : null; if (s) { devHits.push(Object.assign({}, d, s, { field: label, key: k })); break; } }
+        }
       });
     }
     const simsData = [
@@ -330,6 +377,19 @@ class Component extends DCLogic {
       { iccid: '8996802026093001435', msisdn: '+968 7912 3051', sub: 'Omantel M2M · Qatar Foundation', status: 'Active', cls: 's-deployed' },
       { iccid: '8996802026093001436', msisdn: '+968 7912 3052', sub: 'Omantel M2M · SIM-2026-005', status: 'Available', cls: 's-stock' }
     ];
+    // SIMs: overlay store patches (assignment) and add SIMs created elsewhere.
+    const simSeen = {}; simsData.forEach(x => { simSeen[x.iccid] = true; });
+    (ST0.added || []).forEach(u => { if (u && u.ident && !simSeen[u.ident] && isSimUnit(u.ident, u)) { simSeen[u.ident] = true; simsData.push({ iccid: u.ident, msisdn: u.msisdn || '', sub: (u.name || 'SIM') + (u.batch ? ' · ' + u.batch : ''), status: 'Available', cls: 's-stock' }); } });
+    Object.keys(ST0.units).forEach(id => { const u = ST0.units[id]; if (!simSeen[id] && isSimUnit(id, u) && u.device) { simSeen[id] = true; simsData.push({ iccid: id, msisdn: u.msisdn || '', sub: '', status: 'Assigned', cls: 's-ready' }); } });
+    for (let i = 0; i < simsData.length; i++) {
+      const u = ST0.units[simsData[i].iccid]; if (!u) continue;
+      const x = Object.assign({}, simsData[i]);
+      if (u.msisdn) x.msisdn = u.msisdn;
+      if (u.device) { const dv = devs.find(d => d.sn === u.device); x.status = 'Assigned'; x.cls = 's-ready'; x.sub = 'Omantel M2M · assigned to ' + (dv ? dv.product.replace('Teltonika ', '') + ' ' : '') + u.device + (u.ip ? ' · ' + u.ip : ''); }
+      else if (u.assigned === false) { x.status = 'Available'; x.cls = 's-stock'; x.sub = 'Omantel M2M · released ' + (u.upd || ''); }
+      if (u.st && LBL[u.st] && u.st !== 'stock') { x.status = LBL[u.st]; x.cls = 's-' + u.st; }
+      simsData[i] = x;
+    }
     const sims = (t.length >= 2 && (!scope || scope === 'iccid' || scope === 'sim')) ? simsData.map(s => { const h = split(s.iccid) || split(s.msisdn); return h ? Object.assign({}, s, h) : null; }).filter(Boolean) : [];
     const batchData = [
       { id: 'TEL-2026-004', product: 'Teltonika RUT956', date: '22 Sep 2026', range: ['1108675300', '1108675319'], meta: 'Al Noor Technologies LLC · 20 units' },
@@ -360,7 +420,14 @@ class Component extends DCLogic {
       ['CH', '#CDEFE7', 'Chetan', 'deployed to Qatar Foundation', 'RUT956 · 1108675311', '01 Oct, 11:30'],
       ['NI', '#F6E3C4', 'Nitin', 'received batch', 'TEL-2026-004', '22 Sep, 10:15']
     ];
-    const acts = (t.length >= 2 && !scope) ? actData.map(([ini, bg, who, what, obj, when]) => { const h = split(obj); return h ? Object.assign({ ini, bg, who, what, when }, h) : null; }).filter(Boolean) : [];
+    // Activity recorded in the shared store (newest first) ahead of the sample entries.
+    const AV = { CH: '#CDEFE7', NI: '#F6E3C4', AI: '#E6DDFB', RA: '#DCE6FB', SA: '#FBE0DC' };
+    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Record corrected': 'corrected', 'Note added': 'added a note to' };
+    const storeActs = (t.length >= 2 && !scope) ? ST0.events.map(e => {
+      const obj = [e.item || '', e.to ? '→ ' + e.to : '', e.note || ''].filter(Boolean).join(' · ');
+      const h = split(obj); return h ? Object.assign({ ini: e.ini || '··', bg: AV[e.ini] || '#E3E7EC', who: e.who || '—', what: VERB[e.action] || String(e.action || '').toLowerCase(), when: e.when || '' }, h) : null;
+    }).filter(Boolean).slice(0, 20) : [];
+    const acts = storeActs.concat((t.length >= 2 && !scope) ? actData.map(([ini, bg, who, what, obj, when]) => { const h = split(obj); return h ? Object.assign({ ini, bg, who, what, when }, h) : null; }).filter(Boolean) : []);
     const best = devHits[0] || null;
     const others = devHits.slice(1);
     const total = devHits.length + sims.length + batches.length + facs.length + acts.length;

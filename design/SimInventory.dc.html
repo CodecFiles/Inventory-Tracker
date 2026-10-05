@@ -232,7 +232,7 @@ h1,h2,h3,h4,p{margin:0}
 </div>
 </sc-if>
 <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 12px 18px; border-top: 1px solid #EEF1F4; font-size: 12.5px" class="muted">
-<span>Showing {{shown}} of 12 sample rows · 80 SIMs in total</span>
+<span>Showing {{shown}} of {{sampleN}} sample rows · {{totalN}} SIMs in total</span>
 <span>Bank Muscat routers moved from Ooredoo to the Omantel pooled plan on 02 Oct</span>
 </div>
 </section>
@@ -289,18 +289,49 @@ class Component extends DCLogic {
   // Prototype persistence: this screen's data survives reloads and is shared by every screen in this browser.
   componentDidMount() {
     this._init = JSON.parse(JSON.stringify(this.state));
+    this._onStore = e => { if (!e || !e.key || e.key === 'mrd-proto:store') this.forceUpdate(); };
+    try { window.addEventListener('storage', this._onStore); } catch (e) {}
     try { const raw = window.localStorage.getItem('mrd-proto:v1:SimInventory'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
   }
+  // Shared prototype store: one record in browser storage that every screen reads and writes (key mrd-proto:store).
+  readStore() {
+    const empty = { v: 1, units: {}, added: [], deployments: [], events: [], catalog: {} };
+    try { const s = JSON.parse(window.localStorage.getItem('mrd-proto:store') || 'null'); return Object.assign(empty, s || {}); } catch (e) { return empty; }
+  }
+  writeStore(mutate) {
+    const s = this.readStore(); mutate(s); s.events = s.events.slice(0, 200);
+    try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {}
+    this.forceUpdate(); return s;
+  }
+  nowLabel() { const d = new Date(); return 'Today, ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  patchUnit(s, ident, patch, prevSt) {
+    const cur = s.units[ident] || {};
+    s.units[ident] = Object.assign({}, cur, patch, { st0: cur.st0 !== undefined ? cur.st0 : (prevSt || ''), upd: this.nowLabel() });
+  }
+  logEvent(s, ev) {
+    const d = new Date();
+    s.events.unshift(Object.assign({ id: 'e' + d.getTime() + Math.random().toString(36).slice(2, 6), at: d.getTime(), when: this.nowLabel(), who: 'Chetan', ini: 'CH', role: 'Admin', source: 'Web' }, ev));
+  }
+  componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
     try { const keep = Object.assign({}, this.state); ["modal", "toast"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:SimInventory', JSON.stringify(keep)); } catch (e) {}
   }
   constructor(props) {
     super(props);
-    this.state = { carrier: 'all', status: 'all', asg: 'all', q: '', modal: '', dev: '', ip: '', active: true, assigned: {}, toast: '' };
+    this.state = { carrier: 'all', status: 'all', asg: 'all', q: '', modal: '', dev: '', ip: '', active: true, toast: '' };
   }
   renderVals() {
     const S = this.state;
+    const ST0 = this.readStore();
+    const U = ST0.units || {};
+    const addedBy = {};
+    (ST0.added || []).forEach(a => { if (a && a.ident) addedBy[a.ident] = a; });
+    const unitOf = id => Object.assign({}, addedBy[id] || {}, U[id] || {});
+    const allIdents = Object.keys(Object.assign({}, addedBy, U));
+    const stLab = { unconf: 'Unconfigured', prep: 'In preparation', ready: 'Ready', reserved: 'Reserved', stock: 'In stock', deployed: 'Deployed', maint: 'In maintenance', transit: 'In transit', returned: 'Returned', damaged: 'Damaged', retired: 'Retired' };
+    const stCls = { unconf: 's-unconf', prep: 's-prep', ready: 's-ready', reserved: 's-reserved', stock: 's-stock', deployed: 's-deployed', maint: 's-maint', transit: 's-transit', returned: 's-returned', damaged: 's-damaged', retired: 's-retired' };
     const OM = 'M2M Pooled 5 GB', OO = 'M2M Fixed 2 GB';
+    const carrierOf = (iccid, hint) => (/ooredoo/i.test(hint || '') || String(iccid).indexOf('8996803') === 0) ? 'Ooredoo' : 'Omantel';
     const base = [
       ['8996802026093001427', '+968 7912 3045', 'Omantel', OM, 'active', '1108675309', 'Ready · Shelf A2', '10.64.12.37', 'MRD Office · Shelf A2', 'Inventory.dc.html', 'SIM-2026-005', '05 Oct, 09:38', 'Assigned by Chetan'],
       ['8996802026093001435', '+968 7912 3053', 'Omantel', OM, 'active', '1108675311', 'Deployed · POC', '10.64.12.41', 'Qatar Foundation', 'FacilityDetail.dc.html', 'SIM-2026-005', '01 Oct, 13:20', 'Deployed by Chetan'],
@@ -315,70 +346,132 @@ class Component extends DCLogic {
       ['8996803026052000103', '+968 7208 4400', 'Ooredoo', OO, 'deact', '', '', '—', 'Retired', 'AuditLog.dc.html', 'SIM-2026-002', '11 Jul, 09:15', 'Lost in transit · Aisha'],
       ['8996803026052000108', '+968 7208 4405', 'Ooredoo', OO, 'deact', '', '', '—', 'Retired', 'AuditLog.dc.html', 'SIM-2026-002', '03 Aug, 14:48', 'Damaged · Rahul']
     ];
-    const A = S.assigned;
+    // Baseline of every sample row (for KPI deltas against the 80-SIM totals).
+    const blOf = r => ({ st: r[4], hasDev: !!r[5], dep: r[6].indexOf('Deployed') === 0, carrier: r[2] });
+    base.forEach(r => { r.bl = blOf(r); });
+    const sampleN = base.length;
+    const known = {}; base.forEach(r => { known[r[0]] = true; });
+    // SIMs received through Receive stock (new SIMs: they add to the totals).
+    (ST0.added || []).forEach(a => {
+      if (!a || a.cat !== 'sim' || !a.ident || known[a.ident]) return;
+      const c = carrierOf(a.ident, (a.brand || '') + ' ' + (a.name || ''));
+      const row = [a.ident, a.msisdn || '—', c, c === 'Ooredoo' ? OO : OM, 'avail', '', '', '—', 'MRD Office · ' + (a.loc2 || 'Shelf C2'), 'Inventory.dc.html', a.batch || '—', a.recv || '05 Oct 2026', 'Received by Chetan'];
+      row.bl = null; base.push(row); known[a.ident] = true;
+    });
+    // SIMs referenced by the store (e.g. assigned in Device preparation) that are not sample rows:
+    // they are among the unlisted available SIMs, so the baseline is "available, unassigned".
+    const simRefs = {};
+    allIdents.forEach(id => { const u = unitOf(id); if (u.sim) simRefs[u.sim] = id; if (u.device && !known[id]) simRefs[id] = simRefs[id] || u.device; });
+    Object.keys(simRefs).forEach(iccid => {
+      if (known[iccid]) return;
+      const dv = unitOf(simRefs[iccid]), sp = unitOf(iccid);
+      const c = carrierOf(iccid, sp.brand || '');
+      const row = [iccid, sp.msisdn || dv.msisdn || '—', c, c === 'Ooredoo' ? OO : OM, 'avail', '', '', '—', 'MRD Office · Shelf C2', 'Inventory.dc.html', sp.batch || 'SIM-2026-005', '30 Sep, 11:02', 'Received by Nitin'];
+      row.bl = { st: 'avail', hasDev: false, dep: false, carrier: c }; base.push(row); known[iccid] = true;
+    });
+    // Assignment overlay: SIM's own patch (device/ip/active) and any device whose patch says sim = this ICCID.
+    const devBySim = {};
+    allIdents.forEach(id => { const u = unitOf(id); if (u.sim && u.cat !== 'sim') devBySim[u.sim] = id; });
+    const all = base.map(r => {
+      const p = unitOf(r[0]);
+      let st = r[4], dev = r[5], devSub = r[6], ip = r[7], fac = r[8], facHref = r[9], last = r[11], lastSub = r[12], msisdn = r[1];
+      let touched = false;
+      if (p.msisdn) msisdn = p.msisdn;
+      const sd = devBySim[r[0]];
+      if (Object.prototype.hasOwnProperty.call(p, 'device') || sd) {
+        const nd = p.device !== undefined && p.device !== null && p.device !== '' ? p.device : (sd || (p.device === '' ? '' : dev));
+        if (nd !== dev || p.ip || (sd && unitOf(sd).ip)) {
+          touched = true;
+          if (nd && nd !== dev) { devSub = 'In preparation · Prep bench'; fac = 'MRD Office · Prep bench'; facHref = 'Inventory.dc.html'; }
+          dev = nd;
+          ip = p.ip || (sd && unitOf(sd).ip) || (dev ? ip : '—');
+          if (!dev) { ip = '—'; st = 'avail'; devSub = ''; }
+          else st = p.active === false ? 'assigned' : 'active';
+        }
+      }
+      if (dev) {
+        const du = unitOf(dev);
+        if (du.st) { devSub = (stLab[du.st] || du.st) + ' · ' + (du.st === 'deployed' ? (du.type || du.fac || '') : (du.loc2 || du.loc || '')); touched = true; }
+        if (du.st === 'deployed' && du.fac) { fac = du.fac; facHref = 'FacilityDetail.dc.html'; }
+        else if (du.loc) { fac = du.loc + (du.loc2 ? ' · ' + du.loc2 : ''); facHref = du.loc === 'MRD Office' ? 'Inventory.dc.html' : 'FacilityDetail.dc.html'; }
+        if (du.upd && touched) { last = du.upd; lastSub = 'Updated by Chetan'; }
+      }
+      if (p.fac || p.loc) { fac = p.fac || (p.loc + (p.loc2 ? ' · ' + p.loc2 : '')); facHref = (p.fac || p.loc !== 'MRD Office') ? 'FacilityDetail.dc.html' : 'Inventory.dc.html'; touched = true; }
+      if (p.st === 'retired' || p.st === 'damaged') { st = 'deact'; touched = true; }
+      if (p.upd && touched) { last = p.upd; lastSub = 'Updated by Chetan'; }
+      const lab = { active: ['Active', 's-deployed'], avail: ['Available', 's-stock'], deact: ['Deactivated', 's-retired'], assigned: ['Assigned', 's-ready'] }[st];
+      return { iccid: r[0], msisdn, carrier: r[2], plan: r[3], st, status: lab[0], cls: lab[1], dev, devSub, ip, fac, facHref, batch: r[10], last, lastSub,
+        hasDev: !!dev, noDev: !dev, canAssign: st === 'avail', isDeact: st === 'deact', bl: r.bl, dep: !!dev && devSub.indexOf('Deployed') === 0,
+        assign: () => { const d0 = devList[0]; this.setState({ modal: r[0], dev: d0 ? d0.sn : '', ip: nextFree(r[2]), active: true }); } };
+    });
     const usedIps = {};
-    base.forEach(r => { if (r[7] !== '—') usedIps[r[7]] = r[5]; });
+    all.forEach(r => { if (r.ip && r.ip !== '—') usedIps[r.ip] = r.dev || r.iccid; });
     ['10.64.12.35','10.64.12.27','10.64.12.28','10.64.12.29','10.64.12.30','10.64.12.31','10.64.12.32'].forEach(ip => { usedIps[ip] = 'Bank Muscat router'; });
-    Object.keys(A).forEach(k => { usedIps[A[k].ip] = A[k].dev; });
+    allIdents.forEach(id => { const u = unitOf(id); if (u.ip && u.ip !== '—' && !usedIps[u.ip]) usedIps[u.ip] = u.cat === 'sim' ? (u.device || id) : id; });
     const nextFree = c => {
       const pre = c === 'Omantel' ? '10.64.12.' : '10.72.4.';
       for (let i = c === 'Omantel' ? 38 : 12; i < 255; i++) { if (!usedIps[pre + i]) return pre + i; }
       return '';
     };
-    const all = base.map(r => {
-      const a = A[r[0]];
-      let st = r[4], dev = r[5], devSub = r[6], ip = r[7], fac = r[8], facHref = r[9], last = r[11], lastSub = r[12];
-      if (a) { st = a.active ? 'active' : 'assigned'; dev = a.dev; devSub = 'In preparation · Prep bench'; ip = a.ip; fac = 'MRD Office · Prep bench'; facHref = 'Inventory.dc.html'; last = '05 Oct, now'; lastSub = 'Assigned by Chetan'; }
-      const lab = { active: ['Active', 's-deployed'], avail: ['Available', 's-stock'], deact: ['Deactivated', 's-retired'], assigned: ['Assigned', 's-ready'] }[st];
-      return { iccid: r[0], msisdn: r[1], carrier: r[2], plan: r[3], st, status: lab[0], cls: lab[1], dev, devSub, ip, fac, facHref, batch: r[10], last, lastSub,
-        hasDev: !!dev, noDev: !dev, canAssign: st === 'avail', isDeact: st === 'deact',
-        assign: () => { const d0 = this.freeDevs()[0]; this.setState({ modal: r[0], dev: d0 ? d0.sn : '', ip: nextFree(r[2]), active: true }); } };
-    });
+    const takenDev = {};
+    all.forEach(r => { if (r.dev) takenDev[r.dev] = true; });
+    const devList = this.freeDevs(unitOf, allIdents, takenDev, stLab, stCls);
+    // Counts: published totals (80 SIMs) adjusted by how merged rows differ from their sample baseline.
+    const cnt = (rows, f) => rows.filter(f).length;
+    const blRows = all.filter(r => r.bl).map(r => r.bl);
+    const d = f => cnt(all, f) - cnt(blRows, f);
+    const dC = (c, f) => d(r => r.carrier === c && f(r));
+    const newOm = cnt(all, r => !r.bl && r.carrier === 'Omantel'), newOo = cnt(all, r => !r.bl && r.carrier === 'Ooredoo');
+    const total = 80 + newOm + newOo, omTotal = 50 + newOm, ooTotal = 30 + newOo;
+    const nActive = 14 + d(r => r.st === 'active'), nAvail = 64 + d(r => r.st === 'avail'), nDeact = 2 + d(r => r.st === 'deact');
+    const nAsg = 14 + d(r => r.hasDev), nDep = 10 + d(r => r.dep);
     const q = S.q.trim().toLowerCase();
     const list = all.filter(r => (S.carrier === 'all' || r.carrier === S.carrier)
-      && (S.status === 'all' || r.st === S.status || (S.status === 'active' && r.st === 'active'))
+      && (S.status === 'all' || r.st === S.status)
       && (S.asg === 'all' || (S.asg === 'yes' ? r.hasDev : !r.hasDev))
       && (!q || (r.iccid + ' ' + r.msisdn + ' ' + r.ip + ' ' + r.dev + ' ' + r.fac).toLowerCase().indexOf(q) >= 0));
-    const n = Object.keys(A).length, nAct = Object.keys(A).filter(k => A[k].active).length;
-    const chips = (defs, key) => defs.map(([id, label, cnt]) => ({ label, n: cnt, cls: 'chip' + (S[key] === id ? ' on' : ''), pressed: S[key] === id ? 'true' : 'false', pick: () => { const o = {}; o[key] = id; this.setState(o); } }));
-    const fCarrier = chips([['all', 'All', 80], ['Omantel', 'Omantel', 50], ['Ooredoo', 'Ooredoo', 30]], 'carrier');
-    const fStatus = chips([['all', 'All', 80], ['active', 'Active', 14 + nAct], ['avail', 'Available', 64 - n], ['deact', 'Deactivated', 2]], 'status');
-    const fAsg = chips([['all', 'All', 80], ['yes', 'Assigned', 14 + n], ['no', 'Unassigned', 66 - n]], 'asg');
+    const chips = (defs, key) => defs.map(([id, label, cn]) => ({ label, n: cn, cls: 'chip' + (S[key] === id ? ' on' : ''), pressed: S[key] === id ? 'true' : 'false', pick: () => { const o = {}; o[key] = id; this.setState(o); } }));
+    const fCarrier = chips([['all', 'All', total], ['Omantel', 'Omantel', omTotal], ['Ooredoo', 'Ooredoo', ooTotal]], 'carrier');
+    const fStatus = chips([['all', 'All', total], ['active', 'Active', nActive], ['avail', 'Available', nAvail], ['deact', 'Deactivated', nDeact]], 'status');
+    const fAsg = chips([['all', 'All', total], ['yes', 'Assigned', nAsg], ['no', 'Unassigned', total - nAsg]], 'asg');
+    const ooDeact = 2 + dC('Ooredoo', r => r.st === 'deact');
     const kpis = [
-      { label: 'Total SIMs', value: '80', sub: 'Omantel 50 · Ooredoo 30', dot: '#3B4758', pick: () => this.setState({ carrier: 'all', status: 'all', asg: 'all' }) },
-      { label: 'Available', value: '' + (64 - n), sub: 'in office, not assigned', dot: '#1A8FAD', pick: () => this.setState({ status: 'avail', asg: 'all' }) },
-      { label: 'Assigned to devices', value: '' + (14 + n), sub: '10 deployed · ' + (4 + n) + ' in office routers', dot: '#2F6FE4', pick: () => this.setState({ asg: 'yes', status: 'all' }) },
-      { label: 'Active', value: '' + (14 + nAct), sub: 'billing on carrier plan', dot: '#12A374', pick: () => this.setState({ status: 'active', asg: 'all' }) },
-      { label: 'Deactivated', value: '2', sub: 'Ooredoo · lost 1, damaged 1', dot: '#8A96A8', pick: () => this.setState({ status: 'deact', asg: 'all' }) }
+      { label: 'Total SIMs', value: '' + total, sub: 'Omantel ' + omTotal + ' · Ooredoo ' + ooTotal, dot: '#3B4758', pick: () => this.setState({ carrier: 'all', status: 'all', asg: 'all' }) },
+      { label: 'Available', value: '' + nAvail, sub: 'in office, not assigned', dot: '#1A8FAD', pick: () => this.setState({ status: 'avail', asg: 'all' }) },
+      { label: 'Assigned to devices', value: '' + nAsg, sub: nDep + ' deployed · ' + (nAsg - nDep) + ' in office routers', dot: '#2F6FE4', pick: () => this.setState({ asg: 'yes', status: 'all' }) },
+      { label: 'Active', value: '' + nActive, sub: 'billing on carrier plan', dot: '#12A374', pick: () => this.setState({ status: 'active', asg: 'all' }) },
+      { label: 'Deactivated', value: '' + nDeact, sub: nDeact === 2 ? 'Ooredoo · lost 1, damaged 1' : 'Ooredoo ' + ooDeact + ' · Omantel ' + (nDeact - ooDeact), dot: '#8A96A8', pick: () => this.setState({ status: 'deact', asg: 'all' }) }
     ];
-    const omUsed = 13 + Object.keys(A).filter(k => A[k].carrier === 'Omantel').length;
-    const ooUsed = 1 + Object.keys(A).filter(k => A[k].carrier === 'Ooredoo').length;
-    const omAs = 13 + Object.keys(A).filter(k => A[k].carrier === 'Omantel').length;
-    const ooAs = 1 + Object.keys(A).filter(k => A[k].carrier === 'Ooredoo').length;
-    const mkC = (name, abbr, tint, ink, plan, apn, total, parts, pool, used, next, reserved) => ({
-      name, abbr, tint, ink, plan, apn, total, pool, used, next, reserved,
+    const ipsIn = pre => Object.keys(usedIps).filter(ip => ip.indexOf(pre) === 0).length;
+    const omUsed = ipsIn('10.64.12.');
+    const ooUsed = ipsIn('10.72.4.');
+    const omAs = 13 + dC('Omantel', r => r.hasDev), ooAs = 1 + dC('Ooredoo', r => r.hasDev);
+    const omDe = 0 + dC('Omantel', r => r.st === 'deact');
+    const mkC = (name, abbr, tint, ink, plan, apn, tot, parts, pool, used, next, reserved) => ({
+      name, abbr, tint, ink, plan, apn, total: tot, pool, used, next, reserved,
       pct: (used / 254 * 100).toFixed(1) + '%', usedW: (used / 254 * 100).toFixed(1) + '%',
-      parts: parts.filter(p => p[1] > 0).map(([label, v, c]) => ({ label, v, c, w: (v / total * 100).toFixed(1) + '%' })),
+      parts: parts.filter(p => p[1] > 0).map(([label, v, c]) => ({ label, v, c, w: (v / tot * 100).toFixed(1) + '%' })),
       aria: parts.map(p => p[0] + ' ' + p[1]).join(', ')
     });
     const carriers = [
-      mkC('Omantel Business', 'OM', '#E1F4EC', '#0A6648', OM, 'mrd.m2m', 50, [['Available', 50 - omAs, '#1A8FAD'], ['Assigned, active', omAs, '#12A374'], ['Deactivated', 0, '#8A96A8']], '10.64.12.0/24', omUsed, nextFree('Omantel'), '.1–.25 reserved for gateway & VPN'),
-      mkC('Ooredoo Business', 'OO', '#FDEBEA', '#A3201F', OO, 'ooredoo.m2m', 30, [['Available', 27 - (ooAs - 1), '#1A8FAD'], ['Assigned, active', ooAs, '#12A374'], ['Deactivated', 2, '#8A96A8']], '10.72.4.0/24', ooUsed, nextFree('Ooredoo'), '.1–.10 reserved for gateway & VPN')
+      mkC('Omantel Business', 'OM', '#E1F4EC', '#0A6648', OM, 'mrd.m2m', omTotal, [['Available', omTotal - omAs - omDe, '#1A8FAD'], ['Assigned, active', omAs, '#12A374'], ['Deactivated', omDe, '#8A96A8']], '10.64.12.0/24', omUsed, nextFree('Omantel'), '.1–.25 reserved for gateway & VPN'),
+      mkC('Ooredoo Business', 'OO', '#FDEBEA', '#A3201F', OO, 'ooredoo.m2m', ooTotal, [['Available', ooTotal - ooAs - ooDeact, '#1A8FAD'], ['Assigned, active', ooAs, '#12A374'], ['Deactivated', ooDeact, '#8A96A8']], '10.72.4.0/24', ooUsed, nextFree('Ooredoo'), '.1–.10 reserved for gateway & VPN')
     ];
     // modal
     const mrow = all.filter(r => r.iccid === S.modal)[0];
     const m = mrow ? { iccid: mrow.iccid, carrier: mrow.carrier, msisdn: mrow.msisdn } : { iccid: '', carrier: '', msisdn: '' };
-    const devOpts = this.freeDevs().map(d => ({ sn: d.sn, batch: d.batch, where: d.where, status: d.status, scls: d.scls, cls: 'opt' + (S.dev === d.sn ? ' on' : ''), checked: S.dev === d.sn ? 'true' : 'false', pick: () => this.setState({ dev: d.sn }) }));
+    const devOpts = devList.map(dv => ({ sn: dv.sn, batch: dv.batch, where: dv.where, status: dv.status, scls: dv.scls, cls: 'opt' + (S.dev === dv.sn ? ' on' : ''), checked: S.dev === dv.sn ? 'true' : 'false', pick: () => this.setState({ dev: dv.sn }) }));
     const pre = m.carrier === 'Ooredoo' ? '10.72.4.' : '10.64.12.';
     const ipT = S.ip.trim();
-    const last = parseInt(ipT.slice(pre.length), 10);
+    const lastN = parseInt(ipT.slice(pre.length), 10);
     let ipMsg = 'Next free address in ' + (m.carrier === 'Ooredoo' ? '10.72.4.0/24' : '10.64.12.0/24') + ' · suggested automatically';
     let ipOk = true;
-    if (ipT.indexOf(pre) !== 0 || isNaN(last) || last < 1 || last > 254 || ('' + last) !== ipT.slice(pre.length)) { ipOk = false; ipMsg = 'Must be inside the ' + m.carrier + ' pool ' + pre + '0/24'; }
+    if (ipT.indexOf(pre) !== 0 || isNaN(lastN) || lastN < 1 || lastN > 254 || ('' + lastN) !== ipT.slice(pre.length)) { ipOk = false; ipMsg = 'Must be inside the ' + m.carrier + ' pool ' + pre + '0/24'; }
     else if (usedIps[ipT]) { ipOk = false; ipMsg = 'Already assigned to ' + usedIps[ipT]; }
-    if (!S.dev) { ipOk = false; ipMsg = 'Choose a device first'; }
+    if (!S.dev || !devList.some(dv => dv.sn === S.dev)) { ipOk = false; ipMsg = 'Choose a device first'; }
     return {
       kpis, carriers, fCarrier, fStatus, fAsg, rows: list, shown: list.length, empty: list.length === 0,
+      sampleN: all.length, totalN: total,
       q: S.q, onQ: e => this.setState({ q: e.target.value }),
       reset: () => this.setState({ carrier: 'all', status: 'all', asg: 'all', q: '' }),
       modalOpen: !!S.modal, m, devOpts, ip: S.ip, onIp: e => this.setState({ ip: e.target.value }),
@@ -388,23 +481,50 @@ class Component extends DCLogic {
       toggleAct: () => this.setState({ active: !S.active }),
       closeModal: () => this.setState({ modal: '' }),
       confirmAssign: () => {
-        const na = Object.assign({}, A);
-        na[S.modal] = { dev: S.dev, ip: ipT, active: S.active, carrier: m.carrier };
-        this.setState({ assigned: na, modal: '', toast: 'SIM …' + S.modal.slice(-4) + ' assigned to ' + S.dev + ' · ' + ipT + (S.active ? ' · activation requested' : '') });
+        if (!ipOk) return;
+        const iccid = S.modal, sn = S.dev, act = S.active;
+        const dv = devList.filter(x => x.sn === sn)[0] || {};
+        const prevSt = dv.st || 'unconf';
+        this.writeStore(s => {
+          this.patchUnit(s, iccid, { cat: 'sim', device: sn, ip: ipT, active: act, msisdn: m.msisdn }, 'stock');
+          const dp = { sim: iccid, ip: ipT, msisdn: m.msisdn };
+          if (prevSt === 'unconf' || prevSt === 'prep') { dp.st = 'prep'; dp.loc = 'MRD Office'; dp.loc2 = 'Prep bench'; }
+          if (!addedBy[sn]) { dp.cat = 'tel'; dp.name = 'Teltonika RUT956'; dp.batch = dv.batch; }
+          this.patchUnit(s, sn, dp, prevSt);
+          this.logEvent(s, { action: 'SIM assigned', item: sn, itemHref: 'DeviceDetail.dc.html', from: 'No SIM', to: m.carrier + ' SIM …' + iccid.slice(-4), note: 'ICCID ' + iccid + ' · ' + m.msisdn + (act ? ' · activation requested' : ' · inactive') });
+          this.logEvent(s, { action: 'IP assigned', item: sn, itemHref: 'DeviceDetail.dc.html', from: '—', to: ipT, note: m.carrier + ' pool ' + pre + '0/24' });
+        });
+        this.setState({ modal: '', toast: 'SIM …' + iccid.slice(-4) + ' assigned to ' + sn + ' · ' + ipT + (act ? ' · activation requested' : '') });
       },
       hasToast: S.toast !== '', toast: S.toast, clearToast: () => this.setState({ toast: '' })
     };
   }
-  freeDevs() {
-    const A = this.state.assigned;
-    const taken = {};
-    Object.keys(A).forEach(k => { taken[A[k].dev] = true; });
-    return [
-      { sn: '1107442109', batch: 'TEL-2026-003', where: 'Prep bench · awaiting SIM since 28 Sep', status: 'In preparation', scls: 's-prep' },
-      { sn: '1108675300', batch: 'TEL-2026-004', where: 'MRD Office · Shelf A1', status: 'Unconfigured', scls: 's-unconf' },
-      { sn: '1108675301', batch: 'TEL-2026-004', where: 'MRD Office · Shelf A1', status: 'Unconfigured', scls: 's-unconf' },
-      { sn: '1108675303', batch: 'TEL-2026-004', where: 'MRD Office · Shelf A1', status: 'Unconfigured', scls: 's-unconf' }
-    ].filter(d => !taken[d.sn]);
+  freeDevs(unitOf, allIdents, taken, stLab, stCls) {
+    const okSt = { unconf: true, prep: true, ready: true };
+    const sample = [
+      { sn: '1107442109', batch: 'TEL-2026-003', where: 'Prep bench · awaiting SIM since 28 Sep', st: 'prep' },
+      { sn: '1108675300', batch: 'TEL-2026-004', where: 'MRD Office · Shelf A1', st: 'unconf' },
+      { sn: '1108675301', batch: 'TEL-2026-004', where: 'MRD Office · Shelf A1', st: 'unconf' },
+      { sn: '1108675303', batch: 'TEL-2026-004', where: 'MRD Office · Shelf A1', st: 'unconf' }
+    ];
+    const seen = {};
+    const out = [];
+    sample.forEach(dv => {
+      seen[dv.sn] = true;
+      const u = unitOf(dv.sn);
+      const st = u.st || dv.st;
+      if (taken[dv.sn] || u.sim || !okSt[st]) return;
+      const where = u.loc ? u.loc + (u.loc2 ? ' · ' + u.loc2 : '') : dv.where;
+      out.push({ sn: dv.sn, batch: u.batch || dv.batch, where, st, status: stLab[st], scls: stCls[st] });
+    });
+    allIdents.forEach(id => {
+      if (seen[id] || taken[id]) return;
+      const u = unitOf(id);
+      const isTel = u.cat === 'tel' || /RUT|Teltonika/i.test(u.name || '');
+      if (!isTel || u.sim || !okSt[u.st]) return;
+      out.push({ sn: id, batch: u.batch || '—', where: (u.loc || 'MRD Office') + (u.loc2 ? ' · ' + u.loc2 : ''), st: u.st, status: stLab[u.st], scls: stCls[u.st] });
+    });
+    return out;
   }
 }
 </script>

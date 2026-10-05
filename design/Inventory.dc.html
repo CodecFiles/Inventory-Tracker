@@ -409,8 +409,30 @@ class Component extends DCLogic {
   // Prototype persistence: this screen's data survives reloads and is shared by every screen in this browser.
   componentDidMount() {
     this._init = JSON.parse(JSON.stringify(this.state));
+    this._onStore = e => { if (!e || !e.key || e.key === 'mrd-proto:store') this.forceUpdate(); };
+    try { window.addEventListener('storage', this._onStore); } catch (e) {}
     try { const raw = window.localStorage.getItem('mrd-proto:v1:Inventory'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
   }
+  // Shared prototype store: one record in browser storage that every screen reads and writes (key mrd-proto:store).
+  readStore() {
+    const empty = { v: 1, units: {}, added: [], deployments: [], events: [], catalog: {} };
+    try { const s = JSON.parse(window.localStorage.getItem('mrd-proto:store') || 'null'); return Object.assign(empty, s || {}); } catch (e) { return empty; }
+  }
+  writeStore(mutate) {
+    const s = this.readStore(); mutate(s); s.events = s.events.slice(0, 200);
+    try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {}
+    this.forceUpdate(); return s;
+  }
+  nowLabel() { const d = new Date(); return 'Today, ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  patchUnit(s, ident, patch, prevSt) {
+    const cur = s.units[ident] || {};
+    s.units[ident] = Object.assign({}, cur, patch, { st0: cur.st0 !== undefined ? cur.st0 : (prevSt || ''), upd: this.nowLabel() });
+  }
+  logEvent(s, ev) {
+    const d = new Date();
+    s.events.unshift(Object.assign({ id: 'e' + d.getTime() + Math.random().toString(36).slice(2, 6), at: d.getTime(), when: this.nowLabel(), who: 'Chetan', ini: 'CH', role: 'Admin', source: 'Web' }, ev));
+  }
+  componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
     try { const keep = Object.assign({}, this.state); ["toast", "modal", "mErr", "open"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:Inventory', JSON.stringify(keep)); } catch (e) {}
   }
@@ -435,7 +457,25 @@ class Component extends DCLogic {
       { id: 'r13', name: 'Milesight UG65', cat: 'gw', catLabel: 'LoRaWAN Gateways', track: 'Serialised', brand: 'Milesight', model: 'UG65', batch: 'GW-2026-001', ident: '6247B1820045', identLabel: 'S/N', sub: 'EUI 24E124FFFEF51A07', st: 'deployed', loc: 'Roof plant', loc2: 'Mast 2', fac: 'Lulu Hypermarket', type: 'POC', recv: '15 Jul 2026', upd: '16 Sep 2026', href: 'DeviceDetail.dc.html' },
       { id: 'r14', name: 'Teltonika RUT956', cat: 'tel', catLabel: 'Teltonika Devices', track: 'Serialised', brand: 'Teltonika', model: 'RUT956', batch: 'TEL-2026-003', ident: '1107442103', identLabel: 'S/N', sub: 'LTE modem fault', st: 'maint', loc: 'MRD Office', loc2: 'Repair bench', fac: '', type: '', recv: '12 Aug 2026', upd: '14 Sep 2026', href: 'DeviceDetail.dc.html' }
     ];
-    const data = S.added.slice().reverse().concat(base).map(r => Object.assign({}, r, S.edits[r.id] || {}));
+    // Shared store: units added on any screen, plus patches keyed by serial / ICCID (or row id for bulk rows).
+    const ST0 = this.readStore();
+    const CATL = { tel: 'Teltonika Devices', co2: 'CO₂ Sensors', gw: 'LoRaWAN Gateways', sim: 'M2M SIM Cards', net: 'Network Equipment', vfd: 'VFDs', cab: 'Cables & Accessories', bms: 'Controllers & BMS' };
+    const keyOf = r => (r.identLabel === 'S/N' || r.identLabel === 'ICCID') ? r.ident : 'row:' + r.id;
+    const fromStore = ST0.added.slice().reverse().map(u => ({ id: 'add-' + u.ident, name: u.name || 'Unit', cat: u.cat || 'tel', catLabel: CATL[u.cat] || 'Other', track: u.cat === 'cab' ? 'Quantity' : 'Serialised', brand: u.brand || '', model: u.model || '', batch: u.batch || 'Unassigned', ident: u.ident, identLabel: u.cat === 'sim' ? 'ICCID' : 'S/N', sub: u.imei ? 'IMEI ' + u.imei : (u.note || ''), st: u.st || 'unconf', loc: u.loc || 'MRD Office', loc2: u.loc2 || '', fac: u.fac || '', type: u.type || '', recv: u.recv || '05 Oct 2026', upd: u.upd || 'Just now', href: 'DeviceDetail.dc.html', low: false }));
+    // Units changed on other screens that are not among this page's sample rows (e.g. prepared or deployed elsewhere).
+    const knownIdents = {}; fromStore.concat(base).forEach(r => { knownIdents[r.ident] = true; });
+    Object.keys(ST0.units).forEach(k => {
+      const p = ST0.units[k];
+      if (k.indexOf('row:') === 0 || knownIdents[k] || !p.name || p.cat === 'sim' || /^8996/.test(k)) return;
+      fromStore.push({ id: 'st-' + k, name: p.name, cat: p.cat || 'tel', catLabel: CATL[p.cat || 'tel'] || 'Other', track: 'Serialised', brand: p.brand || (p.name.split(' ')[0]), model: p.model || p.name.split(' ').slice(1).join(' '), batch: p.batch || '—', ident: k, identLabel: 'S/N', sub: p.ip ? 'IP ' + p.ip : (p.imei ? 'IMEI ' + p.imei : ''), st: p.st || 'unconf', loc: p.loc || 'MRD Office', loc2: p.loc2 || '', fac: p.fac || '', type: p.type || '', recv: '22 Sep 2026', upd: p.upd || 'Just now', href: 'DeviceDetail.dc.html', low: false });
+    });
+    const data = fromStore.concat(base).map(r => {
+      const p = ST0.units[keyOf(r)]; if (!p) return r;
+      const o = Object.assign({}, r);
+      ['st', 'loc', 'loc2', 'fac', 'type', 'upd'].forEach(k => { if (p[k] !== undefined) o[k] = p[k]; });
+      if (p.ip && r.identLabel === 'S/N') o.sub = 'IP ' + p.ip + (p.sim ? ' · SIM …' + String(p.sim).slice(-4) : '');
+      return o;
+    });
     const MON = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
     data.forEach(r => {
       const p = r.recv.split(' ');
@@ -530,9 +570,22 @@ class Component extends DCLogic {
 
     // Bulk actions and dialogs
     const selRows = data.filter(r => sel[r.id]);
-    const done = (edits, msg) => { const e = Object.assign({}, this.state.edits); Object.keys(edits).forEach(id => { e[id] = Object.assign({}, e[id] || {}, edits[id], { upd: 'Just now' }); }); this.setState({ edits: e, modal: '', mErr: '', sel: {}, toast: msg }); };
+    const done = (edits, msg, action) => {
+      this.writeStore(st => {
+        Object.keys(edits).forEach(id => {
+          const r = data.filter(x => x.id === id)[0]; if (!r) return;
+          const before = action === 'Moved' ? where(r) : labelOf(r.st);
+          if (r.id.indexOf('add-') === 0) { const u = st.added.filter(x => x.ident === r.ident)[0]; if (u) Object.assign(u, edits[id], { upd: this.nowLabel() }); }
+          else this.patchUnit(st, keyOf(r), edits[id], r.st);
+          const after = action === 'Moved' ? where(Object.assign({}, r, edits[id])) : labelOf(edits[id].st);
+          this.logEvent(st, { action, item: r.name + ' ' + r.ident, itemHref: r.href, from: before, to: after, note: action === 'Status changed' ? this.state.stReason.trim() : '' });
+        });
+      });
+      this.setState({ modal: '', mErr: '', sel: {}, toast: msg });
+    };
     // Move location
     const SUBS = ['A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3', 'B4', 'C1', 'C2', 'C3', 'C4'].map(x => 'MRD Office · Shelf ' + x).concat(['MRD Office · Prep bench', 'MRD Office · Repair bench', 'In transit · Courier', 'With technician · Rahul', 'With technician · Saif']);
+    (ST0.catalog.locations || []).forEach(l => { const v = l.kind === 'Logical location' ? l.name : 'MRD Office · ' + l.name; if (SUBS.indexOf(v) < 0) SUBS.push(v); });
     const destOpts = SUBS.map(v => ({ v }));
     const where = r => (r.loc === 'MRD Office' ? r.loc2.split(' · ')[0] : r.loc + (r.loc2 ? ' · ' + r.loc2 : ''));
     const shortDest = S.mvDest.replace('MRD Office · ', '');
@@ -594,13 +647,17 @@ class Component extends DCLogic {
     const doImport = () => {
       const add = impGood.map(r => { const pr = protos[r.product]; const cfg = ['tel', 'gw', 'co2'].indexOf(pr.cat) > -1;
         return Object.assign({}, pr, { id: 'imp-' + r.serial, ident: r.serial, identLabel: 'S/N', sub: r.imei ? 'IMEI ' + r.imei : 'Imported from CSV', batch: r.batch === '—' ? 'Unassigned' : r.batch, st: cfg ? 'unconf' : 'stock', loc: 'MRD Office', loc2: r.loc || 'Shelf A3', fac: '', type: '', recv: '05 Oct 2026', upd: 'Just now', low: false }); });
-      this.setState({ added: this.state.added.concat(add), modal: '', mErr: '', impText: null, toast: 'Imported ' + add.length + (add.length === 1 ? ' unit' : ' units') + ' into MRD Office' + (impParsed.length - add.length ? ' · ' + (impParsed.length - add.length) + ' rows skipped' : '') + '. Logged to the audit log.' });
+      this.writeStore(st => {
+        add.forEach(a => { st.added.push({ ident: a.ident, name: a.name, cat: a.cat, brand: a.brand, model: a.model, batch: a.batch, imei: a.sub.indexOf('IMEI ') === 0 ? a.sub.slice(5) : '', st: a.st, loc: a.loc, loc2: a.loc2, recv: a.recv, upd: this.nowLabel() }); });
+        this.logEvent(st, { action: 'Imported', item: add.length + (add.length === 1 ? ' unit' : ' units') + ' from CSV', itemHref: 'Inventory.dc.html', from: '—', to: 'MRD Office', note: add.map(a => a.ident).join(', ') });
+      });
+      this.setState({ modal: '', mErr: '', impText: null, toast: 'Imported ' + add.length + (add.length === 1 ? ' unit' : ' units') + ' into MRD Office' + (impParsed.length - add.length ? ' · ' + (impParsed.length - add.length) + ' rows skipped' : '') + '. Logged to the audit log.' });
     };
     const MD = {
       move: { title: 'Move ' + selRows.length + (selRows.length === 1 ? ' item' : ' items'), desc: 'Changes where items are stored. Each move is recorded with its previous location.', cta: 'Move ' + mvOk.length + (mvOk.length === 1 ? ' item' : ' items'), can: mvOk.length > 0,
-        submit: () => { const parts = S.mvDest.split(' · '); const ed = {}; mvOk.forEach(r => { ed[r.id] = parts[0] === 'MRD Office' ? { loc: 'MRD Office', loc2: parts[1] } : { loc: parts[0], loc2: parts[1] || '' }; }); done(ed, 'Moved ' + mvOk.length + (mvOk.length === 1 ? ' item' : ' items') + ' to ' + shortDest + '. Previous locations kept in the audit log.'); } },
+        submit: () => { const parts = S.mvDest.split(' · '); const ed = {}; mvOk.forEach(r => { ed[r.id] = parts[0] === 'MRD Office' ? { loc: 'MRD Office', loc2: parts[1] } : { loc: parts[0], loc2: parts[1] || '' }; }); done(ed, 'Moved ' + mvOk.length + (mvOk.length === 1 ? ' item' : ' items') + ' to ' + shortDest + '. Previous locations kept in the audit log.', 'Moved'); } },
       status: { title: 'Change status of ' + selRows.length + (selRows.length === 1 ? ' item' : ' items'), desc: 'Only valid changes are applied. Deployment and preparation have their own workflows.', cta: 'Change ' + stOk.length + (stOk.length === 1 ? ' item' : ' items'), can: stOk.length > 0,
-        submit: () => { if (!S.stReason.trim()) { this.setState({ mErr: 'Add a reason so the change is traceable.' }); return; } const ed = {}; stOk.forEach(r => { ed[r.id] = { st: S.stNew }; }); done(ed, stOk.length + (stOk.length === 1 ? ' item' : ' items') + ' set to ' + labelOf(S.stNew) + '. Reason recorded in the audit log.'); } },
+        submit: () => { if (!S.stReason.trim()) { this.setState({ mErr: 'Add a reason so the change is traceable.' }); return; } const ed = {}; stOk.forEach(r => { ed[r.id] = { st: S.stNew }; }); done(ed, stOk.length + (stOk.length === 1 ? ' item' : ' items') + ' set to ' + labelOf(S.stNew) + '. Reason recorded in the audit log.', 'Status changed'); } },
       export: { title: 'Export inventory', desc: 'A CSV of the rows and columns you choose.', cta: 'Download CSV', can: exRowsData.length > 0, submit: doExport },
       import: { title: 'Import from CSV', desc: 'Adds serialised units in bulk. To receive a new shipment with supplier and PO details, use Receive stock.', cta: 'Import ' + impGood.length + (impGood.length === 1 ? ' row' : ' rows'), can: impGood.length > 0, submit: doImport }
     };

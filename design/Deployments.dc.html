@@ -164,27 +164,27 @@ h1,h2,h3,h4,p{margin:0}
 <section aria-label="Deployment summary" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px">
 <a class="card kpi" href="Inventory.dc.html">
 <span style="display: flex; align-items: center; justify-content: space-between"><span class="muted" style="font-size: 13px">Units deployed</span><span style="width: 8px; height: 8px; border-radius: 50%; background: #12A374"></span></span>
-<span class="n">538</span>
-<span class="muted" style="font-size: 12.5px">55 serialised · 483 by quantity · 3 facilities</span>
+<span class="n">{{kUnits}}</span>
+<span class="muted" style="font-size: 12.5px">{{kSer}} serialised · {{kQty}} by quantity · {{kFacs}} facilities</span>
 </a>
 <div class="card kpi">
 <span style="display: flex; align-items: center; justify-content: space-between"><span class="muted" style="font-size: 13px">POC vs contract</span><a href="PocManagement.dc.html" style="font-size: 12px; font-weight: 500">Details</a></span>
-<span style="display: flex; align-items: baseline; gap: 10px"><span class="n">41</span><span class="muted" style="font-size: 13px">POC</span><span style="color: #C9D0D9">/</span><span class="n">497</span><span class="muted" style="font-size: 13px">contract</span></span>
-<div class="seg" role="img" aria-label="41 POC units, 497 contract units" style="margin-top: 2px">
-<span style="width: 7.6%; background: #7A5AF8" title="POC · 41 units (7.6%)"></span>
-<span style="width: 92.4%; background: #0E8A78" title="Contract · 497 units (92.4%)"></span>
+<span style="display: flex; align-items: baseline; gap: 10px"><span class="n">{{kPoc}}</span><span class="muted" style="font-size: 13px">POC</span><span style="color: #C9D0D9">/</span><span class="n">{{kCon}}</span><span class="muted" style="font-size: 13px">contract</span></span>
+<div class="seg" role="img" aria-label="{{kPoc}} POC units, {{kCon}} contract units" style="margin-top: 2px">
+<span style="width: {{kPocPct}}; background: #7A5AF8" title="POC · {{kPoc}} units ({{kPocPct}})"></span>
+<span style="width: {{kConPct}}; background: #0E8A78" title="Contract · {{kCon}} units ({{kConPct}})"></span>
 </div>
-<span style="display: flex; gap: 14px; font-size: 12px; color: #3B4758"><span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 2px; background: #7A5AF8"></span>POC 7.6%</span><span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 2px; background: #0E8A78"></span>Contract 92.4%</span></span>
+<span style="display: flex; gap: 14px; font-size: 12px; color: #3B4758"><span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 2px; background: #7A5AF8"></span>POC {{kPocPct}}</span><span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 2px; background: #0E8A78"></span>Contract {{kConPct}}</span></span>
 </div>
 <button class="card kpi" onClick="{{goHistory}}" style="text-align: left; font: inherit; cursor: pointer">
 <span style="display: flex; align-items: center; justify-content: space-between; width: 100%"><span class="muted" style="font-size: 13px">Deployments this month</span><span style="width: 8px; height: 8px; border-radius: 50%; background: #3B4758"></span></span>
-<span class="n">4</span>
-<span class="muted" style="font-size: 12.5px">18 units · 2 POC · 1 contract · 1 additional</span>
+<span class="n">{{kMonth}}</span>
+<span class="muted" style="font-size: 12.5px">{{kMonthSub}}</span>
 </button>
 <button class="card kpi" onClick="{{goScheduled}}" style="text-align: left; font: inherit; cursor: pointer">
 <span style="display: flex; align-items: center; justify-content: space-between; width: 100%"><span class="muted" style="font-size: 13px">Scheduled</span><span style="width: 8px; height: 8px; border-radius: 50%; background: #5468E0"></span></span>
-<span class="n">3</span>
-<span class="muted" style="font-size: 12.5px">Next: Thu 08 Oct · Qatar Foundation</span>
+<span class="n">{{schedN}}</span>
+<span class="muted" style="font-size: 12.5px">{{schedNext}}</span>
 </button>
 </section>
 
@@ -245,6 +245,8 @@ h1,h2,h3,h4,p{margin:0}
 <option value="Bank Muscat Head Office">Bank Muscat Head Office</option>
 <option value="Lulu Hypermarket">Lulu Hypermarket</option>
 <option value="Al Khuwair Business Tower">Al Khuwair Business Tower</option>
+<option value="Sohar Logistics Hub">Sohar Logistics Hub</option>
+<option value="Ruwi Medical Centre">Ruwi Medical Centre</option>
 </select>
 </div>
 </div>
@@ -312,7 +314,7 @@ h1,h2,h3,h4,p{margin:0}
 <!-- Charts -->
 <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px" aria-label="Deployment charts">
 <div class="card" style="padding: 18px; display: flex; flex-direction: column; gap: 14px">
-<div><h2 style="font-size: 15px; font-weight: 600">Devices by facility</h2><p class="muted" style="font-size: 12.5px">55 serialised devices at 3 facilities</p></div>
+<div><h2 style="font-size: 15px; font-weight: 600">Devices by facility</h2><p class="muted" style="font-size: 12.5px">{{kSer}} serialised devices at {{kFacs}} facilities</p></div>
 <div style="display: flex; flex-direction: column; gap: 12px">
 <sc-for list="{{byFac}}" as="c" hint-placeholder-count="3">
 <div style="display: grid; grid-template-columns: 120px 1fr 30px; align-items: center; gap: 10px; font-size: 12.5px" title="{{c.label}}: {{c.v}} devices · {{c.deps}} deployments">
@@ -326,8 +328,8 @@ h1,h2,h3,h4,p{margin:0}
 <div class="card" style="padding: 18px; display: flex; flex-direction: column; gap: 14px">
 <div><h2 style="font-size: 15px; font-weight: 600">POC vs contract equipment</h2><p class="muted" style="font-size: 12.5px">Serialised devices at facilities, by category</p></div>
 <div style="display: flex; gap: 16px; font-size: 12px; color: #3B4758">
-<span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 2px; background: #7A5AF8"></span>POC · 20</span>
-<span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 2px; background: #0E8A78"></span>Contract · 35</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 2px; background: #7A5AF8"></span>POC · {{chPoc}}</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 2px; background: #0E8A78"></span>Contract · {{chCon}}</span>
 </div>
 <div style="display: flex; flex-direction: column; gap: 9px">
 <sc-for list="{{pocCon}}" as="c" hint-placeholder-count="6">
@@ -339,7 +341,7 @@ h1,h2,h3,h4,p{margin:0}
 </div>
 </div>
 <div class="card" style="padding: 18px; display: flex; flex-direction: column; gap: 14px">
-<div><h2 style="font-size: 15px; font-weight: 600">Deployments per month</h2><p class="muted" style="font-size: 12.5px">Completed records · Apr–Oct 2026 · 3 more scheduled in Oct</p></div>
+<div><h2 style="font-size: 15px; font-weight: 600">Deployments per month</h2><p class="muted" style="font-size: 12.5px">Completed records · Apr–Oct 2026 · {{schedN}} more scheduled in Oct</p></div>
 <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; align-items: end; height: 110px; border-bottom: 1px solid #E3E7EC">
 <sc-for list="{{months}}" as="m" hint-placeholder-count="7"><span title="{{m.label}}: {{m.v}} deployments" style="display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; height: 100%"><span style="font-size: 11.5px; font-weight: 600; color: #3B4758">{{m.v}}</span><span style="display: block; width: 100%; height: {{m.h}}; background: #0E8A78; border-radius: 4px 4px 0 0"></span></span></sc-for>
 </div>
@@ -365,8 +367,30 @@ class Component extends DCLogic {
   // Prototype persistence: this screen's data survives reloads and is shared by every screen in this browser.
   componentDidMount() {
     this._init = JSON.parse(JSON.stringify(this.state));
+    this._onStore = e => { if (!e || !e.key || e.key === 'mrd-proto:store') this.forceUpdate(); };
+    try { window.addEventListener('storage', this._onStore); } catch (e) {}
     try { const raw = window.localStorage.getItem('mrd-proto:v1:Deployments'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
   }
+  // Shared prototype store: one record in browser storage that every screen reads and writes (key mrd-proto:store).
+  readStore() {
+    const empty = { v: 1, units: {}, added: [], deployments: [], events: [], catalog: {} };
+    try { const s = JSON.parse(window.localStorage.getItem('mrd-proto:store') || 'null'); return Object.assign(empty, s || {}); } catch (e) { return empty; }
+  }
+  writeStore(mutate) {
+    const s = this.readStore(); mutate(s); s.events = s.events.slice(0, 200);
+    try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {}
+    this.forceUpdate(); return s;
+  }
+  nowLabel() { const d = new Date(); return 'Today, ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  patchUnit(s, ident, patch, prevSt) {
+    const cur = s.units[ident] || {};
+    s.units[ident] = Object.assign({}, cur, patch, { st0: cur.st0 !== undefined ? cur.st0 : (prevSt || ''), upd: this.nowLabel() });
+  }
+  logEvent(s, ev) {
+    const d = new Date();
+    s.events.unshift(Object.assign({ id: 'e' + d.getTime() + Math.random().toString(36).slice(2, 6), at: d.getTime(), when: this.nowLabel(), who: 'Chetan', ini: 'CH', role: 'Admin', source: 'Web' }, ev));
+  }
+  componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
     try { const keep = Object.assign({}, this.state); ["toast"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:Deployments', JSON.stringify(keep)); } catch (e) {}
   }
@@ -419,6 +443,42 @@ class Component extends DCLogic {
         L('Milesight EM500-CO2 × 6', '6136C4289501 +5', '—', 'In stock', 'Deployed', 'MRD Office · Shelf B2', 'Floors 1–2'),
         L('Milesight UG65 × 2', '6247B1810007 +1', '—', 'Ready for deployment', 'Deployed', 'MRD Office · Shelf A3', 'Roof, east & west') ] }
     ];
+    // Shared store: deployments confirmed in New deployment, newest first, in the same row shape.
+    const ST0 = this.readStore();
+    const evs = ST0.events || [];
+    const TK = { POC: 'poc', Contract: 'con', Replacement: 'rep', Additional: 'add' };
+    const INI = { Chetan: 'CH', Nitin: 'NI', Aisha: 'AI', Rahul: 'RA', Saif: 'SA' };
+    const WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], MO = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const STL = { unconf: 'Unconfigured', prep: 'In preparation', ready: 'Ready for deployment', reserved: 'Reserved', stock: 'In stock' };
+    const storeDeps = (ST0.deployments || []).slice().reverse().filter(d => d && d.ref && !all.some(x => x.ref === d.ref)).map(d => {
+      const parts = String(d.date || '').split(' ');
+      const dt = new Date(+parts[2], MO.indexOf(parts[1]), +parts[0]);
+      const items = d.items || [];
+      const ser = items.filter(i => !i.qty), qtyI = items.filter(i => i.qty);
+      const groups = {};
+      ser.forEach(i => { groups[i.name] = (groups[i.name] || 0) + 1; });
+      const summary = Object.keys(groups).map(n => groups[n] === 1 ? n + ' · ' + (ser.find(i => i.name === n).ident) : n + ' × ' + groups[n])
+        .concat(qtyI.map(i => i.name + ' × ' + i.qty)).join(' + ') || '—';
+      const lines = [];
+      let befores = [];
+      ser.forEach(i => {
+        const u = (ST0.units || {})[i.ident] || {};
+        const ev = evs.find(e => e.action === 'Deployed' && e.item === i.ident && String(e.note || '').indexOf(d.ref) === 0);
+        const lb = ev && ev.from ? ev.from : 'MRD Office';
+        befores.push(lb);
+        lines.push(L(i.name, i.ident, i.sim ? '…' + i.sim.slice(-7) + ' · ' + (i.ip || '—') : '—', STL[u.st0] || 'Ready for deployment', 'Deployed', lb, d.area || (ev && ev.to) || d.fac));
+        if (i.sim) lines.push(L('M2M SIM', i.sim, i.ip || '—', 'Assigned', 'Assigned, active', 'In router ' + i.ident, 'In router ' + i.ident));
+      });
+      qtyI.forEach(i => lines.push(L(i.name + ' × ' + i.qty, i.qty + ' ' + (i.unit || 'pcs'), '—', 'In stock', 'Deployed', 'MRD Office', d.area || d.fac, false)));
+      befores = befores.filter((b, k) => befores.indexOf(b) === k);
+      const auditN = ser.length;
+      const team = (d.team && d.team.length ? d.team : [d.by || 'Chetan']);
+      return { ref: d.ref, mon: parts[1] || '', day: parts[0] || '', wd: isNaN(dt.getTime()) ? '' : WD[dt.getDay()], short: (parts[0] || '') + ' ' + (parts[1] || ''),
+        fac: d.fac, items: summary, count: ser.length + qtyI.reduce((a, i) => a + (+i.qty || 0), 0), type: TK[d.type] || 'poc', tech: INI[team[0]] || 'CH',
+        status: S[d.status] ? d.status : 'Completed', before: befores.length === 1 ? befores[0] : 'MRD Office', after: d.area || d.fac, note: d.note || '',
+        aud: auditN + (auditN === 1 ? ' entry' : ' entries'), lines, serN: ser.length, qtyN: qtyI.reduce((a, i) => a + (+i.qty || 0), 0), fromStore: true };
+    });
+    all.unshift.apply(all, storeDeps);
     const tabDefs = [
       ['overview', 'Overview', d => d.status === 'Completed', 'Recent deployments', 'Latest completed deployments. Expand a row to see each item and its before → after state.'],
       ['poc', 'POC', d => d.type === 'poc', 'POC deployments', 'Trial equipment at proof-of-concept facilities.'],
@@ -446,13 +506,43 @@ class Component extends DCLogic {
     const sched = all.filter(d => d.status === 'Scheduled' || d.status === 'Draft').slice().reverse().map(d => ({
       ref: d.ref, mon: d.mon, day: d.day, wd: d.wd, fac: d.fac, items: d.items, note: d.note, type: T[d.type][0], tcls: T[d.type][1], status: d.status, scls: S[d.status], tech: U[d.tech][0], tbg: U[d.tech][1], ini: d.tech
     }));
-    const byFac = [['Bank Muscat Head Office', 35, 6], ['Qatar Foundation', 12, 2], ['Lulu Hypermarket', 8, 2]].map(([label, v, deps]) => ({ label, v, deps, w: (v / 35 * 100) + '%' }));
-    const pocCon = [['Teltonika', 2, 8], ['CO₂ sensors', 13, 12], ['Gateways', 2, 2], ['SIM cards', 2, 8], ['Switches', 1, 3], ['VFDs', 0, 2]].map(([label, poc, con]) => ({ label, poc, con, pw: (poc / 25 * 100) + '%', cw: (con / 25 * 100) + '%' }));
-    const mv = [1, 0, 0, 2, 0, 4, 2], ml = ['April', 'May', 'June', 'July', 'August', 'September', 'October'];
-    const months = mv.map((v, i) => ({ v, label: ml[i], h: v === 0 ? '2px' : (v / 4 * 80) + '%' }));
+    const done = storeDeps.filter(d => d.status === 'Completed');
+    const facRows = [['Bank Muscat Head Office', 35, 6], ['Qatar Foundation', 12, 2], ['Lulu Hypermarket', 8, 2]];
+    done.forEach(d => {
+      const devN = d.serN + d.lines.filter(l => l.item === 'M2M SIM').length;
+      let r = facRows.find(x => x[0] === d.fac);
+      if (!r) { r = [d.fac, 0, 0]; facRows.push(r); }
+      r[1] += devN; r[2] += 1;
+    });
+    const facMax = Math.max.apply(null, facRows.map(r => r[1]).concat([1]));
+    const byFac = facRows.filter(r => r[1] > 0 || r[2] > 0).map(([label, v, deps]) => ({ label, v, deps, w: (v / facMax * 100) + '%' }));
+    const pcRows = [['Teltonika', 2, 8], ['CO₂ sensors', 13, 12], ['Gateways', 2, 2], ['SIM cards', 2, 8], ['Switches', 1, 3], ['VFDs', 0, 2]];
+    const catRow = n => /RUT|Teltonika/i.test(n) ? 0 : /CO2|CO₂|EM500/i.test(n) ? 1 : /UG6|Gateway/i.test(n) ? 2 : /SIM/i.test(n) ? 3 : /Switch|UniFi/i.test(n) ? 4 : /VFD|ACS/i.test(n) ? 5 : -1;
+    done.forEach(d => d.lines.forEach(l => { if (l.plain) return; const k = catRow(l.item); if (k >= 0) pcRows[k][d.type === 'poc' ? 1 : 2] += 1; }));
+    const pcMax = Math.max.apply(null, pcRows.map(r => r[1] + r[2]).concat([25]));
+    const pocCon = pcRows.map(([label, poc, con]) => ({ label, poc, con, pw: (poc / pcMax * 100) + '%', cw: (con / pcMax * 100) + '%' }));
+    const chPoc = pcRows.reduce((a, r) => a + r[1], 0), chCon = pcRows.reduce((a, r) => a + r[2], 0);
+    const addSer = done.reduce((a, d) => a + d.serN + d.lines.filter(l => l.item === 'M2M SIM').length, 0), addQty = done.reduce((a, d) => a + d.qtyN, 0);
+    const kSer = 55 + addSer, kQty = 483 + addQty, kUnits = kSer + kQty;
+    const kFacs = byFac.filter(r => r.v > 0).length;
+    const addPoc = done.filter(d => d.type === 'poc').reduce((a, d) => a + d.count, 0);
+    const kPoc = 41 + addPoc, kCon = 497 + (addSer + addQty - addPoc);
+    const kPocPct = (kPoc / (kPoc + kCon) * 100).toFixed(1) + '%', kConPct = (kCon / (kPoc + kCon) * 100).toFixed(1) + '%';
+    const octDone = done.filter(d => d.mon === 'Oct');
+    const tc = { poc: 2, con: 1, rep: 0, add: 1 };
+    octDone.forEach(d => { tc[d.type] += 1; });
+    const kMonth = 4 + octDone.length;
+    const kMonthSub = (18 + octDone.reduce((a, d) => a + d.count, 0)) + ' units · ' + [['poc', 'POC'], ['con', 'contract'], ['rep', 'replacement'], ['add', 'additional']].filter(x => tc[x[0]]).map(x => tc[x[0]] + ' ' + x[1]).join(' · ');
+    const mv = [1, 0, 0, 2, 0, 4, 2 + octDone.length], ml = ['April', 'May', 'June', 'July', 'August', 'September', 'October'];
+    const mMax = Math.max.apply(null, mv.concat([4]));
+    const months = mv.map((v, i) => ({ v, label: ml[i], h: v === 0 ? '2px' : (v / mMax * 80) + '%' }));
+    const schedSorted = all.filter(d => d.status === 'Scheduled').slice().reverse();
+    const schedN = all.filter(d => d.status === 'Scheduled' || d.status === 'Draft').length;
+    const schedNext = schedSorted.length ? 'Next: ' + schedSorted[0].wd + ' ' + schedSorted[0].day + ' ' + schedSorted[0].mon + ' · ' + schedSorted[0].fac : 'Nothing scheduled';
     const totalDone = all.filter(d => d.status === 'Completed').length;
     return {
       tabs, rows, sched, byFac, pocCon, months, totalDone,
+      kUnits, kSer, kQty, kFacs, kPoc, kCon, kPocPct, kConPct, kMonth, kMonthSub, schedN, schedNext, chPoc, chCon,
       showStrip: st.tab === 'overview',
       tableTitle: cur[3], tableSub: cur[4],
       empty: rows.length === 0,

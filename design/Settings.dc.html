@@ -508,8 +508,30 @@ class Component extends DCLogic {
   // Prototype persistence: this screen's data survives reloads and is shared by every screen in this browser.
   componentDidMount() {
     this._init = JSON.parse(JSON.stringify(this.state));
+    this._onStore = e => { if (!e || !e.key || e.key === 'mrd-proto:store') this.forceUpdate(); };
+    try { window.addEventListener('storage', this._onStore); } catch (e) {}
     try { const raw = window.localStorage.getItem('mrd-proto:v1:Settings'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
   }
+  // Shared prototype store: one record in browser storage that every screen reads and writes (key mrd-proto:store).
+  readStore() {
+    const empty = { v: 1, units: {}, added: [], deployments: [], events: [], catalog: {} };
+    try { const s = JSON.parse(window.localStorage.getItem('mrd-proto:store') || 'null'); return Object.assign(empty, s || {}); } catch (e) { return empty; }
+  }
+  writeStore(mutate) {
+    const s = this.readStore(); mutate(s); s.events = s.events.slice(0, 200);
+    try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {}
+    this.forceUpdate(); return s;
+  }
+  nowLabel() { const d = new Date(); return 'Today, ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  patchUnit(s, ident, patch, prevSt) {
+    const cur = s.units[ident] || {};
+    s.units[ident] = Object.assign({}, cur, patch, { st0: cur.st0 !== undefined ? cur.st0 : (prevSt || ''), upd: this.nowLabel() });
+  }
+  logEvent(s, ev) {
+    const d = new Date();
+    s.events.unshift(Object.assign({ id: 'e' + d.getTime() + Math.random().toString(36).slice(2, 6), at: d.getTime(), when: this.nowLabel(), who: 'Chetan', ini: 'CH', role: 'Admin', source: 'Web' }, ev));
+  }
+  componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
     try { const keep = Object.assign({}, this.state); ["toast", "addOpen", "statusOpen", "confirm", "form", "formErr"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:Settings', JSON.stringify(keep)); } catch (e) {}
   }
@@ -621,7 +643,8 @@ class Component extends DCLogic {
     const swatches = SW.map(([c, label]) => ({ label, dot: c, on: S.stColor === c ? 'true' : 'false', cls: 'icp' + (S.stColor === c ? ' on' : ''), pick: () => this.setState({ stColor: c }) }));
 
     // Suppliers
-    const suppliers = [['Al Noor Technologies LLC', 'Teltonika Devices', 4, '22 Sep 2026'], ['SensorTech Trading', 'CO₂ Sensors · LoRaWAN Gateways', 3, '03 Sep 2026'], ['Gulf Network Supplies', 'Network Equipment · Cables & Accessories', 5, '01 Oct 2026'], ['Gulf Electro-Mechanical Supplies', 'VFDs · Controllers & BMS', 2, '18 Sep 2026'], ['Omantel Business', 'M2M SIM Cards', 3, '30 Sep 2026'], ['Ooredoo Business', 'M2M SIM Cards', 1, '14 Jul 2026']].concat(S.extraSups)
+    const SUP_BASE = [['Al Noor Technologies LLC', 'Teltonika Devices', 4, '22 Sep 2026'], ['SensorTech Trading', 'CO₂ Sensors · LoRaWAN Gateways', 3, '03 Sep 2026'], ['Gulf Network Supplies', 'Network Equipment · Cables & Accessories', 5, '01 Oct 2026'], ['Gulf Electro-Mechanical Supplies', 'VFDs · Controllers & BMS', 2, '18 Sep 2026'], ['Omantel Business', 'M2M SIM Cards', 3, '30 Sep 2026'], ['Ooredoo Business', 'M2M SIM Cards', 1, '14 Jul 2026']];
+    const suppliers = SUP_BASE.concat(S.extraSups)
       .map(([orig, cats0, n, last]) => {
         const e = S.supEdits[orig] || {};
         const name = e.name || orig, cats = e.cats || cats0, contact = e.contact || '[contact on file]';
@@ -724,6 +747,17 @@ class Component extends DCLogic {
       const res = FD.submit(v, F0.orig);
       if (res.err) { this.setState({ formErr: res.err }); return; }
       this.setState(Object.assign({ form: null, formErr: '', toast: res.ok + ' Logged to the audit log.' }, res.state));
+      // Publish the catalogue to the shared store so other screens (receiving, inventory moves) can use it.
+      const nx = Object.assign({}, S, res.state);
+      this.writeStore(st => {
+        st.catalog = {
+          brands: nx.extraBrands.map(b => b[0]),
+          locations: nx.extraShelves.map(x => ({ name: x[0], kind: x[2] })).concat(nx.extraLog.map(x => ({ name: x[0], kind: 'Logical location' }))),
+          suppliers: SUP_BASE.concat(nx.extraSups).map(x => { const e = nx.supEdits[x[0]] || {}; return { name: e.name || x[0], cats: e.cats || x[1], contact: e.contact || '' }; }),
+          office: nx.office
+        };
+        this.logEvent(st, { action: 'Settings changed', item: FD.title.replace(/^(Add|Edit) /, '').replace(/^./, c => c.toUpperCase()) + ': ' + (v.name || v.cidr || ''), itemHref: 'Settings.dc.html', from: F0.orig || '—', to: v.name || v.cidr || '' });
+      });
     };
 
     // Confirm

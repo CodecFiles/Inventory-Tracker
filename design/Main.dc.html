@@ -162,15 +162,15 @@ h1,h2,h3,h4,p{margin:0}
 </sc-for>
 </div>
 <div style="display: flex; flex-direction: column; gap: 8px">
-<div class="seg" style="height: 12px; border-radius: 6px" role="img" aria-label="Distribution: 667 in office, 538 at facilities, 79 other">
-<span style="width: 51.9%; background: #1A8FAD" title="In MRD office · 667 units"></span>
-<span style="width: 41.9%; background: #12A374" title="At facilities · 538 units"></span>
-<span style="width: 6.2%; background: #E08A00" title="Transit, maintenance, damaged, returned · 79 units"></span>
+<div class="seg" style="height: 12px; border-radius: 6px" role="img" aria-label="{{dist.aria}}">
+<span style="width: {{dist.wo}}; background: #1A8FAD" title="In MRD office · {{dist.office}} units"></span>
+<span style="width: {{dist.wf}}; background: #12A374" title="At facilities · {{dist.fac}} units"></span>
+<span style="width: {{dist.wx}}; background: #E08A00" title="Transit, maintenance, damaged, returned · {{dist.other}} units"></span>
 </div>
 <div style="display: flex; gap: 20px; flex-wrap: wrap; font-size: 12.5px; color: #3B4758">
-<span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 2px; background: #1A8FAD"></span>In MRD office <strong>667</strong></span>
-<span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 2px; background: #12A374"></span>At facilities <strong>538</strong></span>
-<span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 2px; background: #E08A00"></span>Transit · maintenance · damaged · returned <strong>79</strong></span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 2px; background: #1A8FAD"></span>In MRD office <strong>{{dist.office}}</strong></span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 2px; background: #12A374"></span>At facilities <strong>{{dist.fac}}</strong></span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 2px; background: #E08A00"></span>Transit · maintenance · damaged · returned <strong>{{dist.other}}</strong></span>
 </div>
 </div>
 </section>
@@ -225,7 +225,7 @@ h1,h2,h3,h4,p{margin:0}
 
 <div class="card" style="flex: 2 1 340px; min-width: 0; display: flex; flex-direction: column">
 <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 18px 14px">
-<div><h2 style="font-size: 16px; font-weight: 600">Needs preparation</h2><p class="muted" style="font-size: 13px">17 devices before they can deploy</p></div>
+<div><h2 style="font-size: 16px; font-weight: 600">Needs preparation</h2><p class="muted" style="font-size: 13px">{{prepCount}} devices before they can deploy</p></div>
 <a class="btn sm p" href="DevicePrep.dc.html">Start prep</a>
 </div>
 <sc-for list="{{prep}}" as="p" hint-placeholder-count="5">
@@ -362,8 +362,30 @@ class Component extends DCLogic {
   // Prototype persistence: this screen's data survives reloads and is shared by every screen in this browser.
   componentDidMount() {
     this._init = JSON.parse(JSON.stringify(this.state));
+    this._onStore = e => { if (!e || !e.key || e.key === 'mrd-proto:store') this.forceUpdate(); };
+    try { window.addEventListener('storage', this._onStore); } catch (e) {}
     try { const raw = window.localStorage.getItem('mrd-proto:v1:Main'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
   }
+  // Shared prototype store: one record in browser storage that every screen reads and writes (key mrd-proto:store).
+  readStore() {
+    const empty = { v: 1, units: {}, added: [], deployments: [], events: [], catalog: {} };
+    try { const s = JSON.parse(window.localStorage.getItem('mrd-proto:store') || 'null'); return Object.assign(empty, s || {}); } catch (e) { return empty; }
+  }
+  writeStore(mutate) {
+    const s = this.readStore(); mutate(s); s.events = s.events.slice(0, 200);
+    try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {}
+    this.forceUpdate(); return s;
+  }
+  nowLabel() { const d = new Date(); return 'Today, ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  patchUnit(s, ident, patch, prevSt) {
+    const cur = s.units[ident] || {};
+    s.units[ident] = Object.assign({}, cur, patch, { st0: cur.st0 !== undefined ? cur.st0 : (prevSt || ''), upd: this.nowLabel() });
+  }
+  logEvent(s, ev) {
+    const d = new Date();
+    s.events.unshift(Object.assign({ id: 'e' + d.getTime() + Math.random().toString(36).slice(2, 6), at: d.getTime(), when: this.nowLabel(), who: 'Chetan', ini: 'CH', role: 'Admin', source: 'Web' }, ev));
+  }
+  componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
     try { const keep = Object.assign({}, this.state); [].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:Main', JSON.stringify(keep)); } catch (e) {}
   }
@@ -371,31 +393,51 @@ class Component extends DCLogic {
   renderVals() {
     const range = this.state.range;
     const ranges = [['7d','7 days'],['30d','30 days'],['q','Quarter']].map(([id,label]) => ({ label, cls: 'chip' + (range === id ? ' on' : ''), pick: () => this.setState({ range: id }) }));
+    // Shared store: turn saved changes from every screen into deltas on the sample totals.
+    const ST0 = this.readStore();
+    const ROWQ = { 'row:r4': ['cab', 18], 'row:r5': ['co2', 2], 'row:r6': ['co2', 7], 'row:r7': ['co2', 23], 'row:r9': ['cab', 600], 'row:r11': ['co2', 12] };
+    const catOf = k => ROWQ[k] ? ROWQ[k][0] : /^110/.test(k) ? 'tel' : /^8996/.test(k) ? 'sim' : /^6247/.test(k) ? 'gw' : /^3AXD/.test(k) ? 'vfd' : 'other';
+    const D = {}, DC = {}; let dPoc = 0, dCon = 0, simAsg = 0;
+    const bump = (cat, st, n) => { D[st] = (D[st] || 0) + n; DC[cat] = DC[cat] || {}; DC[cat][st] = (DC[cat][st] || 0) + n; };
+    Object.keys(ST0.units).forEach(k => {
+      const p = ST0.units[k], cat = p.cat || catOf(k), q = ROWQ[k] ? ROWQ[k][1] : 1;
+      if (cat === 'sim') { if (p.device) simAsg++; return; }
+      if (p.st && p.st0 && p.st !== p.st0) { bump(cat, p.st0, -q); bump(cat, p.st, q); if (p.st === 'deployed') { if (p.type === 'POC') dPoc += q; else dCon += q; } }
+    });
+    ST0.added.forEach(u => bump(u.cat || 'tel', u.st || 'unconf', 1));
+    const g = (st, cat) => cat ? ((DC[cat] || {})[st] || 0) : (D[st] || 0);
+    const fmt = n => n.toLocaleString('en-US');
+    const office = 655 + g('unconf') + g('stock'), prepN = 9 + g('prep'), ready = 46 + g('ready'), reserved = 8 + g('reserved');
+    const deployed = 538 + g('deployed'), poc = 41 + dPoc, con = 497 + (g('deployed') - dPoc);
+    const transit = 12 + g('transit'), maint = 7 + g('maint'), total = 1284 + ST0.added.length;
+    const inOffice = office + prepN + ready + reserved, other = 28 + g('transit') + g('maint') + g('damaged') + g('returned') + g('retired');
+    const tsum = inOffice + deployed + other;
+    const dist = { office: fmt(inOffice), fac: fmt(deployed), other: fmt(other), wo: (inOffice / tsum * 100).toFixed(1) + '%', wf: (deployed / tsum * 100).toFixed(1) + '%', wx: (other / tsum * 100).toFixed(1) + '%', aria: 'Distribution: ' + inOffice + ' in office, ' + deployed + ' at facilities, ' + other + ' other' };
     const kpis = [
-      { label: 'Total items', value: '1,284', sub: '244 serialised · 1,040 by quantity', dot: '#3B4758', href: 'Inventory.dc.html' },
+      { label: 'Total items', value: fmt(total), sub: (244 + ST0.added.length) + ' serialised · 1,040 by quantity', dot: '#3B4758', href: 'Inventory.dc.html' },
       { label: 'Products', value: '18', sub: 'across 8 categories', dot: '#3B4758', href: 'Products.dc.html' },
-      { label: 'In office stock', value: '655', sub: 'MRD Office · 3 locations', dot: '#1A8FAD', href: 'Inventory.dc.html' },
-      { label: 'Ready for deployment', value: '46', sub: '8 reserved for facilities', dot: '#2F6FE4', href: 'DevicePrep.dc.html' },
-      { label: 'Deployed', value: '538', sub: '41 POC · 497 contract', dot: '#12A374', href: 'Deployments.dc.html' },
-      { label: 'In transit', value: '12', sub: '1 shipment · ETA 9 Oct', dot: '#5468E0', href: 'Inventory.dc.html' },
-      { label: 'Under maintenance', value: '7', sub: '1 Teltonika · 2 CO₂ · 4 other', dot: '#E86A1C', href: 'Inventory.dc.html' },
+      { label: 'In office stock', value: fmt(office), sub: 'MRD Office · 3 locations', dot: '#1A8FAD', href: 'Inventory.dc.html' },
+      { label: 'Ready for deployment', value: fmt(ready), sub: reserved + ' reserved for facilities', dot: '#2F6FE4', href: 'DevicePrep.dc.html' },
+      { label: 'Deployed', value: fmt(deployed), sub: poc + ' POC · ' + con + ' contract', dot: '#12A374', href: 'Deployments.dc.html' },
+      { label: 'In transit', value: fmt(transit), sub: '1 shipment · ETA 9 Oct', dot: '#5468E0', href: 'Inventory.dc.html' },
+      { label: 'Under maintenance', value: fmt(maint), sub: '1 Teltonika · 2 CO₂ · 4 other', dot: '#E86A1C', href: 'Inventory.dc.html' },
       { label: 'Low-stock items', value: '4', sub: 'below minimum level', dot: '#DC3B3A', href: 'Reports.dc.html' }
     ];
     const stages = [
-      { n: 1, label: 'Office stock', value: '655', sub: 'received, not prepared', bg: '#fff', href: 'Inventory.dc.html' },
-      { n: 2, label: 'In preparation', value: '9', sub: 'on the prep bench', bg: '#fff', href: 'DevicePrep.dc.html' },
-      { n: 3, label: 'Ready', value: '46', sub: 'configured & tested', bg: '#fff', href: 'DevicePrep.dc.html' },
-      { n: 4, label: 'Reserved', value: '8', sub: 'held for a facility', bg: '#fff', href: 'Deployments.dc.html' },
-      { n: 5, label: 'POC', value: '41', sub: 'at 2 POC facilities', bg: '#FAF7FF', href: 'PocManagement.dc.html' },
-      { n: 6, label: 'Contract', value: '497', sub: 'at 1 contract facility', bg: '#F4FBF8', href: 'ContractManagement.dc.html' }
+      { n: 1, label: 'Office stock', value: fmt(office), sub: 'received, not prepared', bg: '#fff', href: 'Inventory.dc.html' },
+      { n: 2, label: 'In preparation', value: fmt(prepN), sub: 'on the prep bench', bg: '#fff', href: 'DevicePrep.dc.html' },
+      { n: 3, label: 'Ready', value: fmt(ready), sub: 'configured & tested', bg: '#fff', href: 'DevicePrep.dc.html' },
+      { n: 4, label: 'Reserved', value: fmt(reserved), sub: 'held for a facility', bg: '#fff', href: 'Deployments.dc.html' },
+      { n: 5, label: 'POC', value: fmt(poc), sub: 'at 2 POC facilities', bg: '#FAF7FF', href: 'PocManagement.dc.html' },
+      { n: 6, label: 'Contract', value: fmt(con), sub: 'at 1 contract facility', bg: '#F4FBF8', href: 'ContractManagement.dc.html' }
     ];
     const pc = (v, t) => (v / t * 100).toFixed(1) + '%';
     const mk = (name, model, total, parts, href) => ({ name, model, total, href, parts: parts.map(([label, v, c]) => ({ label, v, c, w: pc(v, total) })) });
     const devices = [
-      mk('Teltonika', 'RUT956 · 2 batches', 30, [['Unconfigured',14,'#8A96A8'],['Configured',1,'#E08A00'],['Ready',4,'#2F6FE4'],['Deployed',10,'#12A374'],['Inactive',1,'#DC3B3A']], 'Inventory.dc.html'),
-      mk('CO₂ sensors', 'Milesight EM500-CO2', 60, [['In stock',31,'#1A8FAD'],['Reserved',2,'#7C4DDB'],['Deployed',25,'#12A374'],['Maintenance',2,'#E86A1C']], 'Inventory.dc.html'),
-      mk('LoRaWAN gateways', 'Milesight UG65', 6, [['Office stock',2,'#1A8FAD'],['Deployed',4,'#12A374']], 'Inventory.dc.html'),
-      mk('M2M SIM cards', 'Omantel · Ooredoo', 80, [['Available',64,'#1A8FAD'],['Assigned, active',14,'#12A374'],['Deactivated',2,'#8A96A8']], 'SimInventory.dc.html')
+      mk('Teltonika', 'RUT956 · 2 batches', 30 + ST0.added.filter(u => (u.cat || 'tel') === 'tel').length, [['Unconfigured', 14 + g('unconf', 'tel') + g('stock', 'tel'), '#8A96A8'], ['Configured', 1 + g('prep', 'tel'), '#E08A00'], ['Ready', 4 + g('ready', 'tel') + g('reserved', 'tel'), '#2F6FE4'], ['Deployed', 10 + g('deployed', 'tel'), '#12A374'], ['Inactive', 1 + g('maint', 'tel') + g('damaged', 'tel') + g('retired', 'tel') + g('returned', 'tel') + g('transit', 'tel'), '#DC3B3A']], 'Inventory.dc.html'),
+      mk('CO₂ sensors', 'Milesight EM500-CO2', 60 + ST0.added.filter(u => u.cat === 'co2').length, [['In stock', 31 + g('stock', 'co2') + g('unconf', 'co2') + g('prep', 'co2') + g('ready', 'co2'), '#1A8FAD'], ['Reserved', 2 + g('reserved', 'co2'), '#7C4DDB'], ['Deployed', 25 + g('deployed', 'co2'), '#12A374'], ['Maintenance', 2 + g('maint', 'co2') + g('damaged', 'co2') + g('retired', 'co2') + g('returned', 'co2') + g('transit', 'co2'), '#E86A1C']], 'Inventory.dc.html'),
+      mk('LoRaWAN gateways', 'Milesight UG65', 6 + ST0.added.filter(u => u.cat === 'gw').length, [['Office stock', 2 + g('unconf', 'gw') + g('stock', 'gw') + g('prep', 'gw') + g('ready', 'gw') + g('reserved', 'gw') + g('maint', 'gw') + g('damaged', 'gw'), '#1A8FAD'], ['Deployed', 4 + g('deployed', 'gw'), '#12A374']], 'Inventory.dc.html'),
+      mk('M2M SIM cards', 'Omantel · Ooredoo', 80 + ST0.added.filter(u => u.cat === 'sim').length, [['Available', 64 - simAsg + ST0.added.filter(u => u.cat === 'sim').length, '#1A8FAD'], ['Assigned, active', 14 + simAsg, '#12A374'], ['Deactivated', 2, '#8A96A8']], 'SimInventory.dc.html')
     ];
     const lifecycle = [['Site inspection',1,'#8A96A8'],['BMS scan',1,'#1A8FAD'],['POC',1,'#7C4DDB'],['POC study',1,'#E08A00'],['Contract · active',1,'#12A374'],['On hold',1,'#DC3B3A']].map(([label, v, c]) => ({ label, v, c }));
     const facilities = [
@@ -406,7 +448,7 @@ class Component extends DCLogic {
       { name: 'Sohar Logistics Hub', loc: 'Sohar', stage: 'Site inspection', cls: 'g-insp', devices: 0, last: '—' }
     ];
     const prep = [
-      { name: 'Teltonika RUT956 × 14', sub: 'TEL-2026-004 · received 22 Sep', status: 'Unconfigured', cls: 's-unconf' },
+      { name: 'Teltonika RUT956 × ' + Math.max(0, 14 + g('unconf', 'tel')), sub: 'TEL-2026-004 and newer receipts', status: 'Unconfigured', cls: 's-unconf' },
       { name: 'Teltonika RUT956 · 1107442109', sub: 'TEL-2026-003 · awaiting SIM', status: 'In preparation', cls: 's-prep' },
       { name: 'Milesight UG65 × 2', sub: 'GW-2026-001 · LoRa network config', status: 'Unconfigured', cls: 's-unconf' },
       { name: 'Milesight EM500-CO2 × 7', sub: 'CO2-2026-002 · join-key provisioning', status: 'In preparation', cls: 's-prep' }
@@ -449,7 +491,11 @@ class Component extends DCLogic {
       { ini: 'NI', bg: '#F6E3C4', who: 'Nitin', what: 'received batch', obj: 'SIM-2026-005', when: 'Wed 30 Sep, 11:02' },
       { ini: 'AI', bg: '#E6DDFB', who: 'Aisha', what: 'moved to POC study', obj: 'Lulu Hypermarket', when: 'Tue 29 Sep, 16:25' }
     ];
-    return { showBanner: this.state.banner, dismiss: () => this.setState({ banner: false }), ranges, kpis, stages, devices, lifecycle, facilities, prep, cats, monthsIn, monthsOut, pocCon, deps, low, batches, upcoming, activity };
+    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Settings changed': 'updated settings ·', 'Note added': 'added a note to', 'Record corrected': 'corrected' };
+    const storeActivity = ST0.events.slice(0, 5).map(e => ({ ini: e.ini || 'CH', bg: '#CDEFE7', who: e.who || 'Chetan', what: VERB[e.action] || String(e.action || '').toLowerCase(), obj: e.item + (e.to && e.action !== 'Imported' && e.action !== 'Settings changed' ? ' → ' + e.to : ''), when: e.when }));
+    const storeDeps = ST0.deployments.slice().reverse().map(d => ({ ref: d.ref, date: String(d.date || '').slice(0, 6), fac: d.fac, item: (d.items || []).map(i => i.name ? i.name.replace('Teltonika ', '') + ' · ' + i.ident : i.ident).join(', ') || '—', type: d.type, tcls: { POC: 't-poc', Contract: 't-con', Replacement: 't-rep', Additional: 't-add' }[d.type] || 't-add', by: d.by || 'Chetan' }));
+    const prepCount = Math.max(0, 17 + g('unconf') + g('prep') - ROWQ['row:r6'][1] * 0);
+    return { dist, prepCount, showBanner: this.state.banner, dismiss: () => this.setState({ banner: false }), ranges, kpis, stages, devices, lifecycle, facilities, prep, cats, monthsIn, monthsOut, pocCon, deps: storeDeps.concat(deps).slice(0, 5), low, batches, upcoming, activity: storeActivity.concat(activity).slice(0, 5) };
   }
 }
 </script>

@@ -189,12 +189,7 @@ h1,h2,h3,h4,p{margin:0}
 <div class="fg">
 <label class="fl">Supplier
 <select class="inp" value="{{sup}}" onChange="{{onSup}}">
-<option value="Al Noor Technologies LLC">Al Noor Technologies LLC</option>
-<option value="SensorTech Trading">SensorTech Trading</option>
-<option value="Gulf Network Supplies">Gulf Network Supplies</option>
-<option value="Gulf Electro-Mechanical Supplies">Gulf Electro-Mechanical Supplies</option>
-<option value="Omantel Business">Omantel Business</option>
-<option value="Ooredoo Business">Ooredoo Business</option>
+<sc-for list="{{suppliers}}" as="o" hint-placeholder-count="6"><option value="{{o.v}}">{{o.v}}</option></sc-for>
 </select>
 </label>
 <label class="fl">Product
@@ -474,8 +469,30 @@ class Component extends DCLogic {
   // Prototype persistence: this screen's data survives reloads and is shared by every screen in this browser.
   componentDidMount() {
     this._init = JSON.parse(JSON.stringify(this.state));
+    this._onStore = e => { if (!e || !e.key || e.key === 'mrd-proto:store') this.forceUpdate(); };
+    try { window.addEventListener('storage', this._onStore); } catch (e) {}
     try { const raw = window.localStorage.getItem('mrd-proto:v1:ReceiveInventory'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
   }
+  // Shared prototype store: one record in browser storage that every screen reads and writes (key mrd-proto:store).
+  readStore() {
+    const empty = { v: 1, units: {}, added: [], deployments: [], events: [], catalog: {} };
+    try { const s = JSON.parse(window.localStorage.getItem('mrd-proto:store') || 'null'); return Object.assign(empty, s || {}); } catch (e) { return empty; }
+  }
+  writeStore(mutate) {
+    const s = this.readStore(); mutate(s); s.events = s.events.slice(0, 200);
+    try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {}
+    this.forceUpdate(); return s;
+  }
+  nowLabel() { const d = new Date(); return 'Today, ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  patchUnit(s, ident, patch, prevSt) {
+    const cur = s.units[ident] || {};
+    s.units[ident] = Object.assign({}, cur, patch, { st0: cur.st0 !== undefined ? cur.st0 : (prevSt || ''), upd: this.nowLabel() });
+  }
+  logEvent(s, ev) {
+    const d = new Date();
+    s.events.unshift(Object.assign({ id: 'e' + d.getTime() + Math.random().toString(36).slice(2, 6), at: d.getTime(), when: this.nowLabel(), who: 'Chetan', ini: 'CH', role: 'Admin', source: 'Web' }, ev));
+  }
+  componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
     try { const keep = Object.assign({}, this.state); ["done"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:ReceiveInventory', JSON.stringify(keep)); } catch (e) {}
   }
@@ -503,6 +520,21 @@ class Component extends DCLogic {
   }
   renderVals() {
     const S = this.state;
+    const ST0 = this.readStore();
+    const storeHas = {};
+    (ST0.added || []).forEach(a => { if (a && a.ident) storeHas[a.ident] = a.batch || 'an earlier batch'; });
+    const usedBatches = {};
+    (ST0.added || []).forEach(a => { if (a && a.batch) usedBatches[a.batch] = true; });
+    (ST0.events || []).forEach(e => { const m = e && e.action === 'Received' && /^Batch (\S+)/.exec(e.item || ''); if (m) usedBatches[m[1]] = true; });
+    const bumpBatch = b => b.replace(/(\d+)$/, m => { const n = parseInt(m, 10) + 1; return String(n).padStart(m.length, '0'); });
+    const skipUsed = b => { let x = b, i = 0; while (usedBatches[x] && /\d+$/.test(x) && i++ < 500) x = bumpBatch(x); return x; };
+    // While the user has not typed a batch, suggest the next unused number; after confirming, show the batch just received.
+    const batch = (S.done || S.batchTyped) ? S.batch : skipUsed(S.batch);
+    const SUP0 = ['Al Noor Technologies LLC', 'SensorTech Trading', 'Gulf Network Supplies', 'Gulf Electro-Mechanical Supplies', 'Omantel Business', 'Ooredoo Business'];
+    const supNames = SUP0.slice();
+    ((ST0.catalog && ST0.catalog.suppliers) || []).forEach(x => { const n = x && (typeof x === 'string' ? x : x.name); if (n && supNames.indexOf(n) < 0) supNames.push(n); });
+    if (S.sup && supNames.indexOf(S.sup) < 0) supNames.push(S.sup);
+    const suppliers = supNames.map(v => ({ v }));
     const P = {
       rut956: { name: 'Teltonika RUT956', cat: 'Teltonika Devices', track: 'Serialised', cfg: true, batch: 'TEL-2026-005', fields: 'S/N, IMEI, MAC', cols: ['Serial number', 'IMEI', 'MAC address'], sup: 'Al Noor Technologies LLC', note: 'Each unit gets its own record. SIM, IP, Device ID and firmware are captured later in preparation.' },
       em500: { name: 'Milesight EM500-CO2', cat: 'CO₂ Sensors', track: 'Hybrid', cfg: true, batch: 'CO2-2026-003', fields: 'S/N, DevEUI (optional now)', cols: ['Serial number', 'DevEUI', 'Notes'], sup: 'SensorTech Trading', note: 'Received as a counted batch; units can be serialised now or during preparation (LoRaWAN join keys).' },
@@ -520,25 +552,26 @@ class Component extends DCLogic {
     const firstIdx = {};
     S.rows.forEach((r, i) => { const k = r.sn.trim(); if (k && firstIdx[k] === undefined) firstIdx[k] = i; });
     const manualEntered = S.rows.filter(r => r.sn.trim()).length;
-    const manualDup = S.rows.filter((r, i) => { const k = r.sn.trim(); return k && counts[k] > 1 && firstIdx[k] !== i; }).length;
+    const manualDup = S.rows.filter((r, i) => { const k = r.sn.trim(); return k && ((counts[k] > 1 && firstIdx[k] !== i) || storeHas[k]); }).length;
     const bLines = S.bulk.split('\n').map(l => l.trim()).filter(l => l);
     const bSn = bLines.map(l => l.split(/[\t,;]+/)[0].trim());
     const bSeen = {}; let bDup = 0;
-    bSn.forEach(s => { if (bSeen[s]) bDup++; bSeen[s] = true; });
+    bSn.forEach(s => { if (bSeen[s] || storeHas[s]) bDup++; bSeen[s] = true; });
     const mapVals = Object.keys(S.map).map(k => S.map[k]);
     const csvHasSn = mapVals.indexOf('sn') >= 0;
     let entered = 0, dup = 0;
     if (S.mode === 'manual') { entered = manualEntered; dup = manualDup; }
     else if (S.mode === 'bulk') { entered = bSn.length; dup = bDup; }
-    else { entered = S.csv && csvHasSn ? 20 : 0; dup = 0; }
+    else { entered = S.csv && csvHasSn ? 20 : 0; dup = 0; if (entered) for (let i = 0; i < 20; i++) { if (storeHas['11086753' + (20 + i)]) dup++; } }
     if (isQty) { entered = qty; dup = 0; }
     const visible = S.allRows ? S.rows : S.rows.slice(0, 14);
     const rows = visible.map((r, i) => {
       const k = r.sn.trim();
-      const isDup = !!k && counts[k] > 1 && firstIdx[k] !== i;
+      const inStore = !!k && !!storeHas[k];
+      const isDup = !!k && ((counts[k] > 1 && firstIdx[k] !== i) || inStore);
       return {
         n: i + 1, sn: r.sn, imei: r.imei, mac: r.mac, snCls: 'inp' + (isDup ? ' err' : ''),
-        dup: isDup, dupMsg: isDup ? 'Duplicate of row ' + (firstIdx[k] + 1) : '', ok: !!k && !isDup, blank: !k,
+        dup: isDup, dupMsg: isDup ? (inStore && !(counts[k] > 1 && firstIdx[k] !== i) ? 'Already received in ' + storeHas[k] : 'Duplicate of row ' + (firstIdx[k] + 1)) : '', ok: !!k && !isDup, blank: !k,
         onSn: e => this.setRow(i, 'sn', e.target.value), onImei: e => this.setRow(i, 'imei', e.target.value), onMac: e => this.setRow(i, 'mac', e.target.value)
       };
     });
@@ -561,13 +594,13 @@ class Component extends DCLogic {
     const unitsShort = isQty ? 'Counted' : entered + ' / ' + qty + (dup ? ' · ' + dup + ' dup' : '');
     const effects = [
       { t: qty + ' units → ' + S.loc + ' → ' + initStatus, s: 'Each unit gets a record linked to its batch and supplier' },
-      { t: 'Batch ' + S.batch + ' created', s: S.sup + ' · ' + (S.po || 'no PO') },
+      { t: 'Batch ' + batch + ' created', s: S.sup + ' · ' + (S.po || 'no PO') },
       { t: qty + ' audit entries recorded', s: 'Received by Chetan · ' + dateLabel },
       p.cfg ? { t: 'Added to Device Preparation queue', s: 'Queue grows from 15 to ' + (15 + qty) + ' devices' } : { t: 'Available immediately', s: 'No configuration required for this product' }
     ];
     const blocked = needUnits && dup > 0;
     const okP = 'M20 6L9 17l-5-5', dotP = 'M12 12h.01';
-    const shipOk = !!S.sup && qty > 0 && !!S.batch.trim();
+    const shipOk = !!S.sup && qty > 0 && !!batch.trim();
     const unitsOk = isQty || (entered >= qty && dup === 0);
     const checks = [
       { label: 'Shipment details', v: shipOk ? 'Complete' : 'Incomplete', bg: shipOk ? '#E1F4EC' : '#EEF1F5', fg: shipOk ? '#0A6648' : '#5E6B7D', path: shipOk ? okP : dotP },
@@ -575,15 +608,23 @@ class Component extends DCLogic {
       { label: 'Review and confirm', v: S.done ? 'Done' : 'Pending', bg: S.done ? '#E1F4EC' : '#EEF1F5', fg: S.done ? '#0A6648' : '#5E6B7D', path: S.done ? okP : dotP }
     ];
     const docs = S.docs.map((d, i) => ({ name: d.name, meta: d.meta, remove: () => this.setState({ docs: S.docs.filter((x, j) => j !== i) }) }));
-    const recent = [
+    // Batches received through this screen (shared store) come first.
+    const storeBatches = [];
+    const byBatch = {};
+    (ST0.added || []).forEach(a => {
+      if (!a || !a.batch) return;
+      if (!byBatch[a.batch]) { byBatch[a.batch] = { id: a.batch, product: a.name || '—', sup: a.sup || '—', n: 0, date: (a.recv || '').slice(0, 6), by: 'Chetan' }; storeBatches.push(byBatch[a.batch]); }
+      byBatch[a.batch].n++;
+    });
+    const recent = storeBatches.slice().reverse().map(b => ({ id: b.id, product: b.product, sup: b.sup, qty: '' + b.n, date: b.date, by: b.by })).concat([
       { id: 'CAB-2026-007', product: 'Cat6 patch cable 3 m', sup: 'Gulf Network Supplies', qty: '200 pcs', date: '01 Oct', by: 'Aisha' },
       { id: 'SIM-2026-005', product: 'Omantel M2M SIM', sup: 'Omantel Business', qty: '50', date: '30 Sep', by: 'Nitin' },
       { id: 'TEL-2026-004', product: 'Teltonika RUT956', sup: 'Al Noor Technologies LLC', qty: '20', date: '22 Sep', by: 'Nitin' },
       { id: 'VFD-2026-001', product: 'ABB ACS580 VFD', sup: 'Gulf Electro-Mechanical Supplies', qty: '4', date: '18 Sep', by: 'Nitin' }
-    ];
+    ]).slice(0, 6);
     return {
       steps, s1: !S.done && step === 1, s2: !S.done && step === 2, s3: !S.done && step === 3, done: S.done,
-      sup: S.sup, prod: S.prod, batch: S.batch, qty: S.qty, date: S.date, loc: S.loc, po: S.po, inv: S.inv, notes: S.notes,
+      sup: S.sup, suppliers, prod: S.prod, batch, qty: S.qty, date: S.date, loc: S.loc, po: S.po, inv: S.inv, notes: S.notes,
       pName: p.name, pCat: p.cat, track: p.track, cfg: p.cfg, trackNote: p.note, fields: p.fields, c1: p.cols[0], c2: p.cols[1], c3: p.cols[2],
       qtyHint: isQty ? 'Pieces · counted stock' : qty + ' unit records will be created',
       initStatus, initCls: p.cfg ? 's-unconf' : 's-stock',
@@ -605,8 +646,8 @@ class Component extends DCLogic {
       sumBadge: S.done ? 'Received' : 'Draft', sumBadgeCls: 'b ' + (S.done ? 's-deployed' : 's-unconf'),
       checks,
       onSup: e => this.setState({ sup: e.target.value }),
-      onProd: e => { const np = P[e.target.value]; this.setState({ prod: e.target.value, batch: np.batch, sup: np.sup, mode: 'manual' }); },
-      onBatch: e => this.setState({ batch: e.target.value }),
+      onProd: e => { const np = P[e.target.value]; this.setState({ prod: e.target.value, batch: np.batch, batchTyped: false, sup: np.sup, mode: 'manual' }); },
+      onBatch: e => this.setState({ batch: e.target.value, batchTyped: true }),
       onQty: e => this.setState({ qty: e.target.value }),
       onDate: e => this.setState({ date: e.target.value }),
       onLoc: e => this.setState({ loc: e.target.value }),
@@ -627,16 +668,45 @@ class Component extends DCLogic {
       clearCsv: () => this.setState({ csv: false }),
       fixDup: () => {
         const seen = {};
-        const nr = S.rows.map(r => { const k = r.sn.trim(); if (k && seen[k]) return { sn: '', imei: '', mac: '' }; if (k) seen[k] = true; return r; });
-        const nb = S.bulk.split('\n').filter((l, i, arr) => { const k = l.split(/[\t,;]+/)[0].trim(); return !k || arr.findIndex(x => x.split(/[\t,;]+/)[0].trim() === k) === i; }).join('\n');
+        const nr = S.rows.map(r => { const k = r.sn.trim(); if (k && (seen[k] || storeHas[k])) return { sn: '', imei: '', mac: '' }; if (k) seen[k] = true; return r; });
+        const nb = S.bulk.split('\n').filter((l, i, arr) => { const k = l.split(/[\t,;]+/)[0].trim(); return !k || (!storeHas[k] && arr.findIndex(x => x.split(/[\t,;]+/)[0].trim() === k) === i); }).join('\n');
         this.setState({ rows: nr, bulk: nb });
       },
       toStep1: () => this.setState({ step: 1 }),
       toStep2: () => this.setState({ step: isQty ? 3 : 2 }),
       toStep3: () => this.setState({ step: 3 }),
       backFrom3: () => this.setState({ step: isQty ? 1 : 2 }),
-      confirm: () => this.setState({ done: true }),
-      again: () => this.setState({ done: false, step: 1, batch: p.batch.replace(/(\d+)$/, m => { const n = parseInt(m, 10) + 1; return (n < 10 ? '00' : n < 100 ? '0' : '') + n; }), docs: [], notes: '' })
+      confirm: () => {
+        if (blocked || !shipOk) return;
+        // Collect the unit identities from whichever entry method is active.
+        let ids = [];
+        if (needUnits) {
+          if (S.mode === 'manual') ids = S.rows.map(r => [r.sn, r.imei, r.mac]);
+          else if (S.mode === 'bulk') ids = bLines.map(l => l.split(/[\t,;]+/));
+          else if (S.csv && csvHasSn) { for (let i = 0; i < 20; i++) ids.push(['11086753' + (20 + i), '8605480439129' + (51 + i * 2), '00:1E:42:3A:7C:' + (65 + i).toString(16).toUpperCase()]); }
+          ids = ids.map(x => x.map(y => (y || '').trim())).filter(x => x[0]).slice(0, qty);
+        }
+        const SPEC = { rut956: ['tel', 'Teltonika', 'RUT956'], em500: ['co2', 'Milesight', 'EM500-CO2'], ug65: ['gw', 'Milesight', 'UG65'], sim: ['sim', 'Omantel', 'M2M SIM'], cab1: ['cab', 'Generic', 'Cat6 1 m'] }[S.prod];
+        const inTransit = /transit/i.test(S.loc);
+        const loc2 = inTransit ? '' : S.loc.replace(/^MRD Office · /, '');
+        const stKey = inTransit ? 'transit' : (p.cfg ? 'unconf' : 'stock');
+        this.writeStore(s => {
+          const have = {};
+          s.added.forEach(a => { if (a && a.ident) have[a.ident] = true; });
+          ids.forEach(x => {
+            if (have[x[0]]) return; have[x[0]] = true;
+            const u = { ident: x[0], name: p.name, cat: SPEC[0], brand: SPEC[1], model: SPEC[2], batch, st: stKey, loc: inTransit ? 'In transit' : 'MRD Office', loc2, recv: dateLabel, sup: S.sup, upd: this.nowLabel() };
+            if (S.prod === 'rut956') { u.imei = x[1] || ''; u.mac = x[2] || ''; }
+            else if (S.prod === 'ug65') { u.eui = x[1] || ''; u.mac = x[2] || ''; }
+            else if (S.prod === 'em500') { u.eui = x[1] || ''; }
+            else if (S.prod === 'sim') { u.msisdn = x[1] || ''; }
+            s.added.push(u);
+          });
+          this.logEvent(s, { action: 'Received', item: 'Batch ' + batch + ' · ' + qty + ' × ' + p.name, itemHref: 'BatchDetail.dc.html', from: S.sup, to: S.loc, note: (needUnits ? ids.length + ' serialised · ' : 'Counted stock · ') + (S.po || 'no PO') + (S.inv ? ' · ' + S.inv : '') });
+        });
+        this.setState({ done: true, step: 1, batch, batchTyped: false });
+      },
+      again: () => this.setState({ done: false, step: 1, batchTyped: false, batch: p.batch.replace(/(\d+)$/, m => { const n = parseInt(m, 10) + 1; return (n < 10 ? '00' : n < 100 ? '0' : '') + n; }), docs: [], notes: '' })
     };
   }
 }

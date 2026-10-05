@@ -434,8 +434,8 @@ h1,h2,h3,h4,p{margin:0}
 <div style="display: flex; justify-content: space-between; font-size: 12px; color: #3B4758; flex-wrap: wrap; gap: 6px"><span>01 Oct · start</span><span>08 Oct · 2 sensors</span><span>15 Oct · optimisation on</span><span>30 Nov · end</span></div>
 </div>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px">
-<div class="stat"><span class="muted" style="font-size: 12px">Devices installed</span><span class="n">12</span><span class="muted" style="font-size: 12px">of 14 planned</span></div>
-<div class="stat"><span class="muted" style="font-size: 12px">Currently deployed</span><span class="n">12</span><span class="muted" style="font-size: 12px">all online</span></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Devices installed</span><span class="n">{{devN}}</span><span class="muted" style="font-size: 12px">of 14 planned</span></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Currently deployed</span><span class="n">{{devN}}</span><span class="muted" style="font-size: 12px">all online</span></div>
 <div class="stat"><span class="muted" style="font-size: 12px">Reserved</span><span class="n">2</span><span class="muted" style="font-size: 12px">EM500-CO2 · 08 Oct</span></div>
 </div>
 <div style="display: flex; flex-direction: column; gap: 10px">
@@ -489,7 +489,7 @@ h1,h2,h3,h4,p{margin:0}
 <td class="mono">{{d.sim}}</td>
 <td class="mono">{{d.ip}}</td>
 <td class="muted">{{d.date}}</td>
-<td><span class="t t-poc">POC</span></td>
+<td><span class="t {{d.tcls}}">{{d.type}}</span></td>
 <td>{{d.place}}</td>
 <td><span class="b s-deployed">Deployed</span></td>
 </tr>
@@ -623,21 +623,38 @@ class Component extends DCLogic {
   // Prototype persistence: this screen's data survives reloads and is shared by every screen in this browser.
   componentDidMount() {
     this._init = JSON.parse(JSON.stringify(this.state));
+    this._onStore = e => { if (!e || !e.key || e.key === 'mrd-proto:store') this.forceUpdate(); };
+    try { window.addEventListener('storage', this._onStore); } catch (e) {}
     try { const raw = window.localStorage.getItem('mrd-proto:v1:FacilityDetail'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
   }
+  // Shared prototype store: one record in browser storage that every screen reads and writes (key mrd-proto:store).
+  readStore() {
+    const empty = { v: 1, units: {}, added: [], deployments: [], events: [], catalog: {} };
+    try { const s = JSON.parse(window.localStorage.getItem('mrd-proto:store') || 'null'); return Object.assign(empty, s || {}); } catch (e) { return empty; }
+  }
+  writeStore(mutate) {
+    const s = this.readStore(); mutate(s); s.events = s.events.slice(0, 200);
+    try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {}
+    this.forceUpdate(); return s;
+  }
+  nowLabel() { const d = new Date(); return 'Today, ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  patchUnit(s, ident, patch, prevSt) {
+    const cur = s.units[ident] || {};
+    s.units[ident] = Object.assign({}, cur, patch, { st0: cur.st0 !== undefined ? cur.st0 : (prevSt || ''), upd: this.nowLabel() });
+  }
+  logEvent(s, ev) {
+    const d = new Date();
+    s.events.unshift(Object.assign({ id: 'e' + d.getTime() + Math.random().toString(36).slice(2, 6), at: d.getTime(), when: this.nowLabel(), who: 'Chetan', ini: 'CH', role: 'Admin', source: 'Web' }, ev));
+  }
+  componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
     try { const keep = Object.assign({}, this.state); ["more", "confirm", "upload", "edit", "notice"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:FacilityDetail', JSON.stringify(keep)); } catch (e) {}
   }
   constructor(props) { super(props); this.state = { tab: 'overview', cat: 'all', more: false, confirm: null, upload: false, edit: false, notice: '' }; }
   renderVals() {
     const s = this.state;
-    const kpis = [
-      { label: 'Devices deployed', value: '12', sub: '5 categories · all online', dot: '#12A374' },
-      { label: 'POC devices', value: '12', sub: 'tracked as POC equipment', dot: '#7A5AF8' },
-      { label: 'Contract devices', value: '0', sub: 'contract not started', dot: '#8A96A8' },
-      { label: 'Last deployment', value: '03 Oct', sub: 'DEP-0148 · Rahul', dot: '#3B4758' },
-      { label: 'Reserved', value: '2', sub: 'EM500-CO2 · install 08 Oct', dot: '#7C4DDB' }
-    ];
+    const ST0 = this.readStore();
+    const FAC = 'Qatar Foundation';
     const sd = [
       ['Site inspection', '08 Sep 2026', 'done', 'pre', 'Aisha, Rahul'],
       ['BMS network scan', '22 Sep 2026', 'done', 'pre', 'Saif'],
@@ -662,13 +679,13 @@ class Component extends DCLogic {
         fw: cur ? '600' : '500', lc: cur ? '#5B32B4' : done ? '#0E1726' : '#5E6B7D'
       };
     });
-    const T = [['overview', 'Overview'], ['project', 'Project'], ['inspection', 'Site inspection'], ['bms', 'BMS scan'], ['poc', 'POC'], ['contract', 'Contract'], ['inventory', 'Deployed inventory', 12], ['activity', 'Activity']];
+    const T = [['overview', 'Overview'], ['project', 'Project'], ['inspection', 'Site inspection'], ['bms', 'BMS scan'], ['poc', 'POC'], ['contract', 'Contract'], ['inventory', 'Deployed inventory', '__N__'], ['activity', 'Activity']];
     const tabs = T.map(([id, label, n]) => ({ label, n, hasN: !!n, sel: s.tab === id ? 'true' : 'false', cls: 'tab' + (s.tab === id ? ' on' : ''), pick: () => this.setState({ tab: id }) }));
     const contacts = [
       { ini: 'OH', name: 'Omar H.', role: 'Facilities Manager · Qatar Foundation', phone: '+974 •••• ••••', email: '[email]', primary: true },
       { ini: 'LS', name: 'Lina S.', role: 'Sustainability Lead · Qatar Foundation', phone: '+974 •••• ••••', email: '[email]', primary: false }
     ];
-    const onsite = [['CO₂ sensors', 8], ['Teltonika router', 1], ['LoRaWAN gateway', 1], ['SIM card', 1], ['Network switch', 1]].map(([label, v]) => ({ label, v, w: (v / 8 * 100) + '%' }));
+
     const docs = [
       { ext: 'PDF', name: 'Site inspection report.pdf', meta: '2.4 MB · Aisha · 09 Sep 2026' },
       { ext: 'PDF', name: 'QF-BMS-Scan-2026-09-22.pdf', meta: '5.1 MB · Saif · 22 Sep 2026' },
@@ -709,7 +726,62 @@ class Component extends DCLogic {
       { cat: 'sim', dev: 'M2M SIM', model: 'Omantel M2M', sn: '8996802026093001435', sim: '—', ip: '—', date: '01 Oct 2026', place: 'In RUT956 1108675311' },
       { cat: 'gw', dev: 'LoRaWAN gateway', model: 'Milesight UG65', sn: '6247B1820041', sim: '—', ip: '10.64.12.42', date: '01 Oct 2026', place: 'Plant room B1 · wall' },
       { cat: 'net', dev: 'PoE switch', model: 'UniFi Switch Lite 8 PoE', sn: 'F4E2C6A10B37', sim: '—', ip: '10.64.12.43', date: '01 Oct 2026', place: 'Plant room B1 · BMS panel' }
-    ].concat(co2.map(([sn, date, place]) => ({ cat: 'co2', dev: 'CO₂ sensor', model: 'Milesight EM500-CO2', sn, sim: '—', ip: '—', date, place })));
+    ].concat(co2.map(([sn, date, place]) => ({ cat: 'co2', dev: 'CO₂ sensor', model: 'Milesight EM500-CO2', sn, sim: '—', ip: '—', date, place })))
+      .map(d => Object.assign(d, { type: 'POC', tcls: 't-poc' }));
+    // Shared store overlay: drop sample devices that have since left, add units deployed here through the store.
+    const SU = ST0.units || {};
+    const addedBy = {};
+    (ST0.added || []).forEach(a => { if (a && a.ident) addedBy[a.ident] = a; });
+    const unitOf = id => Object.assign({}, addedBy[id] || {}, SU[id] || {});
+    const left = id => { const u = SU[id]; if (!u) return false; return (u.st !== undefined && u.st !== '' && u.st !== 'deployed') || (u.fac !== undefined && u.fac !== FAC); };
+    const sampleSn = {};
+    D.forEach(d => { sampleSn[d.sn] = true; });
+    for (let i = D.length - 1; i >= 0; i--) {
+      const d = D[i];
+      if (left(d.sn) || (d.cat === 'sim' && left('1108675311'))) D.splice(i, 1);
+    }
+    const TC = { POC: 't-poc', Contract: 't-con', Replacement: 't-rep', Additional: 't-add' };
+    const CATM = { tel: ['router', 'LTE router'], sim: ['sim', 'M2M SIM'], gw: ['gw', 'LoRaWAN gateway'], net: ['net', 'PoE switch'], co2: ['co2', 'CO₂ sensor'], vfd: ['other', 'VFD'], cab: ['other', 'Accessory'] };
+    const depOf = {};
+    (ST0.deployments || []).forEach(dp => (dp.items || []).forEach(it => { if (it && it.ident) { depOf[it.ident] = dp; if (it.sim) depOf[it.sim] = dp; } }));
+    const fmtDate = x => String(x || '').length === 6 ? x + ' 2026' : (x || '05 Oct 2026');
+    const ids = Object.keys(Object.assign({}, addedBy, SU));
+    ids.forEach(id => {
+      if (sampleSn[id]) return;
+      const u = unitOf(id);
+      if (u.fac !== FAC) return;
+      const isSim = u.cat === 'sim';
+      if (!isSim && u.st !== 'deployed') return;
+      if (isSim && u.device && left(u.device) && !sampleSn[u.device] && unitOf(u.device).fac !== FAC) return;
+      const cm = CATM[u.cat] || ['other', 'Device'];
+      const host = isSim ? unitOf(u.device || '') : u;
+      const ty = u.type || host.type || 'POC';
+      const dp = depOf[id];
+      D.push({ cat: cm[0], dev: cm[1], model: u.name || ((u.brand || '') + ' ' + (u.model || '')).trim() || (isSim ? (id.indexOf('8996803') === 0 ? 'Ooredoo M2M' : 'Omantel M2M') : '—'), sn: id,
+        sim: u.sim ? '…' + u.sim.slice(-9) : '—', ip: (!isSim && u.ip) || '—', date: dp ? fmtDate(dp.date) : '05 Oct 2026',
+        place: isSim ? 'In ' + (host.name ? host.name.replace(/^Teltonika /, '') + ' ' : '') + (u.device || '') : (u.loc2 || '—'),
+        type: ty, tcls: TC[ty] || 't-poc', fromStore: true });
+    });
+    const catN = {};
+    D.forEach(d => { catN[d.cat] = (catN[d.cat] || 0) + 1; });
+    const onsiteDefs = [['co2', 'CO₂ sensors'], ['router', 'Teltonika router'], ['gw', 'LoRaWAN gateway'], ['sim', 'SIM card'], ['net', 'Network switch'], ['other', 'Other equipment']];
+    const onMax = Math.max.apply(null, onsiteDefs.map(o => catN[o[0]] || 0).concat([1]));
+    const onsite = onsiteDefs.filter(o => o[0] !== 'other' || catN.other).map(([k, label]) => ({ label, v: catN[k] || 0, w: ((catN[k] || 0) / onMax * 100) + '%' }));
+    const pocN = D.filter(d => d.type === 'POC').length, conN = D.length - pocN;
+    const MO = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const dnum = x => { const p = String(x || '').split(' '); return (+p[2] || 2026) * 10000 + (MO.indexOf(p[1]) + 1) * 100 + (+p[0] || 0); };
+    let lastDep = { date: '03 Oct 2026', ref: 'DEP-0148', by: 'Rahul' };
+    (ST0.deployments || []).filter(dp => dp && dp.fac === FAC && dp.status !== 'Cancelled').forEach(dp => {
+      if (dnum(dp.date) >= dnum(lastDep.date)) lastDep = { date: dp.date, ref: dp.ref, by: (dp.team && dp.team[0]) || dp.by || 'Chetan' };
+    });
+    const kpis = [
+      { label: 'Devices deployed', value: '' + D.length, sub: Object.keys(catN).length + ' categories · all online', dot: '#12A374' },
+      { label: 'POC devices', value: '' + pocN, sub: 'tracked as POC equipment', dot: '#7A5AF8' },
+      { label: 'Contract devices', value: '' + conN, sub: conN ? 'contract, additional or replacement' : 'contract not started', dot: '#8A96A8' },
+      { label: 'Last deployment', value: String(lastDep.date).slice(0, 6), sub: lastDep.ref + ' · ' + lastDep.by, dot: '#3B4758' },
+      { label: 'Reserved', value: '2', sub: 'EM500-CO2 · install 08 Oct', dot: '#7C4DDB' }
+    ];
+    tabs.forEach(t => { if (t.n === '__N__') t.n = D.length; });
     const C = [['all', 'All'], ['co2', 'CO₂ sensors'], ['router', 'Teltonika'], ['gw', 'Gateways'], ['sim', 'SIM'], ['net', 'Network']];
     const cats = C.map(([id, label]) => ({ label, n: id === 'all' ? D.length : D.filter(d => d.cat === id).length, sel: s.cat === id ? 'true' : 'false', cls: 'chip' + (s.cat === id ? ' on' : ''), pick: () => this.setState({ cat: id }) }));
     const devs = D.filter(d => s.cat === 'all' || d.cat === s.cat);
@@ -722,7 +794,20 @@ class Component extends DCLogic {
       { ini: 'SA', bg: '#FBE0DC', who: 'Saif', what: 'uploaded', obj: 'QF-BMS-Scan-2026-09-22.pdf', href: 'FacilityDetail.dc.html', when: 'Tue 22 Sep, 17:20', tag: '', tcls: '' },
       { ini: 'AI', bg: '#E6DDFB', who: 'Aisha', what: 'completed', obj: 'Site inspection', href: 'FacilityDetail.dc.html', when: 'Tue 8 Sep, 15:45', tag: '', tcls: '' },
       { ini: 'CH', bg: '#CDEFE7', who: 'Chetan', what: 'created facility', obj: 'Qatar Foundation', href: 'FacilityDetail.dc.html', when: 'Wed 2 Sep, 10:02', tag: '', tcls: '' }
-    ].map(a => Object.assign(a, { hasTag: !!a.tag }));
+    ];
+    // Store events that mention this facility, newest first, ahead of the sample history.
+    const PI = { CH: '#CDEFE7', NI: '#F6E3C4', AI: '#E6DDFB', RA: '#DCE6FB', SA: '#FBE0DC' };
+    const storeAct = (ST0.events || []).filter(e => e && [e.item, e.from, e.to, e.note].some(x => String(x || '').indexOf(FAC) >= 0)).map(e => {
+      const note = String(e.note || '');
+      const ref = (/^(DEP-\d+)/.exec(note) || [])[1];
+      const ty = (/· (POC|Contract|Replacement|Additional)\b/.exec(note) || [])[1] || '';
+      const isDep = e.action === 'Deployed' && ref;
+      return { ini: e.ini || 'CH', bg: PI[e.ini] || '#CDEFE7', who: e.who || 'Chetan',
+        what: isDep ? 'deployed ' + e.item + (e.to ? ' to ' + String(e.to).replace(FAC + ' · ', '') : '') + ' ·' : String(e.action || 'updated').toLowerCase() + (e.to ? ' → ' + e.to + ' ·' : ''),
+        obj: isDep ? ref : (e.item || ''), href: isDep ? 'Deployments.dc.html' : (e.itemHref || 'AuditLog.dc.html'), when: e.when || '', tag: ty, tcls: TC[ty] || '' };
+    });
+    activity.unshift.apply(activity, storeAct);
+    activity.forEach(a => Object.assign(a, { hasTag: !!a.tag }));
     const trace = [
       { ab: 'FAC', kind: 'Facility', value: 'Qatar Foundation', sub: 'Plant room B1 · BMS panel', href: 'FacilityDetail.dc.html', bg: '#F0EAFE', fg: '#5B32B4', vcls: '' },
       { ab: 'DEP', kind: 'Deployment', value: 'DEP-0147', sub: '01 Oct 2026 · POC · Chetan', href: 'Deployments.dc.html', bg: '#F1F4F7', fg: '#3B4758', vcls: 'mono' },
@@ -742,7 +827,7 @@ class Component extends DCLogic {
     };
     const cf = s.confirm ? CF[s.confirm] : CF.archive;
     return {
-      kpis, steps, tabs, contacts, onsite, docs, pstages, objectives, team, cats, devs, activity, trace, upcoming,
+      kpis, steps, tabs, contacts, devN: D.length, onsite, docs, pstages, objectives, team, cats, devs, activity, trace, upcoming,
       tOverview: s.tab === 'overview', tProject: s.tab === 'project', tInspection: s.tab === 'inspection', tBms: s.tab === 'bms', tPoc: s.tab === 'poc', tContract: s.tab === 'contract', tInventory: s.tab === 'inventory', tActivity: s.tab === 'activity',
       goProject: () => this.setState({ tab: 'project' }), goPoc: () => this.setState({ tab: 'poc' }),
       moreOpen: s.more, moreExp: s.more ? 'true' : 'false', toggleMore: () => this.setState({ more: !s.more }),

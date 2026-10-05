@@ -151,7 +151,7 @@ h1,h2,h3,h4,p{margin:0}
 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
 <button class="btn" onClick="{{openEdit}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg>Edit batch</button>
 <button class="btn" onClick="{{printLabels}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"></path><rect x="3" y="9" width="18" height="8" rx="2"></rect><path d="M6 14h12v7H6z"></path></svg>Print labels</button>
-<a class="btn p" href="DevicePrep.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg>Prepare 14 devices</a>
+<a class="btn p" href="DevicePrep.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg>Prepare {{nUnconf}} devices</a>
 <div style="position: relative">
 <button class="btn ic" aria-label="More actions" aria-expanded="{{menuStr}}" onClick="{{toggleMenu}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h.01M12 12h.01M19 12h.01"></path></svg></button>
 <sc-if value="{{menu}}" hint-placeholder-val="{{ false }}">
@@ -170,7 +170,7 @@ h1,h2,h3,h4,p{margin:0}
 
 <sc-if value="{{archived}}" hint-placeholder-val="{{ false }}">
 <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 10px; background: #EFF0F2; border: 1px solid #D5DBE3; font-size: 13.5px">
-<span style="flex: 1">This batch is archived. Its 20 unit records, deployments and audit history are preserved and still appear in reports.</span>
+<span style="flex: 1">This batch is archived. Its {{total}} unit records, deployments and audit history are preserved and still appear in reports.</span>
 <button class="btn sm" onClick="{{restore}}">Restore</button>
 </div>
 </sc-if>
@@ -180,11 +180,11 @@ h1,h2,h3,h4,p{margin:0}
 <span class="arrow" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
 <div class="ent" style="border-color: #0B7A6B; box-shadow: inset 0 0 0 1px #0B7A6B"><span class="ov" style="font-size: 11px">Batch</span><span class="mono" style="font-weight: 500; font-size: 13.5px">TEL-2026-004</span><span class="muted" style="font-size: 12px">PO-MRD-2026-0412</span></div>
 <span class="arrow" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
-<a class="ent" href="Inventory.dc.html"><span class="ov" style="font-size: 11px">Devices</span><span style="font-weight: 500; font-size: 13.5px">20 Teltonika RUT956</span><span class="muted" style="font-size: 12px">6 with SIM + static IP</span></a>
+<a class="ent" href="Inventory.dc.html"><span class="ov" style="font-size: 11px">Devices</span><span style="font-weight: 500; font-size: 13.5px">{{total}} Teltonika RUT956</span><span class="muted" style="font-size: 12px">{{withSim}} with SIM + static IP</span></a>
 <span class="arrow" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
-<a class="ent" href="Facilities.dc.html"><span class="ov" style="font-size: 11px">Facilities</span><span style="font-weight: 500; font-size: 13.5px">2 facilities</span><span class="muted" style="font-size: 12px">Qatar Foundation · Bank Muscat</span></a>
+<a class="ent" href="Facilities.dc.html"><span class="ov" style="font-size: 11px">Facilities</span><span style="font-weight: 500; font-size: 13.5px">{{facCount}}</span><span class="muted" style="font-size: 12px">{{facNames}}</span></a>
 <span class="arrow" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
-<a class="ent" href="Deployments.dc.html"><span class="ov" style="font-size: 11px">Deployments</span><span style="font-weight: 500; font-size: 13.5px">2 deployments</span><span class="muted" style="font-size: 12px">1 POC · 1 Additional</span></a>
+<a class="ent" href="Deployments.dc.html"><span class="ov" style="font-size: 11px">Deployments</span><span style="font-weight: 500; font-size: 13.5px">{{depCount}}</span><span class="muted" style="font-size: 12px">{{depTypes}}</span></a>
 </section>
 
 <section class="card" aria-label="Quantities">
@@ -194,16 +194,11 @@ h1,h2,h3,h4,p{margin:0}
 </sc-for>
 </div>
 <div style="padding: 16px 18px 18px; border-top: 1px solid #EEF1F4; display: flex; flex-direction: column; gap: 10px">
-<div class="seg" style="height: 14px; border-radius: 7px" role="img" aria-label="14 unconfigured, 4 ready for deployment, 2 deployed, 0 damaged">
-<span style="width: 70%; background: #8A96A8" title="Unconfigured · 14 units · MRD Office, Shelf A1"></span>
-<span style="width: 20%; background: #2F6FE4" title="Ready for deployment · 4 units · MRD Office, Shelf A2"></span>
-<span style="width: 10%; background: #12A374" title="Deployed · 2 units · Qatar Foundation, Bank Muscat"></span>
+<div class="seg" style="height: 14px; border-radius: 7px" role="img" aria-label="{{segAria}}">
+<sc-for list="{{seg}}" as="g" hint-placeholder-count="3"><span style="width: {{g.w}}; background: {{g.c}}" title="{{g.title}}"></span></sc-for>
 </div>
 <div style="display: flex; gap: 20px; flex-wrap: wrap; font-size: 12.5px; color: #3B4758">
-<span class="lg"><i style="background: #8A96A8"></i>Unconfigured <strong>14</strong> · 70%</span>
-<span class="lg"><i style="background: #2F6FE4"></i>Ready for deployment <strong>4</strong> · 20%</span>
-<span class="lg"><i style="background: #12A374"></i>Deployed <strong>2</strong> · 10%</span>
-<span class="lg"><i style="background: #DC3B3A"></i>Damaged <strong>0</strong></span>
+<sc-for list="{{legend}}" as="g" hint-placeholder-count="4"><span class="lg"><i style="background: {{g.c}}"></i>{{g.label}} <strong>{{g.n}}</strong>{{g.pct}}</span></sc-for>
 </div>
 </div>
 </section>
@@ -211,7 +206,7 @@ h1,h2,h3,h4,p{margin:0}
 <section style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
 <div class="card" style="flex: 2 1 620px; min-width: 0">
 <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 18px 18px 14px">
-<div><h2 style="font-size: 16px; font-weight: 600">Units in this batch</h2><p class="muted" style="font-size: 13px">Serials 1108675300 – 1108675319 · showing {{shown}} of 20</p></div>
+<div><h2 style="font-size: 16px; font-weight: 600">Units in this batch</h2><p class="muted" style="font-size: 13px">Serials 1108675300 – 1108675319{{extraSerials}} · showing {{shown}} of {{total}}</p></div>
 <div class="cg" role="group" aria-label="Filter units by status">
 <sc-for list="{{filters}}" as="f" hint-placeholder-count="5"><button class="{{f.cls}}" aria-pressed="{{f.pressed}}" onClick="{{f.pick}}">{{f.label}}<span class="cn">{{f.n}}</span></button></sc-for>
 </div>
@@ -237,9 +232,9 @@ h1,h2,h3,h4,p{margin:0}
 <sc-if value="{{noUnits}}" hint-placeholder-val="{{ false }}">
 <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 40px 16px; text-align: center; border-top: 1px solid #EEF1F4">
 <span style="width: 44px; height: 44px; border-radius: 12px; background: #E1F4EC; color: #0A6648; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg></span>
-<span style="font-weight: 500">No damaged units in this batch.</span>
+<span style="font-weight: 500">{{emptyTitle}}</span>
 <span class="muted" style="font-size: 13px">Units marked damaged during prep or after a return will show here.</span>
-<button class="btn sm" onClick="{{showAll}}">Show all 20 units</button>
+<button class="btn sm" onClick="{{showAll}}">Show all {{total}} units</button>
 </div>
 </sc-if>
 </div>
@@ -287,12 +282,15 @@ h1,h2,h3,h4,p{margin:0}
 <section class="card">
 <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 18px 14px; gap: 12px; flex-wrap: wrap">
 <div><h2 style="font-size: 16px; font-weight: 600">Deployment history</h2><p class="muted" style="font-size: 13px">Units from this batch that have left the MRD Office</p></div>
-<a class="btn sm" href="CreateDeployment.dc.html">Deploy ready units (4)</a>
+<a class="btn sm" href="CreateDeployment.dc.html">Deploy ready units ({{nReady}})</a>
 </div>
 <div class="tw">
 <table class="tbl">
 <thead><tr><th>Ref</th><th>Date</th><th>Facility</th><th>Device</th><th>SIM · IP</th><th>Type</th><th>Deployed by</th></tr></thead>
 <tbody>
+<sc-for list="{{storeDeps}}" as="d" hint-placeholder-count="1">
+<tr><td class="mono"><a href="Deployments.dc.html">{{d.ref}}</a></td><td>{{d.date}}</td><td><a href="FacilityDetail.dc.html" style="color: #0E1726; font-weight: 500">{{d.fac}}</a></td><td><a class="mono" href="DeviceDetail.dc.html">{{d.sn}}</a></td><td><span class="mono">{{d.sim}}</span> <span class="muted">·</span> <span class="mono">{{d.ip}}</span></td><td><span class="{{d.typeCls}}">{{d.type}}</span></td><td>{{d.by}}</td></tr>
+</sc-for>
 <tr><td class="mono"><a href="Deployments.dc.html">DEP-0147</a></td><td>01 Oct 2026</td><td><a href="FacilityDetail.dc.html" style="color: #0E1726; font-weight: 500">Qatar Foundation</a><div class="muted" style="font-size: 12px">Education City, Doha</div></td><td><a class="mono" href="DeviceDetail.dc.html">1108675311</a></td><td><span class="mono">…3001435</span> <span class="muted">·</span> <span class="mono">10.64.12.41</span></td><td><span class="t t-poc">POC</span></td><td>Chetan</td></tr>
 <tr><td class="mono"><a href="Deployments.dc.html">DEP-0146</a></td><td>28 Sep 2026</td><td><a href="FacilityDetail.dc.html" style="color: #0E1726; font-weight: 500">Bank Muscat Head Office</a><div class="muted" style="font-size: 12px">Airport Heights, Muscat</div></td><td><a class="mono" href="DeviceDetail.dc.html">1108675302</a></td><td><span class="mono">…3001419</span> <span class="muted">·</span> <span class="mono">10.64.12.33</span></td><td><span class="t t-add">Additional</span></td><td>Saif</td></tr>
 </tbody>
@@ -310,7 +308,7 @@ h1,h2,h3,h4,p{margin:0}
 <span style="width: 40px; height: 40px; border-radius: 10px; background: #FDEBEA; color: #A3201F; display: flex; align-items: center; justify-content: center; flex: 0 0 40px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1"></rect><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"></path><path d="M10 13h4"></path></svg></span>
 <div style="display: flex; flex-direction: column; gap: 8px">
 <h2 id="arch-t" style="font-size: 17px; font-weight: 600">Archive batch TEL-2026-004?</h2>
-<p class="muted" style="font-size: 13.5px; line-height: 1.5">The batch is hidden from active lists. Its 20 unit records, 2 deployments and the full audit trail are kept. 2 units are still deployed and stay live at their facilities. An Admin can restore it at any time.</p>
+<p class="muted" style="font-size: 13.5px; line-height: 1.5">The batch is hidden from active lists. Its {{total}} unit records, {{depCount}} and the full audit trail are kept. {{nDeployed}} units are still deployed and stay live at their facilities. An Admin can restore it at any time.</p>
 </div>
 </div>
 <div style="display: flex; justify-content: flex-end; gap: 10px; padding: 14px 22px; border-top: 1px solid #EEF1F4; background: #F8FAFB; border-radius: 0 0 14px 14px">
@@ -356,8 +354,30 @@ class Component extends DCLogic {
   // Prototype persistence: this screen's data survives reloads and is shared by every screen in this browser.
   componentDidMount() {
     this._init = JSON.parse(JSON.stringify(this.state));
+    this._onStore = e => { if (!e || !e.key || e.key === 'mrd-proto:store') this.forceUpdate(); };
+    try { window.addEventListener('storage', this._onStore); } catch (e) {}
     try { const raw = window.localStorage.getItem('mrd-proto:v1:BatchDetail'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
   }
+  // Shared prototype store: one record in browser storage that every screen reads and writes (key mrd-proto:store).
+  readStore() {
+    const empty = { v: 1, units: {}, added: [], deployments: [], events: [], catalog: {} };
+    try { const s = JSON.parse(window.localStorage.getItem('mrd-proto:store') || 'null'); return Object.assign(empty, s || {}); } catch (e) { return empty; }
+  }
+  writeStore(mutate) {
+    const s = this.readStore(); mutate(s); s.events = s.events.slice(0, 200);
+    try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {}
+    this.forceUpdate(); return s;
+  }
+  nowLabel() { const d = new Date(); return 'Today, ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  patchUnit(s, ident, patch, prevSt) {
+    const cur = s.units[ident] || {};
+    s.units[ident] = Object.assign({}, cur, patch, { st0: cur.st0 !== undefined ? cur.st0 : (prevSt || ''), upd: this.nowLabel() });
+  }
+  logEvent(s, ev) {
+    const d = new Date();
+    s.events.unshift(Object.assign({ id: 'e' + d.getTime() + Math.random().toString(36).slice(2, 6), at: d.getTime(), when: this.nowLabel(), who: 'Chetan', ini: 'CH', role: 'Admin', source: 'Web' }, ev));
+  }
+  componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
     try { const keep = Object.assign({}, this.state); ["menu", "archiveOpen", "editOpen", "toast", "dPo", "dInv", "dNotes"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:BatchDetail', JSON.stringify(keep)); } catch (e) {}
   }
@@ -371,28 +391,74 @@ class Component extends DCLogic {
     };
   }
   renderVals() {
+    const ST0 = this.readStore();
     const S = this.state;
+    const BATCH = 'TEL-2026-004';
+    const LBL = { unconf: 'Unconfigured', prep: 'In preparation', ready: 'Ready for deployment', reserved: 'Reserved', stock: 'In stock', deployed: 'Deployed', maint: 'Under maintenance', transit: 'In transit', returned: 'Returned', damaged: 'Damaged', retired: 'Retired' };
     const imei = ['860548043912841','860548043912846','860548043912853','860548043912858','860548043912862','860548043912866','860548043912870','860548043912874','860548043912881','860548043912877','860548043912889','860548043912901','860548043912906','860548043912912','860548043912918','860548043912923','860548043912929','860548043912934','860548043912940','860548043912947'];
     const ready = { 4: ['8996802026093001421', '10.64.12.34'], 6: ['8996802026093001424', '10.64.12.35'], 9: ['8996802026093001427', '10.64.12.37'], 13: ['8996802026093001430', '10.64.12.36'] };
     const dep = { 2: ['8996802026093001419', '10.64.12.33', 'Bank Muscat Head Office', 'Deployed · 28 Sep · Saif'], 11: ['8996802026093001435', '10.64.12.41', 'Qatar Foundation', 'Deployed · 01 Oct · Chetan'] };
-    const all = imei.map((im, i) => {
+    const sample = imei.map((im, i) => {
       const sn = '11086753' + (i < 10 ? '0' + i : '' + i);
-      if (dep[i]) return { sn, imei: im, key: 'deployed', status: 'Deployed', cls: 's-deployed', iccid: dep[i][0], ip: dep[i][1], loc: dep[i][2], locHref: 'FacilityDetail.dc.html', last: dep[i][3] };
-      if (ready[i]) return { sn, imei: im, key: 'ready', status: 'Ready for deployment', cls: 's-ready', iccid: ready[i][0], ip: ready[i][1], loc: 'MRD Office · Shelf A2', locHref: 'Inventory.dc.html', last: i === 9 ? 'Configured · 05 Oct 09:40 · Chetan' : 'Configured · 05 Oct · Chetan' };
-      return { sn, imei: im, key: 'unconf', status: 'Unconfigured', cls: 's-unconf', iccid: '—', ip: '—', loc: 'MRD Office · Shelf A1', locHref: 'Inventory.dc.html', last: 'Labelled · 23 Sep · Nitin' };
+      if (dep[i]) return { sn, imei: im, key: 'deployed', status: 'Deployed', cls: 's-deployed', iccid: dep[i][0], ip: dep[i][1], loc: dep[i][2], fac: dep[i][2], locHref: 'FacilityDetail.dc.html', last: dep[i][3] };
+      if (ready[i]) return { sn, imei: im, key: 'ready', status: 'Ready for deployment', cls: 's-ready', iccid: ready[i][0], ip: ready[i][1], loc: 'MRD Office · Shelf A2', inOffice: true, locHref: 'Inventory.dc.html', last: i === 9 ? 'Configured · 05 Oct 09:40 · Chetan' : 'Configured · 05 Oct · Chetan' };
+      return { sn, imei: im, key: 'unconf', status: 'Unconfigured', cls: 's-unconf', iccid: '—', ip: '—', loc: 'MRD Office · Shelf A1', inOffice: true, locHref: 'Inventory.dc.html', last: 'Labelled · 23 Sep · Nitin' };
     });
-    const defs = [['all', 'All'], ['unconf', 'Unconfigured'], ['ready', 'Ready'], ['deployed', 'Deployed'], ['damaged', 'Damaged']];
-    const filters = defs.map(([id, label]) => ({ label, n: id === 'all' ? 20 : all.filter(u => u.key === id).length, cls: 'chip' + (S.f === id ? ' on' : ''), pressed: S.f === id ? 'true' : 'false', pick: () => this.setState({ f: id }) }));
+    // Units created elsewhere (Receive / Import) that belong to this batch.
+    const known = {}; sample.forEach(u => { known[u.sn] = true; });
+    const extra = (ST0.added || []).filter(u => u && u.ident && u.batch === BATCH && !known[u.ident]).map(u => {
+      known[u.ident] = true;
+      return { sn: u.ident, imei: u.imei || '—', key: u.st || 'unconf', status: LBL[u.st || 'unconf'] || u.st, cls: 's-' + (u.st || 'unconf'), iccid: u.sim || '—', ip: u.ip || '—', loc: (u.loc || 'MRD Office') + (u.loc2 ? ' · ' + u.loc2 : ''), inOffice: (u.loc || 'MRD Office') === 'MRD Office', locHref: 'Inventory.dc.html', last: 'Received · ' + (u.upd || 'recently') };
+    });
+    // Overlay shared-store patches (status, SIM, IP, location / facility).
+    const all = sample.concat(extra).map(r => {
+      const u = ST0.units[r.sn];
+      if (!u) return r;
+      const m = Object.assign({}, r);
+      if (u.st && LBL[u.st]) { m.key = u.st; m.status = LBL[u.st]; m.cls = 's-' + u.st; }
+      if (u.imei) m.imei = u.imei;
+      if (u.sim !== undefined) m.iccid = u.sim || '—';
+      if (u.ip !== undefined) m.ip = u.ip || '—';
+      const fac = u.fac || (m.key === 'deployed' && u.loc && u.loc !== 'MRD Office' ? u.loc : '');
+      if (m.key === 'deployed' && (fac || m.fac)) { m.fac = fac || m.fac; m.loc = m.fac; m.locHref = 'FacilityDetail.dc.html'; m.inOffice = false; }
+      else if (u.loc) { m.fac = ''; m.loc = u.loc + (u.loc2 ? ' · ' + u.loc2 : ''); m.locHref = 'Inventory.dc.html'; m.inOffice = u.loc === 'MRD Office'; }
+      else if (m.key !== 'deployed' && r.key === 'deployed') { m.fac = ''; }
+      if (u.upd) m.last = (m.status || 'Updated') + ' · ' + u.upd + (u.configuredBy && m.key === 'ready' ? ' · ' + u.configuredBy : '');
+      return m;
+    });
+    const total = all.length;
+    const cnt = k => all.filter(u => u.key === k).length;
+    const nUnconf = cnt('unconf'), nPrep = cnt('prep'), nReady = cnt('ready'), nDeployed = cnt('deployed'), nDamaged = cnt('damaged');
+    const nOther = total - nUnconf - nPrep - nReady - nDeployed - nDamaged;
+    const available = all.filter(u => u.inOffice && ['unconf', 'prep', 'ready', 'stock', 'reserved'].indexOf(u.key) >= 0).length;
+    const remaining = all.filter(u => ['deployed', 'retired'].indexOf(u.key) < 0).length;
+    const facs = []; all.forEach(u => { if (u.key === 'deployed' && u.fac && facs.indexOf(u.fac) < 0) facs.push(u.fac); });
+    const defs = [['all', 'All'], ['unconf', 'Unconfigured'], ['prep', 'In prep'], ['ready', 'Ready'], ['deployed', 'Deployed'], ['damaged', 'Damaged']].filter(([id]) => id !== 'prep' || nPrep > 0 || S.f === 'prep');
+    const filters = defs.map(([id, label]) => ({ label, n: id === 'all' ? total : cnt(id), cls: 'chip' + (S.f === id ? ' on' : ''), pressed: S.f === id ? 'true' : 'false', pick: () => this.setState({ f: id }) }));
     const units = all.filter(u => S.f === 'all' || u.key === S.f);
     const qty = [
-      { label: 'Received', v: 20, sub: '22 Sep 2026', c: '#3B4758' },
-      { label: 'Available (in office)', v: 18, sub: 'Shelf A1 · A2', c: '#1A8FAD' },
-      { label: 'Unconfigured', v: 14, sub: 'need SIM + IP', c: '#8A96A8' },
-      { label: 'Ready', v: 4, sub: 'configured 05 Oct', c: '#2F6FE4' },
-      { label: 'Deployed', v: 2, sub: '2 facilities', c: '#12A374' },
-      { label: 'Damaged', v: 0, sub: 'none reported', c: '#DC3B3A' },
-      { label: 'Remaining', v: 18, sub: 'not yet deployed', c: '#0B7A6B' }
+      { label: 'Received', v: total, sub: '22 Sep 2026', c: '#3B4758' },
+      { label: 'Available (in office)', v: available, sub: 'Shelf A1 · A2', c: '#1A8FAD' },
+      { label: 'Unconfigured', v: nUnconf, sub: nPrep ? nPrep + ' more in preparation' : 'need SIM + IP', c: '#8A96A8' },
+      { label: 'Ready', v: nReady, sub: 'configured & tested', c: '#2F6FE4' },
+      { label: 'Deployed', v: nDeployed, sub: facs.length + (facs.length === 1 ? ' facility' : ' facilities'), c: '#12A374' },
+      { label: 'Damaged', v: nDamaged, sub: nDamaged ? 'blocked from deployment' : 'none reported', c: '#DC3B3A' },
+      { label: 'Remaining', v: remaining, sub: 'not yet deployed', c: '#0B7A6B' }
     ];
+    const pct = n => Math.round(n / Math.max(1, total) * 100);
+    const segDefs = [['Unconfigured', nUnconf, '#8A96A8'], ['In preparation', nPrep, '#E08A00'], ['Ready for deployment', nReady, '#2F6FE4'], ['Deployed', nDeployed, '#12A374'], ['Damaged', nDamaged, '#DC3B3A'], ['Other (maintenance, transit, retired…)', nOther, '#646C79']];
+    const seg = segDefs.filter(d => d[1] > 0).map(([label, n, c]) => ({ w: (n / Math.max(1, total) * 100).toFixed(2) + '%', c, title: label + ' · ' + n + ' units' }));
+    const legend = segDefs.filter(d => d[1] > 0 || d[0] === 'Damaged').map(([label, n, c]) => ({ label, n, c, pct: n ? ' · ' + pct(n) + '%' : '' }));
+    const segAria = segDefs.filter(d => d[1] > 0).map(([label, n]) => n + ' ' + label.toLowerCase()).join(', ');
+    // Deployments recorded in the shared store that include units of this batch.
+    const storeDeps = [];
+    (ST0.deployments || []).forEach(d => (d.items || []).forEach(it => {
+      if (!known[it.ident]) return;
+      const r = all.find(u => u.sn === it.ident) || {};
+      storeDeps.push({ ref: d.ref || '—', date: d.date || '', fac: d.fac || '—', sn: it.ident, sim: r.iccid && r.iccid !== '—' ? '…' + String(r.iccid).slice(-7) : '—', ip: r.ip || '—', type: d.type || '—', typeCls: d.type === 'POC' ? 't t-poc' : d.type === 'Contract' ? 't t-con' : d.type === 'Replacement' ? 't t-rep' : 't t-add', by: d.by || '—' });
+    }));
+    const depAll = [{ type: 'POC' }, { type: 'Additional' }].concat(storeDeps.filter((d, i, a) => a.findIndex(x => x.ref === d.ref) === i));
+    const typeCount = {}; depAll.forEach(d => { typeCount[d.type] = (typeCount[d.type] || 0) + 1; });
     const tl = [
       ['CH', '#CDEFE7', 'Chetan', 'configured 4 units → Ready for deployment:', '1108675304, 06, 09, 13', 'Mon 5 Oct 2026, 09:40', 'mono'],
       ['CH', '#CDEFE7', 'Chetan', 'deployed 1 unit to', 'Qatar Foundation · POC', 'Thu 1 Oct 2026, 13:20', ''],
@@ -402,12 +468,27 @@ class Component extends DCLogic {
       ['NI', '#F6E3C4', 'Nitin', 'printed and applied asset labels to', '20 units', 'Wed 23 Sep 2026, 09:05', ''],
       ['NI', '#F6E3C4', 'Nitin', 'received batch into MRD Office · Shelf A1:', 'TEL-2026-004 · 20 units', 'Tue 22 Sep 2026, 10:15', '']
     ];
-    const timeline = tl.map(([ini, bg, who, what, obj, when, objCls]) => ({ ini, bg, who, what, obj, when, objCls }));
+    // Store events that mention this batch or any of its serials, newest first, ahead of the sample activity.
+    const idents = Object.keys(known);
+    const AV = { CH: '#CDEFE7', NI: '#F6E3C4', AI: '#E6DDFB', RA: '#DCE6FB', SA: '#FBE0DC' };
+    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Record corrected': 'corrected the record of', 'Note added': 'added a note to' };
+    const storeTl = ST0.events.filter(e => { const t = String(e.item || '') + ' ' + String(e.note || ''); return t.indexOf(BATCH) >= 0 || idents.some(id => t.indexOf(id) >= 0); }).map(e => {
+      const id = idents.find(x => String(e.item || '').indexOf(x) >= 0);
+      const obj = (id || e.item || '') + ((e.from && e.from !== '—') || e.to ? ' · ' + (e.from && e.from !== '—' ? e.from + ' → ' : '') + (e.to || '') : '') + (e.action === 'Note added' && e.note ? ' · ' + e.note : '');
+      return { ini: e.ini || '··', bg: AV[e.ini] || '#E3E7EC', who: e.who || '—', what: VERB[e.action] || String(e.action || '').toLowerCase(), obj, when: e.when || '', objCls: 'mono' };
+    });
+    const timeline = storeTl.concat(tl.map(([ini, bg, who, what, obj, when, objCls]) => ({ ini, bg, who, what, obj, when, objCls })));
+    const emptyTitle = S.f === 'all' ? 'No units in this batch.' : 'No ' + ((defs.find(d => d[0] === S.f) || [0, 'matching'])[1]).toLowerCase() + ' units in this batch.';
+    const extraSerials = extra.length ? ' + ' + extra.length + ' added' : '';
+    const withSim = all.filter(u => u.iccid && u.iccid !== '—' && u.ip && u.ip !== '—').length;
     const closeAll = () => this.setState({ archiveOpen: false, editOpen: false, menu: false });
     return {
       live: !S.archived, archived: S.archived, menu: S.menu, menuStr: S.menu ? 'true' : 'false',
       archiveOpen: S.archiveOpen, editOpen: S.editOpen, hasToast: S.toast !== '', toast: S.toast,
       qty, filters, units, shown: units.length, noUnits: units.length === 0, timeline,
+      total, nUnconf, nReady, nDeployed, withSim, seg, legend, segAria, storeDeps, emptyTitle, extraSerials,
+      facCount: facs.length + (facs.length === 1 ? ' facility' : ' facilities'), facNames: facs.join(' · ') || 'none yet',
+      depCount: depAll.length + (depAll.length === 1 ? ' deployment' : ' deployments'), depTypes: Object.keys(typeCount).map(k => typeCount[k] + ' ' + k).join(' · '),
       po: S.po, inv: S.inv, notes: S.notes, dPo: S.dPo, dInv: S.dInv, dNotes: S.dNotes,
       toggleMenu: () => this.setState({ menu: !S.menu }),
       openArchive: () => this.setState({ menu: false, archiveOpen: true }),
