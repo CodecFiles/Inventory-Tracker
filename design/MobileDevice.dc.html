@@ -89,8 +89,17 @@ h1,h2,h3,h4,p{margin:0}
 <header class="ab">
 <a class="tap" href="Inventory.dc.html" aria-label="Back to devices"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></a>
 <h1 style="flex: 1; text-align: center; font-size: 16px; font-weight: 600">Device</h1>
-<button class="tap" aria-label="More actions"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h.01M12 12h.01M19 12h.01"></path></svg></button>
+<button class="tap" aria-label="More actions" aria-haspopup="menu" aria-expanded="{{menuAria}}" onClick="{{toggleMenu}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h.01M12 12h.01M19 12h.01"></path></svg></button>
+<sc-if value="{{menuOpen}}" hint-placeholder-val="{{ false }}">
+<div role="menu" style="position: absolute; right: 8px; top: 52px; z-index: 30; width: 250px; background: #fff; border: 1px solid #E3E7EC; border-radius: 12px; box-shadow: 0 12px 32px rgba(14,23,38,.18); padding: 6px; display: flex; flex-direction: column">
+<a role="menuitem" href="{{mapsHref}}" target="_blank" rel="noopener" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 10px; border-radius: 8px; color: #1B2638; font-size: 14px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>Directions to {{facName}}</a>
+<button role="menuitem" onClick="{{copySn}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 10px; border: 0; border-radius: 8px; background: transparent; font: inherit; font-size: 14px; color: #1B2638; cursor: pointer; text-align: left"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a1 1 0 0 1 1-1h10"></path></svg>Copy serial number</button>
+<a role="menuitem" href="DeviceDetail.dc.html" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 10px; border-radius: 8px; color: #1B2638; font-size: 14px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path></svg>Open full device record</a>
+<button role="menuitem" onClick="{{menuIssue}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 10px; border: 0; border-radius: 8px; background: transparent; font: inherit; font-size: 14px; color: #A3201F; cursor: pointer; text-align: left"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9.5 17H2.5z"></path><path d="M12 10v4M12 17h.01"></path></svg>Report issue</button>
+</div>
+</sc-if>
 </header>
+<sc-if value="{{menuOpen}}" hint-placeholder-val="{{ false }}"><button aria-label="Close menu" onClick="{{toggleMenu}}" style="position: fixed; inset: 0; z-index: 9; background: transparent; border: 0; padding: 0; cursor: default"></button></sc-if>
 
 <main style="flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 14px">
 
@@ -108,6 +117,9 @@ h1,h2,h3,h4,p{margin:0}
 </div>
 </section>
 
+<sc-if value="{{hasMsg}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; gap: 10px; align-items: center; padding: 10px 14px; border-radius: 12px; background: #0E1726; color: #fff; font-size: 13.5px"><span style="flex: 1; overflow-wrap: anywhere">{{msg}}</span><button onClick="{{dismissMsg}}" aria-label="Dismiss" style="border: 0; background: transparent; color: #B3BDCB; cursor: pointer; min-width: 44px; min-height: 44px">✕</button></div>
+</sc-if>
 <sc-if value="{{verified}}" hint-placeholder-val="{{ false }}">
 <div role="status" style="display: flex; gap: 10px; padding: 12px 14px; border-radius: 12px; background: #E1F4EC; color: #0A6648; font-size: 13.5px">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 20px"><circle cx="12" cy="12" r="9"></circle><path d="M8 12l3 3 5-6"></path></svg>
@@ -122,7 +134,7 @@ h1,h2,h3,h4,p{margin:0}
 </sc-if>
 
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px">
-<button class="btn p big" onClick="{{verify}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"></path><path d="M7 8v8M10 8v8M13 8v8M17 8v8"></path></svg>Scan to verify</button>
+<button class="btn p big" onClick="{{openScan}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"></path><path d="M7 8v8M10 8v8M13 8v8M17 8v8"></path></svg>Scan to verify</button>
 <button class="btn big" onClick="{{openIssue}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9.5 17H2.5z"></path><path d="M12 10v4M12 17h.01"></path></svg>Report issue</button>
 </div>
 
@@ -177,10 +189,25 @@ h1,h2,h3,h4,p{margin:0}
 <nav class="tabs" aria-label="App">
 <a class="tab" href="Main.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"></path><path d="M5 10v10h14V10"></path></svg>Home</a>
 <a class="tab" href="Search.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search</a>
-<button class="tab" onClick="{{verify}}" style="border: 0; background: transparent; font: inherit; font-size: 11px; font-weight: 500; cursor: pointer; color: #0E1726"><span style="width: 44px; height: 44px; margin-top: -18px; border-radius: 50%; background: #0B7A6B; color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(11,122,107,.35)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"></path><path d="M7 12h10"></path></svg></span>Scan</button>
+<button class="tab" onClick="{{openScan}}" style="border: 0; background: transparent; font: inherit; font-size: 11px; font-weight: 500; cursor: pointer; color: #0E1726"><span style="width: 44px; height: 44px; margin-top: -18px; border-radius: 50%; background: #0B7A6B; color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(11,122,107,.35)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"></path><path d="M7 12h10"></path></svg></span>Scan</button>
 <a class="tab on" href="Inventory.dc.html" aria-current="page"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="18" height="7" rx="2"></rect><path d="M7 16.5h.01M11 16.5h.01"></path><path d="M17 13V5"></path></svg>Devices</a>
 <a class="tab" href="Users.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>Me</a>
 </nav>
+
+<sc-if value="{{scanOpen}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{closeScan}}" style="position: fixed; inset: 0; background: rgba(14,23,38,.45); z-index: 40"></div>
+<div role="dialog" aria-modal="true" aria-label="Scan to verify" style="position: fixed; left: 0; right: 0; bottom: 0; z-index: 41; background: #fff; border-radius: 18px 18px 0 0; padding: 10px 16px 20px; display: flex; flex-direction: column; gap: 12px; max-width: 390px; margin: 0 auto">
+<span style="width: 40px; height: 4px; border-radius: 2px; background: #D5DBE3; align-self: center"></span>
+<div><h2 style="font-size: 17px; font-weight: 600">Scan to verify</h2><p class="muted" style="font-size: 13px">Scan the label on the router (Bluetooth scanner or keyboard), or type the serial or device ID. No camera is used.</p></div>
+<label for="scan-in" style="font-size: 13px; font-weight: 500; color: #3B4758">Scanned value</label>
+<input id="scan-in" autofocus="autofocus" value="{{scanVal}}" onChange="{{onScanVal}}" placeholder="e.g. 1108675311" style="height: 48px; border: 1px solid {{scanBorder}}; border-radius: 10px; padding: 0 12px; font-family: 'Geist Mono', ui-monospace, monospace; font-size: 16px">
+<sc-if value="{{scanHasErr}}" hint-placeholder-val="{{ false }}"><p role="alert" style="font-size: 13px; color: #A3201F; background: #FDEBEA; padding: 10px 12px; border-radius: 10px">{{scanErr}}</p></sc-if>
+<div style="display: grid; grid-template-columns: 1fr 1.4fr; gap: 10px">
+<button class="btn big" onClick="{{closeScan}}">Cancel</button>
+<button class="btn p big" onClick="{{verify}}">Verify</button>
+</div>
+</div>
+</sc-if>
 
 <sc-if value="{{issue}}" hint-placeholder-val="{{ false }}">
 <div onClick="{{closeIssue}}" style="position: fixed; inset: 0; background: rgba(14,23,38,.45); z-index: 40"></div>
@@ -231,16 +258,17 @@ class Component extends DCLogic {
   componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
     // verified / reported now live in the shared store (events), so they are not kept per screen.
-    try { const keep = Object.assign({}, this.state); ["issue", "verified", "reported"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:MobileDevice', JSON.stringify(keep)); } catch (e) {}
+    try { const keep = Object.assign({}, this.state); ["issue", "verified", "reported", "scan", "menu", "msg"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:MobileDevice', JSON.stringify(keep)); } catch (e) {}
   }
   constructor(props) {
     super(props);
-    this.state = { idOpen: true, connOpen: true, issue: false, issueType: 'conn', note: '' };
+    this.state = { idOpen: true, connOpen: true, issue: false, issueType: 'conn', note: '', scan: null, menu: false, msg: '' };
   }
   renderVals() {
     const st = this.state;
     const ST0 = this.readStore();
-    const SN = '1108675311', NAME = 'Teltonika RUT956', ITEM = NAME + ' ' + SN, HREF = 'MobileDevice.dc.html';
+    const SN = '1108675311', DEVID = 'MRD-TEL-0419', NAME = 'Teltonika RUT956', ITEM = NAME + ' ' + SN, HREF = 'MobileDevice.dc.html';
+    const FAC_AREA = { 'Qatar Foundation': 'Education City, Doha', 'Bank Muscat Head Office': 'Airport Heights, Muscat', 'Lulu Hypermarket': 'Bausher, Muscat', 'Al Khuwair Business Tower': 'Al Khuwair, Muscat', 'Sohar Logistics Hub': 'Sohar', 'Ruwi Medical Centre': 'Ruwi, Muscat', 'MRD Office': 'Muscat' };
     // Sample record for this device; the shared store overlays it.
     const BASE = { st: 'deployed', loc: 'Qatar Foundation', loc2: 'Plant room B1 · BMS panel', fac: 'Qatar Foundation', type: 'POC', sim: '8996802026093001435', msisdn: '+968 7912 3051', ip: '10.64.12.41' };
     const P = (ST0.units || {})[SN] || {};
@@ -289,9 +317,28 @@ class Component extends DCLogic {
       idOpen: st.idOpen, idAria: st.idOpen ? 'true' : 'false', idRot: st.idOpen ? 'rotate(180deg)' : 'none', toggleId: () => this.setState({ idOpen: !this.state.idOpen }),
       connOpen: st.connOpen, connAria: st.connOpen ? 'true' : 'false', connRot: st.connOpen ? 'rotate(180deg)' : 'none', toggleConn: () => this.setState({ connOpen: !this.state.connOpen }),
       verified: !!vEv, verifiedWhen: vEv ? String(vEv.when || '').replace(/^Today/, 'today') : '', verifiedWho: vEv ? vEv.who || '—' : '',
+      // Scan to verify: the scanned / typed value must match this unit's serial or device ID.
+      scanOpen: !!st.scan, openScan: () => this.setState({ scan: { val: '', err: '' }, menu: false }), closeScan: () => this.setState({ scan: null }),
+      scanVal: st.scan ? st.scan.val : '', onScanVal: e => this.setState({ scan: { val: e.target.value, err: '' } }),
+      scanErr: st.scan ? st.scan.err : '', scanHasErr: !!(st.scan && st.scan.err), scanBorder: st.scan && st.scan.err ? '#B42318' : '#D5DBE3',
       verify: () => {
-        this.writeStore(s => { this.logEvent(s, { action: 'Verified on site', source: 'Mobile', item: ITEM, itemHref: HREF, from: '', to: facName, note: 'Scanned label matches S/N' }); });
+        const raw = String((this.state.scan || {}).val || '').replace(/\s+/g, '').toUpperCase();
+        if (!raw) { this.setState({ scan: { val: '', err: 'Nothing scanned yet. Scan the label or type the serial.' } }); return; }
+        if (raw !== SN && raw !== DEVID) { this.setState({ scan: { val: (this.state.scan || {}).val || '', err: 'Scanned “' + raw + '” doesn’t match this device (S/N ' + SN + ' · ' + DEVID + '). Check you have the right unit.' } }); return; }
+        this.writeStore(s => { this.logEvent(s, { action: 'Verified on site', source: 'Mobile', item: ITEM, itemHref: HREF, from: '', to: facName, note: 'Scanned ' + (raw === SN ? 'S/N' : 'device ID') + ' matches label' }); });
+        this.setState({ scan: null });
       },
+      // More actions menu.
+      menuOpen: !!st.menu, menuAria: st.menu ? 'true' : 'false', toggleMenu: () => this.setState({ menu: !this.state.menu }),
+      mapsHref: 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(facName + ', ' + (FAC_AREA[facName] || 'Oman')),
+      menuIssue: () => this.setState({ menu: false, issue: true }),
+      copySn: () => {
+        const ok = () => this.setState({ menu: false, msg: 'Serial ' + SN + ' copied' });
+        const no = () => this.setState({ menu: false, msg: 'Clipboard not available here. Serial: ' + SN });
+        try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(SN).then(ok, no); return; } } catch (e) {}
+        no();
+      },
+      hasMsg: !!st.msg, msg: st.msg || '', dismissMsg: () => this.setState({ msg: '' }),
       issue: st.issue, openIssue: () => this.setState({ issue: true }), closeIssue: () => this.setState({ issue: false }),
       note: st.note, onNote: e => this.setState({ note: e.target.value }),
       reported: !!iEv, issueLabel: iEv ? iEv.issue || '' : '', ticket: iEv ? iEv.ticket || 'ISS-0031' : '',
@@ -308,270 +355,6 @@ class Component extends DCLogic {
         });
         this.setState({ issue: false, note: '' });
       }
-    };
-  }
-}
-</script>
-</head>
-<body>
-<x-dc>
-<helmet>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
-<style>
-body{margin:0;background:#F4F6F8;color:#0E1726;font-family:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
-*{box-sizing:border-box}
-a{color:#0B7A6B;text-decoration:none}a:hover{color:#075C51}
-h1,h2,h3,h4,p{margin:0}
-.mono{font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;letter-spacing:-.01em}
-.muted{color:#5E6B7D}
-.side{flex:0 0 248px;background:#0C1424;padding:18px 12px 16px;display:flex;flex-direction:column;gap:1px}
-.nav{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:8px;color:#B3BDCB;font-size:13.5px}
-.nav:hover{background:#152036;color:#fff}
-.nav.on{background:#1C2A42;color:#fff;box-shadow:inset 2px 0 0 #2BC4A8}
-.nav svg{flex:0 0 16px;width:16px;height:16px}
-.nav .ct{margin-left:auto;font-size:11px;font-weight:600;background:#2BC4A8;color:#04211C;border-radius:999px;padding:1px 7px}
-.sec{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#7F8CA0;padding:16px 10px 6px;font-weight:500}
-.mtop{display:none}
-.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 32px;background:#fff;border-bottom:1px solid #E3E7EC}
-.srch{flex:1 1 320px;max-width:560px;display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border:1px solid #DCE1E8;border-radius:10px;background:#F8FAFB;color:#5E6B7D;font-size:13.5px}
-.srch:hover{border-color:#B9C2CE;color:#3B4758}
-.kbd{margin-left:auto;font-family:'Geist Mono',monospace;font-size:11px;border:1px solid #DCE1E8;border-radius:5px;padding:1px 6px;background:#fff;color:#5E6B7D}
-.main{padding:28px 32px 48px;max-width:1400px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:24px}
-.card{background:#fff;border:1px solid #E3E7EC;border-radius:12px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 14px;border-radius:9px;border:1px solid #D5DBE3;background:#fff;color:#1B2638;font:inherit;font-size:13.5px;font-weight:500;cursor:pointer;white-space:nowrap}
-.btn:hover{background:#F4F6F8;color:#0E1726}
-.btn.p{background:#0B7A6B;border-color:#0B7A6B;color:#fff}.btn.p:hover{background:#08695C;color:#fff}
-.btn.sm{height:32px;padding:0 10px;font-size:12.5px;border-radius:8px}
-.btn.ic{width:40px;padding:0}
-.btn svg{width:16px;height:16px}
-.b{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;background:#EEF1F5;color:#3E4A5C}
-.b::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
-.s-unconf{background:#EEF1F5;color:#3E4A5C}.s-prep{background:#FFF3DC;color:#8A4B00}.s-ready{background:#E6EEFF;color:#1D4FB8}.s-reserved{background:#F0EAFE;color:#5B32B4}.s-deployed{background:#E1F4EC;color:#0A6648}.s-stock{background:#E3F2F6;color:#0E5E73}.s-maint{background:#FFEDE3;color:#9A3D0B}.s-damaged{background:#FDEBEA;color:#A3201F}.s-transit{background:#E9EDFC;color:#3346A8}.s-returned{background:#F1EEE8;color:#5E554A}.s-retired{background:#EFF0F2;color:#646C79}
-.g-insp{background:#EEF1F5;color:#3E4A5C}.g-bms{background:#E3F2F6;color:#0E5E73}.g-poc{background:#F0EAFE;color:#5B32B4}.g-study{background:#FFF3DC;color:#8A4B00}.g-cpend{background:#E6EEFF;color:#1D4FB8}.g-contract{background:#E1F4EC;color:#0A6648}.g-ops{background:#0B7A6B;color:#fff}.g-done{background:#EFF0F2;color:#646C79}.g-hold{background:#FDEBEA;color:#A3201F}
-.t{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:6px;font-size:11.5px;font-weight:600;letter-spacing:.02em;border:1px solid}
-.t-poc{color:#5B32B4;border-color:#D7C8FA;background:#FAF7FF}.t-con{color:#0A6648;border-color:#BFE3D3;background:#F4FBF8}.t-rep{color:#8A4B00;border-color:#F3D9A6;background:#FFFBF2}.t-add{color:#1D4FB8;border-color:#C8D8FA;background:#F6F9FF}
-.tw{overflow-x:auto}
-.tbl{width:100%;border-collapse:collapse;font-size:13px}
-.tbl th{text-align:left;font-weight:500;color:#5E6B7D;font-size:12px;padding:10px 14px;border-bottom:1px solid #E3E7EC;background:#F8FAFB;white-space:nowrap}
-.tbl td{padding:11px 14px;border-bottom:1px solid #EEF1F4;white-space:nowrap;vertical-align:middle}
-.tbl tr:hover td{background:#F8FAFB}
-.tbl tr:last-child td{border-bottom:0}
-.ov{font-size:12px;font-weight:500;color:#5E6B7D;text-transform:uppercase;letter-spacing:.06em}
-.kpi{padding:16px 18px;display:flex;flex-direction:column;gap:6px;color:#0E1726}
-.kpi:hover{border-color:#B9C2CE;color:#0E1726}
-.kpi .n{font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
-.seg{display:flex;gap:2px;height:8px;border-radius:4px;overflow:hidden}
-.seg span{display:block;height:100%}
-.row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-top:1px solid #EEF1F4;color:#0E1726}
-.row:hover{background:#F8FAFB;color:#0E1726}
-.chip{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;border:0;background:transparent;font:inherit;font-size:13px;color:#3B4758;cursor:pointer}
-.chip.on{background:#fff;color:#0E1726;box-shadow:0 1px 2px rgba(14,23,38,.12)}
-.ab{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:4px;height:56px;padding:0 6px;background:#fff;border-bottom:1px solid #E3E7EC}
-.tap{width:44px;height:44px;border:0;border-radius:10px;background:transparent;color:#1B2638;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
-.tap:hover{background:#F1F4F7;color:#0E1726}
-.big{height:52px;font-size:15px;border-radius:12px;width:100%}
-.big svg{width:20px;height:20px}
-.fr{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 14px;border-top:1px solid #EEF1F4;color:#0E1726}
-.fr:first-child{border-top:0}
-.fr .ico{width:32px;height:32px;border-radius:9px;background:#F1F4F7;color:#3B4758;display:flex;align-items:center;justify-content:center;flex:0 0 32px}
-.fr .k{display:block;font-size:12px;color:#5E6B7D}
-.fr .v{display:block;font-size:14px;font-weight:500;overflow-wrap:anywhere}
-.acc{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:52px;padding:0 16px;border:0;background:transparent;font:inherit;font-size:15px;font-weight:600;color:#0E1726;cursor:pointer;text-align:left}
-.acc svg{transition:transform .15s}
-.kv{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px;padding:8px 16px;border-top:1px solid #EEF1F4;font-size:13.5px}
-.kv .k{color:#5E6B7D;flex:0 0 auto}
-.kv .v{text-align:right;overflow-wrap:anywhere;min-width:0}
-.tabs{position:sticky;bottom:0;z-index:10;display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border-top:1px solid #E3E7EC;padding:6px 4px 10px}
-.tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:48px;font-size:11px;font-weight:500;color:#5E6B7D}
-.tab.on{color:#0B7A6B}
-.opt{display:flex;align-items:center;gap:12px;width:100%;min-height:48px;padding:0 14px;border:1px solid #E3E7EC;border-radius:10px;background:#fff;font:inherit;font-size:14px;color:#1B2638;cursor:pointer;text-align:left}
-.opt .rd{width:18px;height:18px;border-radius:50%;border:2px solid #8794A6;flex:0 0 18px}
-.opt.on{border-color:#0B7A6B;background:#F4FBF8}
-.opt.on .rd{border:5px solid #0B7A6B}
-@media (max-width:900px){.side{display:none}.mtop{display:flex}.main{padding:20px 16px 40px}.top{padding:12px 16px}}
-</style>
-</helmet>
-<div style="width: 390px; min-height: 1640px; margin: 0 auto; background: #F4F6F8; display: flex; flex-direction: column; position: relative">
-
-<header class="ab">
-<a class="tap" href="Inventory.dc.html" aria-label="Back to devices"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></a>
-<h1 style="flex: 1; text-align: center; font-size: 16px; font-weight: 600">Device</h1>
-<button class="tap" aria-label="More actions"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h.01M12 12h.01M19 12h.01"></path></svg></button>
-</header>
-
-<main style="flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 14px">
-
-<section class="card" style="padding: 16px; display: flex; flex-direction: column; gap: 12px">
-<div style="display: flex; gap: 14px; align-items: center">
-<div style="width: 60px; height: 60px; border-radius: 12px; background: #E9EEF2; color: #5E6B7D; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; flex: 0 0 60px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="13" width="18" height="7" rx="2"></rect><path d="M7 16.5h.01M11 16.5h.01"></path><path d="M17 13V5"></path><path d="M14 7.5a4 4 0 0 1 6 0"></path></svg><span style="font-size: 9.5px">Photo</span></div>
-<div style="min-width: 0; display: flex; flex-direction: column; gap: 2px">
-<span style="font-size: 13px; color: #3B4758">Teltonika RUT956</span>
-<span class="mono" style="font-size: 22px; font-weight: 500; letter-spacing: 0; line-height: 1.2">1108675311</span>
-<span class="muted" style="font-size: 12px">Device ID <span class="mono" style="font-size: 12px">MRD-TEL-0419</span></span>
-</div>
-</div>
-<div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center">
-<span class="{{stCls}}">{{stLabel}}</span><sc-if value="{{hasType}}" hint-placeholder-val="{{ true }}"><span class="{{typeCls}}">{{typeLabel}}</span></sc-if><span class="muted" style="font-size: 12px">{{sinceLabel}}</span>
-</div>
-</section>
-
-<sc-if value="{{verified}}" hint-placeholder-val="{{ false }}">
-<div role="status" style="display: flex; gap: 10px; padding: 12px 14px; border-radius: 12px; background: #E1F4EC; color: #0A6648; font-size: 13.5px">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 20px"><circle cx="12" cy="12" r="9"></circle><path d="M8 12l3 3 5-6"></path></svg>
-<span><strong style="font-weight: 600">Verified on site.</strong> Scanned label matches S/N 1108675311 at {{facName}} · {{verifiedWhen}} · {{verifiedWho}}</span>
-</div>
-</sc-if>
-<sc-if value="{{reported}}" hint-placeholder-val="{{ false }}">
-<div role="status" style="display: flex; gap: 10px; padding: 12px 14px; border-radius: 12px; background: #FFEDE3; color: #9A3D0B; font-size: 13.5px">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 20px"><path d="M12 3l9.5 17H2.5z"></path><path d="M12 10v4M12 17h.01"></path></svg>
-<span><strong style="font-weight: 600">Issue reported:</strong> {{issueLabel}}. {{issueEffect}}Operations (Nitin, Aisha) notified · ticket <span class="mono">{{ticket}}</span></span>
-</div>
-</sc-if>
-
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px">
-<button class="btn p big" onClick="{{verify}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"></path><path d="M7 8v8M10 8v8M13 8v8M17 8v8"></path></svg>Scan to verify</button>
-<button class="btn big" onClick="{{openIssue}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9.5 17H2.5z"></path><path d="M12 10v4M12 17h.01"></path></svg>Report issue</button>
-</div>
-
-<section class="card" aria-label="Quick facts">
-<sc-for list="{{facts}}" as="x" hint-placeholder-count="5">
-<a class="fr" href="{{x.href}}">
-<span class="ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{x.icon}}"></path></svg></span>
-<span style="flex: 1; min-width: 0"><span class="k">{{x.k}}</span><span class="{{x.cls}}">{{x.v}}</span></span>
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8794A6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg>
-</a>
-</sc-for>
-</section>
-
-<section class="card">
-<button class="acc" onClick="{{toggleId}}" aria-expanded="{{idAria}}">Identity<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="transform: {{idRot}}"><path d="M6 9l6 6 6-6"></path></svg></button>
-<sc-if value="{{idOpen}}" hint-placeholder-val="{{ true }}">
-<sc-for list="{{identity}}" as="r" hint-placeholder-count="5">
-<div class="kv"><span class="k">{{r.k}}</span><span class="v mono" style="font-size: 13px">{{r.v}}</span></div>
-</sc-for>
-</sc-if>
-</section>
-
-<section class="card">
-<button class="acc" onClick="{{toggleConn}}" aria-expanded="{{connAria}}">Connectivity<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="transform: {{connRot}}"><path d="M6 9l6 6 6-6"></path></svg></button>
-<sc-if value="{{connOpen}}" hint-placeholder-val="{{ true }}">
-<div class="kv"><span class="k">Carrier</span><span class="v">Omantel M2M</span></div>
-<div class="kv"><span class="k">ICCID</span><a class="v mono" style="font-size: 13px" href="SimInventory.dc.html">{{simLabel}}</a></div>
-<div class="kv"><span class="k">Phone</span><span class="v mono" style="font-size: 13px">{{msisdnLabel}}</span></div>
-<div class="kv"><span class="k">IP address</span><span class="v mono" style="font-size: 13px">{{ipLabel}}</span></div>
-<div class="kv"><span class="k">APN</span><span class="v mono" style="font-size: 13px">mrd.m2m</span></div>
-<div style="margin: 4px 16px 16px; padding: 10px 12px; border-radius: 10px; background: #F4F6F8; display: flex; gap: 10px; font-size: 12.5px; color: #3B4758">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 18px" aria-hidden="true"><path d="M2 8.5a15 15 0 0 1 20 0M5 12a10 10 0 0 1 14 0M8.5 15.5a5 5 0 0 1 7 0M12 19h.01"></path><path d="M3 3l18 18"></path></svg>
-<span>Connectivity monitoring not connected. Last on-site test passed at deployment, 01 Oct 2026.</span>
-</div>
-</sc-if>
-</section>
-
-<section class="card">
-<div style="display: flex; justify-content: space-between; align-items: center; padding: 14px 16px 6px"><h2 style="font-size: 15px; font-weight: 600">History</h2><a href="DeviceDetail.dc.html" style="font-size: 13px; font-weight: 500; min-height: 44px; display: flex; align-items: center">View all</a></div>
-<ol style="list-style: none; margin: 0; padding: 0 16px 10px">
-<sc-for list="{{history}}" as="h" hint-placeholder-count="5">
-<li style="display: grid; grid-template-columns: 14px 1fr; gap: 12px; position: relative; padding-bottom: 14px">
-<span style="position: absolute; left: 6px; top: 16px; bottom: 0; width: 2px; background: {{h.rail}}"></span>
-<span style="width: 14px; height: 14px; border-radius: 50%; margin-top: 3px; background: {{h.dot}}; border: 3px solid #fff; box-shadow: 0 0 0 1.5px {{h.dot}}; position: relative"></span>
-<span style="display: flex; flex-direction: column; gap: 1px"><span style="font-size: 13.5px; font-weight: 500">{{h.title}}</span><span class="muted" style="font-size: 12px">{{h.sub}}</span></span>
-</li>
-</sc-for>
-</ol>
-</section>
-</main>
-
-<nav class="tabs" aria-label="App">
-<a class="tab" href="Main.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"></path><path d="M5 10v10h14V10"></path></svg>Home</a>
-<a class="tab" href="Search.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search</a>
-<button class="tab" onClick="{{verify}}" style="border: 0; background: transparent; font: inherit; font-size: 11px; font-weight: 500; cursor: pointer; color: #0E1726"><span style="width: 44px; height: 44px; margin-top: -18px; border-radius: 50%; background: #0B7A6B; color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(11,122,107,.35)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"></path><path d="M7 12h10"></path></svg></span>Scan</button>
-<a class="tab on" href="Inventory.dc.html" aria-current="page"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="18" height="7" rx="2"></rect><path d="M7 16.5h.01M11 16.5h.01"></path><path d="M17 13V5"></path></svg>Devices</a>
-<a class="tab" href="Users.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>Me</a>
-</nav>
-
-<sc-if value="{{issue}}" hint-placeholder-val="{{ false }}">
-<div onClick="{{closeIssue}}" style="position: fixed; inset: 0; background: rgba(14,23,38,.45); z-index: 40"></div>
-<div role="dialog" aria-modal="true" aria-label="Report an issue" style="position: fixed; left: 0; right: 0; bottom: 0; z-index: 41; background: #fff; border-radius: 18px 18px 0 0; padding: 10px 16px 20px; display: flex; flex-direction: column; gap: 12px; max-width: 390px; margin: 0 auto">
-<span style="width: 40px; height: 4px; border-radius: 2px; background: #D5DBE3; align-self: center"></span>
-<div><h2 style="font-size: 17px; font-weight: 600">Report an issue</h2><p class="muted" style="font-size: 13px">RUT956 · <span class="mono">1108675311</span> · {{facName}}</p></div>
-<div role="radiogroup" aria-label="Issue type" style="display: flex; flex-direction: column; gap: 8px">
-<sc-for list="{{issueOpts}}" as="o" hint-placeholder-count="4"><button role="radio" aria-checked="{{o.aria}}" class="{{o.cls}}" onClick="{{o.pick}}"><span class="rd"></span>{{o.label}}</button></sc-for>
-</div>
-<label for="iss-note" style="font-size: 13px; font-weight: 500; color: #3B4758">What did you see?</label>
-<textarea id="iss-note" value="{{note}}" onChange="{{onNote}}" placeholder="e.g. LTE LED off, router reboots every few minutes" style="height: 80px; border: 1px solid #D5DBE3; border-radius: 10px; padding: 10px 12px; font: inherit; font-size: 14px; resize: none"></textarea>
-<div style="display: grid; grid-template-columns: 1fr 1.4fr; gap: 10px">
-<button class="btn big" onClick="{{closeIssue}}">Cancel</button>
-<button class="btn p big" onClick="{{submitIssue}}">Submit report</button>
-</div>
-</div>
-</sc-if>
-</div>
-</x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1640}}'>
-class Component extends DCLogic {
-  // Prototype persistence: this screen's data survives reloads and is shared by every screen in this browser.
-  componentDidMount() {
-    this._init = JSON.parse(JSON.stringify(this.state));
-    this._onStore = e => { if (!e || !e.key || e.key === 'mrd-proto:store') this.forceUpdate(); };
-    try { window.addEventListener('storage', this._onStore); } catch (e) {}
-    try { const raw = window.localStorage.getItem('mrd-proto:v1:MobileDevice'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
-  }
-  // Shared prototype store: one record in browser storage that every screen reads and writes (key mrd-proto:store).
-  readStore() {
-    const empty = { v: 1, units: {}, added: [], deployments: [], events: [], catalog: {} };
-    try { const s = JSON.parse(window.localStorage.getItem('mrd-proto:store') || 'null'); return Object.assign(empty, s || {}); } catch (e) { return empty; }
-  }
-  writeStore(mutate) {
-    const s = this.readStore(); mutate(s); s.events = s.events.slice(0, 200);
-    try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {}
-    this.forceUpdate(); return s;
-  }
-  nowLabel() { const d = new Date(); return 'Today, ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
-  patchUnit(s, ident, patch, prevSt) {
-    const cur = s.units[ident] || {};
-    s.units[ident] = Object.assign({}, cur, patch, { st0: cur.st0 !== undefined ? cur.st0 : (prevSt || ''), upd: this.nowLabel() });
-  }
-  logEvent(s, ev) {
-    const d = new Date();
-    s.events.unshift(Object.assign({ id: 'e' + d.getTime() + Math.random().toString(36).slice(2, 6), at: d.getTime(), when: this.nowLabel(), who: 'Chetan', ini: 'CH', role: 'Admin', source: 'Web' }, ev));
-  }
-  componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
-  componentDidUpdate() {
-    try { const keep = Object.assign({}, this.state); ["issue"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:MobileDevice', JSON.stringify(keep)); } catch (e) {}
-  }
-  constructor(props) {
-    super(props);
-    this.state = { idOpen: true, connOpen: true, verified: false, issue: false, issueType: 'conn', note: '', reported: false };
-  }
-  renderVals() {
-    const st = this.state;
-    const facts = [
-      ['Facility', 'Qatar Foundation', 'FacilityDetail.dc.html', 'M4 3h16v18H4zM9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1', 'v'],
-      ['Placement', 'Plant room B1 · BMS panel', 'FacilityDetail.dc.html', 'M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z', 'v'],
-      ['Deployment', 'POC · DEP-0147 · 01 Oct 2026', 'Deployments.dc.html', 'M3 6h11v10H3zM14 10h4l3 3v3h-7', 'v'],
-      ['SIM ICCID', '8996802026093001435', 'SimInventory.dc.html', 'M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z', 'v mono'],
-      ['IP address', '10.64.12.41', 'SimInventory.dc.html', 'M3 12h18M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18', 'v mono']
-    ].map(([k, v, href, icon, cls]) => ({ k, v, href, icon, cls }));
-    const identity = [['Serial', '1108675311'], ['IMEI', '860548043912901'], ['MAC', '00:1E:42:3A:7C:1B'], ['Device ID', 'MRD-TEL-0419'], ['Batch', 'TEL-2026-004']].map(([k, v]) => ({ k, v }));
-    const history = [
-      ['Deployed to Qatar Foundation · POC', '01 Oct 2026, 11:30 · Chetan · DEP-0147', '#12A374'],
-      ['Left MRD Office · in transit', '01 Oct 2026, 07:45 · Chetan', '#5468E0'],
-      ['Ready for deployment', '24 Sep 2026, 15:10 · Saif', '#2F6FE4'],
-      ['SIM …1435 and IP 10.64.12.41 assigned', '24 Sep 2026, 14:52 · Saif', '#8A96A8'],
-      ['Received · batch TEL-2026-004', '22 Sep 2026, 10:15 · Nitin', '#8A96A8']
-    ].map(([title, sub, dot], i, a) => ({ title, sub, dot, rail: i < a.length - 1 ? '#EEF1F4' : 'transparent' }));
-    const types = [['conn', 'No connectivity / LTE down'], ['dmg', 'Physical damage'], ['place', 'Wrong or unsafe placement'], ['other', 'Something else']];
-    const issueOpts = types.map(([id, label]) => ({ label, cls: 'opt' + (st.issueType === id ? ' on' : ''), aria: st.issueType === id ? 'true' : 'false', pick: () => this.setState({ issueType: id }) }));
-    const issueLabel = (types.find(t => t[0] === st.issueType) || types[0])[1];
-    return {
-      facts, identity, history, issueOpts, issueLabel,
-      idOpen: st.idOpen, idAria: st.idOpen ? 'true' : 'false', idRot: st.idOpen ? 'rotate(180deg)' : 'none', toggleId: () => this.setState({ idOpen: !this.state.idOpen }),
-      connOpen: st.connOpen, connAria: st.connOpen ? 'true' : 'false', connRot: st.connOpen ? 'rotate(180deg)' : 'none', toggleConn: () => this.setState({ connOpen: !this.state.connOpen }),
-      verified: st.verified, verify: () => this.setState({ verified: true }),
-      issue: st.issue, openIssue: () => this.setState({ issue: true }), closeIssue: () => this.setState({ issue: false }),
-      note: st.note, onNote: e => this.setState({ note: e.target.value }),
-      reported: st.reported, submitIssue: () => this.setState({ issue: false, reported: true, note: '' })
     };
   }
 }

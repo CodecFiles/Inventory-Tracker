@@ -131,7 +131,7 @@ textarea.inp{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
 <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
 <div class="mtop" style="align-items: center; justify-content: space-between; padding: 12px 16px; background: #0C1424; color: #fff">
 <span style="font-weight: 600">Moonrock R&amp;D</span>
-<button class="btn sm" aria-label="Open menu" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
+<button class="btn sm" aria-label="Open menu" aria-expanded="{{shell.menuExp}}" onClick="{{shell.toggleMenu}}" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
 </div>
 <header class="top">
 <a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
@@ -139,7 +139,24 @@ textarea.inp{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
 <span class="b s-prep" title="All records shown are sample data">Sample data</span>
 <a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
 <a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
-<button class="btn ic" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg></button>
+<div style="position: relative; z-index: {{shell.bellZ}}">
+<button class="btn ic" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="{{shell.bellExp}}" onClick="{{shell.toggleBell}}" style="position: relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg><sc-if value="{{shell.hasUnread}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #DC3B3A; color: #fff; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #fff">{{shell.unread}}</span></sc-if></button>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="Notifications" style="position: absolute; right: 0; top: calc(100% + 8px); z-index: 41; width: 360px; max-width: calc(100vw - 32px); background: #fff; border: 1px solid #DCE1E8; border-radius: 12px; box-shadow: 0 16px 40px rgba(14,23,38,.18); overflow: hidden; text-align: left">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #EEF1F4"><span style="font-weight: 600; font-size: 14px; color: #0E1726">Notifications</span><button onClick="{{shell.markRead}}" style="border: 0; background: none; padding: 4px; font: inherit; font-size: 12.5px; color: #0B7A6B; cursor: pointer">Mark all as read</button></div>
+<div style="max-height: 380px; overflow-y: auto">
+<sc-for list="{{shell.notes}}" as="n" hint-placeholder-count="4">
+<a href="{{n.href}}" style="display: flex; gap: 10px; padding: 11px 14px; border-bottom: 1px solid #F1F4F7; color: #0E1726; background: {{n.bg}}">
+<span style="width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: 0 0 8px; background: {{n.dot}}"></span>
+<span style="flex: 1; min-width: 0; font-size: 13px; line-height: 1.4"><span style="display: block">{{n.text}}</span><span style="display: block; font-size: 12px; color: #5E6B7D">{{n.when}}</span></span>
+</a>
+</sc-for>
+</div>
+<a href="AuditLog.dc.html" style="display: block; padding: 10px 14px; font-size: 13px; font-weight: 500; text-align: center; border-top: 1px solid #EEF1F4">Open audit log</a>
+</div>
+</sc-if>
+</div>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}"><button aria-label="Close notifications" onClick="{{shell.closeAll}}" style="position: fixed; inset: 0; z-index: 30; background: transparent; border: 0; padding: 0; cursor: default"></button></sc-if>
 </header>
 
 <main class="main">
@@ -194,7 +211,7 @@ textarea.inp{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
 <div class="card" style="padding: 16px; display: flex; flex-direction: column; gap: 10px">
 <div style="display: flex; justify-content: space-between; align-items: center"><h2 style="font-size: 14px; font-weight: 600">Next in the pipeline</h2><a href="PocManagement.dc.html" style="font-size: 12.5px; font-weight: 500">POC projects →</a></div>
 <sc-for list="{{pipe}}" as="p" hint-placeholder-count="2">
-<a href="FacilityDetail.dc.html" style="display: flex; gap: 10px; align-items: center; color: #0E1726">
+<a href="FacilityDetail.dc.html" onClick="{{p.openFac}}" style="display: flex; gap: 10px; align-items: center; color: #0E1726">
 <span style="flex: 1; min-width: 0"><span style="display: block; font-weight: 500; font-size: 13px">{{p.name}}</span><span class="muted" style="font-size: 12px">{{p.sub}}</span></span><span class="b {{p.cls}}">{{p.stage}}</span></a>
 </sc-for>
 <sc-if value="{{pipeEmpty}}" hint-placeholder-val="{{ false }}"><span class="muted" style="font-size: 12.5px">Nothing in POC or pre-POC right now.</span></sc-if>
@@ -222,8 +239,8 @@ textarea.inp{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
 <div style="display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: flex-start">
 <div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
 <span style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span class="b {{bm.bcls}}">{{bm.status}}</span><span class="b {{bm.gcls}}">{{bm.stage}}</span></span>
-<h2 style="font-size: 20px; font-weight: 600; letter-spacing: -.01em"><a href="FacilityDetail.dc.html" style="color: #0E1726">Bank Muscat Head Office</a></h2>
-<span class="muted" style="font-size: 13px"><span class="mono" style="color: #0E1726">CN-EXG-BM-2026-01</span> · Airport Heights, Muscat · signed 24 Jun 2026</span>
+<h2 style="font-size: 20px; font-weight: 600; letter-spacing: -.01em"><a href="FacilityDetail.dc.html" onClick="{{openCurFac}}" style="color: #0E1726">Bank Muscat Head Office</a></h2>
+<span class="muted" style="font-size: 13px"><span class="mono" style="color: #0E1726">{{bm.ref}}</span> · Airport Heights, Muscat · signed 24 Jun 2026</span>
 </div>
 <div style="display: flex; gap: 8px; flex-wrap: wrap">
 <button class="btn sm" onClick="{{openEdit}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg>Edit contract</button>
@@ -232,12 +249,12 @@ textarea.inp{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
 </div>
 </div>
 <div style="display: flex; flex-direction: column; gap: 6px">
-<div style="display: flex; justify-content: space-between; font-size: 12.5px; gap: 8px; flex-wrap: wrap"><span><span class="muted">Start</span> <strong style="font-weight: 600">01 Jul 2026</strong></span><span style="color: #0A6648; font-weight: 500">Month 4 of 36 · 999 days remaining</span><span><span class="muted">End</span> <strong style="font-weight: 600">30 Jun 2029</strong></span></div>
-<div style="position: relative; height: 10px; border-radius: 5px; background: #EEF1F5" role="img" aria-label="Contract term 8.8% elapsed">
-<span style="position: absolute; left: 0; top: 0; bottom: 0; width: 8.8%; background: #0E8A78; border-radius: 5px" title="96 of 1,095 days elapsed"></span>
-<span style="position: absolute; left: 8.8%; top: -4px; width: 2px; height: 18px; background: #0E1726" title="Today · 05 Oct 2026"></span>
+<div style="display: flex; justify-content: space-between; font-size: 12.5px; gap: 8px; flex-wrap: wrap"><span><span class="muted">Start</span> <strong style="font-weight: 600">{{bm.start}}</strong></span><span style="color: #0A6648; font-weight: 500">{{bm.termLine}}</span><span><span class="muted">End</span> <strong style="font-weight: 600">{{bm.end}}</strong></span></div>
+<div style="position: relative; height: 10px; border-radius: 5px; background: #EEF1F5" role="img" aria-label="Contract term {{bm.pct}} elapsed">
+<span style="position: absolute; left: 0; top: 0; bottom: 0; width: {{bm.pct}}; background: #0E8A78; border-radius: 5px" title="{{bm.daysTitle}}"></span>
+<span style="position: absolute; left: {{bm.pct}}; top: -4px; width: 2px; height: 18px; background: #0E1726" title="Today · 05 Oct 2026"></span>
 </div>
-<div style="display: flex; justify-content: space-between; font-size: 12px" class="muted"><span>Today · 05 Oct 2026</span><span>Renewal review from 01 Jan 2029</span></div>
+<div style="display: flex; justify-content: space-between; font-size: 12px" class="muted"><span>Today · 05 Oct 2026</span><span>{{bm.renewal}}</span></div>
 </div>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px">
 <div class="stat"><span class="muted" style="font-size: 12px">Devices under contract</span><span class="v">{{bm.dev}}</span></div>
@@ -251,25 +268,35 @@ textarea.inp{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
 <div style="padding: 18px 22px; display: flex; flex-direction: column; gap: 14px; border-right: 1px solid #EEF1F4">
 <h3 style="font-size: 14px; font-weight: 600">Contract details</h3>
 <dl class="dl" style="margin: 0">
-<dt>Reference</dt><dd class="mono">CN-EXG-BM-2026-01</dd>
+<dt>Reference</dt><dd class="mono">{{bm.ref}}</dd>
 <dt>Client</dt><dd>Bank Muscat · via Exergio</dd>
 <dt>Signed</dt><dd>24 Jun 2026</dd>
-<dt>Term</dt><dd>01 Jul 2026 – 30 Jun 2029 · 36 months</dd>
+<dt>Term</dt><dd>{{bm.term}}</dd>
 <dt>Preceded by</dt><dd>POC 01 Apr – 31 May 2026</dd>
-<dt>Scope</dt><dd style="font-weight: 400; color: #5E6B7D; font-style: italic">[contract scope as entered]</dd>
+<dt>Scope</dt><dd><sc-if value="{{cScope.has}}" hint-placeholder-val="{{ false }}"><span style="font-weight: 400; white-space: pre-wrap">{{cScope.text}}</span></sc-if><sc-if value="{{cScope.none}}" hint-placeholder-val="{{ true }}"><span style="font-weight: 400; color: #5E6B7D; font-style: italic">[contract scope as entered]</span></sc-if></dd>
+<dt>Value</dt><dd><sc-if value="{{cValue.has}}" hint-placeholder-val="{{ false }}"><span>{{cValue.text}}</span></sc-if><sc-if value="{{cValue.none}}" hint-placeholder-val="{{ true }}"><span style="font-weight: 400; color: #5E6B7D; font-style: italic">[contract value]</span></sc-if></dd>
 <dt>Owner</dt><dd>Aisha · Operations</dd>
 </dl>
 <h3 style="font-size: 14px; font-weight: 600; margin-top: 4px">Documents</h3>
 <div class="doc">
 <span style="width: 34px; height: 34px; border-radius: 8px; background: #FDEBEA; color: #A3201F; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex: 0 0 34px">PDF</span>
 <span style="flex: 1; min-width: 0"><span class="mono" style="display: block; color: #0E1726">CN-EXG-BM-2026-01_signed.pdf</span><span class="muted" style="font-size: 12px">Signed contract · 2.4 MB · Aisha, 24 Jun</span></span>
-<button class="btn sm ic" style="width: 32px" aria-label="Download signed contract"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"></path></svg></button>
+<span class="muted" style="font-size: 11.5px" title="Sample record: the file itself is not stored in this prototype">Sample file</span>
 </div>
 <div class="doc">
 <span style="width: 34px; height: 34px; border-radius: 8px; background: #FDEBEA; color: #A3201F; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex: 0 0 34px">PDF</span>
 <span style="flex: 1; min-width: 0"><span class="mono" style="display: block; color: #0E1726">BM-POC-study-final.pdf</span><span class="muted" style="font-size: 12px">POC study report · 5.1 MB · Chetan, 10 Jun</span></span>
-<button class="btn sm ic" style="width: 32px" aria-label="Download POC study report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"></path></svg></button>
+<span class="muted" style="font-size: 11.5px" title="Sample record: the file itself is not stored in this prototype">Sample file</span>
 </div>
+<sc-for list="{{cdocs}}" as="d" hint-placeholder-count="0">
+<div class="doc">
+<span style="width: 34px; height: 34px; border-radius: 8px; background: #E6EEFF; color: #1D4FB8; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex: 0 0 34px">{{d.ext}}</span>
+<span style="flex: 1; min-width: 0"><span class="mono" style="display: block; color: #0E1726; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{d.name}}</span><span class="muted" style="font-size: 12px">{{d.meta}}</span></span>
+<button class="btn sm ic" style="width: 32px" onClick="{{d.remove}}" aria-label="Remove {{d.name}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-for>
+<label class="btn sm" style="align-self: flex-start; position: relative"><input type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="position: absolute; width: 1px; height: 1px; opacity: 0" onChange="{{onContractFile}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"></path><path d="M7 9l5-5 5 5"></path><path d="M4 16v4h16v-4"></path></svg>Upload contract document</label>
+<span class="muted" style="font-size: 11.5px">Only the file name, size and type are recorded in this prototype.</span>
 </div>
 <div style="padding: 18px 22px; display: flex; flex-direction: column; gap: 14px">
 <div style="display: flex; justify-content: space-between; align-items: center"><h3 style="font-size: 14px; font-weight: 600">Contract deployment timeline</h3><a href="Deployments.dc.html" style="font-size: 12.5px; font-weight: 500">All deployments →</a></div>
@@ -292,7 +319,7 @@ textarea.inp{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
 <div style="border-top: 1px solid #EEF1F4">
 <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 22px 12px; gap: 8px; flex-wrap: wrap">
 <div><h3 style="font-size: 14px; font-weight: 600">Deployed equipment by category</h3><p class="muted" style="font-size: 12.5px">{{bm.dev}} serialised devices · plus 462 quantity-tracked items (cables, accessories)</p></div>
-<a href="FacilityDetail.dc.html" style="font-size: 12.5px; font-weight: 500">View all at facility →</a>
+<a href="FacilityDetail.dc.html" onClick="{{openCurFac}}" style="font-size: 12.5px; font-weight: 500">View all at facility →</a>
 </div>
 <div class="tw">
 <table class="tbl">
@@ -313,8 +340,8 @@ textarea.inp{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
 <div style="display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: flex-start">
 <div style="display: flex; flex-direction: column; gap: 4px">
 <span style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span class="b {{lu.bcls}}">{{lu.status}}</span><span class="b {{lu.gcls}}">{{lu.stage}}</span></span>
-<h2 style="font-size: 20px; font-weight: 600; letter-spacing: -.01em"><a href="FacilityDetail.dc.html" style="color: #0E1726">Lulu Hypermarket</a></h2>
-<span class="muted" style="font-size: 13px"><span class="mono" style="color: #0E1726">CN-EXG-LU-2026-D1</span> · {{lu.kind}} · Bausher, Muscat</span>
+<h2 style="font-size: 20px; font-weight: 600; letter-spacing: -.01em"><a href="FacilityDetail.dc.html" onClick="{{openCurFac}}" style="color: #0E1726">Lulu Hypermarket</a></h2>
+<span class="muted" style="font-size: 13px"><span class="mono" style="color: #0E1726">{{lu.ref}}</span> · {{lu.kind}} · Bausher, Muscat</span>
 </div>
 <div style="display: flex; gap: 8px; flex-wrap: wrap">
 <button class="btn sm" onClick="{{openEdit}}">Edit draft terms</button>
@@ -331,12 +358,23 @@ textarea.inp{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
 <div style="padding: 18px 22px; display: flex; flex-direction: column; gap: 14px; border-right: 1px solid #EEF1F4">
 <h3 style="font-size: 14px; font-weight: 600">Draft terms</h3>
 <dl class="dl" style="margin: 0">
-<dt>Draft ref</dt><dd class="mono">CN-EXG-LU-2026-D1</dd>
-<dt>Proposed term</dt><dd>36 months from 01 Nov 2026</dd>
+<dt>Draft ref</dt><dd class="mono">{{lu.ref}}</dd>
+<dt>Proposed term</dt><dd>{{lu.term}}</dd>
 <dt>POC</dt><dd>{{lu.poc}}</dd>
-<dt>Scope</dt><dd style="font-weight: 400; color: #5E6B7D; font-style: italic">[proposed scope as entered]</dd>
+<dt>Scope</dt><dd><sc-if value="{{cScope.has}}" hint-placeholder-val="{{ false }}"><span style="font-weight: 400; white-space: pre-wrap">{{cScope.text}}</span></sc-if><sc-if value="{{cScope.none}}" hint-placeholder-val="{{ true }}"><span style="font-weight: 400; color: #5E6B7D; font-style: italic">[proposed scope as entered]</span></sc-if></dd>
+<dt>Value</dt><dd><sc-if value="{{cValue.has}}" hint-placeholder-val="{{ false }}"><span>{{cValue.text}}</span></sc-if><sc-if value="{{cValue.none}}" hint-placeholder-val="{{ true }}"><span style="font-weight: 400; color: #5E6B7D; font-style: italic">[contract value]</span></sc-if></dd>
 <dt>Owner</dt><dd>Aisha · Operations</dd>
 </dl>
+<h3 style="font-size: 14px; font-weight: 600; margin-top: 4px">Documents</h3>
+<sc-for list="{{cdocs}}" as="d" hint-placeholder-count="0">
+<div class="doc">
+<span style="width: 34px; height: 34px; border-radius: 8px; background: #E6EEFF; color: #1D4FB8; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex: 0 0 34px">{{d.ext}}</span>
+<span style="flex: 1; min-width: 0"><span class="mono" style="display: block; color: #0E1726; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{d.name}}</span><span class="muted" style="font-size: 12px">{{d.meta}}</span></span>
+<button class="btn sm ic" style="width: 32px" onClick="{{d.remove}}" aria-label="Remove {{d.name}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-for>
+<sc-if value="{{noCdocs}}" hint-placeholder-val="{{ true }}"><span class="muted" style="font-size: 12.5px">No contract documents uploaded yet.</span></sc-if>
+<label class="btn sm" style="align-self: flex-start; position: relative"><input type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="position: absolute; width: 1px; height: 1px; opacity: 0" onChange="{{onContractFile}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"></path><path d="M7 9l5-5 5 5"></path><path d="M4 16v4h16v-4"></path></svg>Upload contract document</label>
 </div>
 <div style="padding: 18px 22px; display: flex; flex-direction: column; gap: 10px">
 <h3 style="font-size: 14px; font-weight: 600">Proposed equipment</h3>
@@ -353,11 +391,12 @@ textarea.inp{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
 <div style="display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: flex-start">
 <div style="display: flex; flex-direction: column; gap: 4px">
 <span style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span class="b {{gen.bcls}}">{{gen.status}}</span><span class="b {{gen.gcls}}">{{gen.stage}}</span></span>
-<h2 style="font-size: 20px; font-weight: 600; letter-spacing: -.01em"><a href="FacilityDetail.dc.html" style="color: #0E1726">{{gen.name}}</a></h2>
+<h2 style="font-size: 20px; font-weight: 600; letter-spacing: -.01em"><a href="FacilityDetail.dc.html" onClick="{{openCurFac}}" style="color: #0E1726">{{gen.name}}</a></h2>
 <span class="muted" style="font-size: 13px"><span class="mono" style="color: #0E1726">{{gen.ref}}</span> · {{gen.loc}}</span>
 </div>
 <div style="display: flex; gap: 8px; flex-wrap: wrap">
-<a class="btn sm" href="FacilityDetail.dc.html">Open facility</a>
+<a class="btn sm" href="FacilityDetail.dc.html" onClick="{{openCurFac}}">Open facility</a>
+<button class="btn sm" onClick="{{openEdit}}">Edit contract</button>
 <sc-if value="{{gen.canConvert}}" hint-placeholder-val="{{ false }}"><button class="btn sm p" onClick="{{convert}}">Convert to contract</button></sc-if>
 <sc-if value="{{gen.canEnd}}" hint-placeholder-val="{{ false }}"><button class="btn sm dg" onClick="{{openEnd}}">End contract</button></sc-if>
 </div>
@@ -374,6 +413,23 @@ textarea.inp{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
 <div style="display: flex; justify-content: space-between; gap: 10px; font-size: 13px; padding: 6px 0; border-bottom: 1px solid #EEF1F4"><span>{{q.name}} <span class="mono muted">{{q.sn}}</span></span><span class="t {{q.tcls}}">{{q.type}}</span></div>
 </sc-for>
 <sc-if value="{{gen.empty}}" hint-placeholder-val="{{ false }}"><p class="muted" style="font-size: 12.5px">No equipment deployed here through the system yet.</p></sc-if>
+<h3 style="font-size: 14px; font-weight: 600; margin-top: 8px">Contract details</h3>
+<dl class="dl" style="margin: 0">
+<dt>Reference</dt><dd class="mono">{{gen.ref}}</dd>
+<dt>Term</dt><dd>{{gen.term}}</dd>
+<dt>Scope</dt><dd><sc-if value="{{cScope.has}}" hint-placeholder-val="{{ false }}"><span style="font-weight: 400; white-space: pre-wrap">{{cScope.text}}</span></sc-if><sc-if value="{{cScope.none}}" hint-placeholder-val="{{ true }}"><span style="font-weight: 400; color: #5E6B7D; font-style: italic">[contract scope as entered]</span></sc-if></dd>
+<dt>Value</dt><dd><sc-if value="{{cValue.has}}" hint-placeholder-val="{{ false }}"><span>{{cValue.text}}</span></sc-if><sc-if value="{{cValue.none}}" hint-placeholder-val="{{ true }}"><span style="font-weight: 400; color: #5E6B7D; font-style: italic">[contract value]</span></sc-if></dd>
+</dl>
+<h3 style="font-size: 14px; font-weight: 600; margin-top: 8px">Documents</h3>
+<sc-for list="{{cdocs}}" as="d" hint-placeholder-count="0">
+<div class="doc">
+<span style="width: 34px; height: 34px; border-radius: 8px; background: #E6EEFF; color: #1D4FB8; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex: 0 0 34px">{{d.ext}}</span>
+<span style="flex: 1; min-width: 0"><span class="mono" style="display: block; color: #0E1726; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{d.name}}</span><span class="muted" style="font-size: 12px">{{d.meta}}</span></span>
+<button class="btn sm ic" style="width: 32px" onClick="{{d.remove}}" aria-label="Remove {{d.name}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-for>
+<sc-if value="{{noCdocs}}" hint-placeholder-val="{{ true }}"><span class="muted" style="font-size: 12.5px">No contract documents uploaded yet.</span></sc-if>
+<label class="btn sm" style="align-self: flex-start; position: relative"><input type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="position: absolute; width: 1px; height: 1px; opacity: 0" onChange="{{onContractFile}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"></path><path d="M7 9l5-5 5 5"></path><path d="M4 16v4h16v-4"></path></svg>Upload contract document</label>
 </div>
 </sc-if>
 </section>
@@ -411,15 +467,21 @@ textarea.inp{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
 <sc-if value="{{editOpen}}" hint-placeholder-val="{{ false }}">
 <div class="ovl">
 <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="editt">
-<div style="padding: 20px 22px 4px; display: flex; justify-content: space-between; align-items: center"><h2 id="editt" style="font-size: 17px; font-weight: 600">Edit contract</h2><button class="btn sm ic" style="width: 32px" onClick="{{closeEdit}}" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<div style="padding: 20px 22px 4px; display: flex; justify-content: space-between; align-items: center"><div><h2 id="editt" style="font-size: 17px; font-weight: 600">Edit contract</h2><p class="muted" style="font-size: 12.5px">{{editFac}}</p></div><button class="btn sm ic" style="width: 32px" onClick="{{closeEdit}}" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
 <div style="padding: 12px 22px 18px; display: flex; flex-direction: column; gap: 12px">
-<div style="display: flex; flex-direction: column; gap: 6px"><label class="lbl" for="eref">Contract reference</label><input id="eref" class="inp mono" type="text" value="{{editRef}}" readOnly="{{yes}}"></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><label class="lbl" for="eref">Contract reference</label><input id="eref" class="inp mono" type="text" value="{{editRef}}" onChange="{{onEditRef}}"></div>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px">
-<div style="display: flex; flex-direction: column; gap: 6px"><label class="lbl" for="es">Start date</label><input id="es" class="inp" type="date" value="{{editStart}}" readOnly="{{yes}}"></div>
-<div style="display: flex; flex-direction: column; gap: 6px"><label class="lbl" for="ee">End date</label><input id="ee" class="inp" type="date" value="{{editEnd}}" readOnly="{{yes}}"></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><label class="lbl" for="es">Start date</label><input id="es" class="inp" type="date" value="{{editStart}}" onChange="{{onEditStart}}"></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><label class="lbl" for="ee">End date</label><input id="ee" class="inp" type="date" value="{{editEnd}}" onChange="{{onEditEnd}}"></div>
 </div>
-<div style="display: flex; flex-direction: column; gap: 6px"><label class="lbl" for="esc">Scope</label><textarea id="esc" class="inp" placeholder="[contract scope as entered]"></textarea></div>
-<p class="muted" style="font-size: 12px">Changes are versioned. The previous terms stay visible in the audit log.</p>
+<div style="display: flex; flex-direction: column; gap: 6px"><label class="lbl" for="esc">Scope</label><textarea id="esc" class="inp" placeholder="[contract scope as entered]" value="{{editScope}}" onChange="{{onEditScope}}"></textarea></div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 6px"><label class="lbl" for="ev">Contract value</label><input id="ev" class="inp" type="text" placeholder="[contract value]" value="{{editValue}}" onChange="{{onEditValue}}"></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><label class="lbl" for="est">Status</label><select id="est" class="inp" value="{{editStatus}}" onChange="{{onEditStatus}}" disabled="{{editStatusLocked}}"><sc-for list="{{editStatusOpts}}" as="o" hint-placeholder-count="2"><option value="{{o.v}}">{{o.label}}</option></sc-for></select></div>
+</div>
+<p class="muted" style="font-size: 12px">{{editStatusNote}}</p>
+<sc-if value="{{hasEditErr}}" hint-placeholder-val="{{ false }}"><p role="alert" style="font-size: 12.5px; color: #A3201F">{{editErr}}</p></sc-if>
+<p class="muted" style="font-size: 12px">Saving records a "Contract updated" entry in the audit log with the previous terms.</p>
 </div>
 <div style="padding: 14px 22px; border-top: 1px solid #EEF1F4; display: flex; justify-content: flex-end; gap: 10px">
 <button class="btn" onClick="{{closeEdit}}">Cancel</button>
@@ -439,6 +501,31 @@ textarea.inp{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
 </main>
 </div>
 </div>
+<sc-if value="{{shell.menuOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 70; display: flex">
+<nav aria-label="Mobile navigation" style="width: min(300px, 85vw); height: 100%; overflow-y: auto; background: #0C1424; padding: 16px 12px; display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 8px 14px; color: #fff"><span style="font-weight: 600">Moonrock R&amp;D</span><button onClick="{{shell.closeAll}}" aria-label="Close menu" style="width: 40px; height: 40px; border: 0; border-radius: 8px; background: #1C2A42; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<a href="Main.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Dashboard</a>
+<a href="Search.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Search</a>
+<a href="Inventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">All inventory</a>
+<a href="Products.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Products</a>
+<a href="Batches.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Batches</a>
+<a href="ReceiveInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Receive stock</a>
+<a href="DevicePrep.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Device preparation</a>
+<a href="SimInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">SIM cards</a>
+<a href="Facilities.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Facilities</a>
+<a href="PocManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">POC projects</a>
+<a href="ContractManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Contracts</a>
+<a href="Deployments.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Deployments</a>
+<a href="CreateDeployment.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">New deployment</a>
+<a href="Reports.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Reports</a>
+<a href="AuditLog.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Audit log</a>
+<a href="Users.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Users &amp; roles</a>
+<a href="Settings.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Settings</a>
+</nav>
+<button aria-label="Close menu" onClick="{{shell.closeAll}}" style="flex: 1; border: 0; padding: 0; background: rgba(14,23,38,.5); cursor: default"></button>
+</div>
+</sc-if>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1340}}'>
 class Component extends DCLogic {
@@ -482,7 +569,7 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
-    try { const keep = Object.assign({}, this.state); ["endOpen", "editOpen", "toast", "draft"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:ContractManagement', JSON.stringify(keep)); } catch (e) {}
+    try { const keep = Object.assign({}, this.state); delete keep._shell; ["endOpen", "editOpen", "toast", "draft", "edit", "editErr"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:ContractManagement', JSON.stringify(keep)); } catch (e) {}
   }
   constructor(props) {
     super(props);
@@ -506,6 +593,62 @@ class Component extends DCLogic {
       });
     }
     return saved;
+  }
+  // Contract dates are stored as "01 Jul 2026"; the edit form uses ISO dates.
+  isoOf(lbl) { const M = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']; const p = String(lbl || '').split(' '); const m = M.indexOf(p[1]); if (p.length !== 3 || m < 0) return ''; return p[2] + '-' + String(m + 1).padStart(2, '0') + '-' + String(+p[0]).padStart(2, '0'); }
+  lblOf(iso) { const M = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']; const p = String(iso || '').split('-'); if (p.length !== 3 || !M[+p[1] - 1]) return ''; return String(+p[2]).padStart(2, '0') + ' ' + M[+p[1] - 1] + ' ' + p[0]; }
+  sizeLabel(n) { n = +n || 0; return n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : n >= 1024 ? Math.round(n / 1024) + ' KB' : n + ' B'; }
+  // Term arithmetic against the prototype's "today" (05 Oct 2026).
+  termInfo(c) {
+    const a = this.isoOf(c.start), b = this.isoOf(c.end);
+    if (!a || !b) return { months: 0, pct: '0%', line: 'Term to be confirmed', title: '', renewal: 'Renewal review date not set', term: (c.start || 'TBC') + ' – ' + (c.end || 'TBC') };
+    const d0 = new Date(a + 'T00:00:00Z'), d1 = new Date(b + 'T00:00:00Z'), now = new Date('2026-10-05T00:00:00Z');
+    const day = 86400000, total = Math.max(1, Math.round((d1 - d0) / day) + 1), el = Math.min(total, Math.max(0, Math.round((now - d0) / day)));
+    const months = Math.max(1, (d1.getUTCFullYear() - d0.getUTCFullYear()) * 12 + d1.getUTCMonth() - d0.getUTCMonth() + (d1.getUTCDate() >= d0.getUTCDate() - 1 ? 1 : 0));
+    const mNow = Math.min(months, Math.max(1, (now.getUTCFullYear() - d0.getUTCFullYear()) * 12 + now.getUTCMonth() - d0.getUTCMonth() + 1));
+    const rv = new Date(Date.UTC(d1.getUTCFullYear(), d1.getUTCMonth() - 6 + 1, 1));
+    const rvLbl = this.lblOf(rv.getUTCFullYear() + '-' + String(rv.getUTCMonth() + 1).padStart(2, '0') + '-01');
+    const left = Math.max(0, total - el);
+    return { months, pct: (el / total * 100).toFixed(1) + '%', title: el + ' of ' + total.toLocaleString('en-US') + ' days elapsed',
+      line: now < d0 ? 'Starts ' + c.start + ' · ' + months + ' months' : 'Month ' + mNow + ' of ' + months + ' · ' + left.toLocaleString('en-US') + ' days remaining',
+      renewal: 'Renewal review from ' + rvLbl, term: c.start + ' – ' + c.end + ' · ' + months + ' months' };
+  }
+  // Edit contract: saves the form into facilities[name].contract and records a "Contract updated" event.
+  saveContract(cur) {
+    const ed = this.state.edit || {};
+    const ref = String(ed.ref || '').trim(), scope = String(ed.scope || '').trim(), value = String(ed.value || '').trim();
+    if (!ref) { this.setState({ editErr: 'Enter a contract reference.' }); return; }
+    if (!ed.start || !ed.end) { this.setState({ editErr: 'Enter both a start and an end date.' }); return; }
+    if (ed.end <= ed.start) { this.setState({ editErr: 'The end date must be after the start date.' }); return; }
+    const name = cur.name, old = cur.contract || {};
+    const next = { ref, start: this.lblOf(ed.start), end: this.lblOf(ed.end), scope, value };
+    const changes = [];
+    if (next.ref !== old.ref) changes.push('ref ' + (old.ref || '—') + ' → ' + next.ref);
+    if (next.start !== old.start || next.end !== old.end) changes.push('term ' + (old.start || 'TBC') + '–' + (old.end || 'TBC') + ' → ' + next.start + '–' + next.end);
+    if (next.scope !== (old.scope || '')) changes.push('scope ' + (old.scope ? 'edited' : 'added'));
+    if (next.value !== (old.value || '')) changes.push('value ' + (old.value || '—') + ' → ' + (next.value || '—'));
+    const activate = ed.status === 'Active' && cur.pending;
+    this.writeStore(s => {
+      const prev = ((s.facilities || {})[name] || {}).contract || {};
+      const base = Object.assign({}, old, prev, next, { history: (prev.history || []).concat([{ when: this.nowLabel(), by: 'Chetan', ref: old.ref || '', start: old.start || '', end: old.end || '', scope: old.scope || '', value: old.value || '', status: old.status || '' }]).slice(-20) });
+      this.setFac(s, name, { contract: base });
+      this.logEvent(s, { action: 'Contract updated', item: name, itemHref: 'ContractManagement.dc.html', from: old.ref || '—', to: next.ref, note: changes.length ? changes.join(' · ') : 'Saved without changes' });
+    });
+    if (activate) { const c2 = Object.assign({}, cur, { contract: Object.assign({}, cur.contract, next) }); this.convert(c2); }
+    const after = { editOpen: false, edit: null, editErr: '' };
+    if (!activate) after.toast = 'Contract ' + ref + ' updated · previous terms kept in the audit log';
+    this.setState(after);
+  }
+  addContractDocs(name, ref, files) {
+    const list = Array.prototype.slice.call(files || []);
+    if (!list.length) return;
+    this.writeStore(s => {
+      const cur = ((s.facilities || {})[name] || {}).docs || [];
+      const add = list.map(f => ({ name: String(f.name || 'document'), size: +f.size || 0, type: String(f.type || ''), by: 'Chetan', when: this.nowLabel(), kind: 'Contract', ref }));
+      this.setFac(s, name, { docs: cur.concat(add) });
+      add.forEach(d => this.logEvent(s, { action: 'Document uploaded', item: name, itemHref: 'ContractManagement.dc.html', from: '—', to: d.name, note: 'Contract document · ' + ref + ' · ' + this.sizeLabel(d.size) }));
+    });
+    this.setState({ toast: list.length === 1 ? list[0].name + ' attached to ' + ref : list.length + ' documents attached to ' + ref });
   }
   setFac(s, name, patch) {
     s.facilities = s.facilities || {};
@@ -576,7 +719,32 @@ class Component extends DCLogic {
     });
     this.setState({ toast: name + ' is now under contract' + (retained ? ' · ' + retained + ' POC devices re-tagged as contract' : '') });
   }
-  renderVals() {
+  // Shared shell: notifications bell (fed by the shared store) and the mobile navigation drawer.
+  shellVals() {
+    const S = this.state, st = this.readStore();
+    const seen = (st.ui && st.ui.seenAt) || 0;
+    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Stage changed': 'moved the stage of', 'POC decision': 'recorded a POC decision for', 'Contract ended': 'ended the contract for', 'Issue reported': 'reported an issue on', 'Reserved': 'reserved', 'Labels printed': 'printed labels for', 'File attached': 'attached a file to', 'File removed': 'removed a file from', 'User updated': 'updated user', 'Product edited': 'edited', 'Invite resent': 'resent the invite to', 'Document uploaded': 'uploaded a document to', 'Document removed': 'removed a document from', 'Contact added': 'added a contact to', 'Contact removed': 'removed a contact from', 'Contract updated': 'updated the contract for', 'Batch updated': 'updated batch', 'Batch archived': 'archived batch', 'Batch restored': 'restored batch', 'Facility updated': 'updated facility', 'Facility restored': 'restored facility', 'Report exported': 'exported', 'Record corrected': 'corrected', 'Note added': 'added a note to', 'Settings changed': 'updated settings ·', 'User invited': 'invited', 'Role changed': 'changed the role of', 'Verified on site': 'verified on site', 'Deployment cancelled': 'cancelled', 'Deployment updated': 'updated deployment' };
+    const fromStore = st.events.slice(0, 8).map(e => ({ text: (e.who || 'Chetan') + ' ' + (VERB[e.action] || String(e.action || '').toLowerCase()) + ' ' + e.item + (e.to && e.to !== '—' && e.action !== 'Imported' ? ' → ' + e.to : ''), when: e.when, href: e.itemHref || 'AuditLog.dc.html', unread: (e.at || 0) > seen }));
+    const alerts = [
+      { text: '14 Teltonika RUT956 units are waiting for preparation', when: 'Batch TEL-2026-004', href: 'DevicePrep.dc.html', alert: true },
+      { text: 'Cat6 patch cable 1 m is below its minimum level', when: 'Low stock · 18 of 25', href: 'InventoryItem.dc.html', alert: true },
+      { text: 'Qatar Foundation: 2 CO₂ sensors scheduled to install on 08 Oct', when: 'Upcoming deployment', href: 'Deployments.dc.html', alert: true }
+    ].map(a => Object.assign(a, { unread: !seen }));
+    const all = fromStore.concat(alerts);
+    const unread = all.filter(n => n.unread).length;
+    return {
+      bellOpen: S._shell === 'bell', bellExp: S._shell === 'bell' ? 'true' : 'false', bellZ: S._shell === 'bell' ? '40' : 'auto',
+      menuOpen: S._shell === 'menu', menuExp: S._shell === 'menu' ? 'true' : 'false',
+      unread: unread > 9 ? '9+' : String(unread), hasUnread: unread > 0,
+      notes: all.map(n => ({ text: n.text, when: n.when, href: n.href, bg: n.unread ? '#F4FBF8' : '#fff', dot: n.alert ? '#E08A00' : (n.unread ? '#0B7A6B' : '#D5DBE3') })),
+      toggleBell: () => this.setState({ _shell: this.state._shell === 'bell' ? '' : 'bell' }),
+      toggleMenu: () => this.setState({ _shell: this.state._shell === 'menu' ? '' : 'menu' }),
+      closeAll: () => this.setState({ _shell: '' }),
+      markRead: () => this.writeStore(s => { s.ui = Object.assign({}, s.ui || {}, { seenAt: Date.now() }); })
+    };
+  }
+  renderVals() { return Object.assign(this._screenVals(), { shell: this.shellVals() }); }
+  _screenVals() {
     const st = this.state;
     const S = this.readStore();
     const FS = S.facilities || {};
@@ -672,8 +840,10 @@ class Component extends DCLogic {
     const bmDeps = (S.deployments || []).filter(d => d && d.fac === BM && d.status !== 'Cancelled');
     let bmLast = '28 Sep 2026';
     bmDeps.forEach(d => { if (dnum(d.date) >= dnum(bmLast)) bmLast = d.date; });
-    const bm = bmE ? { status: bmE.status, bcls: bmE.bcls, stage: fb.stage, gcls: GC[fb.stage] || 'g-ops', canEnd: bmE.active, dev: bmE.dev, ret: bmE.ret, add: bmE.add, last: bmLast }
-      : { status: 'Archived', bcls: 's-retired', stage: fb.stage, gcls: 'g-done', canEnd: false, dev: 0, ret: 0, add: 0, last: bmLast };
+    const bmT = this.termInfo(bmC);
+    const bmTerm = { ref: bmC.ref, start: bmC.start, end: bmC.end, term: bmT.term, termLine: ended(bmC) ? 'Ended ' + (bmC.endDate || '') : bmT.line, pct: ended(bmC) ? '100%' : bmT.pct, daysTitle: bmT.title, renewal: bmT.renewal };
+    const bm = Object.assign(bmE ? { status: bmE.status, bcls: bmE.bcls, stage: fb.stage, gcls: GC[fb.stage] || 'g-ops', canEnd: bmE.active, dev: bmE.dev, ret: bmE.ret, add: bmE.add, last: bmLast }
+      : { status: 'Archived', bcls: 's-retired', stage: fb.stage, gcls: 'g-done', canEnd: false, dev: 0, ret: 0, add: 0, last: bmLast }, bmTerm);
     const tl = [
       ['01 Apr', 'POC kit installed', 'DEP-0120', '14 devices · Chetan', 'POC', 't-poc', '#7A5AF8', '#E6DDFB'],
       ['24 Jun', 'Contract signed', 'CN-EXG-BM-2026-01', 'signed PDF attached', 'Contract', 't-con', '#0E8A78', '#CDEFE7'],
@@ -709,8 +879,9 @@ class Component extends DCLogic {
       status: luE.status, bcls: luE.bcls, stage: luSt, gcls: GC[luSt] || 'g-study', kind: luActive ? 'signed' : ended(luC) ? 'ended' : 'draft',
       canConvert: luE.ready, waiting: luE.pending && !luE.ready, canEnd: luActive,
       info: ended(luC) ? endLine(luC) + '.' : luActive ? 'Contract active. ' + luDevs.filter(d => d.type === 'Contract').length + ' POC devices were retained and re-tagged as contract equipment.' : luE.ready ? 'POC decision recorded: proceed to contract. Convert when the contract is signed; devices marked "remains at contract" are re-tagged as contract equipment.' : luDec === 'extend' ? 'POC extended to ' + (fl.pocEnd || '') + '. The ' + luDevs.length + ' POC devices stay recorded as POC until the contract is signed.' : 'Awaiting POC study decision on Wed 14 Oct 2026. The ' + luDevs.length + ' POC devices stay recorded as POC until the contract is signed.',
-      poc: luDec === 'proceed' ? '15 Jul – 15 Sep 2026 · study complete' : luDec === 'extend' ? '15 Jul 2026 – ' + (fl.pocEnd || '') + ' · extended' : '15 Jul – 15 Sep 2026 · study in progress'
-    } : { status: '', bcls: '', stage: '', gcls: '', kind: '', canConvert: false, waiting: false, canEnd: false, info: '', poc: '' };
+      poc: luDec === 'proceed' ? '15 Jul – 15 Sep 2026 · study complete' : luDec === 'extend' ? '15 Jul 2026 – ' + (fl.pocEnd || '') + ' · extended' : '15 Jul – 15 Sep 2026 · study in progress',
+      ref: luC.ref, term: luActive || ended(luC) ? this.termInfo(luC).term : this.termInfo(luC).months + ' months from ' + luC.start + ' (to ' + luC.end + ')'
+    } : { status: '', bcls: '', stage: '', gcls: '', kind: '', canConvert: false, waiting: false, canEnd: false, info: '', poc: '', ref: '', term: '' };
     // Generic detail
     const gE = cur && cur.id.indexOf('g:') === 0 ? cur : null;
     const gen = gE ? { name: gE.name, ref: gE.ref, loc: gE.loc || '', status: gE.status, bcls: gE.bcls, stage: gE.stage, gcls: GC[gE.stage] || 'g-cpend', canConvert: gE.ready, canEnd: gE.active,
@@ -734,12 +905,28 @@ class Component extends DCLogic {
     const pipe = names.filter(n => !inList[n] && !facOf(n).archived && ['POC', 'POC study', 'BMS scan'].indexOf(facOf(n).stage) > -1).map(n => {
       const f = facOf(n);
       const sub = (BASE[n] || {}).stage === f.stage && PSUB[n] ? PSUB[n] : f.stage === 'POC study' ? 'In POC study · decision pending' : f.stage === 'POC' ? 'POC' + (f.pocEnd ? ' to ' + f.pocEnd : ' running') + ' · ' + devicesAt(n).length + ' devices' : (f.loc || f.stage);
-      return { name: n, stage: f.stage, cls: GC[f.stage], sub };
+      return { name: n, stage: f.stage, cls: GC[f.stage], sub, openFac: () => this.writeStore(s => { s.ui = Object.assign({}, s.ui || {}, { facility: n }); }) };
     });
     const isBM = !!cur && cur.id === 'bm';
     const endE = cur || { name: BM, ref: '', dev: 0, contract: {} };
     const endedNow = !!cur && cur.contract && cur.contract.status === 'Ended';
     const ec = endedNow ? cur.contract : {};
+    // Current contract: scope, value, documents and the edit form.
+    const cc = (cur && cur.contract) || {};
+    const scopeTxt = String(cc.scope || '').trim(), valueTxt = String(cc.value || '').trim();
+    const facDocs = cur ? (((FS[cur.name] || {}).docs) || []).filter(d => d && d.kind === 'Contract') : [];
+    const cdocs = facDocs.map((d, i) => ({ name: d.name, ext: (String(d.name).split('.').pop() || 'FILE').slice(0, 4).toUpperCase(), meta: (d.ref ? d.ref + ' · ' : '') + this.sizeLabel(d.size) + ' · ' + (d.by || 'Chetan') + ', ' + (d.when || ''),
+      remove: () => this.writeStore(s => {
+        const all = ((s.facilities || {})[cur.name] || {}).docs || [];
+        let k = -1; all.forEach((x, j) => { if (k < 0 && x && x.kind === 'Contract' && x.name === d.name && x.when === d.when) k = j; });
+        if (k < 0) return;
+        this.setFac(s, cur.name, { docs: all.filter((x, j) => j !== k) });
+        this.logEvent(s, { action: 'Document removed', item: cur.name, itemHref: 'ContractManagement.dc.html', from: d.name, to: '—', note: 'Contract document · ' + (d.ref || cur.ref) });
+      }) }));
+    const ed = st.edit || {};
+    const curStatus = !cur ? '' : cur.contract.status === 'Ended' ? 'Ended' : cur.pending ? 'Pending' : 'Active';
+    const editStatusOpts = curStatus === 'Pending' ? [{ v: 'Pending', label: 'Pending signature' }, { v: 'Active', label: 'Active · signed (converts the POC)' }] : curStatus === 'Ended' ? [{ v: 'Ended', label: 'Ended' }] : [{ v: 'Active', label: 'Active' }];
+    const openFacN = n => () => this.writeStore(s => { s.ui = Object.assign({}, s.ui || {}, { facility: n }); });
     return {
       yes: true, kpis, list, timeline, equip, proposed, notes, bm, lu, gen, pipe, pipeEmpty: pipe.length === 0,
       countLabel: entries.length + (entries.length === 1 ? ' contract' : ' contracts'),
@@ -768,9 +955,24 @@ class Component extends DCLogic {
       endMsg: endedNow ? 'Contract ' + cur.ref + ' ended effective ' + (ec.endDate || '') + '. Equipment ' + (ec.endChoice === 'return' ? 'returned to the MRD Office (' + (ec.returned || 0) + ' identified devices marked Returned).' : 'retained at the facility (out of contract).') + ' ' + cur.name + ' moved to Completed.' : '',
       undoEnd: () => { if (cur) this.undoEnd(cur); },
       convert: () => { if (cur && cur.ready) this.convert(cur); },
-      editOpen: st.editOpen, openEdit: () => this.setState({ editOpen: true }), closeEdit: () => this.setState({ editOpen: false }),
-      editRef: cur ? cur.ref : '', editStart: isBM ? '2026-07-01' : '2026-11-01', editEnd: isBM ? '2029-06-30' : '2029-10-31',
-      saveEdit: () => this.setState({ editOpen: false, toast: 'Contract saved · previous version kept in audit log' }),
+      editOpen: st.editOpen && !!cur, editFac: cur ? cur.name : '',
+      openEdit: () => { if (!cur) return; this.setState({ editOpen: true, editErr: '', edit: { ref: cc.ref || cur.ref, start: this.isoOf(cc.start), end: this.isoOf(cc.end), scope: cc.scope || '', value: cc.value || '', status: curStatus } }); },
+      closeEdit: () => this.setState({ editOpen: false, edit: null, editErr: '' }),
+      editRef: ed.ref || '', editStart: ed.start || '', editEnd: ed.end || '', editScope: ed.scope || '', editValue: ed.value || '', editStatus: ed.status || curStatus,
+      editStatusOpts, editStatusLocked: editStatusOpts.length < 2,
+      editStatusNote: curStatus === 'Ended' ? 'This contract has ended; its status cannot be changed here. Use Undo on the notice to reopen it.' : curStatus === 'Pending' ? 'Choosing Active records the signature and converts the POC: devices marked "remains at contract" are re-tagged as contract equipment.' : 'To end this contract use End contract, so the equipment outcome is recorded.',
+      hasEditErr: !!st.editErr, editErr: st.editErr || '',
+      onEditRef: e => this.setState({ edit: Object.assign({}, this.state.edit || {}, { ref: e.target.value }), editErr: '' }),
+      onEditStart: e => this.setState({ edit: Object.assign({}, this.state.edit || {}, { start: e.target.value }), editErr: '' }),
+      onEditEnd: e => this.setState({ edit: Object.assign({}, this.state.edit || {}, { end: e.target.value }), editErr: '' }),
+      onEditScope: e => this.setState({ edit: Object.assign({}, this.state.edit || {}, { scope: e.target.value }) }),
+      onEditValue: e => this.setState({ edit: Object.assign({}, this.state.edit || {}, { value: e.target.value }) }),
+      onEditStatus: e => this.setState({ edit: Object.assign({}, this.state.edit || {}, { status: e.target.value }) }),
+      saveEdit: () => { if (cur) this.saveContract(cur); },
+      cScope: { has: !!scopeTxt, none: !scopeTxt, text: scopeTxt }, cValue: { has: !!valueTxt, none: !valueTxt, text: valueTxt },
+      cdocs, noCdocs: cdocs.length === 0,
+      onContractFile: e => { const t = e && e.target; if (cur && t) { this.addContractDocs(cur.name, cc.ref || cur.ref, t.files); try { t.value = ''; } catch (x) {} } },
+      openCurFac: openFacN(cur ? cur.name : BM),
       hasToast: !!st.toast, toast: st.toast, closeToast: () => this.setState({ toast: '' })
     };
   }

@@ -82,6 +82,10 @@ h1,h2,h3,h4,p{margin:0}
 .inp{height:40px;border:1px solid #D5DBE3;border-radius:9px;padding:0 12px;font:inherit;font-size:13.5px;background:#fff;color:#0E1726;width:100%}
 .inp:focus{outline:2px solid #2BC4A8;outline-offset:0;border-color:#0B7A6B}
 .toast{position:fixed;right:24px;bottom:24px;z-index:60;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;background:#0E1726;color:#fff;font-size:13px;box-shadow:0 10px 30px rgba(14,23,38,.3)}
+.lbl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.lbl-card{border:1.5px solid #0E1726;border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:3px;background:#fff;color:#0E1726;break-inside:avoid;page-break-inside:avoid}
+.lbl-bars{height:30px;margin:4px 0;background:repeating-linear-gradient(90deg,#0E1726 0 2px,#fff 2px 4px,#0E1726 4px 5px,#fff 5px 8px,#0E1726 8px 11px,#fff 11px 12px)}
+@media print{body *{visibility:hidden !important}.lbl-sheet,.lbl-sheet *{visibility:visible !important}.lbl-sheet{position:absolute;left:0;top:0;width:100%;padding:0}.no-print{display:none !important}}
 @media (max-width:900px){.side{display:none}.mtop{display:flex}.main{padding:20px 16px 40px}.top{padding:12px 16px}}
 </style>
 </helmet>
@@ -125,7 +129,7 @@ h1,h2,h3,h4,p{margin:0}
 <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
 <div class="mtop" style="align-items: center; justify-content: space-between; padding: 12px 16px; background: #0C1424; color: #fff">
 <span style="font-weight: 600">Moonrock R&amp;D</span>
-<button class="btn sm" aria-label="Open menu" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
+<button class="btn sm" aria-label="Open menu" aria-expanded="{{shell.menuExp}}" onClick="{{shell.toggleMenu}}" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
 </div>
 <header class="top">
 <a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
@@ -133,7 +137,24 @@ h1,h2,h3,h4,p{margin:0}
 <span class="b s-prep" title="All records shown are sample data">Sample data</span>
 <a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
 <a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
-<button class="btn ic" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg></button>
+<div style="position: relative; z-index: {{shell.bellZ}}">
+<button class="btn ic" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="{{shell.bellExp}}" onClick="{{shell.toggleBell}}" style="position: relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg><sc-if value="{{shell.hasUnread}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #DC3B3A; color: #fff; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #fff">{{shell.unread}}</span></sc-if></button>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="Notifications" style="position: absolute; right: 0; top: calc(100% + 8px); z-index: 41; width: 360px; max-width: calc(100vw - 32px); background: #fff; border: 1px solid #DCE1E8; border-radius: 12px; box-shadow: 0 16px 40px rgba(14,23,38,.18); overflow: hidden; text-align: left">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #EEF1F4"><span style="font-weight: 600; font-size: 14px; color: #0E1726">Notifications</span><button onClick="{{shell.markRead}}" style="border: 0; background: none; padding: 4px; font: inherit; font-size: 12.5px; color: #0B7A6B; cursor: pointer">Mark all as read</button></div>
+<div style="max-height: 380px; overflow-y: auto">
+<sc-for list="{{shell.notes}}" as="n" hint-placeholder-count="4">
+<a href="{{n.href}}" style="display: flex; gap: 10px; padding: 11px 14px; border-bottom: 1px solid #F1F4F7; color: #0E1726; background: {{n.bg}}">
+<span style="width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: 0 0 8px; background: {{n.dot}}"></span>
+<span style="flex: 1; min-width: 0; font-size: 13px; line-height: 1.4"><span style="display: block">{{n.text}}</span><span style="display: block; font-size: 12px; color: #5E6B7D">{{n.when}}</span></span>
+</a>
+</sc-for>
+</div>
+<a href="AuditLog.dc.html" style="display: block; padding: 10px 14px; font-size: 13px; font-weight: 500; text-align: center; border-top: 1px solid #EEF1F4">Open audit log</a>
+</div>
+</sc-if>
+</div>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}"><button aria-label="Close notifications" onClick="{{shell.closeAll}}" style="position: fixed; inset: 0; z-index: 30; background: transparent; border: 0; padding: 0; cursor: default"></button></sc-if>
 </header>
 
 <main class="main">
@@ -222,7 +243,7 @@ h1,h2,h3,h4,p{margin:0}
 <td><span class="b {{u.cls}}">{{u.status}}</span></td>
 <td class="mono">{{u.iccid}}</td>
 <td class="mono">{{u.ip}}</td>
-<td><a href="{{u.locHref}}" style="color: #0E1726">{{u.loc}}</a></td>
+<td><a href="{{u.locHref}}" onClick="{{u.openFac}}" style="color: #0E1726">{{u.loc}}</a></td>
 <td class="muted" style="font-size: 12.5px">{{u.last}}</td>
 </tr>
 </sc-for>
@@ -257,10 +278,13 @@ h1,h2,h3,h4,p{margin:0}
 <p style="font-size: 13px; line-height: 1.5; color: #3B4758; padding: 10px 12px; background: #F8FAFB; border-radius: 8px">{{notes}}</p>
 </div>
 <div style="display: flex; flex-direction: column; gap: 8px">
-<span class="ov">Documents · 2</span>
-<a class="doc" href="BatchDetail.dc.html"><span style="width: 32px; height: 32px; border-radius: 8px; background: #FDEBEA; color: #A3201F; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex: 0 0 32px">PDF</span><span style="flex: 1; min-width: 0"><span class="mono" style="display: block; font-weight: 500">INV-AN-88213.pdf</span><span class="muted" style="font-size: 12px">Supplier invoice · 214 KB</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"></path></svg></a>
-<a class="doc" href="BatchDetail.dc.html"><span style="width: 32px; height: 32px; border-radius: 8px; background: #FDEBEA; color: #A3201F; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex: 0 0 32px">PDF</span><span style="flex: 1; min-width: 0"><span class="mono" style="display: block; font-weight: 500">PL-AN-88213.pdf</span><span class="muted" style="font-size: 12px">Packing list · 96 KB</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"></path></svg></a>
-<button class="btn sm" style="align-self: flex-start"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Attach document</button>
+<span class="ov">Documents · {{docN}}</span>
+<div class="doc"><span style="width: 32px; height: 32px; border-radius: 8px; background: #FDEBEA; color: #A3201F; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex: 0 0 32px">PDF</span><span style="flex: 1; min-width: 0"><span class="mono" style="display: block; font-weight: 500">INV-AN-88213.pdf</span><span class="muted" style="font-size: 12px">Supplier invoice · 214 KB · Nitin, 22 Sep</span></span><span class="muted" style="font-size: 11.5px" title="Sample record: the file itself is not stored in this prototype">Sample file</span></div>
+<div class="doc"><span style="width: 32px; height: 32px; border-radius: 8px; background: #FDEBEA; color: #A3201F; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex: 0 0 32px">PDF</span><span style="flex: 1; min-width: 0"><span class="mono" style="display: block; font-weight: 500">PL-AN-88213.pdf</span><span class="muted" style="font-size: 12px">Packing list · 96 KB · Nitin, 22 Sep</span></span><span class="muted" style="font-size: 11.5px" title="Sample record: the file itself is not stored in this prototype">Sample file</span></div>
+<sc-for list="{{bdocs}}" as="d" hint-placeholder-count="0">
+<div class="doc"><span style="width: 32px; height: 32px; border-radius: 8px; background: #E6EEFF; color: #1D4FB8; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex: 0 0 32px">{{d.ext}}</span><span style="flex: 1; min-width: 0"><span class="mono" style="display: block; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{d.name}}</span><span class="muted" style="font-size: 12px">{{d.meta}}</span></span><button class="btn sm ic" style="width: 30px; height: 30px" onClick="{{d.remove}}" aria-label="Remove {{d.name}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+</sc-for>
+<label class="btn sm" style="align-self: flex-start; position: relative"><input type="file" multiple="multiple" accept=".pdf,.jpg,.jpeg,.png" style="position: absolute; width: 1px; height: 1px; opacity: 0" onChange="{{onDocFile}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Attach document</label>
 </div>
 </div>
 
@@ -289,10 +313,10 @@ h1,h2,h3,h4,p{margin:0}
 <thead><tr><th>Ref</th><th>Date</th><th>Facility</th><th>Device</th><th>SIM · IP</th><th>Type</th><th>Deployed by</th></tr></thead>
 <tbody>
 <sc-for list="{{storeDeps}}" as="d" hint-placeholder-count="1">
-<tr><td class="mono"><a href="Deployments.dc.html">{{d.ref}}</a></td><td>{{d.date}}</td><td><a href="FacilityDetail.dc.html" style="color: #0E1726; font-weight: 500">{{d.fac}}</a></td><td><a class="mono" href="DeviceDetail.dc.html">{{d.sn}}</a></td><td><span class="mono">{{d.sim}}</span> <span class="muted">·</span> <span class="mono">{{d.ip}}</span></td><td><span class="{{d.typeCls}}">{{d.type}}</span></td><td>{{d.by}}</td></tr>
+<tr><td class="mono"><a href="Deployments.dc.html">{{d.ref}}</a></td><td>{{d.date}}</td><td><a href="FacilityDetail.dc.html" onClick="{{d.openFac}}" style="color: #0E1726; font-weight: 500">{{d.fac}}</a></td><td><a class="mono" href="DeviceDetail.dc.html">{{d.sn}}</a></td><td><span class="mono">{{d.sim}}</span> <span class="muted">·</span> <span class="mono">{{d.ip}}</span></td><td><span class="{{d.typeCls}}">{{d.type}}</span></td><td>{{d.by}}</td></tr>
 </sc-for>
-<tr><td class="mono"><a href="Deployments.dc.html">DEP-0147</a></td><td>01 Oct 2026</td><td><a href="FacilityDetail.dc.html" style="color: #0E1726; font-weight: 500">Qatar Foundation</a><div class="muted" style="font-size: 12px">Education City, Doha</div></td><td><a class="mono" href="DeviceDetail.dc.html">1108675311</a></td><td><span class="mono">…3001435</span> <span class="muted">·</span> <span class="mono">10.64.12.41</span></td><td><span class="t t-poc">POC</span></td><td>Chetan</td></tr>
-<tr><td class="mono"><a href="Deployments.dc.html">DEP-0146</a></td><td>28 Sep 2026</td><td><a href="FacilityDetail.dc.html" style="color: #0E1726; font-weight: 500">Bank Muscat Head Office</a><div class="muted" style="font-size: 12px">Airport Heights, Muscat</div></td><td><a class="mono" href="DeviceDetail.dc.html">1108675302</a></td><td><span class="mono">…3001419</span> <span class="muted">·</span> <span class="mono">10.64.12.33</span></td><td><span class="t t-add">Additional</span></td><td>Saif</td></tr>
+<tr><td class="mono"><a href="Deployments.dc.html">DEP-0147</a></td><td>01 Oct 2026</td><td><a href="FacilityDetail.dc.html" onClick="{{openQF}}" style="color: #0E1726; font-weight: 500">Qatar Foundation</a><div class="muted" style="font-size: 12px">Education City, Doha</div></td><td><a class="mono" href="DeviceDetail.dc.html">1108675311</a></td><td><span class="mono">…3001435</span> <span class="muted">·</span> <span class="mono">10.64.12.41</span></td><td><span class="t t-poc">POC</span></td><td>Chetan</td></tr>
+<tr><td class="mono"><a href="Deployments.dc.html">DEP-0146</a></td><td>28 Sep 2026</td><td><a href="FacilityDetail.dc.html" onClick="{{openBM}}" style="color: #0E1726; font-weight: 500">Bank Muscat Head Office</a><div class="muted" style="font-size: 12px">Airport Heights, Muscat</div></td><td><a class="mono" href="DeviceDetail.dc.html">1108675302</a></td><td><span class="mono">…3001419</span> <span class="muted">·</span> <span class="mono">10.64.12.33</span></td><td><span class="t t-add">Additional</span></td><td>Saif</td></tr>
 </tbody>
 </table>
 </div>
@@ -345,8 +369,80 @@ h1,h2,h3,h4,p{margin:0}
 </div>
 </sc-if>
 
+<!-- Printable label sheet -->
+<sc-if value="{{labelsOpen}}" hint-placeholder-val="{{ false }}">
+<div class="ovl" role="dialog" aria-modal="true" aria-labelledby="lbl-t" style="align-items: flex-start; overflow-y: auto">
+<div class="pnl" style="max-width: 920px; margin: 16px 0">
+<div class="no-print" style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 18px 22px; border-bottom: 1px solid #EEF1F4">
+<div><h2 id="lbl-t" style="font-size: 17px; font-weight: 600">Print labels · <span class="mono" style="font-size: 15px">TEL-2026-004</span></h2><p class="muted" style="font-size: 13px">{{labelSub}}</p></div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center">
+<div class="cg" role="group" aria-label="Which units"><sc-for list="{{labelScopes}}" as="o" hint-placeholder-count="2"><button class="{{o.cls}}" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}">{{o.label}}<span class="cn">{{o.n}}</span></button></sc-for></div>
+<button class="btn" onClick="{{closeAll}}">Close</button>
+<button class="btn p" onClick="{{doPrint}}" disabled="{{noLabels}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"></path><rect x="3" y="9" width="18" height="8" rx="2"></rect><path d="M6 14h12v7H6z"></path></svg>Print {{labelN}} labels</button>
+</div>
+</div>
+<div class="lbl-sheet" style="padding: 18px 22px">
+<div class="lbl-grid">
+<sc-for list="{{labels}}" as="l" hint-placeholder-count="6">
+<div class="lbl-card">
+<span style="display: flex; justify-content: space-between; font-size: 10.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase"><span>MRD Inventory</span><span>{{l.batch}}</span></span>
+<span style="font-size: 12.5px; font-weight: 600">Teltonika RUT956</span>
+<span class="lbl-bars" aria-hidden="true"></span>
+<span class="mono" style="font-size: 15px; font-weight: 600; letter-spacing: .04em; color: #0E1726">S/N {{l.sn}}</span>
+<span class="mono" style="font-size: 11px; color: #0E1726">IMEI {{l.imei}}</span>
+</div>
+</sc-for>
+</div>
+<sc-if value="{{noLabels}}" hint-placeholder-val="{{ false }}"><p class="muted" style="font-size: 13px">No units in this selection.</p></sc-if>
+</div>
+</div>
+</div>
+</sc-if>
+
+<!-- Export units CSV -->
+<sc-if value="{{exportOpen}}" hint-placeholder-val="{{ false }}">
+<div class="ovl" role="dialog" aria-modal="true" aria-labelledby="ex-t">
+<div class="pnl" style="max-width: 640px">
+<div style="padding: 18px 22px; border-bottom: 1px solid #EEF1F4"><h2 id="ex-t" style="font-size: 17px; font-weight: 600">Export units (CSV)</h2><p class="muted" style="font-size: 13px">{{exMeta}}</p></div>
+<div style="padding: 16px 22px; display: flex; flex-direction: column; gap: 10px">
+<label class="fl">CSV preview · <span class="mono">{{exFile}}</span><textarea class="inp mono" readOnly="readOnly" style="height: 180px; padding: 8px 10px; font-size: 11.5px; white-space: pre; resize: vertical" value="{{exCsv}}"></textarea></label>
+<sc-if value="{{hasExErr}}" hint-placeholder-val="{{ false }}"><p role="alert" style="font-size: 12.5px; color: #8A4B00; padding: 10px 12px; background: #FFF8EB; border: 1px solid #F3D9A6; border-radius: 9px">{{exErr}}</p></sc-if>
+</div>
+<div style="display: flex; justify-content: flex-end; gap: 10px; padding: 14px 22px; border-top: 1px solid #EEF1F4">
+<button class="btn" onClick="{{closeAll}}">Close</button>
+<button class="btn p" onClick="{{doExport}}">Download CSV</button>
+</div>
+</div>
+</div>
+</sc-if>
+
 <sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
 <div class="toast" role="status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2BC4A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg><span>{{toast}}</span><button class="btn sm" onClick="{{clearToast}}" style="background: transparent; border-color: #3B4758; color: #fff; height: 26px">OK</button></div>
+</sc-if>
+<sc-if value="{{shell.menuOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 70; display: flex">
+<nav aria-label="Mobile navigation" style="width: min(300px, 85vw); height: 100%; overflow-y: auto; background: #0C1424; padding: 16px 12px; display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 8px 14px; color: #fff"><span style="font-weight: 600">Moonrock R&amp;D</span><button onClick="{{shell.closeAll}}" aria-label="Close menu" style="width: 40px; height: 40px; border: 0; border-radius: 8px; background: #1C2A42; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<a href="Main.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Dashboard</a>
+<a href="Search.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Search</a>
+<a href="Inventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">All inventory</a>
+<a href="Products.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Products</a>
+<a href="Batches.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Batches</a>
+<a href="ReceiveInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Receive stock</a>
+<a href="DevicePrep.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Device preparation</a>
+<a href="SimInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">SIM cards</a>
+<a href="Facilities.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Facilities</a>
+<a href="PocManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">POC projects</a>
+<a href="ContractManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Contracts</a>
+<a href="Deployments.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Deployments</a>
+<a href="CreateDeployment.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">New deployment</a>
+<a href="Reports.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Reports</a>
+<a href="AuditLog.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Audit log</a>
+<a href="Users.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Users &amp; roles</a>
+<a href="Settings.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Settings</a>
+</nav>
+<button aria-label="Close menu" onClick="{{shell.closeAll}}" style="flex: 1; border: 0; padding: 0; background: rgba(14,23,38,.5); cursor: default"></button>
+</div>
 </sc-if>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1900}}'>
@@ -379,7 +475,7 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
-    try { const keep = Object.assign({}, this.state); ["menu", "archiveOpen", "editOpen", "toast", "dPo", "dInv", "dNotes"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:BatchDetail', JSON.stringify(keep)); } catch (e) {}
+    try { const keep = Object.assign({}, this.state); delete keep._shell; ["menu", "archiveOpen", "editOpen", "toast", "dPo", "dInv", "dNotes", "labelsOpen", "exportOpen", "exErr"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:BatchDetail', JSON.stringify(keep)); } catch (e) {}
   }
   constructor(props) {
     super(props);
@@ -387,10 +483,38 @@ class Component extends DCLogic {
       f: 'all', menu: false, archiveOpen: false, editOpen: false, archived: false, toast: '',
       po: 'PO-MRD-2026-0412', inv: 'INV-AN-88213',
       notes: 'Arrived in 2 sealed cartons, no transit damage. Factory firmware RUT9M_R_00.07.06 on arrival; update to 00.07.08.3 during preparation. Antennas packed separately (Shelf A1, bin 3).',
-      dPo: '', dInv: '', dNotes: ''
+      dPo: '', dInv: '', dNotes: '', labelsOpen: false, labelScope: 'all', exportOpen: false, exErr: ''
     };
   }
-  renderVals() {
+  sizeLabel(n) { n = +n || 0; return n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; }
+  // Batch record in the shared store: store.batches[id] = { po, inv, notes, docs: [{ name, size, type, by, when }], archived }.
+  patchBatch(s, id, patch) { s.batches = s.batches || {}; s.batches[id] = Object.assign({}, s.batches[id] || {}, patch); return s.batches[id]; }
+  // Shared shell: notifications bell (fed by the shared store) and the mobile navigation drawer.
+  shellVals() {
+    const S = this.state, st = this.readStore();
+    const seen = (st.ui && st.ui.seenAt) || 0;
+    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Stage changed': 'moved the stage of', 'POC decision': 'recorded a POC decision for', 'Contract ended': 'ended the contract for', 'Issue reported': 'reported an issue on', 'Reserved': 'reserved', 'Labels printed': 'printed labels for', 'File attached': 'attached a file to', 'File removed': 'removed a file from', 'User updated': 'updated user', 'Product edited': 'edited', 'Invite resent': 'resent the invite to', 'Document uploaded': 'uploaded a document to', 'Document removed': 'removed a document from', 'Contact added': 'added a contact to', 'Contact removed': 'removed a contact from', 'Contract updated': 'updated the contract for', 'Batch updated': 'updated batch', 'Batch archived': 'archived batch', 'Batch restored': 'restored batch', 'Facility updated': 'updated facility', 'Facility restored': 'restored facility', 'Report exported': 'exported', 'Record corrected': 'corrected', 'Note added': 'added a note to', 'Settings changed': 'updated settings ·', 'User invited': 'invited', 'Role changed': 'changed the role of', 'Verified on site': 'verified on site', 'Deployment cancelled': 'cancelled', 'Deployment updated': 'updated deployment' };
+    const fromStore = st.events.slice(0, 8).map(e => ({ text: (e.who || 'Chetan') + ' ' + (VERB[e.action] || String(e.action || '').toLowerCase()) + ' ' + e.item + (e.to && e.to !== '—' && e.action !== 'Imported' ? ' → ' + e.to : ''), when: e.when, href: e.itemHref || 'AuditLog.dc.html', unread: (e.at || 0) > seen }));
+    const alerts = [
+      { text: '14 Teltonika RUT956 units are waiting for preparation', when: 'Batch TEL-2026-004', href: 'DevicePrep.dc.html', alert: true },
+      { text: 'Cat6 patch cable 1 m is below its minimum level', when: 'Low stock · 18 of 25', href: 'InventoryItem.dc.html', alert: true },
+      { text: 'Qatar Foundation: 2 CO₂ sensors scheduled to install on 08 Oct', when: 'Upcoming deployment', href: 'Deployments.dc.html', alert: true }
+    ].map(a => Object.assign(a, { unread: !seen }));
+    const all = fromStore.concat(alerts);
+    const unread = all.filter(n => n.unread).length;
+    return {
+      bellOpen: S._shell === 'bell', bellExp: S._shell === 'bell' ? 'true' : 'false', bellZ: S._shell === 'bell' ? '40' : 'auto',
+      menuOpen: S._shell === 'menu', menuExp: S._shell === 'menu' ? 'true' : 'false',
+      unread: unread > 9 ? '9+' : String(unread), hasUnread: unread > 0,
+      notes: all.map(n => ({ text: n.text, when: n.when, href: n.href, bg: n.unread ? '#F4FBF8' : '#fff', dot: n.alert ? '#E08A00' : (n.unread ? '#0B7A6B' : '#D5DBE3') })),
+      toggleBell: () => this.setState({ _shell: this.state._shell === 'bell' ? '' : 'bell' }),
+      toggleMenu: () => this.setState({ _shell: this.state._shell === 'menu' ? '' : 'menu' }),
+      closeAll: () => this.setState({ _shell: '' }),
+      markRead: () => this.writeStore(s => { s.ui = Object.assign({}, s.ui || {}, { seenAt: Date.now() }); })
+    };
+  }
+  renderVals() { return Object.assign(this._screenVals(), { shell: this.shellVals() }); }
+  _screenVals() {
     const ST0 = this.readStore();
     const S = this.state;
     const BATCH = 'TEL-2026-004';
@@ -435,7 +559,8 @@ class Component extends DCLogic {
     const facs = []; all.forEach(u => { if (u.key === 'deployed' && u.fac && facs.indexOf(u.fac) < 0) facs.push(u.fac); });
     const defs = [['all', 'All'], ['unconf', 'Unconfigured'], ['prep', 'In prep'], ['ready', 'Ready'], ['deployed', 'Deployed'], ['damaged', 'Damaged']].filter(([id]) => id !== 'prep' || nPrep > 0 || S.f === 'prep');
     const filters = defs.map(([id, label]) => ({ label, n: id === 'all' ? total : cnt(id), cls: 'chip' + (S.f === id ? ' on' : ''), pressed: S.f === id ? 'true' : 'false', pick: () => this.setState({ f: id }) }));
-    const units = all.filter(u => S.f === 'all' || u.key === S.f);
+    const openFacU = n => () => { if (n) this.writeStore(st => { st.ui = Object.assign({}, st.ui || {}, { facility: n }); }); };
+    const units = all.filter(u => S.f === 'all' || u.key === S.f).map(u => Object.assign({}, u, { openFac: openFacU(u.locHref === 'FacilityDetail.dc.html' ? u.fac : '') }));
     const qty = [
       { label: 'Received', v: total, sub: '22 Sep 2026', c: '#3B4758' },
       { label: 'Available (in office)', v: available, sub: 'Shelf A1 · A2', c: '#1A8FAD' },
@@ -455,7 +580,7 @@ class Component extends DCLogic {
     (ST0.deployments || []).forEach(d => (d.items || []).forEach(it => {
       if (!known[it.ident]) return;
       const r = all.find(u => u.sn === it.ident) || {};
-      storeDeps.push({ ref: d.ref || '—', date: d.date || '', fac: d.fac || '—', sn: it.ident, sim: r.iccid && r.iccid !== '—' ? '…' + String(r.iccid).slice(-7) : '—', ip: r.ip || '—', type: d.type || '—', typeCls: d.type === 'POC' ? 't t-poc' : d.type === 'Contract' ? 't t-con' : d.type === 'Replacement' ? 't t-rep' : 't t-add', by: d.by || '—' });
+      storeDeps.push({ openFac: openFacU(d.fac), ref: d.ref || '—', date: d.date || '', fac: d.fac || '—', sn: it.ident, sim: r.iccid && r.iccid !== '—' ? '…' + String(r.iccid).slice(-7) : '—', ip: r.ip || '—', type: d.type || '—', typeCls: d.type === 'POC' ? 't t-poc' : d.type === 'Contract' ? 't t-con' : d.type === 'Replacement' ? 't t-rep' : 't t-add', by: d.by || '—' });
     }));
     const depAll = [{ type: 'POC' }, { type: 'Additional' }].concat(storeDeps.filter((d, i, a) => a.findIndex(x => x.ref === d.ref) === i));
     const typeCount = {}; depAll.forEach(d => { typeCount[d.type] = (typeCount[d.type] || 0) + 1; });
@@ -471,7 +596,7 @@ class Component extends DCLogic {
     // Store events that mention this batch or any of its serials, newest first, ahead of the sample activity.
     const idents = Object.keys(known);
     const AV = { CH: '#CDEFE7', NI: '#F6E3C4', AI: '#E6DDFB', RA: '#DCE6FB', SA: '#FBE0DC' };
-    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Record corrected': 'corrected the record of', 'Note added': 'added a note to' };
+    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Record corrected': 'corrected the record of', 'Note added': 'added a note to', 'Document uploaded': 'uploaded a document to', 'Document removed': 'removed a document from', 'Batch updated': 'updated', 'Labels printed': 'printed labels for', 'Batch archived': 'archived', 'Batch restored': 'restored', 'Reserved': 'reserved', 'Reservation released': 'released the reservation of' };
     const storeTl = ST0.events.filter(e => { const t = String(e.item || '') + ' ' + String(e.note || ''); return t.indexOf(BATCH) >= 0 || idents.some(id => t.indexOf(id) >= 0); }).map(e => {
       const id = idents.find(x => String(e.item || '').indexOf(x) >= 0);
       const obj = (id || e.item || '') + ((e.from && e.from !== '—') || e.to ? ' · ' + (e.from && e.from !== '—' ? e.from + ' → ' : '') + (e.to || '') : '') + (e.action === 'Note added' && e.note ? ' · ' + e.note : '');
@@ -481,26 +606,88 @@ class Component extends DCLogic {
     const emptyTitle = S.f === 'all' ? 'No units in this batch.' : 'No ' + ((defs.find(d => d[0] === S.f) || [0, 'matching'])[1]).toLowerCase() + ' units in this batch.';
     const extraSerials = extra.length ? ' + ' + extra.length + ' added' : '';
     const withSim = all.filter(u => u.iccid && u.iccid !== '—' && u.ip && u.ip !== '—').length;
-    const closeAll = () => this.setState({ archiveOpen: false, editOpen: false, menu: false });
+    const closeAll = () => this.setState({ archiveOpen: false, editOpen: false, menu: false, labelsOpen: false, exportOpen: false, exErr: '' });
+    const SB = (ST0.batches || {})[BATCH] || {};
+    const has = k => Object.prototype.hasOwnProperty.call(SB, k);
+    const po = has('po') ? SB.po : S.po, inv = has('inv') ? SB.inv : S.inv, notes = has('notes') ? SB.notes : S.notes;
+    const archived = has('archived') ? !!SB.archived : !!S.archived;
+    const bdocs = (SB.docs || []).map((d, i) => ({ name: d.name, ext: (String(d.name).split('.').pop() || 'FILE').slice(0, 4).toUpperCase(), meta: this.sizeLabel(d.size) + (d.type ? ' · ' + d.type : '') + ' · ' + (d.by || 'Chetan') + ', ' + (d.when || ''),
+      remove: () => this.writeStore(st => { const b = (st.batches || {})[BATCH] || {}; const list = (b.docs || []).filter((x, j) => j !== i); this.patchBatch(st, BATCH, { docs: list }); this.logEvent(st, { action: 'Document removed', item: 'Batch ' + BATCH, itemHref: 'BatchDetail.dc.html', from: d.name, to: '—', note: 'Batch document' }); }) }));
+    const openFacN = n => () => { if (n) this.writeStore(st => { st.ui = Object.assign({}, st.ui || {}, { facility: n }); }); };
+    // Label sheet and CSV export
+    const labelSrc = S.labelScope === 'view' ? units : all;
+    const labels = labelSrc.map(u => ({ sn: u.sn, imei: u.imei || '—', batch: BATCH }));
+    const esc = v => { const x = String(v == null ? '' : v); return /[",\n]/.test(x) ? '"' + x.replace(/"/g, '""') + '"' : x; };
+    const exList = units;
+    const exCsv = [['serial', 'imei', 'status', 'sim_iccid', 'ip', 'location', 'batch']].concat(exList.map(u => [u.sn, u.imei, u.status, u.iccid, u.ip, u.loc, BATCH])).map(r => r.map(x => esc(x === '—' ? '' : x)).join(',')).join('\n');
+    const exFile = BATCH + '_units' + (S.f !== 'all' ? '_' + S.f : '') + '.csv';
     return {
-      live: !S.archived, archived: S.archived, menu: S.menu, menuStr: S.menu ? 'true' : 'false',
+      live: !archived, archived, menu: S.menu, menuStr: S.menu ? 'true' : 'false',
       archiveOpen: S.archiveOpen, editOpen: S.editOpen, hasToast: S.toast !== '', toast: S.toast,
       qty, filters, units, shown: units.length, noUnits: units.length === 0, timeline,
       total, nUnconf, nReady, nDeployed, withSim, seg, legend, segAria, storeDeps, emptyTitle, extraSerials,
       facCount: facs.length + (facs.length === 1 ? ' facility' : ' facilities'), facNames: facs.join(' · ') || 'none yet',
       depCount: depAll.length + (depAll.length === 1 ? ' deployment' : ' deployments'), depTypes: Object.keys(typeCount).map(k => typeCount[k] + ' ' + k).join(' · '),
-      po: S.po, inv: S.inv, notes: S.notes, dPo: S.dPo, dInv: S.dInv, dNotes: S.dNotes,
+      po: po || '—', inv: inv || '—', notes: notes || 'No notes.', dPo: S.dPo, dInv: S.dInv, dNotes: S.dNotes,
+      bdocs, docN: 2 + bdocs.length,
+      onDocFile: e => {
+        const t = e && e.target; const list = t && t.files ? Array.prototype.slice.call(t.files) : [];
+        if (!list.length) return;
+        this.writeStore(st => {
+          const b = (st.batches || {})[BATCH] || {};
+          const add = list.map(f => ({ name: String(f.name || 'document'), size: +f.size || 0, type: String(f.type || ''), by: 'Chetan', when: this.nowLabel() }));
+          this.patchBatch(st, BATCH, { docs: (b.docs || []).concat(add) });
+          add.forEach(d => this.logEvent(st, { action: 'Document uploaded', item: 'Batch ' + BATCH, itemHref: 'BatchDetail.dc.html', from: '—', to: d.name, note: this.sizeLabel(d.size) + (d.type ? ' · ' + d.type : '') }));
+        });
+        this.setState({ toast: list.length === 1 ? list[0].name + ' attached to ' + BATCH : list.length + ' documents attached to ' + BATCH });
+        try { t.value = ''; } catch (x) {}
+      },
+      openQF: openFacN('Qatar Foundation'), openBM: openFacN('Bank Muscat Head Office'),
+      labelsOpen: S.labelsOpen, labels, labelN: labels.length, noLabels: labels.length === 0,
+      labelSub: labels.length + ' label' + (labels.length === 1 ? '' : 's') + ' · 50 × 25 mm · serial, IMEI and batch. Use your browser\'s print dialog to send them to the label printer.',
+      labelScopes: [['all', 'All units', all.length], ['view', 'Current filter', units.length]].map(([id, label, n]) => ({ label, n, cls: 'chip' + ((S.labelScope || 'all') === id ? ' on' : ''), pressed: (S.labelScope || 'all') === id ? 'true' : 'false', pick: () => this.setState({ labelScope: id }) })),
+      doPrint: () => {
+        if (!labels.length) return;
+        this.writeStore(st => { this.logEvent(st, { action: 'Labels printed', item: 'Batch ' + BATCH, itemHref: 'BatchDetail.dc.html', from: '—', to: labels.length + ' labels', note: labels.length === all.length ? 'All units' : labels.map(l => l.sn).join(', ') }); });
+        try { window.print(); } catch (e) {}
+      },
+      exportOpen: S.exportOpen, exCsv, exFile, exMeta: exList.length + ' unit' + (exList.length === 1 ? '' : 's') + (S.f !== 'all' ? ' in the current filter' : '') + ' · serial, IMEI, status, SIM, IP and location.',
+      hasExErr: !!S.exErr, exErr: S.exErr || '',
+      doExport: async () => {
+        let dl = null;
+        try { dl = (window.claude && window.claude.use) ? await window.claude.use('downloads') : null; } catch (e) { dl = null; }
+        if (!dl) { this.setState({ exErr: 'Downloads aren’t available in this preview. Select the CSV above and copy it instead.' }); return; }
+        try { await dl.save({ filename: exFile, data: exCsv }); this.setState({ exportOpen: false, exErr: '', toast: exFile + ' saved · ' + exList.length + ' rows' }); }
+        catch (e) { this.setState({ exErr: e && e.code === 'declined' ? 'Download cancelled.' : 'The download didn’t start (' + ((e && e.code) || 'unavailable') + '). Copy the CSV above instead.' }); }
+      },
       toggleMenu: () => this.setState({ menu: !S.menu }),
       openArchive: () => this.setState({ menu: false, archiveOpen: true }),
-      confirmArchive: () => this.setState({ archiveOpen: false, archived: true, toast: 'TEL-2026-004 archived · recorded in audit log' }),
-      restore: () => this.setState({ archived: false, toast: 'TEL-2026-004 restored' }),
-      openEdit: () => this.setState({ editOpen: true, menu: false, dPo: S.po, dInv: S.inv, dNotes: S.notes }),
-      saveEdit: () => this.setState({ editOpen: false, po: S.dPo, inv: S.dInv, notes: S.dNotes, toast: 'Batch details saved' }),
+      confirmArchive: () => {
+        this.writeStore(st => { this.patchBatch(st, BATCH, { archived: true }); this.logEvent(st, { action: 'Batch archived', item: 'Batch ' + BATCH, itemHref: 'BatchDetail.dc.html', from: 'Active', to: 'Archived', note: total + ' unit records kept · ' + nDeployed + ' still deployed' }); });
+        this.setState({ archiveOpen: false, archived: true, toast: BATCH + ' archived · recorded in audit log' });
+      },
+      restore: () => {
+        this.writeStore(st => { this.patchBatch(st, BATCH, { archived: false }); this.logEvent(st, { action: 'Batch restored', item: 'Batch ' + BATCH, itemHref: 'BatchDetail.dc.html', from: 'Archived', to: 'Active', note: '' }); });
+        this.setState({ archived: false, toast: BATCH + ' restored' });
+      },
+      openEdit: () => this.setState({ editOpen: true, menu: false, dPo: po, dInv: inv, dNotes: notes }),
+      saveEdit: () => {
+        const nPo = String(S.dPo || '').trim(), nInv = String(S.dInv || '').trim(), nNotes = String(S.dNotes || '').trim();
+        const ch = [];
+        if (nPo !== (po || '')) ch.push('PO ' + (po || '—') + ' → ' + (nPo || '—'));
+        if (nInv !== (inv || '')) ch.push('invoice ' + (inv || '—') + ' → ' + (nInv || '—'));
+        if (nNotes !== (notes || '')) ch.push('notes updated');
+        this.writeStore(st => {
+          this.patchBatch(st, BATCH, { po: nPo, inv: nInv, notes: nNotes });
+          this.logEvent(st, { action: 'Batch updated', item: 'Batch ' + BATCH, itemHref: 'BatchDetail.dc.html', from: po || '—', to: nPo || '—', note: ch.join(' · ') || 'Saved without changes' });
+        });
+        this.setState({ editOpen: false, po: nPo, inv: nInv, notes: nNotes, toast: ch.length ? 'Batch details saved · ' + ch.join(' · ') : 'No changes to save' });
+      },
       onPo: e => this.setState({ dPo: e.target.value }),
       onInv: e => this.setState({ dInv: e.target.value }),
       onNotes: e => this.setState({ dNotes: e.target.value }),
-      printLabels: () => this.setState({ toast: '20 labels sent to Office label printer (Zebra ZD421)' }),
-      exportCsv: () => this.setState({ menu: false, toast: 'TEL-2026-004_units.csv exported · 20 rows' }),
+      printLabels: () => this.setState({ labelsOpen: true, menu: false }),
+      exportCsv: () => this.setState({ menu: false, exportOpen: true, exErr: '' }),
       showAll: () => this.setState({ f: 'all' }),
       clearToast: () => this.setState({ toast: '' }),
       closeAll

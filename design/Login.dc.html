@@ -129,6 +129,7 @@ Internal system · authorised MRD staff only
 
 <section style="flex: 1 1 460px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 40px 20px">
 <div class="card" style="width: min(420px, 100%); padding: 32px; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 1px 2px rgba(14,23,38,.04), 0 12px 32px rgba(14,23,38,.06)">
+<sc-if value="{{isSignIn}}" hint-placeholder-val="{{ true }}">
 <div style="display: flex; flex-direction: column; gap: 4px">
 <h2 style="font-size: 22px; font-weight: 600; letter-spacing: -.015em">Sign in</h2>
 <p class="muted" style="font-size: 13.5px">Use your MRD work account.</p>
@@ -140,15 +141,22 @@ Internal system · authorised MRD staff only
 <span><strong style="font-weight: 600">We couldn't sign you in.</strong> {{errText}}</span>
 </div>
 </sc-if>
-<sc-if value="{{resetSent}}" hint-placeholder-val="{{ false }}">
-<div role="status" style="padding: 12px 14px; border-radius: 10px; background: #F4FBF8; border: 1px solid #BFE3D3; color: #0A6648; font-size: 13px">If an account exists for that email, a reset link is on its way. It expires in 30 minutes.</div>
+<sc-if value="{{ssoNote}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 10px; background: #FFF3DC; border: 1px solid #F3D9A6; color: #6B3D00; font-size: 13px">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: 0 0 16px; margin-top: 2px"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg>
+<span style="flex: 1"><strong style="font-weight: 600">Microsoft 365 sign-in isn't connected in this prototype.</strong> There is no identity provider behind this page, so single sign-on can't run here. Sign in with your work email and password instead.</span>
+<button class="lnk" onClick="{{hideSso}}" aria-label="Dismiss message">Dismiss</button>
+</div>
+</sc-if>
+<sc-if value="{{resetDone}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="padding: 12px 14px; border-radius: 10px; background: #F4FBF8; border: 1px solid #BFE3D3; color: #0A6648; font-size: 13px">Password reset requested for {{resetEmail}}. Sign in once you've set a new password.</div>
 </sc-if>
 
 <div style="display: flex; flex-direction: column; gap: 16px">
 <div>
 <label class="lbl" for="em">Work email</label>
-<input id="em" class="{{emCls}}" type="email" autocomplete="username" placeholder="name@moonrock.om" value="{{email}}" onChange="{{onEmail}}" aria-invalid="{{emInvalid}}">
-<sc-if value="{{emErr}}" hint-placeholder-val="{{ false }}"><p style="font-size: 12.5px; color: #B42318; margin-top: 6px">Enter your work email.</p></sc-if>
+<input id="em" class="{{emCls}}" type="email" autocomplete="username" placeholder="name@moonrock.om" value="{{email}}" onChange="{{onEmail}}" aria-invalid="{{emInvalid}}" aria-describedby="emerr">
+<sc-if value="{{emErr}}" hint-placeholder-val="{{ false }}"><p id="emerr" style="font-size: 12.5px; color: #B42318; margin-top: 6px">{{emMsg}}</p></sc-if>
 </div>
 <div>
 <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px"><label class="lbl" for="pw" style="margin: 0">Password</label><button class="lnk" onClick="{{forgot}}">Forgot password?</button></div>
@@ -158,7 +166,7 @@ Internal system · authorised MRD staff only
 </div>
 <sc-if value="{{pwErr}}" hint-placeholder-val="{{ false }}"><p id="pwerr" style="font-size: 12.5px; color: #B42318; margin-top: 6px">Enter your password to sign in.</p></sc-if>
 </div>
-<label for="keep" style="display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: #1B2638; cursor: pointer"><input id="keep" type="checkbox" style="width: 16px; height: 16px; accent-color: #0B7A6B; margin: 0">Keep me signed in on this device</label>
+<label for="keep" style="display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: #1B2638; cursor: pointer"><input id="keep" type="checkbox" checked="checked" style="width: 16px; height: 16px; accent-color: #0B7A6B; margin: 0">Keep me signed in on this device</label>
 </div>
 
 <sc-if value="{{needCheck}}" hint-placeholder-val="{{ true }}"><button class="btn p" style="width: 100%; height: 44px; font-size: 14px" onClick="{{trySignIn}}">Sign in</button></sc-if>
@@ -166,7 +174,31 @@ Internal system · authorised MRD staff only
 
 <div style="display: flex; align-items: center; gap: 12px; color: #5E6B7D; font-size: 12.5px" role="separator" aria-label="or"><span style="flex: 1; height: 1px; background: #E3E7EC"></span>or<span style="flex: 1; height: 1px; background: #E3E7EC"></span></div>
 
-<a class="btn" href="Main.dc.html" style="width: 100%; height: 44px; font-size: 14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"></circle><path d="M10.8 12.2L20 3M16 7l3 3M14 9l2 2"></path></svg>Continue with Microsoft 365</a>
+<button class="btn" onClick="{{sso}}" style="width: 100%; height: 44px; font-size: 14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"></circle><path d="M10.8 12.2L20 3M16 7l3 3M14 9l2 2"></path></svg>Continue with Microsoft 365</button>
+</sc-if>
+
+<sc-if value="{{isReset}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h2 style="font-size: 22px; font-weight: 600; letter-spacing: -.015em">Reset your password</h2>
+<p class="muted" style="font-size: 13.5px">Enter your MRD work email and we'll send a link to set a new password.</p>
+</div>
+<sc-if value="{{resetForm}}" hint-placeholder-val="{{ true }}">
+<div>
+<label class="lbl" for="rem">Work email</label>
+<input id="rem" class="{{rEmCls}}" type="email" autocomplete="username" placeholder="name@moonrock.om" value="{{rEmail}}" onChange="{{onREmail}}" aria-invalid="{{rEmInvalid}}" aria-describedby="remerr">
+<sc-if value="{{rEmErr}}" hint-placeholder-val="{{ false }}"><p id="remerr" style="font-size: 12.5px; color: #B42318; margin-top: 6px">{{rEmMsg}}</p></sc-if>
+</div>
+<button class="btn p" style="width: 100%; height: 44px; font-size: 14px" onClick="{{sendReset}}">Send reset link</button>
+</sc-if>
+<sc-if value="{{resetSent}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; gap: 10px; align-items: flex-start; padding: 14px; border-radius: 10px; background: #F4FBF8; border: 1px solid #BFE3D3; color: #0A6648; font-size: 13px">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: 0 0 16px; margin-top: 2px"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+<span><strong style="font-weight: 600">Reset requested for {{rEmail}}.</strong> If an MRD account exists for that address, a reset link is sent and expires in 30 minutes. This prototype has no mail server, so no email actually leaves it.</span>
+</div>
+<button class="btn" style="width: 100%; height: 44px; font-size: 14px" onClick="{{sendAgain}}">Use a different email</button>
+</sc-if>
+<button class="lnk" style="align-self: flex-start" onClick="{{backToSignIn}}">← Back to sign in</button>
+</sc-if>
 
 <p class="muted" style="font-size: 12.5px; display: flex; gap: 8px; align-items: flex-start; padding-top: 4px; border-top: 1px solid #EEF1F4"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: 0 0 14px; margin-top: 7px"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"></path></svg><span style="padding-top: 4px">Access is role-based: Admin, Operations, Technician, Viewer. Need access? Ask an MRD administrator for an invite.</span></p>
 </div>
@@ -176,14 +208,19 @@ Internal system · authorised MRD staff only
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
 class Component extends DCLogic {
-  constructor(props) { super(props); this.state = { email: 'chetan@moonrock.om', pw: '', show: false, err: false, reset: false }; }
+  constructor(props) { super(props); this.state = { view: 'signin', email: 'chetan@moonrock.om', pw: '', show: false, err: false, keep: true, sso: false, rEmail: '', rErr: false, rSent: false, resetDone: false }; }
   renderVals() {
     const S = this.state;
+    const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const em = (S.email || '').trim();
     const hasPw = (S.pw || '').length > 0;
-    const hasEm = (S.email || '').trim().length > 0;
-    const pwErr = S.err && !hasPw, emErr = S.err && !hasEm;
-    const canGo = hasPw && hasEm;
+    const hasEm = em.length > 0, emOk = EMAIL.test(em);
+    // Errors show only after a sign-in attempt; the Sign in control becomes a link to the dashboard once both fields are valid.
+    const pwErr = S.err && !hasPw, emErr = S.err && !emOk;
+    const canGo = hasPw && emOk;
+    const rem = (S.rEmail || '').trim(), rOk = EMAIL.test(rem), rEmErr = S.rErr && !rOk;
     return {
+      isSignIn: S.view !== 'reset', isReset: S.view === 'reset',
       email: S.email, pw: S.pw,
       onEmail: (e) => this.setState({ email: e.target.value, err: false }),
       onPw: (e) => this.setState({ pw: e.target.value, err: false }),
@@ -191,12 +228,24 @@ class Component extends DCLogic {
       toggleShow: () => this.setState({ show: !S.show }),
       toggleText: S.show ? 'Hide' : 'Show', toggleLabel: S.show ? 'Hide password' : 'Show password', showPressed: S.show ? 'true' : 'false',
       eyeIcon: S.show ? 'M3 3l18 18M10.6 6.1A9.8 9.8 0 0 1 12 6c6 0 9.5 6 9.5 6a17 17 0 0 1-3 3.6M6.6 7.6C4 9.4 2.5 12 2.5 12s3.5 6 9.5 6c1.6 0 3-.4 4.2-1M9.9 9.9a3 3 0 0 0 4.2 4.2' : 'M2.5 12S6 6 12 6s9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6zM12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6z',
-      err: S.err && (pwErr || emErr), errText: emErr ? 'Enter your work email and password.' : 'Your password is missing. Check your email and password and try again.',
-      pwErr, emErr, pwCls: 'fld' + (pwErr ? ' err' : ''), emCls: 'fld' + (emErr ? ' err' : ''),
+      err: S.err && (pwErr || emErr),
+      errText: emErr && pwErr ? 'Enter your work email and password.' : emErr ? (hasEm ? 'That doesn’t look like an email address.' : 'Your work email is missing.') : 'Your password is missing.',
+      pwErr, emErr, emMsg: hasEm ? 'Enter a valid email, e.g. name@moonrock.om.' : 'Enter your work email.',
+      pwCls: 'fld' + (pwErr ? ' err' : ''), emCls: 'fld' + (emErr ? ' err' : ''),
       pwInvalid: pwErr ? 'true' : 'false', emInvalid: emErr ? 'true' : 'false',
       needCheck: !canGo, canGo,
-      trySignIn: () => this.setState({ err: true, reset: false }),
-      resetSent: S.reset, forgot: () => this.setState({ reset: true, err: false })
+      trySignIn: () => this.setState({ err: true, sso: false, resetDone: false }),
+      ssoNote: !!S.sso, sso: () => this.setState({ sso: true, err: false }), hideSso: () => this.setState({ sso: false }),
+      resetDone: !!S.resetDone, resetEmail: S.rEmail || '',
+      // Forgot password: a separate request view with a confirmation.
+      forgot: () => this.setState({ view: 'reset', rEmail: em, rErr: false, rSent: false, err: false, sso: false }),
+      rEmail: S.rEmail, onREmail: (e) => this.setState({ rEmail: e.target.value, rErr: false }),
+      rEmErr, rEmMsg: rem ? 'Enter a valid email, e.g. name@moonrock.om.' : 'Enter the email you sign in with.',
+      rEmCls: 'fld' + (rEmErr ? ' err' : ''), rEmInvalid: rEmErr ? 'true' : 'false',
+      resetForm: !S.rSent, resetSent: !!S.rSent,
+      sendReset: () => { if (!rOk) { this.setState({ rErr: true }); return; } this.setState({ rSent: true, rErr: false, rEmail: rem }); },
+      sendAgain: () => this.setState({ rSent: false, rEmail: '', rErr: false }),
+      backToSignIn: () => this.setState({ view: 'signin', resetDone: !!S.rSent, email: S.rSent ? S.rEmail : S.email, pw: '', err: false })
     };
   }
 }

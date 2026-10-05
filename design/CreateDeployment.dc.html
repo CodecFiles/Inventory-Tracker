@@ -152,7 +152,7 @@ textarea.inp{height:auto;min-height:84px;padding:10px 12px;resize:vertical}
 <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
 <div class="mtop" style="align-items: center; justify-content: space-between; padding: 12px 16px; background: #0C1424; color: #fff">
 <span style="font-weight: 600">Moonrock R&amp;D</span>
-<button class="btn sm" aria-label="Open menu" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
+<button class="btn sm" aria-label="Open menu" aria-expanded="{{shell.menuExp}}" onClick="{{shell.toggleMenu}}" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
 </div>
 <header class="top">
 <a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
@@ -160,7 +160,24 @@ textarea.inp{height:auto;min-height:84px;padding:10px 12px;resize:vertical}
 <span class="b s-prep" title="All records shown are sample data">Sample data</span>
 <a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
 <a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
-<button class="btn ic" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg></button>
+<div style="position: relative; z-index: {{shell.bellZ}}">
+<button class="btn ic" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="{{shell.bellExp}}" onClick="{{shell.toggleBell}}" style="position: relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg><sc-if value="{{shell.hasUnread}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #DC3B3A; color: #fff; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #fff">{{shell.unread}}</span></sc-if></button>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="Notifications" style="position: absolute; right: 0; top: calc(100% + 8px); z-index: 41; width: 360px; max-width: calc(100vw - 32px); background: #fff; border: 1px solid #DCE1E8; border-radius: 12px; box-shadow: 0 16px 40px rgba(14,23,38,.18); overflow: hidden; text-align: left">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #EEF1F4"><span style="font-weight: 600; font-size: 14px; color: #0E1726">Notifications</span><button onClick="{{shell.markRead}}" style="border: 0; background: none; padding: 4px; font: inherit; font-size: 12.5px; color: #0B7A6B; cursor: pointer">Mark all as read</button></div>
+<div style="max-height: 380px; overflow-y: auto">
+<sc-for list="{{shell.notes}}" as="n" hint-placeholder-count="4">
+<a href="{{n.href}}" style="display: flex; gap: 10px; padding: 11px 14px; border-bottom: 1px solid #F1F4F7; color: #0E1726; background: {{n.bg}}">
+<span style="width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: 0 0 8px; background: {{n.dot}}"></span>
+<span style="flex: 1; min-width: 0; font-size: 13px; line-height: 1.4"><span style="display: block">{{n.text}}</span><span style="display: block; font-size: 12px; color: #5E6B7D">{{n.when}}</span></span>
+</a>
+</sc-for>
+</div>
+<a href="AuditLog.dc.html" style="display: block; padding: 10px 14px; font-size: 13px; font-weight: 500; text-align: center; border-top: 1px solid #EEF1F4">Open audit log</a>
+</div>
+</sc-if>
+</div>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}"><button aria-label="Close notifications" onClick="{{shell.closeAll}}" style="position: fixed; inset: 0; z-index: 30; background: transparent; border: 0; padding: 0; cursor: default"></button></sc-if>
 </header>
 
 <main class="main">
@@ -172,12 +189,21 @@ textarea.inp{height:auto;min-height:84px;padding:10px 12px;resize:vertical}
 <p class="muted" style="font-size: 14px">Move prepared equipment from the MRD Office to a facility. Nothing changes in inventory until you confirm.</p>
 </div>
 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
-<span class="muted" style="font-size: 12.5px">Draft ref <span class="mono" style="color: #0E1726">DEP-0152</span></span>
+<span class="muted" style="font-size: 12.5px">{{refLabel}} <span class="mono" style="color: #0E1726">{{draftRef}}</span>{{savedLabel}}</span>
 <button class="btn" onClick="{{saveDraft}}">Save draft</button>
 <a class="btn" href="Deployments.dc.html">Cancel</a>
 </div>
 </div>
 </div>
+
+<sc-if value="{{showResume}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 16px; border-radius: 10px; background: #F6F9FF; border: 1px solid #C8D8FA; color: #1D3F8F; font-size: 13.5px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path></svg>
+<span style="flex: 1 1 280px">{{resumeText}}</span>
+<button class="btn sm p" onClick="{{resumeDraft}}">Resume draft</button>
+<button class="btn sm" onClick="{{dismissDraft}}" style="background: transparent">Start a new one</button>
+</div>
+</sc-if>
 
 <sc-if value="{{notDone}}" hint-placeholder-val="{{ true }}">
 <nav class="card steps" aria-label="Deployment steps">
@@ -210,7 +236,7 @@ textarea.inp{height:auto;min-height:84px;padding:10px 12px;resize:vertical}
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg>
 <span><strong style="font-weight: 600">{{fac.name}}</strong> · Stage: {{fac.stage}} → default type <strong style="font-weight: 600">{{defType}}</strong></span>
 <span style="flex: 1"></span>
-<a href="FacilityDetail.dc.html" style="font-size: 12.5px; font-weight: 500">View facility</a>
+<a href="FacilityDetail.dc.html" onClick="{{openFac}}" style="font-size: 12.5px; font-weight: 500">View facility</a>
 </div>
 </div>
 <div style="display: flex; flex-direction: column; gap: 12px">
@@ -298,13 +324,13 @@ textarea.inp{height:auto;min-height:84px;padding:10px 12px;resize:vertical}
 <div class="fld"><span class="lbl">Attachments</span>
 <div style="border: 1.5px dashed #C9D0D9; border-radius: 10px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; background: #FBFCFD">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.5l-8.5 8.5a5 5 0 0 1-7-7L14 5.5a3.3 3.3 0 0 1 4.7 4.7L10.2 18.7a1.7 1.7 0 0 1-2.4-2.4L15.5 8.6"></path></svg>
-<span class="muted" style="font-size: 13px; flex: 1 1 200px">Delivery note, photos of the installation, signed handover. PDF, JPG, PNG up to 20 MB.</span>
-<button class="btn sm" onClick="{{addFile}}">Add files</button>
+<span class="muted" style="font-size: 13px; flex: 1 1 200px">Delivery note, photos of the installation, signed handover. PDF, JPG, PNG up to 20 MB. File names and sizes are kept on the deployment record.</span>
+<label class="btn sm" style="position: relative"><input type="file" multiple="multiple" accept=".pdf,.jpg,.jpeg,.png" style="position: absolute; width: 1px; height: 1px; opacity: 0" onChange="{{onFile}}">Add files</label>
 </div>
 <sc-for list="{{files}}" as="fl" hint-placeholder-count="1">
 <div style="display: flex; align-items: center; gap: 10px; padding: 8px 12px; border: 1px solid #E3E7EC; border-radius: 8px; font-size: 13px">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B4758" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path></svg>
-<span class="mono" style="flex: 1; min-width: 0">{{fl.name}}</span><span class="muted" style="font-size: 12px">{{fl.size}}</span>
+<span class="mono" style="flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{fl.name}}</span><span class="muted" style="font-size: 12px">{{fl.size}}</span>
 <button class="btn sm ic" style="width: 32px" onClick="{{fl.remove}}" aria-label="Remove {{fl.name}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
 </div>
 </sc-for>
@@ -350,7 +376,7 @@ I confirm the equipment has physically left the MRD office
 
 <!-- Right rail -->
 <aside class="card" style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column" aria-label="Deployment summary">
-<div style="padding: 16px 18px 12px; display: flex; justify-content: space-between; align-items: center"><h2 style="font-size: 15px; font-weight: 600">Summary</h2><span class="mono muted">DEP-0152 · Draft</span></div>
+<div style="padding: 16px 18px 12px; display: flex; justify-content: space-between; align-items: center"><h2 style="font-size: 15px; font-weight: 600">Summary</h2><span class="mono muted">{{draftRef}} · {{draftState}}</span></div>
 <div style="padding: 0 18px 12px; display: flex; flex-direction: column">
 <div class="rl"><span class="muted">Facility</span><span style="text-align: right; font-weight: 500">{{fac.name}}</span></div>
 <div class="rl"><span class="muted">Stage</span><span class="b {{fac.g}}">{{fac.stage}}</span></div>
@@ -390,7 +416,7 @@ I confirm the equipment has physically left the MRD office
 <h2 style="font-size: 22px; font-weight: 600; letter-spacing: -.01em">Deployment <span class="mono" style="font-size: 20px">{{doneRef}}</span> confirmed</h2>
 <p class="muted" style="font-size: 14px; max-width: 560px">{{doneCount}} moved to {{fac.name}} · {{area}} as <strong style="color: #0E1726">{{typeShort}}</strong>. Inventory and the facility record are updated, and {{auditN}} audit entries were recorded.</p>
 <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 6px">
-<a class="btn p" href="FacilityDetail.dc.html">View facility</a>
+<a class="btn p" href="FacilityDetail.dc.html" onClick="{{openFac}}">View facility</a>
 <a class="btn" href="DeviceDetail.dc.html">View device</a>
 <a class="btn" href="AuditLog.dc.html">Audit entries</a>
 <button class="btn" onClick="{{reset}}">New deployment</button>
@@ -408,6 +434,31 @@ I confirm the equipment has physically left the MRD office
 </main>
 </div>
 </div>
+<sc-if value="{{shell.menuOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 70; display: flex">
+<nav aria-label="Mobile navigation" style="width: min(300px, 85vw); height: 100%; overflow-y: auto; background: #0C1424; padding: 16px 12px; display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 8px 14px; color: #fff"><span style="font-weight: 600">Moonrock R&amp;D</span><button onClick="{{shell.closeAll}}" aria-label="Close menu" style="width: 40px; height: 40px; border: 0; border-radius: 8px; background: #1C2A42; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<a href="Main.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Dashboard</a>
+<a href="Search.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Search</a>
+<a href="Inventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">All inventory</a>
+<a href="Products.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Products</a>
+<a href="Batches.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Batches</a>
+<a href="ReceiveInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Receive stock</a>
+<a href="DevicePrep.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Device preparation</a>
+<a href="SimInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">SIM cards</a>
+<a href="Facilities.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Facilities</a>
+<a href="PocManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">POC projects</a>
+<a href="ContractManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Contracts</a>
+<a href="Deployments.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Deployments</a>
+<a href="CreateDeployment.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">New deployment</a>
+<a href="Reports.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Reports</a>
+<a href="AuditLog.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Audit log</a>
+<a href="Users.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Users &amp; roles</a>
+<a href="Settings.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Settings</a>
+</nav>
+<button aria-label="Close menu" onClick="{{shell.closeAll}}" style="flex: 1; border: 0; padding: 0; background: rgba(14,23,38,.5); cursor: default"></button>
+</div>
+</sc-if>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1300}}'>
 class Component extends DCLogic {
@@ -439,7 +490,7 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
-    try { const keep = Object.assign({}, this.state); ["confirm", "done", "toast"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:CreateDeployment', JSON.stringify(keep)); } catch (e) {}
+    try { const keep = Object.assign({}, this.state); delete keep._shell; ["confirm", "done", "toast"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:CreateDeployment', JSON.stringify(keep)); } catch (e) {}
   }
   constructor(props) {
     super(props);
@@ -462,9 +513,34 @@ class Component extends DCLogic {
     return o;
   }
   initial() {
-    return { step: 1, fac: 'qf', type: 'poc', ptab: 'ser', prod: 'rut', sel: { '1108675309': true }, qty: { cat3: 6 }, techs: { RA: true, CH: true }, date: '2026-10-05', area: 'Plant room B1', spot: 'Rack 2, top shelf', notes: '', files: [{ name: 'QF-plantroom-B1-rack.jpg', size: '1.8 MB' }], confirm: false, done: false, toast: '' };
+    return { step: 1, fac: 'qf', type: 'poc', ptab: 'ser', prod: 'rut', sel: { '1108675309': true }, qty: { cat3: 6 }, techs: { RA: true, CH: true }, date: '2026-10-05', area: 'Plant room B1', spot: 'Rack 2, top shelf', notes: '', files: [{ name: 'QF-plantroom-B1-rack.jpg', size: '1.8 MB' }], confirm: false, done: false, toast: '', draftRef: null };
   }
-  renderVals() {
+  // Shared shell: notifications bell (fed by the shared store) and the mobile navigation drawer.
+  shellVals() {
+    const S = this.state, st = this.readStore();
+    const seen = (st.ui && st.ui.seenAt) || 0;
+    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Stage changed': 'moved the stage of', 'POC decision': 'recorded a POC decision for', 'Contract ended': 'ended the contract for', 'Issue reported': 'reported an issue on', 'Reserved': 'reserved', 'Labels printed': 'printed labels for', 'File attached': 'attached a file to', 'File removed': 'removed a file from', 'User updated': 'updated user', 'Product edited': 'edited', 'Invite resent': 'resent the invite to', 'Document uploaded': 'uploaded a document to', 'Document removed': 'removed a document from', 'Contact added': 'added a contact to', 'Contact removed': 'removed a contact from', 'Contract updated': 'updated the contract for', 'Batch updated': 'updated batch', 'Batch archived': 'archived batch', 'Batch restored': 'restored batch', 'Facility updated': 'updated facility', 'Facility restored': 'restored facility', 'Report exported': 'exported', 'Record corrected': 'corrected', 'Note added': 'added a note to', 'Settings changed': 'updated settings ·', 'User invited': 'invited', 'Role changed': 'changed the role of', 'Verified on site': 'verified on site', 'Deployment cancelled': 'cancelled', 'Deployment updated': 'updated deployment' };
+    const fromStore = st.events.slice(0, 8).map(e => ({ text: (e.who || 'Chetan') + ' ' + (VERB[e.action] || String(e.action || '').toLowerCase()) + ' ' + e.item + (e.to && e.to !== '—' && e.action !== 'Imported' ? ' → ' + e.to : ''), when: e.when, href: e.itemHref || 'AuditLog.dc.html', unread: (e.at || 0) > seen }));
+    const alerts = [
+      { text: '14 Teltonika RUT956 units are waiting for preparation', when: 'Batch TEL-2026-004', href: 'DevicePrep.dc.html', alert: true },
+      { text: 'Cat6 patch cable 1 m is below its minimum level', when: 'Low stock · 18 of 25', href: 'InventoryItem.dc.html', alert: true },
+      { text: 'Qatar Foundation: 2 CO₂ sensors scheduled to install on 08 Oct', when: 'Upcoming deployment', href: 'Deployments.dc.html', alert: true }
+    ].map(a => Object.assign(a, { unread: !seen }));
+    const all = fromStore.concat(alerts);
+    const unread = all.filter(n => n.unread).length;
+    return {
+      bellOpen: S._shell === 'bell', bellExp: S._shell === 'bell' ? 'true' : 'false', bellZ: S._shell === 'bell' ? '40' : 'auto',
+      menuOpen: S._shell === 'menu', menuExp: S._shell === 'menu' ? 'true' : 'false',
+      unread: unread > 9 ? '9+' : String(unread), hasUnread: unread > 0,
+      notes: all.map(n => ({ text: n.text, when: n.when, href: n.href, bg: n.unread ? '#F4FBF8' : '#fff', dot: n.alert ? '#E08A00' : (n.unread ? '#0B7A6B' : '#D5DBE3') })),
+      toggleBell: () => this.setState({ _shell: this.state._shell === 'bell' ? '' : 'bell' }),
+      toggleMenu: () => this.setState({ _shell: this.state._shell === 'menu' ? '' : 'menu' }),
+      closeAll: () => this.setState({ _shell: '' }),
+      markRead: () => this.writeStore(s => { s.ui = Object.assign({}, s.ui || {}, { seenAt: Date.now() }); })
+    };
+  }
+  renderVals() { return Object.assign(this._screenVals(), { shell: this.shellVals() }); }
+  _screenVals() {
     const st = this.state;
     const ST0 = this.readStore();
     const SU = ST0.units || {};
@@ -472,7 +548,13 @@ class Component extends DCLogic {
     (ST0.added || []).forEach(a => { if (a && a.ident) addedBy[a.ident] = a; });
     const unitOf = id => Object.assign({}, addedBy[id] || {}, SU[id] || {});
     const storeIds = Object.keys(Object.assign({}, addedBy, SU));
-    const REF = 'DEP-0' + (152 + (ST0.deployments || []).length);
+    // Next reference: one above the highest DEP number in the store (sample records end at DEP-0151).
+    const nextRef = deps => { let mx = 151; (deps || []).forEach(d => { const m = /^DEP-(\d+)$/.exec((d && d.ref) || ''); if (m) mx = Math.max(mx, parseInt(m[1], 10)); }); return 'DEP-' + String(mx + 1).padStart(4, '0'); };
+    const deps0 = ST0.deployments || [];
+    const myDraft = st.draftRef ? deps0.filter(d => d && d.ref === st.draftRef && d.status === 'Draft')[0] || null : null;
+    const REF = myDraft ? myDraft.ref : nextRef(deps0);
+    const drafts = deps0.filter(d => d && d.status === 'Draft' && d.draft && !(st.skipDrafts || {})[d.ref] && (!myDraft || d.ref !== myDraft.ref));
+    const resumable = !myDraft && !st.done ? drafts[drafts.length - 1] || null : null;
     const FAC = [
       { id: 'qf', name: 'Qatar Foundation', loc: 'Education City, Doha', stage: 'POC', g: 'g-poc', def: 'poc', devices: 12, info: 'POC 01 Oct – 30 Nov 2026 · 12 devices', areas: ['Plant room B1', 'Library, Level 1', 'Level 2 classrooms', 'Roof, north'] },
       { id: 'bm', name: 'Bank Muscat Head Office', loc: 'Airport Heights, Muscat', stage: 'Active operations', g: 'g-ops', def: 'add', devices: 35, contract: true, info: 'Contract CN-EXG-BM-2026-01 · 35 devices', areas: ['Plant room B1', 'AHU-3 plant room', 'AHU-4 plant room', 'Floors 3–5 open office'] },
@@ -621,7 +703,12 @@ class Component extends DCLogic {
       { label: f.name + ' accepts ' + curT.short + ' equipment', ok: !tyDis(curT) },
       { label: 'Physical hand-over confirmed', ok: st.confirm }
     ].map(c => ({ label: c.label, bg: c.ok ? '#E1F4EC' : '#EEF1F5', fg: c.ok ? '#0A6648' : '#8A96A8' }));
-    const files = st.files.map((fl, i) => ({ name: fl.name, size: fl.size, remove: () => this.setState({ files: st.files.filter((x, j) => j !== i) }) }));
+    const sizeLbl = n => typeof n === 'number' ? (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB') : String(n || '');
+    const files = st.files.map((fl, i) => ({ name: fl.name, size: sizeLbl(fl.size), remove: () => this.setState({ files: st.files.filter((x, j) => j !== i) }) }));
+    const fileMeta = () => st.files.map(fl => ({ name: fl.name, size: fl.size, type: fl.type || '', by: fl.by || 'Chetan', when: fl.when || 'Earlier' }));
+    const dLabelOf = () => p.length === 3 ? p[2] + ' ' + M[+p[1] - 1] + ' ' + p[0] : '';
+    const itemsOf = () => selSer.map(u => ({ ident: u.sn, name: u.pname, sim: u.sim || '', ip: u.ip || '' })).concat(selQty.map(q => ({ ident: q.id, name: q.name, qty: st.qty[q.id], unit: q.unit })));
+    const snapshot = () => ({ step: st.step, fac: st.fac, type: st.type, ptab: st.ptab, prod: st.prod, sel: st.sel, qty: st.qty, techs: st.techs, date: st.date, area: st.area, spot: st.spot, notes: st.notes, files: st.files });
 
     return {
       steps, facs, types, prods, units, qtys, tray, techs, team, panels, recap, checks, files,
@@ -639,7 +726,17 @@ class Component extends DCLogic {
       onArea: (e) => this.setState({ area: e && e.target ? e.target.value : st.area }),
       onSpot: (e) => this.setState({ spot: e && e.target ? e.target.value : '' }),
       onNotes: (e) => this.setState({ notes: e && e.target ? e.target.value : '' }),
-      addFile: () => this.setState({ files: st.files.concat([{ name: 'delivery-note-' + REF + '.pdf', size: '214 KB' }]) }),
+      onFile: (e) => {
+        const t = e && e.target; const list = t && t.files ? Array.prototype.slice.call(t.files) : [];
+        if (!list.length) return;
+        this.setState({ files: this.state.files.concat(list.map(f => ({ name: String(f.name || 'file'), size: +f.size || 0, type: String(f.type || ''), by: 'Chetan', when: this.nowLabel() }))) });
+        try { t.value = ''; } catch (x) {}
+      },
+      openFac: () => this.writeStore(s => { s.ui = Object.assign({}, s.ui || {}, { facility: f.name }); }),
+      draftRef: REF, refLabel: myDraft ? 'Draft' : 'Draft ref', savedLabel: myDraft ? ' · saved ' + String(myDraft.savedAt || '').replace('Today, ', '') : '', draftState: myDraft ? 'Draft saved' : 'Draft',
+      showResume: !!resumable, resumeText: resumable ? 'You have a saved draft ' + resumable.ref + ' for ' + resumable.fac + ' · ' + (resumable.items || []).length + ' line' + ((resumable.items || []).length === 1 ? '' : 's') + ' · saved ' + (resumable.savedAt || 'earlier') + '. Pick up where you left off?' : '',
+      resumeDraft: () => { if (resumable) this.setState(Object.assign(this.initial(), resumable.draft || {}, { draftRef: resumable.ref, done: false, confirm: false, toast: 'Resumed draft ' + resumable.ref })); },
+      dismissDraft: () => { if (resumable) this.setState({ skipDrafts: Object.assign({}, st.skipDrafts || {}, { [resumable.ref]: true }) }); },
       confirm: st.confirm, toggleConfirm: () => this.setState({ confirm: !st.confirm }),
       noBack: step === 1, back: () => { if (step > 1) this.setState({ step: step - 1 }); },
       notLast: step < 4, isLast: step === 4, noNext: !canNext,
@@ -652,7 +749,9 @@ class Component extends DCLogic {
         const dLabel = p.length === 3 ? p[2] + ' ' + M[+p[1] - 1] + ' ' + p[0] : '05 Oct 2026';
         let ref = REF;
         this.writeStore(s => {
-          ref = 'DEP-0' + (152 + (s.deployments || []).length);
+          const keepRef = st.draftRef && (s.deployments || []).some(d => d && d.ref === st.draftRef && d.status === 'Draft');
+          ref = keepRef ? st.draftRef : nextRef(s.deployments);
+          if (keepRef) s.deployments = s.deployments.filter(d => !(d && d.ref === ref));
           selSer.forEach(u => {
             const patch = { st: 'deployed', loc: f.name, loc2: st.area, fac: f.name, type: curT.short };
             if (!addedBy[u.sn]) { patch.name = u.pname; patch.cat = P_CAT[u.pkey]; }
@@ -664,13 +763,25 @@ class Component extends DCLogic {
           s.deployments = s.deployments || [];
           s.deployments.push({ ref, date: dLabel, fac: f.name, type: curT.short, area: st.area,
             items: selSer.map(u => ({ ident: u.sn, name: u.pname, sim: u.sim || '', ip: u.ip || '' })).concat(selQty.map(q => ({ ident: q.id, name: q.name, qty: st.qty[q.id], unit: q.unit }))),
-            team: team.map(t => t.name), by: 'Chetan', status: 'Completed' });
+            team: team.map(t => t.name), by: 'Chetan', status: 'Completed', note: st.notes || '', spot: st.spot || '', files: fileMeta() });
         });
-        this.setState({ done: true, doneRef: ref, doneCount: trayCount, step: 1, sel: {}, qty: {}, confirm: false });
+        this.setState({ done: true, doneRef: ref, doneCount: trayCount, step: 1, sel: {}, qty: {}, confirm: false, draftRef: null, files: [] });
       },
       notDone: !st.done, done: st.done, doneRef: st.doneRef || REF, doneCount: st.doneCount || trayCount,
       reset: () => this.setState(this.initial()),
-      saveDraft: () => this.setState({ toast: 'Draft ' + REF + ' saved · nothing moved yet' }),
+      saveDraft: () => {
+        let ref = REF;
+        this.writeStore(s => {
+          s.deployments = s.deployments || [];
+          const keepRef = st.draftRef && s.deployments.some(d => d && d.ref === st.draftRef && d.status === 'Draft');
+          ref = keepRef ? st.draftRef : nextRef(s.deployments);
+          const rec = { ref, date: dLabelOf() || '05 Oct 2026', fac: f.name, type: curT.short, area: st.area, items: itemsOf(), team: team.map(t => t.name), by: 'Chetan', status: 'Draft',
+            note: st.notes || '', spot: st.spot || '', files: fileMeta(), draft: snapshot(), savedAt: this.nowLabel() };
+          if (keepRef) s.deployments = s.deployments.map(d => d && d.ref === ref ? rec : d); else s.deployments.push(rec);
+          this.logEvent(s, { action: 'Draft saved', item: ref, itemHref: 'Deployments.dc.html', from: '—', to: f.name, note: curT.short + ' · ' + rec.items.length + (rec.items.length === 1 ? ' line' : ' lines') + ' · nothing moved yet' });
+        });
+        this.setState({ draftRef: ref, toast: 'Draft ' + ref + ' saved · listed under Deployments → Scheduled. Nothing moved yet.' });
+      },
       hasToast: !!st.toast, toast: st.toast, closeToast: () => this.setState({ toast: '' })
     };
   }

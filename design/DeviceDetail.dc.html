@@ -99,6 +99,9 @@ h1,h2,h3,h4,p{margin:0}
 .inp{height:38px;width:100%;border:1px solid #D5DBE3;border-radius:8px;padding:0 11px;font:inherit;font-size:13.5px;color:#0E1726;background:#fff}
 textarea.inp{height:68px;padding:9px 11px;resize:vertical}
 .inp:focus{outline:2px solid #2BC4A8;outline-offset:0;border-color:#0B7A6B}
+.lblc{border:1.5px dashed #8794A6;border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;font-size:12.5px;max-width:320px}
+.lblc .k{color:#5E6B7D;display:inline-block;width:70px}
+@media print{body *{visibility:hidden!important}.pmodal,.pmodal *{visibility:visible!important}.pmodal{position:absolute!important;left:0!important;top:0!important;transform:none!important;width:100%!important;box-shadow:none!important}.noprint{display:none!important}}
 @media (max-width:900px){.side{display:none}.mtop{display:flex}.main{padding:20px 16px 40px}.top{padding:12px 16px}}
 </style>
 </helmet>
@@ -142,7 +145,7 @@ textarea.inp{height:68px;padding:9px 11px;resize:vertical}
 <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
 <div class="mtop" style="align-items: center; justify-content: space-between; padding: 12px 16px; background: #0C1424; color: #fff">
 <span style="font-weight: 600">Moonrock R&amp;D</span>
-<button class="btn sm" aria-label="Open menu" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
+<button class="btn sm" aria-label="Open menu" aria-expanded="{{shell.menuExp}}" onClick="{{shell.toggleMenu}}" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
 </div>
 <header class="top">
 <a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
@@ -150,7 +153,24 @@ textarea.inp{height:68px;padding:9px 11px;resize:vertical}
 <span class="b s-prep" title="All records shown are sample data">Sample data</span>
 <a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
 <a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
-<button class="btn ic" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg></button>
+<div style="position: relative; z-index: {{shell.bellZ}}">
+<button class="btn ic" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="{{shell.bellExp}}" onClick="{{shell.toggleBell}}" style="position: relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg><sc-if value="{{shell.hasUnread}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #DC3B3A; color: #fff; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #fff">{{shell.unread}}</span></sc-if></button>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="Notifications" style="position: absolute; right: 0; top: calc(100% + 8px); z-index: 41; width: 360px; max-width: calc(100vw - 32px); background: #fff; border: 1px solid #DCE1E8; border-radius: 12px; box-shadow: 0 16px 40px rgba(14,23,38,.18); overflow: hidden; text-align: left">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #EEF1F4"><span style="font-weight: 600; font-size: 14px; color: #0E1726">Notifications</span><button onClick="{{shell.markRead}}" style="border: 0; background: none; padding: 4px; font: inherit; font-size: 12.5px; color: #0B7A6B; cursor: pointer">Mark all as read</button></div>
+<div style="max-height: 380px; overflow-y: auto">
+<sc-for list="{{shell.notes}}" as="n" hint-placeholder-count="4">
+<a href="{{n.href}}" style="display: flex; gap: 10px; padding: 11px 14px; border-bottom: 1px solid #F1F4F7; color: #0E1726; background: {{n.bg}}">
+<span style="width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: 0 0 8px; background: {{n.dot}}"></span>
+<span style="flex: 1; min-width: 0; font-size: 13px; line-height: 1.4"><span style="display: block">{{n.text}}</span><span style="display: block; font-size: 12px; color: #5E6B7D">{{n.when}}</span></span>
+</a>
+</sc-for>
+</div>
+<a href="AuditLog.dc.html" style="display: block; padding: 10px 14px; font-size: 13px; font-weight: 500; text-align: center; border-top: 1px solid #EEF1F4">Open audit log</a>
+</div>
+</sc-if>
+</div>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}"><button aria-label="Close notifications" onClick="{{shell.closeAll}}" style="position: fixed; inset: 0; z-index: 30; background: transparent; border: 0; padding: 0; cursor: default"></button></sc-if>
 </header>
 
 <main class="main" style="gap: 20px">
@@ -184,13 +204,13 @@ textarea.inp{height:68px;padding:9px 11px;resize:vertical}
 </div>
 <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; position: relative">
 <a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3z"></path><path d="M14 10h4l3 3v3h-7"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>Deploy</a>
-<button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg>Edit</button>
+<button class="btn" onClick="{{openEdit}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg>Edit</button>
 <button class="btn" onClick="{{askMove}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>Move</button>
 <button class="btn" onClick="{{askStatus}}">Change status</button>
 <button class="btn ic" onClick="{{toggleMenu}}" aria-label="More actions" aria-expanded="{{menuAria}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h.01M12 12h.01M19 12h.01"></path></svg></button>
 <sc-if value="{{menu}}" hint-placeholder-val="{{ false }}">
 <div class="menu" role="menu">
-<button class="mi" role="menuitem" onClick="{{toggleMenu}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"></path><rect x="3" y="9" width="18" height="8" rx="2"></rect><path d="M7 14h10v7H7z"></path></svg>Print label</button>
+<button class="mi" role="menuitem" onClick="{{openLabel}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"></path><rect x="3" y="9" width="18" height="8" rx="2"></rect><path d="M7 14h10v7H7z"></path></svg>Print label</button>
 <a class="mi" role="menuitem" href="AuditLog.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path></svg>View in audit log</a>
 <span style="height: 1px; background: #EEF1F4; margin: 4px 0"></span>
 <button class="mi dg" role="menuitem" onClick="{{askDamaged}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9.5 17H2.5z"></path><path d="M12 10v4M12 17h.01"></path></svg>Mark damaged…</button>
@@ -229,20 +249,20 @@ textarea.inp{height:68px;padding:9px 11px;resize:vertical}
 <div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
 
 <div class="card">
-<div class="hd"><h2>Identity</h2><button class="btn sm">Edit</button></div>
+<div class="hd"><h2>Identity</h2><button class="btn sm" onClick="{{openEdit}}">Edit</button></div>
 <sc-for list="{{identity}}" as="r" hint-placeholder-count="6">
-<div class="kv"><span class="k">{{r.k}}</span><span class="{{r.cls}}">{{r.v}}</span><button class="cp" aria-label="{{r.aria}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a1 1 0 0 1 1-1h10"></path></svg></button></div>
+<div class="kv"><span class="k">{{r.k}}</span><span class="{{r.cls}}">{{r.v}}</span><button class="cp" aria-label="{{r.aria}}" title="{{r.title}}" onClick="{{r.copy}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a1 1 0 0 1 1-1h10"></path></svg></button></div>
 </sc-for>
 </div>
 
 <div class="card">
 <div class="hd"><h2>Connectivity</h2><a href="SimInventory.dc.html" style="font-size: 13px; font-weight: 500">SIM record →</a></div>
 <div class="kv"><span class="k">SIM carrier</span><span>Omantel M2M</span><span></span></div>
-<div class="kv"><span class="k">ICCID</span><a class="mono" href="SimInventory.dc.html">{{simIccid}}</a><button class="cp" aria-label="Copy ICCID"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a1 1 0 0 1 1-1h10"></path></svg></button></div>
+<div class="kv"><span class="k">ICCID</span><a class="mono" href="SimInventory.dc.html">{{simIccid}}</a><button class="cp" aria-label="Copy ICCID" onClick="{{copyIccid}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a1 1 0 0 1 1-1h10"></path></svg></button></div>
 <div class="kv"><span class="k">Phone number</span><span class="mono">{{simMsisdn}}</span><span></span></div>
 <div class="kv"><span class="k">Data plan</span><span>M2M Pooled 5 GB</span><span></span></div>
 <div class="kv"><span class="k">APN</span><span class="mono">mrd.m2m</span><span></span></div>
-<div class="kv"><span class="k">IP address</span><span style="display: flex; align-items: center; gap: 8px"><span class="mono">{{ipAddr}}</span><span class="t t-add">Static</span></span><button class="cp" aria-label="Copy IP address"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a1 1 0 0 1 1-1h10"></path></svg></button></div>
+<div class="kv"><span class="k">IP address</span><span style="display: flex; align-items: center; gap: 8px"><span class="mono">{{ipAddr}}</span><span class="t t-add">Static</span></span><button class="cp" aria-label="Copy IP address" onClick="{{copyIp}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a1 1 0 0 1 1-1h10"></path></svg></button></div>
 <div style="padding: 10px 18px 14px; border-top: 1px solid #EEF1F4; font-size: 12px" class="muted">Pool <span class="mono" style="font-size: 11.5px">10.64.12.0/24</span> · connectivity test passed 05 Oct 09:40 · live monitoring not connected</div>
 </div>
 
@@ -307,11 +327,15 @@ textarea.inp{height:68px;padding:9px 11px;resize:vertical}
 <div style="display: flex; gap: 8px; flex-wrap: wrap">
 <a href="AuditLog.dc.html" style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid #E3E7EC; border-radius: 8px; font-size: 12.5px; color: #1B2638"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path></svg><span class="mono" style="font-size: 12px">config-backup-1108675309.tar.gz</span><span class="muted">18 KB</span></a>
 <a href="AuditLog.dc.html" style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid #E3E7EC; border-radius: 8px; font-size: 12.5px; color: #1B2638"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path></svg>Connectivity test 0940.pdf<span class="muted">212 KB</span></a>
+<sc-for list="{{files}}" as="fl" hint-placeholder-count="1">
+<span style="display: flex; align-items: center; gap: 8px; padding: 6px 6px 6px 10px; border: 1px solid #BFE3D3; background: #F4FBF8; border-radius: 8px; font-size: 12.5px; color: #1B2638" title="{{fl.title}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path></svg><span>{{fl.name}}</span><span class="muted">{{fl.size}}</span><button class="cp" onClick="{{fl.remove}}" aria-label="{{fl.aria}}" style="width: 24px; height: 24px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></span>
+</sc-for>
 </div>
+<p class="muted" style="font-size: 12px">Prototype stores the file name, size and type only — file contents are not uploaded anywhere.</p>
 <label for="note" class="sr" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Add a note</label>
 <div style="display: flex; gap: 8px; flex-wrap: wrap">
 <input id="note" class="inp" value="{{draft}}" onChange="{{onDraft}}" placeholder="Add a note — e.g. label re-printed, reserved for a kit…" style="flex: 1 1 220px; width: auto; height: 32px">
-<button class="btn sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.5l-8.5 8.5a5 5 0 0 1-7-7L14 5.5a3.5 3.5 0 0 1 5 5L10.5 19a2 2 0 0 1-3-3L15 8.5"></path></svg>Attach file</button>
+<label class="btn sm" style="position: relative; overflow: hidden"><input type="file" multiple="multiple" style="position: absolute; width: 1px; height: 1px; opacity: 0" onChange="{{onFile}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.5l-8.5 8.5a5 5 0 0 1-7-7L14 5.5a3.5 3.5 0 0 1 5 5L10.5 19a2 2 0 0 1-3-3L15 8.5"></path></svg>Attach file</label>
 <button class="btn sm p" onClick="{{addNote}}">Add note</button>
 </div>
 </div>
@@ -358,6 +382,77 @@ textarea.inp{height:68px;padding:9px 11px;resize:vertical}
 </div>
 </div>
 </sc-if>
+<!-- Edit identity -->
+<sc-if value="{{editOpen}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{editClose}}" style="position: fixed; inset: 0; background: rgba(14,23,38,.45); z-index: 40"></div>
+<div role="dialog" aria-modal="true" aria-label="Edit device record" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(520px, calc(100% - 32px)); max-height: calc(100vh - 32px); overflow-y: auto; background: #fff; border-radius: 14px; z-index: 41; box-shadow: 0 20px 48px rgba(14,23,38,.25)">
+<div style="padding: 20px 22px 6px"><h2 style="font-size: 17px; font-weight: 600">Edit device record</h2><p class="muted" style="font-size: 13px; margin-top: 4px">Corrections are logged field by field with the previous value. Serial number cannot be changed.</p></div>
+<div style="padding: 12px 22px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px">
+<sc-for list="{{editFields}}" as="ef" hint-placeholder-count="5">
+<div style="display: flex; flex-direction: column; gap: 6px"><label for="{{ef.id}}" style="font-size: 12.5px; font-weight: 500; color: #3B4758">{{ef.label}}</label><input id="{{ef.id}}" class="inp" value="{{ef.v}}" onChange="{{ef.on}}" style="font-family: {{ef.font}}"></div>
+</sc-for>
+</div>
+<sc-if value="{{editHasErr}}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin: 0 22px; font-size: 12.5px; color: #A3201F; background: #FDEBEA; padding: 8px 10px; border-radius: 8px">{{editErr}}</p></sc-if>
+<div style="padding: 16px 22px; display: flex; justify-content: flex-end; gap: 10px">
+<button class="btn" onClick="{{editClose}}">Cancel</button>
+<button class="btn p" onClick="{{editSave}}">Save changes</button>
+</div>
+</div>
+</sc-if>
+
+<!-- Print label -->
+<sc-if value="{{labelOpen}}" hint-placeholder-val="{{ false }}">
+<div class="noprint" onClick="{{labelClose}}" style="position: fixed; inset: 0; background: rgba(14,23,38,.45); z-index: 40"></div>
+<div class="pmodal" role="dialog" aria-modal="true" aria-label="Print device label" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(420px, calc(100% - 32px)); background: #fff; border-radius: 14px; z-index: 41; box-shadow: 0 20px 48px rgba(14,23,38,.25)">
+<div class="noprint" style="padding: 20px 22px 6px"><h2 style="font-size: 17px; font-weight: 600">Print label</h2><p class="muted" style="font-size: 13px; margin-top: 4px">Opens your browser's print dialog with this label only.</p></div>
+<div style="padding: 14px 22px">
+<div class="lblc">
+<span style="font-weight: 600; font-size: 13px">Moonrock R&amp;D · Teltonika RUT956</span>
+<span><span class="k">S/N</span><span class="mono" style="font-weight: 600">1108675309</span></span>
+<span><span class="k">IMEI</span><span class="mono">{{lblImei}}</span></span>
+<span><span class="k">Device ID</span><span class="mono">{{lblDevId}}</span></span>
+<span><span class="k">IP</span><span class="mono">{{ipAddr}}</span></span>
+</div>
+</div>
+<div class="noprint" style="padding: 14px 22px; border-top: 1px solid #E3E7EC; display: flex; justify-content: flex-end; gap: 10px">
+<button class="btn" onClick="{{labelClose}}">Cancel</button>
+<button class="btn p" onClick="{{labelPrint}}">Print</button>
+</div>
+</div>
+</sc-if>
+
+<!-- Status message -->
+<sc-if value="{{hasMsg}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 60; display: flex; align-items: center; gap: 12px; padding: 12px 14px 12px 16px; border-radius: 12px; background: #0E1726; color: #fff; font-size: 13.5px; box-shadow: 0 12px 32px rgba(14,23,38,.3); max-width: calc(100% - 32px); flex-wrap: wrap">
+<span style="word-break: break-all">{{msg}}</span>
+<button onClick="{{dismissMsg}}" aria-label="Dismiss" style="border: 0; background: transparent; color: #B3BDCB; cursor: pointer; padding: 4px; display: flex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-if>
+<sc-if value="{{shell.menuOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 70; display: flex">
+<nav aria-label="Mobile navigation" style="width: min(300px, 85vw); height: 100%; overflow-y: auto; background: #0C1424; padding: 16px 12px; display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 8px 14px; color: #fff"><span style="font-weight: 600">Moonrock R&amp;D</span><button onClick="{{shell.closeAll}}" aria-label="Close menu" style="width: 40px; height: 40px; border: 0; border-radius: 8px; background: #1C2A42; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<a href="Main.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Dashboard</a>
+<a href="Search.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Search</a>
+<a href="Inventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">All inventory</a>
+<a href="Products.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Products</a>
+<a href="Batches.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Batches</a>
+<a href="ReceiveInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Receive stock</a>
+<a href="DevicePrep.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Device preparation</a>
+<a href="SimInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">SIM cards</a>
+<a href="Facilities.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Facilities</a>
+<a href="PocManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">POC projects</a>
+<a href="ContractManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Contracts</a>
+<a href="Deployments.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Deployments</a>
+<a href="CreateDeployment.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">New deployment</a>
+<a href="Reports.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Reports</a>
+<a href="AuditLog.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Audit log</a>
+<a href="Users.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Users &amp; roles</a>
+<a href="Settings.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Settings</a>
+</nav>
+<button aria-label="Close menu" onClick="{{shell.closeAll}}" style="flex: 1; border: 0; padding: 0; background: rgba(14,23,38,.5); cursor: default"></button>
+</div>
+</sc-if>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1760}}'>
 class Component extends DCLogic {
@@ -389,7 +484,7 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
-    try { const keep = Object.assign({}, this.state); ["copied", "menu", "dialog", "draft"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:DeviceDetail', JSON.stringify(keep)); } catch (e) {}
+    try { const keep = Object.assign({}, this.state); delete keep._shell; ["copied", "menu", "dialog", "draft", "edit", "label", "msg"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:DeviceDetail', JSON.stringify(keep)); } catch (e) {}
   }
   constructor(props) {
     super(props);
@@ -398,7 +493,32 @@ class Component extends DCLogic {
       notes: [{ who: 'Chetan', when: 'Today, 09:43', text: 'Earmarked for the Al Khuwair Business Tower POC kit (20 Oct). Confirm with Aisha before deploying elsewhere.' }]
     };
   }
-  renderVals() {
+  // Shared shell: notifications bell (fed by the shared store) and the mobile navigation drawer.
+  shellVals() {
+    const S = this.state, st = this.readStore();
+    const seen = (st.ui && st.ui.seenAt) || 0;
+    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Stage changed': 'moved the stage of', 'POC decision': 'recorded a POC decision for', 'Contract ended': 'ended the contract for', 'Issue reported': 'reported an issue on', 'Reserved': 'reserved', 'Labels printed': 'printed labels for', 'File attached': 'attached a file to', 'File removed': 'removed a file from', 'User updated': 'updated user', 'Product edited': 'edited', 'Invite resent': 'resent the invite to', 'Document uploaded': 'uploaded a document to', 'Document removed': 'removed a document from', 'Contact added': 'added a contact to', 'Contact removed': 'removed a contact from', 'Contract updated': 'updated the contract for', 'Batch updated': 'updated batch', 'Batch archived': 'archived batch', 'Batch restored': 'restored batch', 'Facility updated': 'updated facility', 'Facility restored': 'restored facility', 'Report exported': 'exported', 'Record corrected': 'corrected', 'Note added': 'added a note to', 'Settings changed': 'updated settings ·', 'User invited': 'invited', 'Role changed': 'changed the role of', 'Verified on site': 'verified on site', 'Deployment cancelled': 'cancelled', 'Deployment updated': 'updated deployment' };
+    const fromStore = st.events.slice(0, 8).map(e => ({ text: (e.who || 'Chetan') + ' ' + (VERB[e.action] || String(e.action || '').toLowerCase()) + ' ' + e.item + (e.to && e.to !== '—' && e.action !== 'Imported' ? ' → ' + e.to : ''), when: e.when, href: e.itemHref || 'AuditLog.dc.html', unread: (e.at || 0) > seen }));
+    const alerts = [
+      { text: '14 Teltonika RUT956 units are waiting for preparation', when: 'Batch TEL-2026-004', href: 'DevicePrep.dc.html', alert: true },
+      { text: 'Cat6 patch cable 1 m is below its minimum level', when: 'Low stock · 18 of 25', href: 'InventoryItem.dc.html', alert: true },
+      { text: 'Qatar Foundation: 2 CO₂ sensors scheduled to install on 08 Oct', when: 'Upcoming deployment', href: 'Deployments.dc.html', alert: true }
+    ].map(a => Object.assign(a, { unread: !seen }));
+    const all = fromStore.concat(alerts);
+    const unread = all.filter(n => n.unread).length;
+    return {
+      bellOpen: S._shell === 'bell', bellExp: S._shell === 'bell' ? 'true' : 'false', bellZ: S._shell === 'bell' ? '40' : 'auto',
+      menuOpen: S._shell === 'menu', menuExp: S._shell === 'menu' ? 'true' : 'false',
+      unread: unread > 9 ? '9+' : String(unread), hasUnread: unread > 0,
+      notes: all.map(n => ({ text: n.text, when: n.when, href: n.href, bg: n.unread ? '#F4FBF8' : '#fff', dot: n.alert ? '#E08A00' : (n.unread ? '#0B7A6B' : '#D5DBE3') })),
+      toggleBell: () => this.setState({ _shell: this.state._shell === 'bell' ? '' : 'bell' }),
+      toggleMenu: () => this.setState({ _shell: this.state._shell === 'menu' ? '' : 'menu' }),
+      closeAll: () => this.setState({ _shell: '' }),
+      markRead: () => this.writeStore(s => { s.ui = Object.assign({}, s.ui || {}, { seenAt: Date.now() }); })
+    };
+  }
+  renderVals() { return Object.assign(this._screenVals(), { shell: this.shellVals() }); }
+  _screenVals() {
     const ST0 = this.readStore();
     const st = this.state;
     const SN = '1108675309', NAME = 'Teltonika RUT956', ITEM = NAME + ' ' + SN;
@@ -446,10 +566,19 @@ class Component extends DCLogic {
     const doneN = stages.slice(0, 6).filter(x => /done|cur/.test(x.cls)).length;
     const lifeNext = atReady ? 'Deploy to a facility' : deployed ? 'Monitor at facility' : afterDeploy ? 'Re-check and restock' : stKey === 'retired' ? 'None — retired' : 'Repair or re-configure';
     const lifeHref = atReady ? 'CreateDeployment.dc.html' : deployed ? 'FacilityDetail.dc.html' : 'DevicePrep.dc.html';
+    // Clipboard: real copy where the browser allows it; otherwise show the value to copy by hand.
+    const copyText = (key, text) => {
+      const ok = () => this.setState({ copied: key, msg: key + ' copied to clipboard' });
+      const no = () => this.setState({ copied: '', msg: 'Clipboard not available here — select and copy: ' + text });
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(String(text)).then(ok, no); return; }
+      } catch (e) {}
+      no();
+    };
     const identity = [
       ['Serial number', SN, true], ['IMEI', U.imei, true], ['MAC address', U.mac, true],
       ['Device ID', U.devId, true], ['Firmware', U.fw, true], ['Config profile', U.profile, false]
-    ].map(([k, v, m]) => ({ k, v, cls: m ? 'mono' : '', aria: 'Copy ' + k }));
+    ].map(([k, v, m]) => ({ k, v, cls: m ? 'mono' : '', aria: 'Copy ' + k, title: st.copied === k ? 'Copied' : 'Copy ' + k, copy: () => copyText(k, v) }));
     const I = {
       box: 'M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8',
       tag: 'M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z',
@@ -479,7 +608,7 @@ class Component extends DCLogic {
     const EV = {
       'Status changed': ['status', I.check, 'Status'], 'Moved': ['location', I.move, 'Location'], 'Deployed': ['status', I.truck, 'Facility'],
       'Configured': ['config', I.chip, 'Status'], 'SIM assigned': ['config', I.sim, 'SIM'], 'IP assigned': ['config', I.net, 'IP'],
-      'Record corrected': ['config', I.chip, 'Field'], 'Note added': ['note', I.tag, 'Note'], 'Received': ['location', I.box, 'Location'], 'Imported': ['location', I.box, 'Location']
+      'Record corrected': ['config', I.chip, 'Field'], 'Note added': ['note', I.tag, 'Note'], 'File attached': ['note', I.tag, 'File'], 'File removed': ['note', I.tag, 'File'], 'Label printed': ['status', I.tag, 'Label'], 'Received': ['location', I.box, 'Location'], 'Imported': ['location', I.box, 'Location']
     };
     const storeEvents = mine.map(e => {
       const m = EV[e.action] || ['status', I.check, 'Change'];
@@ -510,6 +639,9 @@ class Component extends DCLogic {
     const notes = (this._init ? this._init.notes : st.notes).concat(storeNotes);
     // Dialog: damaged / retire / status / move.
     const dlg = st.dialog;
+    const EDIT_F = [['imei', 'IMEI', true], ['mac', 'MAC address', true], ['devId', 'Device ID', true], ['fw', 'Firmware', true], ['profile', 'Config profile', false]];
+    const storeFiles = (P.files || []).filter(Boolean);
+    const fmtSize = n => n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : n >= 1024 ? Math.round(n / 1024) + ' KB' : (n || 0) + ' B';
     const LOCS = [['MRD Office|Shelf A2', 'MRD Office · Shelf A2'], ['MRD Office|Shelf A1', 'MRD Office · Shelf A1'], ['MRD Office|Prep bench', 'MRD Office · Prep bench'], ['In transit|', 'In transit'], ['With technician|', 'With technician']]
       .concat(['Qatar Foundation', 'Bank Muscat Head Office', 'Lulu Hypermarket', 'Al Khuwair Business Tower', 'Sohar Logistics Hub', 'Ruwi Medical Centre'].map(f => [f + '|', f]));
     const dlgOpts = dlg === 'status' ? Object.keys(LBL).map(k => ({ v: k, l: LBL[k] })) : dlg === 'move' ? LOCS.map(([v, l]) => ({ v, l })) : [];
@@ -543,7 +675,60 @@ class Component extends DCLogic {
     };
     return {
       statusCls: S[0], statusLabel: S[1], locLabel, cfgBy: U.configuredBy, cfgWhen, deployFact: deployed ? (fac || 'Facility') + (dtype ? ' · ' + dtype : '') : 'Not yet deployed',
-      copy: () => this.setState({ copied: true }), copyLabel: st.copied ? 'Copied' : 'Copy',
+      copy: () => copyText('Serial number', SN), copyLabel: st.copied === 'Serial number' ? 'Copied' : 'Copy',
+      copyIccid: () => { if (U.sim) copyText('ICCID', U.sim); }, copyIp: () => { if (U.ip) copyText('IP address', U.ip); },
+      hasMsg: !!st.msg, msg: st.msg || '', dismissMsg: () => this.setState({ msg: '' }),
+      // Edit identity: saved to the shared store, one 'Record corrected' event per changed field.
+      openEdit: () => this.setState({ menu: false, edit: { imei: U.imei || '', mac: U.mac || '', devId: U.devId || '', fw: U.fw || '', profile: U.profile || '', err: '' } }),
+      editOpen: !!st.edit, editClose: () => this.setState({ edit: null }),
+      editFields: EDIT_F.map(([k, label, mono]) => ({ id: 'ed-' + k, label, v: (st.edit || {})[k] || '', font: mono ? "'Geist Mono', ui-monospace, monospace" : 'inherit',
+        on: e => this.setState({ edit: Object.assign({}, this.state.edit, { [k]: e.target.value, err: '' }) }) })),
+      editErr: (st.edit || {}).err || '', editHasErr: !!(st.edit && st.edit.err),
+      editSave: () => {
+        const ed = this.state.edit || {};
+        const v = {}; EDIT_F.forEach(([k]) => { v[k] = String(ed[k] || '').trim(); });
+        const fail = err => this.setState({ edit: Object.assign({}, ed, { err }) });
+        if (!/^\d{15}$/.test(v.imei)) return fail('IMEI must be 15 digits.');
+        if (!/^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/.test(v.mac)) return fail('MAC address must look like 00:1E:42:3A:7C:19.');
+        if (!v.devId || !v.fw || !v.profile) return fail('Device ID, firmware and config profile cannot be empty.');
+        v.mac = v.mac.toUpperCase();
+        const changed = EDIT_F.filter(([k]) => v[k] !== (U[k] || ''));
+        if (!changed.length) { this.setState({ edit: null, msg: 'No changes to save' }); return; }
+        this.writeStore(s => {
+          const patch = {}; changed.forEach(([k]) => { patch[k] = v[k]; });
+          this.patchUnit(s, SN, patch, stKey);
+          changed.forEach(([k, label]) => this.logEvent(s, { action: 'Record corrected', item: ITEM, itemHref: 'DeviceDetail.dc.html', from: U[k] || '—', to: v[k], note: label }));
+        });
+        this.setState({ edit: null, msg: changed.length + ' field' + (changed.length === 1 ? '' : 's') + ' updated' });
+      },
+      // Print label: modal with the label and the browser print dialog.
+      openLabel: () => this.setState({ menu: false, label: true }),
+      labelOpen: !!st.label, labelClose: () => this.setState({ label: false }),
+      lblImei: U.imei || '—', lblDevId: U.devId || '—',
+      labelPrint: () => {
+        try { window.print(); } catch (e) {}
+        this.writeStore(s => { this.logEvent(s, { action: 'Label printed', item: ITEM, itemHref: 'DeviceDetail.dc.html', from: '—', to: U.devId || SN, note: 'Device label' }); });
+        this.setState({ label: false, msg: 'Print dialog opened for the device label' });
+      },
+      // Attachments: metadata only (name, size, type) in units[SN].files.
+      files: storeFiles.map((x, i) => ({ name: x.name, size: fmtSize(x.size), title: (x.type || 'file') + ' · ' + x.by + ' · ' + x.when, aria: 'Remove ' + x.name,
+        remove: () => this.writeStore(s => {
+          const cur = ((s.units[SN] || {}).files || []).slice(); const gone = cur.splice(i, 1)[0];
+          this.patchUnit(s, SN, { files: cur }, stKey);
+          if (gone) this.logEvent(s, { action: 'File removed', item: ITEM, itemHref: 'DeviceDetail.dc.html', from: gone.name, to: '—', note: gone.name });
+        }) })),
+      onFile: e => {
+        const list = Array.prototype.slice.call((e && e.target && e.target.files) || []);
+        if (!list.length) return;
+        const metas = list.map(fl => ({ name: fl.name, size: fl.size || 0, type: fl.type || '', by: 'Chetan', when: this.nowLabel() }));
+        this.writeStore(s => {
+          const cur = ((s.units[SN] || {}).files || []).concat(metas);
+          this.patchUnit(s, SN, { files: cur }, stKey);
+          metas.forEach(m => this.logEvent(s, { action: 'File attached', item: ITEM, itemHref: 'DeviceDetail.dc.html', from: '—', to: m.name, note: m.name + ' · ' + fmtSize(m.size) }));
+        });
+        try { e.target.value = ''; } catch (err) {}
+        this.setState({ msg: metas.length + ' file' + (metas.length === 1 ? '' : 's') + ' attached' });
+      },
       menu: st.menu, menuAria: st.menu ? 'true' : 'false', toggleMenu: () => this.setState({ menu: !this.state.menu }),
       askDamaged: () => this.setState({ menu: false, dialog: 'damaged' }), askRetire: () => this.setState({ menu: false, dialog: 'retire' }),
       askStatus: () => this.setState({ menu: false, dialog: 'status', dlgValue: '', dlgNote: '' }), askMove: () => this.setState({ menu: false, dialog: 'move', dlgValue: '', dlgNote: '' }),

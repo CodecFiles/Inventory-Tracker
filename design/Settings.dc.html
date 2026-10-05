@@ -137,7 +137,7 @@ h1,h2,h3,h4,p{margin:0}
 <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
 <div class="mtop" style="align-items: center; justify-content: space-between; padding: 12px 16px; background: #0C1424; color: #fff">
 <span style="font-weight: 600">Moonrock R&amp;D</span>
-<button class="btn sm" aria-label="Open menu" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
+<button class="btn sm" aria-label="Open menu" aria-expanded="{{shell.menuExp}}" onClick="{{shell.toggleMenu}}" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
 </div>
 <header class="top">
 <a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
@@ -145,7 +145,24 @@ h1,h2,h3,h4,p{margin:0}
 <span class="b s-prep" title="All records shown are sample data">Sample data</span>
 <a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
 <a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
-<button class="btn ic" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg></button>
+<div style="position: relative; z-index: {{shell.bellZ}}">
+<button class="btn ic" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="{{shell.bellExp}}" onClick="{{shell.toggleBell}}" style="position: relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg><sc-if value="{{shell.hasUnread}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #DC3B3A; color: #fff; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #fff">{{shell.unread}}</span></sc-if></button>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="Notifications" style="position: absolute; right: 0; top: calc(100% + 8px); z-index: 41; width: 360px; max-width: calc(100vw - 32px); background: #fff; border: 1px solid #DCE1E8; border-radius: 12px; box-shadow: 0 16px 40px rgba(14,23,38,.18); overflow: hidden; text-align: left">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #EEF1F4"><span style="font-weight: 600; font-size: 14px; color: #0E1726">Notifications</span><button onClick="{{shell.markRead}}" style="border: 0; background: none; padding: 4px; font: inherit; font-size: 12.5px; color: #0B7A6B; cursor: pointer">Mark all as read</button></div>
+<div style="max-height: 380px; overflow-y: auto">
+<sc-for list="{{shell.notes}}" as="n" hint-placeholder-count="4">
+<a href="{{n.href}}" style="display: flex; gap: 10px; padding: 11px 14px; border-bottom: 1px solid #F1F4F7; color: #0E1726; background: {{n.bg}}">
+<span style="width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: 0 0 8px; background: {{n.dot}}"></span>
+<span style="flex: 1; min-width: 0; font-size: 13px; line-height: 1.4"><span style="display: block">{{n.text}}</span><span style="display: block; font-size: 12px; color: #5E6B7D">{{n.when}}</span></span>
+</a>
+</sc-for>
+</div>
+<a href="AuditLog.dc.html" style="display: block; padding: 10px 14px; font-size: 13px; font-weight: 500; text-align: center; border-top: 1px solid #EEF1F4">Open audit log</a>
+</div>
+</sc-if>
+</div>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}"><button aria-label="Close notifications" onClick="{{shell.closeAll}}" style="position: fixed; inset: 0; z-index: 30; background: transparent; border: 0; padding: 0; cursor: default"></button></sc-if>
 </header>
 
 <main class="main">
@@ -185,14 +202,15 @@ h1,h2,h3,h4,p{margin:0}
 <section class="card">
 <div class="sh"><div><h2>General</h2><p>Organisation defaults used for receiving, dates and record retention.</p></div></div>
 <div style="padding: 0 18px 18px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px">
-<div><label class="lbl" for="g1">Organisation</label><input id="g1" class="fld" value="Moonrock Research &amp; Development (MRD)"></div>
-<div><label class="lbl" for="g2">Partner programme</label><input id="g2" class="fld" value="Exergio"></div>
-<div><label class="lbl" for="g3">Default receiving location</label><select id="g3" class="fld"><option>MRD Office · Muscat</option><option>MRD Office · Prep bench</option></select><p class="hint">New batches land here unless changed on the receive form.</p></div>
-<div><label class="lbl" for="g4">Time zone</label><select id="g4" class="fld"><option>Asia/Muscat · GST (UTC+4)</option><option>Asia/Qatar · AST (UTC+3)</option></select></div>
-<div><label class="lbl" for="g5">Date format</label><select id="g5" class="fld"><option>05 Oct 2026</option><option>2026-10-05</option><option>05/10/2026</option></select></div>
-<div><label class="lbl" for="g6">Audit retention</label><select id="g6" class="fld"><option>7 years</option><option>5 years</option><option>10 years</option></select><p class="hint">Audit records are immutable for the whole period.</p></div>
+<div><label class="lbl" for="g1">Organisation</label><input id="g1" class="fld" value="{{gen.org}}" onChange="{{gen.onOrg}}"></div>
+<div><label class="lbl" for="g2">Partner programme</label><input id="g2" class="fld" value="{{gen.partner}}" onChange="{{gen.onPartner}}"></div>
+<div><label class="lbl" for="g3">Default receiving location</label><select id="g3" class="fld" value="{{gen.loc}}" onChange="{{gen.onLoc}}"><sc-for list="{{gen.locOpts}}" as="o" hint-placeholder-count="2"><option value="{{o.v}}">{{o.v}}</option></sc-for></select><p class="hint">New batches land here unless changed on the receive form.</p></div>
+<div><label class="lbl" for="g4">Time zone</label><select id="g4" class="fld" value="{{gen.tz}}" onChange="{{gen.onTz}}"><option value="Asia/Muscat · GST (UTC+4)">Asia/Muscat · GST (UTC+4)</option><option value="Asia/Qatar · AST (UTC+3)">Asia/Qatar · AST (UTC+3)</option></select></div>
+<div><label class="lbl" for="g5">Date format</label><select id="g5" class="fld" value="{{gen.datefmt}}" onChange="{{gen.onDatefmt}}"><option value="05 Oct 2026">05 Oct 2026</option><option value="2026-10-05">2026-10-05</option><option value="05/10/2026">05/10/2026</option></select></div>
+<div><label class="lbl" for="g6">Audit retention</label><select id="g6" class="fld" value="{{gen.retention}}" onChange="{{gen.onRetention}}"><option value="7 years">7 years</option><option value="5 years">5 years</option><option value="10 years">10 years</option></select><p class="hint">Audit records are immutable for the whole period.</p></div>
 </div>
-<div style="display: flex; justify-content: flex-end; gap: 10px; padding: 14px 18px; border-top: 1px solid #EEF1F4"><button class="btn" onClick="{{saved}}">Save changes</button></div>
+<sc-if value="{{gen.hasErr}}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin: 0 18px 12px; font-size: 13px; color: #A3201F">{{gen.err}}</p></sc-if>
+<div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; padding: 14px 18px; border-top: 1px solid #EEF1F4; flex-wrap: wrap"><span class="muted" style="font-size: 12px; flex: 1 1 200px">{{gen.status}}</span><sc-if value="{{gen.dirty}}" hint-placeholder-val="{{ false }}"><button class="btn" onClick="{{gen.discard}}">Discard</button></sc-if><button class="btn p" onClick="{{gen.save}}">Save changes</button></div>
 </section>
 <section class="card">
 <div class="sh"><div><h2>Prototype data</h2><p>Changes you make on any screen of this prototype are saved in this browser and survive reloads. They are not shared with other people.</p></div><button class="btn danger" onClick="{{askReset}}">Reset sample data</button></div>
@@ -423,7 +441,7 @@ h1,h2,h3,h4,p{margin:0}
 <div style="position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 16px">
 <div onClick="{{closeAdd}}" aria-hidden="true" style="position: absolute; inset: 0; background: rgba(14,23,38,.45)"></div>
 <div role="dialog" aria-modal="true" aria-labelledby="addt" style="position: relative; width: min(600px, 100%); max-height: 100%; overflow-y: auto; background: #fff; border-radius: 14px; box-shadow: 0 24px 48px rgba(14,23,38,.2)">
-<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 20px 22px 0"><div><h2 id="addt" style="font-size: 18px; font-weight: 600">Add category</h2><p class="muted" style="font-size: 13px; margin-top: 2px">Products in this category inherit these defaults. You can override them per product.</p></div><button class="btn sm ic" style="width: 32px" aria-label="Close" onClick="{{closeAdd}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 20px 22px 0"><div><h2 id="addt" style="font-size: 18px; font-weight: 600">{{addTitle}}</h2><p class="muted" style="font-size: 13px; margin-top: 2px">Products in this category inherit these defaults. You can override them per product.</p></div><button class="btn sm ic" style="width: 32px" aria-label="Close" onClick="{{closeAdd}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
 <div style="padding: 18px 22px; display: flex; flex-direction: column; gap: 18px">
 <div><label class="lbl" for="cn">Name</label><input id="cn" class="fld" placeholder="e.g. Energy meters" value="{{newName}}" onChange="{{onNewName}}"></div>
 <div><span class="lbl" id="icl">Icon</span><div role="radiogroup" aria-labelledby="icl" style="display: flex; gap: 8px; flex-wrap: wrap"><sc-for list="{{iconPick}}" as="i" hint-placeholder-count="9"><button class="{{i.cls}}" role="radio" aria-checked="{{i.on}}" aria-label="{{i.label}}" onClick="{{i.pick}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{i.path}}"></path></svg></button></sc-for></div></div>
@@ -431,13 +449,13 @@ h1,h2,h3,h4,p{margin:0}
 <div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid #E3E7EC; border-radius: 10px"><span style="flex: 1"><span style="display: block; font-weight: 500; font-size: 13.5px" id="rcl">Requires configuration before deployment</span><span class="muted" style="font-size: 12px">Units start as Unconfigured and appear in Device preparation.</span></span><button class="{{reqCls}}" role="switch" aria-checked="{{reqOn}}" aria-labelledby="rcl" onClick="{{toggleReq}}"></button></div>
 <div style="display: flex; flex-direction: column; gap: 8px"><span class="lbl" style="margin: 0">Custom fields</span>
 <sc-for list="{{newFields}}" as="f" hint-placeholder-count="2">
-<div style="display: flex; gap: 8px; align-items: center"><label class="sr" for="{{f.id}}">Field name</label><input id="{{f.id}}" class="fld" style="flex: 2" placeholder="{{f.ph}}"><label class="sr" for="{{f.tid}}">Field type</label><select id="{{f.tid}}" class="fld" style="flex: 1"><option>Text</option><option>Number</option><option>List</option><option>Date</option><option>MAC address</option></select><button class="btn sm ic" style="width: 32px; flex: 0 0 32px" aria-label="Remove field" onClick="{{f.remove}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<div style="display: flex; gap: 8px; align-items: center"><label class="sr" for="{{f.id}}">Field name</label><input id="{{f.id}}" class="fld" style="flex: 2" placeholder="{{f.ph}}" value="{{f.name}}" onChange="{{f.onName}}"><label class="sr" for="{{f.tid}}">Field type</label><select id="{{f.tid}}" class="fld" style="flex: 1" value="{{f.type}}" onChange="{{f.onType}}"><option value="Text">Text</option><option value="Number">Number</option><option value="List">List</option><option value="Date">Date</option><option value="MAC address">MAC address</option></select><button class="btn sm ic" style="width: 32px; flex: 0 0 32px" aria-label="Remove field" onClick="{{f.remove}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
 </sc-for>
 <button class="btn sm" style="align-self: flex-start" onClick="{{addField}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add field</button>
 <p class="hint" style="margin: 0">Serial number and status are always included.</p>
 </div>
 </div>
-<div style="display: flex; justify-content: flex-end; gap: 10px; padding: 14px 22px; border-top: 1px solid #E3E7EC"><button class="btn" onClick="{{closeAdd}}">Cancel</button><button class="btn p" onClick="{{createCat}}">Create category</button></div>
+<div style="display: flex; justify-content: flex-end; gap: 10px; padding: 14px 22px; border-top: 1px solid #E3E7EC"><button class="btn" onClick="{{closeAdd}}">Cancel</button><button class="btn p" onClick="{{createCat}}">{{addCta}}</button></div>
 </div>
 </div>
 </sc-if>
@@ -502,6 +520,31 @@ h1,h2,h3,h4,p{margin:0}
 </main>
 </div>
 </div>
+<sc-if value="{{shell.menuOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 70; display: flex">
+<nav aria-label="Mobile navigation" style="width: min(300px, 85vw); height: 100%; overflow-y: auto; background: #0C1424; padding: 16px 12px; display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 8px 14px; color: #fff"><span style="font-weight: 600">Moonrock R&amp;D</span><button onClick="{{shell.closeAll}}" aria-label="Close menu" style="width: 40px; height: 40px; border: 0; border-radius: 8px; background: #1C2A42; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<a href="Main.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Dashboard</a>
+<a href="Search.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Search</a>
+<a href="Inventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">All inventory</a>
+<a href="Products.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Products</a>
+<a href="Batches.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Batches</a>
+<a href="ReceiveInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Receive stock</a>
+<a href="DevicePrep.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Device preparation</a>
+<a href="SimInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">SIM cards</a>
+<a href="Facilities.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Facilities</a>
+<a href="PocManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">POC projects</a>
+<a href="ContractManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Contracts</a>
+<a href="Deployments.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Deployments</a>
+<a href="CreateDeployment.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">New deployment</a>
+<a href="Reports.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Reports</a>
+<a href="AuditLog.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Audit log</a>
+<a href="Users.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Users &amp; roles</a>
+<a href="Settings.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Settings</a>
+</nav>
+<button aria-label="Close menu" onClick="{{shell.closeAll}}" style="flex: 1; border: 0; padding: 0; background: rgba(14,23,38,.5); cursor: default"></button>
+</div>
+</sc-if>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1500}}'>
 class Component extends DCLogic {
@@ -533,12 +576,12 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
-    try { const keep = Object.assign({}, this.state); ["toast", "addOpen", "statusOpen", "confirm", "form", "formErr"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:Settings', JSON.stringify(keep)); } catch (e) {}
+    try { const keep = Object.assign({}, this.state); delete keep._shell; ["toast", "addOpen", "statusOpen", "confirm", "form", "formErr", "genDraft", "genErr", "editCat"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:Settings', JSON.stringify(keep)); } catch (e) {}
   }
   constructor(props) {
     super(props);
     this.state = {
-      sec: 'categories', toast: '', addOpen: false, newName: '', icon: 'box', track: 'serial', reqCfg: true, newFields: [1, 2], fieldSeq: 3, extraCats: [], archCats: [],
+      sec: 'categories', toast: '', addOpen: false, newName: '', icon: 'box', track: 'serial', reqCfg: true, newFields: [1, 2], fieldSeq: 3, nfVals: {}, extraCats: [], archCats: [], catEdits: {}, editCat: '', genDraft: null, genErr: '',
       confirm: null, archLocs: [], statusOpen: false, stName: '', stColor: 's-recv', stAvail: false, extraStatuses: [],
       avail: { 'In stock': true, 'Unconfigured': true, 'Ready for deployment': true },
       stageOrder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
@@ -549,7 +592,32 @@ class Component extends DCLogic {
       office: { name: 'MRD Office · Muscat', desc: 'Office warehouse' }
     };
   }
-  renderVals() {
+  // Shared shell: notifications bell (fed by the shared store) and the mobile navigation drawer.
+  shellVals() {
+    const S = this.state, st = this.readStore();
+    const seen = (st.ui && st.ui.seenAt) || 0;
+    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Stage changed': 'moved the stage of', 'POC decision': 'recorded a POC decision for', 'Contract ended': 'ended the contract for', 'Issue reported': 'reported an issue on', 'Reserved': 'reserved', 'Labels printed': 'printed labels for', 'File attached': 'attached a file to', 'File removed': 'removed a file from', 'User updated': 'updated user', 'Product edited': 'edited', 'Invite resent': 'resent the invite to', 'Document uploaded': 'uploaded a document to', 'Document removed': 'removed a document from', 'Contact added': 'added a contact to', 'Contact removed': 'removed a contact from', 'Contract updated': 'updated the contract for', 'Batch updated': 'updated batch', 'Batch archived': 'archived batch', 'Batch restored': 'restored batch', 'Facility updated': 'updated facility', 'Facility restored': 'restored facility', 'Report exported': 'exported', 'Record corrected': 'corrected', 'Note added': 'added a note to', 'Settings changed': 'updated settings ·', 'User invited': 'invited', 'Role changed': 'changed the role of', 'Verified on site': 'verified on site', 'Deployment cancelled': 'cancelled', 'Deployment updated': 'updated deployment' };
+    const fromStore = st.events.slice(0, 8).map(e => ({ text: (e.who || 'Chetan') + ' ' + (VERB[e.action] || String(e.action || '').toLowerCase()) + ' ' + e.item + (e.to && e.to !== '—' && e.action !== 'Imported' ? ' → ' + e.to : ''), when: e.when, href: e.itemHref || 'AuditLog.dc.html', unread: (e.at || 0) > seen }));
+    const alerts = [
+      { text: '14 Teltonika RUT956 units are waiting for preparation', when: 'Batch TEL-2026-004', href: 'DevicePrep.dc.html', alert: true },
+      { text: 'Cat6 patch cable 1 m is below its minimum level', when: 'Low stock · 18 of 25', href: 'InventoryItem.dc.html', alert: true },
+      { text: 'Qatar Foundation: 2 CO₂ sensors scheduled to install on 08 Oct', when: 'Upcoming deployment', href: 'Deployments.dc.html', alert: true }
+    ].map(a => Object.assign(a, { unread: !seen }));
+    const all = fromStore.concat(alerts);
+    const unread = all.filter(n => n.unread).length;
+    return {
+      bellOpen: S._shell === 'bell', bellExp: S._shell === 'bell' ? 'true' : 'false', bellZ: S._shell === 'bell' ? '40' : 'auto',
+      menuOpen: S._shell === 'menu', menuExp: S._shell === 'menu' ? 'true' : 'false',
+      unread: unread > 9 ? '9+' : String(unread), hasUnread: unread > 0,
+      notes: all.map(n => ({ text: n.text, when: n.when, href: n.href, bg: n.unread ? '#F4FBF8' : '#fff', dot: n.alert ? '#E08A00' : (n.unread ? '#0B7A6B' : '#D5DBE3') })),
+      toggleBell: () => this.setState({ _shell: this.state._shell === 'bell' ? '' : 'bell' }),
+      toggleMenu: () => this.setState({ _shell: this.state._shell === 'menu' ? '' : 'menu' }),
+      closeAll: () => this.setState({ _shell: '' }),
+      markRead: () => this.writeStore(s => { s.ui = Object.assign({}, s.ui || {}, { seenAt: Date.now() }); })
+    };
+  }
+  renderVals() { return Object.assign(this._screenVals(), { shell: this.shellVals() }); }
+  _screenVals() {
     const S = this.state;
     const P = {
       router: 'M3 13h18v7H3zM7 16.5h.01M11 16.5h.01M17 13V5M14 7.5a4 4 0 0 1 6 0',
@@ -569,6 +637,36 @@ class Component extends DCLogic {
     const snav = sections.map(([id, label, ind]) => id === '#' ? { grp: true, btn: false, label } : { grp: false, btn: true, label, cls: 'sbtn' + (ind ? ' in' : '') + (S.sec === id ? ' on' : ''), cur: S.sec === id ? 'page' : 'false', pick: () => this.setState({ sec: id }) });
     const secLabel = sections.filter(s => s[0] === S.sec)[0][1];
     const saved = () => this.setState({ toast: 'Saved. The change is recorded in the audit log under your name.' });
+    // Every change this screen reports as logged goes into the shared audit trail.
+    const logSetting = (item, from, to, note) => this.writeStore(s => { this.logEvent(s, { action: 'Settings changed', item, itemHref: 'Settings.dc.html', from: from || '—', to: to || '—', note: note || '' }); });
+    // General: organisation defaults saved in the shared store (store.settings).
+    const ST0 = this.readStore();
+    const GDEF = { org: 'Moonrock Research & Development (MRD)', partner: 'Exergio', loc: 'MRD Office · Muscat', tz: 'Asia/Muscat · GST (UTC+4)', datefmt: '05 Oct 2026', retention: '7 years' };
+    const GSAVED = Object.assign({}, GDEF, (ST0.settings && typeof ST0.settings === 'object') ? ST0.settings : {});
+    const GV = Object.assign({}, GSAVED, S.genDraft || {});
+    const GLBL = { org: 'Organisation', partner: 'Partner programme', loc: 'Default receiving location', tz: 'Time zone', datefmt: 'Date format', retention: 'Audit retention' };
+    const gSet = k => e => this.setState({ genDraft: Object.assign({}, this.state.genDraft || {}, { [k]: e.target.value }), genErr: '' });
+    const gDiff = Object.keys(GLBL).filter(k => String(GV[k]).trim() !== String(GSAVED[k]));
+    const officeLocs = [S.office.name, 'MRD Office · Prep bench'].concat(S.extraShelves.map(x => 'MRD Office · ' + x[0]));
+    if (officeLocs.indexOf(GV.loc) < 0) officeLocs.push(GV.loc);
+    const gen = Object.assign({}, GV, {
+      locOpts: officeLocs.map(v => ({ v })),
+      onOrg: gSet('org'), onPartner: gSet('partner'), onLoc: gSet('loc'), onTz: gSet('tz'), onDatefmt: gSet('datefmt'), onRetention: gSet('retention'),
+      err: S.genErr || '', hasErr: !!S.genErr, dirty: gDiff.length > 0,
+      status: gDiff.length ? gDiff.length + ' unsaved change' + (gDiff.length === 1 ? '' : 's') : (ST0.settings && ST0.settings.savedAt ? 'Saved ' + ST0.settings.savedAt + ' by ' + (ST0.settings.savedBy || 'Chetan') : 'Sample defaults · not changed yet'),
+      discard: () => this.setState({ genDraft: null, genErr: '' }),
+      save: () => {
+        const v = {}; Object.keys(GLBL).forEach(k => { v[k] = String(GV[k] == null ? '' : GV[k]).trim(); });
+        if (!v.org) { this.setState({ genErr: 'Organisation can’t be empty.' }); return; }
+        const diff = Object.keys(GLBL).filter(k => v[k] !== String(GSAVED[k]));
+        if (!diff.length) { this.setState({ genDraft: null, genErr: '', toast: 'No changes to save.' }); return; }
+        this.writeStore(s => {
+          s.settings = Object.assign({}, s.settings || {}, v, { savedAt: this.nowLabel(), savedBy: 'Chetan' });
+          this.logEvent(s, { action: 'Settings changed', item: 'General settings', itemHref: 'Settings.dc.html', from: diff.map(k => GLBL[k] + ': ' + GSAVED[k]).join(' · '), to: diff.map(k => GLBL[k] + ': ' + v[k]).join(' · '), note: diff.map(k => GLBL[k]).join(', ') });
+        });
+        this.setState({ genDraft: null, genErr: '', toast: 'Saved ' + diff.length + ' change' + (diff.length === 1 ? '' : 's') + ' to General settings. Logged to the audit log.' });
+      }
+    });
 
     // Categories
     const baseCats = [
@@ -581,13 +679,15 @@ class Component extends DCLogic {
       ['Controllers & BMS', 'DDC controllers & BMS interfaces', 4, 'Serialised', true, 5, 'bms', 'BMS'],
       ['Cables & Accessories', 'Patch cables, mounts, power supplies', 4, 'Quantity', false, 2, 'cab', 'CAB']
     ].concat(S.extraCats);
-    const cats = baseCats.map(([name, desc, products, track, cfg, fields, icon, code]) => {
+    const cats = baseCats.map(([name, desc, products, track0, cfg0, fields, icon0, code]) => {
+      const ce = S.catEdits[name] || {};
+      const track = ce.track || track0, cfg = ce.cfg !== undefined ? ce.cfg : cfg0, icon = ce.icon || icon0;
       const arch = S.archCats.indexOf(name) >= 0;
       return { name, desc, products: products + (products === 1 ? ' product' : ' products'), track, cfg: cfg ? 'Required' : 'Not required', cfgCls: cfg ? 's-ready' : 's-unconf', fields: fields + ' fields', icon: P[icon], code,
         arch, live: !arch, color: arch ? '#5E6B7D' : '#0E1726', editAria: 'Edit ' + name, archAria: 'Archive ' + name,
-        edit: () => this.setState({ addOpen: true, newName: name, icon, track: track === 'Quantity' ? 'qty' : 'serial', reqCfg: cfg }),
+        edit: () => this.setState({ addOpen: true, editCat: name, newName: name, icon, track: track === 'Quantity' ? 'qty' : track === 'Batch / lot' ? 'batch' : 'serial', reqCfg: cfg, newFields: [], nfVals: {} }),
         archive: () => this.setState({ confirm: { kind: 'cat', name, items: products } }),
-        restore: () => this.setState({ archCats: S.archCats.filter(x => x !== name), toast: name + ' restored.' }) };
+        restore: () => { this.setState({ archCats: S.archCats.filter(x => x !== name), toast: name + ' restored. Logged to the audit log.' }); logSetting('Category: ' + name, 'Archived', 'Active', 'Category restored'); } };
     });
     const telFields = [
       ['Serial number', 'Text', 'Receive', 'Yes', 'Yes', '1108675309', true], ['IMEI', 'Text · 15 digits', 'Receive', 'Yes', 'Yes', '862292050123456', false],
@@ -608,7 +708,9 @@ class Component extends DCLogic {
     const iconPick = Object.keys(P).map(k => ({ path: P[k], label: k + ' icon', on: S.icon === k ? 'true' : 'false', cls: 'icp' + (S.icon === k ? ' on' : ''), pick: () => this.setState({ icon: k }) }));
     const trackOpts = [['serial', 'Serialised', 'Every unit has its own serial / ID'], ['qty', 'Quantity', 'Counted in bulk per location'], ['batch', 'Batch / lot', 'Quantity tracked per received batch']]
       .map(([id, label, desc]) => ({ label, desc, on: S.track === id ? 'true' : 'false', cls: 'rc' + (S.track === id ? ' on' : ''), pick: () => this.setState({ track: id }) }));
-    const newFields = S.newFields.map((n, i) => ({ id: 'nf' + n, tid: 'nt' + n, ph: i === 0 ? 'e.g. Firmware version' : 'Field name', remove: () => this.setState({ newFields: S.newFields.filter(x => x !== n) }) }));
+    const nfv = n => (S.nfVals || {})[n] || { name: '', type: 'Text' };
+    const setNf = (n, patch) => this.setState({ nfVals: Object.assign({}, this.state.nfVals || {}, { [n]: Object.assign({}, nfv(n), patch) }) });
+    const newFields = S.newFields.map((n, i) => ({ id: 'nf' + n, tid: 'nt' + n, ph: i === 0 ? 'e.g. Firmware version' : 'Field name', name: nfv(n).name, type: nfv(n).type, onName: e => setNf(n, { name: e.target.value }), onType: e => setNf(n, { type: e.target.value }), remove: () => this.setState({ newFields: S.newFields.filter(x => x !== n) }) }));
 
     // Locations
     const shelves = [['Shelf A1', 42], ['Shelf A2', 18], ['Shelf A3', 64], ['Shelf A4', 30], ['Shelf B1', 96], ['Shelf B2', 54], ['Shelf B3', 120], ['Shelf B4', 26], ['Shelf C1', 148], ['Shelf C2', 31], ['Shelf C3', 9], ['Shelf C4', 0], ['Prep bench', 9], ['Repair bench', 8]].map(([n, i]) => [n, i, n.indexOf('Shelf') === 0 ? 'Shelf' : 'Work area']).concat(S.extraShelves);
@@ -616,7 +718,7 @@ class Component extends DCLogic {
       const arch = S.archLocs.indexOf(name) >= 0;
       return { name, items, kind, arch, live: !arch, color: arch ? '#5E6B7D' : '#0E1726', aria: 'Archive ' + name,
         archive: () => this.setState({ confirm: { kind: 'loc', name, items } }),
-        restore: () => this.setState({ archLocs: S.archLocs.filter(x => x !== name), toast: name + ' restored.' }) };
+        restore: () => { this.setState({ archLocs: S.archLocs.filter(x => x !== name), toast: name + ' restored. Logged to the audit log.' }); logSetting('Location: ' + name, 'Archived', 'Active', 'Location restored'); } };
     });
     const logLocs = [
       ['In Transit', 'Shipments between supplier, office and sites', 12, true, 'M3 6h11v10H3zM14 10h4l3 3v3h-7M7 16v2M17 16v2'],
@@ -633,7 +735,7 @@ class Component extends DCLogic {
     const statuses = baseStatuses.map(([name, cls, sys, items]) => {
       const on = !!S.avail[name];
       return { name, cls, sys, items: items + ' items', on: on ? 'true' : 'false', swCls: 'sw' + (on ? ' on' : ''), aria: name + ' counts as available',
-        toggle: () => { const a = Object.assign({}, S.avail); a[name] = !on; this.setState({ avail: a, toast: '“' + name + '” ' + (on ? 'no longer counts' : 'now counts') + ' as available stock. Logged to the audit log.' }); } };
+        toggle: () => { const a = Object.assign({}, S.avail); a[name] = !on; this.setState({ avail: a, toast: '“' + name + '” ' + (on ? 'no longer counts' : 'now counts') + ' as available stock. Logged to the audit log.' }); logSetting('Status: ' + name, on ? 'Counts as available' : 'Not available', on ? 'Not available' : 'Counts as available', 'Availability rule'); } };
     });
     const STG = [['Site inspection', 'g-insp', 1], ['BMS scan', 'g-bms', 1], ['POC', 'g-poc', 1], ['POC study', 'g-study', 1], ['Contract pending', 'g-cpend', 0], ['Contract active', 'g-contract', 1], ['Active operations', 'g-ops', 0], ['Completed', 'g-done', 0], ['On hold', 'g-hold', 1]].concat(S.extraStages);
     const ord = S.stageOrder;
@@ -762,7 +864,7 @@ class Component extends DCLogic {
 
     // Confirm
     const c = S.confirm;
-    let cf = {};
+    let cf = { title: '', body: '', foot: '', ok: false, blocked: false, cta: '', iconBg: '#F1F4F7', iconFg: '#3B4758' };
     if (c) {
       if (c.kind === 'reset') cf = { title: 'Reset all sample data?', body: 'Every screen goes back to the original sample records: imports, moves, status changes, new brands, locations, suppliers, deployments and notes are discarded.', foot: 'This only affects this browser. Screens that are already open show the original data after the canvas reloads.', ok: true, blocked: false, cta: 'Reset sample data', iconBg: '#FDEBEA', iconFg: '#A3201F' };
       else if (c.kind === 'cat') cf = { title: 'Archive ' + c.name + '?', body: 'Its ' + c.items + (c.items === 1 ? ' product stays' : ' products stay') + ' in inventory, reports and history, but the category can\'t be picked for new products until it is restored.', foot: 'Nothing is deleted. The archive is recorded in the audit log.', ok: true, blocked: false, cta: 'Archive category', iconBg: '#FDEBEA', iconFg: '#A3201F' };
@@ -776,31 +878,48 @@ class Component extends DCLogic {
         this.setState(Object.assign({}, this._init || {}, { confirm: null, sec: 'general', toast: 'Sample data restored. Reload the canvas to reset screens that are already open.' }));
         return;
       }
-      if (c.kind === 'cat') this.setState({ archCats: S.archCats.concat([c.name]), confirm: null, toast: c.name + ' archived. Logged to the audit log.' });
-      else this.setState({ archLocs: S.archLocs.concat([c.name]), confirm: null, toast: c.name + ' archived. Logged to the audit log.' });
+      if (c.kind === 'cat') { this.setState({ archCats: S.archCats.concat([c.name]), confirm: null, toast: c.name + ' archived. Logged to the audit log.' }); logSetting('Category: ' + c.name, 'Active', 'Archived', 'Category archived'); }
+      else { this.setState({ archLocs: S.archLocs.concat([c.name]), confirm: null, toast: c.name + ' archived. Logged to the audit log.' }); logSetting('Location: ' + c.name, 'Active', 'Archived', 'Location archived'); }
     };
 
     return {
-      snav, secLabel, saved,
+      snav, secLabel, saved, gen,
+      addTitle: S.editCat ? 'Edit ' + S.editCat : 'Add category', addCta: S.editCat ? 'Save changes' : 'Create category',
       sGeneral: S.sec === 'general', sCat: S.sec === 'categories', sBrands: S.sec === 'brands', sFields: S.sec === 'fields', sLoc: S.sec === 'locations', sStat: S.sec === 'statuses', sSup: S.sec === 'suppliers', sIds: S.sec === 'ids', sNotif: S.sec === 'notif',
       hasToast: !!S.toast, toast: S.toast, hideToast: () => this.setState({ toast: '' }),
       cats, telFields, allFields, brands, goFields: () => this.setState({ sec: 'fields' }),
-      addOpen: S.addOpen, openAdd: () => this.setState({ addOpen: true, newName: '', icon: 'box', track: 'serial', reqCfg: true, newFields: [1, 2] }), closeAdd: () => this.setState({ addOpen: false }),
+      addOpen: S.addOpen, openAdd: () => this.setState({ addOpen: true, editCat: '', newName: '', icon: 'box', track: 'serial', reqCfg: true, newFields: [1, 2], nfVals: {} }), closeAdd: () => this.setState({ addOpen: false, editCat: '' }),
       newName: S.newName, onNewName: (e) => this.setState({ newName: e.target.value }), iconPick, trackOpts,
       reqOn: S.reqCfg ? 'true' : 'false', reqCls: 'sw' + (S.reqCfg ? ' on' : ''), toggleReq: () => this.setState({ reqCfg: !S.reqCfg }),
       newFields, addField: () => this.setState({ newFields: S.newFields.concat([S.fieldSeq]), fieldSeq: S.fieldSeq + 1 }),
       createCat: () => {
-        const nm = (S.newName || '').trim() || 'New category';
-        const exists = baseCats.some(x => x[0] === nm);
-        if (exists) { this.setState({ addOpen: false, toast: nm + ' updated. Logged to the audit log.' }); return; }
-        this.setState({ addOpen: false, extraCats: S.extraCats.concat([[nm, 'Added just now', 0, S.track === 'qty' ? 'Quantity' : S.track === 'batch' ? 'Batch / lot' : 'Serialised', S.reqCfg, S.newFields.length, S.icon, nm.replace(/[^A-Za-z]/g, '').slice(0, 3).toUpperCase() || 'NEW']]), toast: nm + ' created. Logged to the audit log.' });
+        const TR = S.track === 'qty' ? 'Quantity' : S.track === 'batch' ? 'Batch / lot' : 'Serialised';
+        const flds = S.newFields.map(n => nfv(n)).filter(f => String(f.name || '').trim()).map(f => [String(f.name).trim(), f.type || 'Text']);
+        if (S.editCat) {
+          const cur = cats.find(x => x.name === S.editCat) || {};
+          const prev = { track: cur.track, cfg: cur.cfg === 'Required', icon: S.catEdits[S.editCat] && S.catEdits[S.editCat].icon || (baseCats.find(x => x[0] === S.editCat) || [])[6] };
+          const ch = [];
+          if (prev.track !== TR) ch.push(['Tracking', prev.track, TR]);
+          if (prev.cfg !== S.reqCfg) ch.push(['Requires config', prev.cfg ? 'Yes' : 'No', S.reqCfg ? 'Yes' : 'No']);
+          if (prev.icon !== S.icon) ch.push(['Icon', prev.icon, S.icon]);
+          const ce = Object.assign({}, S.catEdits); ce[S.editCat] = { track: TR, cfg: S.reqCfg, icon: S.icon };
+          const extraF = S.extraFields.concat(flds.map(f => [f[0], S.editCat, f[1], 'No', 'No']));
+          this.setState({ addOpen: false, editCat: '', catEdits: ce, extraFields: extraF, toast: ch.length || flds.length ? S.editCat + ' updated. Logged to the audit log.' : 'No changes to ' + S.editCat + '.' });
+          if (ch.length || flds.length) logSetting('Category: ' + S.editCat, ch.map(x => x[0] + ': ' + x[1]).join(' · ') || '—', ch.map(x => x[0] + ': ' + x[2]).concat(flds.map(f => 'Field: ' + f[0])).join(' · '), 'Category edited');
+          return;
+        }
+        const nm = (S.newName || '').trim();
+        if (!nm) { this.setState({ toast: 'Give the category a name first.' }); return; }
+        if (baseCats.some(x => x[0].toLowerCase() === nm.toLowerCase())) { this.setState({ toast: nm + ' already exists — use Edit on its row.' }); return; }
+        this.setState({ addOpen: false, extraCats: S.extraCats.concat([[nm, 'Added just now', 0, TR, S.reqCfg, flds.length, S.icon, nm.replace(/[^A-Za-z]/g, '').slice(0, 3).toUpperCase() || 'NEW']]), extraFields: S.extraFields.concat(flds.map(f => [f[0], nm, f[1], 'No', 'No'])), toast: nm + ' created. Logged to the audit log.' });
+        logSetting('Category: ' + nm, '—', TR + (S.reqCfg ? ' · requires configuration' : ''), flds.length ? 'Fields: ' + flds.map(f => f[0]).join(', ') : 'Category added');
       },
       subLocs, logLocs, facLocs,
       statuses, stages, swatches,
       statusOpen: S.statusOpen, openStatus: () => this.setState({ statusOpen: true, stName: '', stColor: 's-recv', stAvail: false }), closeStatus: () => this.setState({ statusOpen: false }),
       stName: S.stName, onStName: (e) => this.setState({ stName: e.target.value }), stCls: S.stColor, stPreview: (S.stName || '').trim() || 'New status',
       stAvOn: S.stAvail ? 'true' : 'false', stAvCls: 'sw' + (S.stAvail ? ' on' : ''), toggleStAv: () => this.setState({ stAvail: !S.stAvail }),
-      createStatus: () => { const nm = (S.stName || '').trim() || 'New status'; const a = Object.assign({}, S.avail); a[nm] = S.stAvail; this.setState({ statusOpen: false, avail: a, extraStatuses: S.extraStatuses.concat([[nm, S.stColor, false, 0]]), toast: 'Status “' + nm + '” added. Logged to the audit log.' }); },
+      createStatus: () => { const nm = (S.stName || '').trim(); if (!nm) { this.setState({ toast: 'Give the status a name first.' }); return; } if (baseStatuses.some(x => x[0].toLowerCase() === nm.toLowerCase())) { this.setState({ toast: 'A status called ' + nm + ' already exists.' }); return; } const a = Object.assign({}, S.avail); a[nm] = S.stAvail; this.setState({ statusOpen: false, avail: a, extraStatuses: S.extraStatuses.concat([[nm, S.stColor, false, 0]]), toast: 'Status “' + nm + '” added. Logged to the audit log.' }); logSetting('Status: ' + nm, '—', 'Added', S.stAvail ? 'Counts as available' : 'Not available'); },
       suppliers, patterns, pools, thresholds, notifs,
       askReset: () => this.setState({ confirm: { kind: 'reset' } }),
       cfOpen: !!c, cf, cfCancel: () => this.setState({ confirm: null }), cfConfirm,

@@ -115,7 +115,7 @@ textarea.in{height:76px;padding:10px 12px;resize:vertical}
 <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
 <div class="mtop" style="align-items: center; justify-content: space-between; padding: 12px 16px; background: #0C1424; color: #fff">
 <span style="font-weight: 600">Moonrock R&amp;D</span>
-<button class="btn sm" aria-label="Open menu" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
+<button class="btn sm" aria-label="Open menu" aria-expanded="{{shell.menuExp}}" onClick="{{shell.toggleMenu}}" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
 </div>
 <header class="top">
 <a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
@@ -123,7 +123,24 @@ textarea.in{height:76px;padding:10px 12px;resize:vertical}
 <span class="b s-prep" title="All records shown are sample data">Sample data</span>
 <a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
 <a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
-<button class="btn ic" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg></button>
+<div style="position: relative; z-index: {{shell.bellZ}}">
+<button class="btn ic" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="{{shell.bellExp}}" onClick="{{shell.toggleBell}}" style="position: relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg><sc-if value="{{shell.hasUnread}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #DC3B3A; color: #fff; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #fff">{{shell.unread}}</span></sc-if></button>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="Notifications" style="position: absolute; right: 0; top: calc(100% + 8px); z-index: 41; width: 360px; max-width: calc(100vw - 32px); background: #fff; border: 1px solid #DCE1E8; border-radius: 12px; box-shadow: 0 16px 40px rgba(14,23,38,.18); overflow: hidden; text-align: left">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #EEF1F4"><span style="font-weight: 600; font-size: 14px; color: #0E1726">Notifications</span><button onClick="{{shell.markRead}}" style="border: 0; background: none; padding: 4px; font: inherit; font-size: 12.5px; color: #0B7A6B; cursor: pointer">Mark all as read</button></div>
+<div style="max-height: 380px; overflow-y: auto">
+<sc-for list="{{shell.notes}}" as="n" hint-placeholder-count="4">
+<a href="{{n.href}}" style="display: flex; gap: 10px; padding: 11px 14px; border-bottom: 1px solid #F1F4F7; color: #0E1726; background: {{n.bg}}">
+<span style="width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: 0 0 8px; background: {{n.dot}}"></span>
+<span style="flex: 1; min-width: 0; font-size: 13px; line-height: 1.4"><span style="display: block">{{n.text}}</span><span style="display: block; font-size: 12px; color: #5E6B7D">{{n.when}}</span></span>
+</a>
+</sc-for>
+</div>
+<a href="AuditLog.dc.html" style="display: block; padding: 10px 14px; font-size: 13px; font-weight: 500; text-align: center; border-top: 1px solid #EEF1F4">Open audit log</a>
+</div>
+</sc-if>
+</div>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}"><button aria-label="Close notifications" onClick="{{shell.closeAll}}" style="position: fixed; inset: 0; z-index: 30; background: transparent; border: 0; padding: 0; cursor: default"></button></sc-if>
 </header>
 
 <main class="main">
@@ -188,7 +205,7 @@ textarea.in{height:76px;padding:10px 12px;resize:vertical}
 <!-- Left column -->
 <div style="flex: 2 1 600px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
 <div class="card">
-<div class="ch"><div><h2>Stock by location</h2><p class="muted" style="font-size: 12.5px">On-hand quantity includes stock held by technicians</p></div><button class="btn sm">Move stock</button></div>
+<div class="ch"><div><h2>Stock by location</h2><p class="muted" style="font-size: 12.5px">On-hand quantity includes stock held by technicians</p></div><button class="btn sm" onClick="{{mvStart}}">Move stock</button></div>
 <div class="tw">
 <table class="tbl">
 <thead><tr><th>Location</th><th>Sub-location</th><th style="text-align: right">On hand</th><th style="text-align: right">Reserved</th><th>Note</th></tr></thead>
@@ -203,7 +220,7 @@ textarea.in{height:76px;padding:10px 12px;resize:vertical}
 
 <div class="card">
 <div class="ch"><div><h2>Movement ledger</h2><p class="muted" style="font-size: 12.5px">Every receipt, issue, adjustment and return · newest first</p></div>
-<div style="display: flex; gap: 8px"><a class="btn sm" href="AuditLog.dc.html">Audit log</a><button class="btn sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"></path></svg>Export</button></div></div>
+<div style="display: flex; gap: 8px"><a class="btn sm" href="AuditLog.dc.html">Audit log</a><button class="btn sm" onClick="{{openExport}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"></path></svg>Export</button></div></div>
 <div class="tw">
 <table class="tbl">
 <thead><tr><th>Date</th><th>Movement</th><th style="text-align: right">Qty</th><th>From → To</th><th>Facility</th><th>User</th><th>Note / ref</th><th style="text-align: right">Balance</th></tr></thead>
@@ -317,6 +334,55 @@ textarea.in{height:76px;padding:10px 12px;resize:vertical}
 </div>
 </sc-if>
 
+<!-- Move stock modal -->
+<sc-if value="{{mvOpen}}" hint-placeholder-val="{{ false }}">
+<div class="ovl">
+<div class="modal" role="dialog" aria-modal="true" aria-labelledby="mv-title">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 20px 22px 4px">
+<div><h2 id="mv-title" style="font-size: 18px; font-weight: 600">Move stock</h2><p class="muted" style="font-size: 13px; margin-top: 2px">Transfers between locations. On-hand total stays {{onHand}} pcs.</p></div>
+<button class="btn ic sm" aria-label="Close" onClick="{{mvClose}}" style="width: 32px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<div style="padding: 16px 22px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px">
+<div class="fld"><label for="mv-from">From</label><select id="mv-from" class="in" value="{{mvFrom}}" onChange="{{onMvFrom}}"><sc-for list="{{mvLocs}}" as="o" hint-placeholder-count="2"><option value="{{o.v}}">{{o.l}}</option></sc-for></select></div>
+<div class="fld"><label for="mv-to">To</label><select id="mv-to" class="in" value="{{mvTo}}" onChange="{{onMvTo}}"><sc-for list="{{mvLocs}}" as="o" hint-placeholder-count="2"><option value="{{o.v}}">{{o.l}}</option></sc-for></select></div>
+</div>
+<div class="fld"><label for="mv-qty">Quantity (pcs)</label><input id="mv-qty" class="in" type="number" min="1" value="{{mvQty}}" onChange="{{onMvQty}}" style="max-width: 160px"></div>
+<div class="fld"><label for="mv-note">Note</label><input id="mv-note" class="in" value="{{mvNote}}" onChange="{{onMvNote}}" placeholder="e.g. Kit for Al Khuwair POC"></div>
+<sc-if value="{{mvHasErr}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12.5px; color: #A3201F">{{mvErr}}</span></sc-if>
+</div>
+<div style="display: flex; justify-content: flex-end; gap: 10px; padding: 14px 22px 20px; border-top: 1px solid #EEF1F4">
+<button class="btn" onClick="{{mvClose}}">Cancel</button>
+<button class="btn p" onClick="{{mvCommit}}">Move stock</button>
+</div>
+</div>
+</div>
+</sc-if>
+<!-- Export CSV -->
+<sc-if value="{{exOpen}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{exClose}}" style="position: fixed; inset: 0; background: rgba(14,23,38,.45); z-index: 50"></div>
+<div role="dialog" aria-modal="true" aria-label="{{exTitle}}" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(640px, calc(100% - 32px)); max-height: calc(100vh - 32px); overflow-y: auto; background: #fff; border-radius: 14px; z-index: 51; box-shadow: 0 20px 48px rgba(14,23,38,.25); display: flex; flex-direction: column">
+<div style="padding: 20px 22px 6px; display: flex; justify-content: space-between; gap: 12px; align-items: flex-start">
+<div><h2 style="font-size: 17px; font-weight: 600">{{exTitle}}</h2><p style="font-size: 13px; margin-top: 4px; color: #5E6B7D">{{exDesc}}</p></div>
+<button onClick="{{exClose}}" aria-label="Close export" style="width: 32px; height: 32px; border: 1px solid #D5DBE3; border-radius: 8px; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #1B2638; flex: 0 0 32px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<div style="padding: 10px 22px; display: flex; flex-direction: column; gap: 8px">
+<label for="ex-csv" style="display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: 12.5px; font-weight: 500; color: #3B4758"><span>Preview · <span style="font-family: 'Geist Mono', ui-monospace, monospace">{{exFile}}</span></span><span style="font-weight: 400; color: #5E6B7D">{{exMeta}}</span></label>
+<textarea id="ex-csv" readonly="readonly" value="{{exCsv}}" style="width: 100%; min-height: 200px; border: 1px solid #D5DBE3; border-radius: 8px; padding: 9px 11px; font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12px; color: #0E1726; background: #F8FAFB; resize: vertical"></textarea>
+<sc-if value="{{exHasErr}}" hint-placeholder-val="{{ false }}"><p role="alert" style="font-size: 12.5px; color: #8A4B00; background: #FFF3DC; padding: 8px 10px; border-radius: 8px">{{exErr}}</p></sc-if>
+</div>
+<div style="padding: 14px 22px; border-top: 1px solid #E3E7EC; display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap">
+<button class="btn" onClick="{{exClose}}">Close</button>
+<button class="btn p" onClick="{{exSave}}">Download CSV</button>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{hasMsg}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 60; display: flex; align-items: center; gap: 12px; padding: 12px 14px 12px 16px; border-radius: 12px; background: #0E1726; color: #fff; font-size: 13.5px; box-shadow: 0 12px 32px rgba(14,23,38,.3); max-width: calc(100% - 32px)">
+<span>{{msg}}</span>
+<button onClick="{{dismissMsg}}" aria-label="Dismiss" style="border: 0; background: transparent; color: #B3BDCB; cursor: pointer; padding: 4px; display: flex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-if>
 <sc-if value="{{showConfirm}}" hint-placeholder-val="{{ false }}">
 <div class="ovl">
 <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="cf-title" style="max-width: 440px">
@@ -336,6 +402,31 @@ textarea.in{height:76px;padding:10px 12px;resize:vertical}
 <button class="btn p" onClick="{{commit}}">Confirm adjustment</button>
 </div>
 </div>
+</div>
+</sc-if>
+<sc-if value="{{shell.menuOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 70; display: flex">
+<nav aria-label="Mobile navigation" style="width: min(300px, 85vw); height: 100%; overflow-y: auto; background: #0C1424; padding: 16px 12px; display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 8px 14px; color: #fff"><span style="font-weight: 600">Moonrock R&amp;D</span><button onClick="{{shell.closeAll}}" aria-label="Close menu" style="width: 40px; height: 40px; border: 0; border-radius: 8px; background: #1C2A42; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<a href="Main.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Dashboard</a>
+<a href="Search.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Search</a>
+<a href="Inventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">All inventory</a>
+<a href="Products.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Products</a>
+<a href="Batches.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Batches</a>
+<a href="ReceiveInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Receive stock</a>
+<a href="DevicePrep.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Device preparation</a>
+<a href="SimInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">SIM cards</a>
+<a href="Facilities.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Facilities</a>
+<a href="PocManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">POC projects</a>
+<a href="ContractManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Contracts</a>
+<a href="Deployments.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Deployments</a>
+<a href="CreateDeployment.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">New deployment</a>
+<a href="Reports.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Reports</a>
+<a href="AuditLog.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Audit log</a>
+<a href="Users.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Users &amp; roles</a>
+<a href="Settings.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Settings</a>
+</nav>
+<button aria-label="Close menu" onClick="{{shell.closeAll}}" style="flex: 1; border: 0; padding: 0; background: rgba(14,23,38,.5); cursor: default"></button>
 </div>
 </sc-if>
 </x-dc>
@@ -369,10 +460,59 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
-    try { const keep = Object.assign({}, this.state); ["modal", "c1", "rahul", "extra", "reordered"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:InventoryItem', JSON.stringify(keep)); } catch (e) {}
+    try { const keep = Object.assign({}, this.state); delete keep._shell; ["modal", "c1", "rahul", "extra", "reordered", "mv", "ex", "msg"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:InventoryItem', JSON.stringify(keep)); } catch (e) {}
   }
   constructor(props) { super(props); this.state = { modal: '', dir: 'remove', qty: '2', loc: 'c1', reason: '', note: '' }; }
-  renderVals() {
+  // Shared shell: notifications bell (fed by the shared store) and the mobile navigation drawer.
+  shellVals() {
+    const S = this.state, st = this.readStore();
+    const seen = (st.ui && st.ui.seenAt) || 0;
+    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Stage changed': 'moved the stage of', 'POC decision': 'recorded a POC decision for', 'Contract ended': 'ended the contract for', 'Issue reported': 'reported an issue on', 'Reserved': 'reserved', 'Labels printed': 'printed labels for', 'File attached': 'attached a file to', 'File removed': 'removed a file from', 'User updated': 'updated user', 'Product edited': 'edited', 'Invite resent': 'resent the invite to', 'Document uploaded': 'uploaded a document to', 'Document removed': 'removed a document from', 'Contact added': 'added a contact to', 'Contact removed': 'removed a contact from', 'Contract updated': 'updated the contract for', 'Batch updated': 'updated batch', 'Batch archived': 'archived batch', 'Batch restored': 'restored batch', 'Facility updated': 'updated facility', 'Facility restored': 'restored facility', 'Report exported': 'exported', 'Record corrected': 'corrected', 'Note added': 'added a note to', 'Settings changed': 'updated settings ·', 'User invited': 'invited', 'Role changed': 'changed the role of', 'Verified on site': 'verified on site', 'Deployment cancelled': 'cancelled', 'Deployment updated': 'updated deployment' };
+    const fromStore = st.events.slice(0, 8).map(e => ({ text: (e.who || 'Chetan') + ' ' + (VERB[e.action] || String(e.action || '').toLowerCase()) + ' ' + e.item + (e.to && e.to !== '—' && e.action !== 'Imported' ? ' → ' + e.to : ''), when: e.when, href: e.itemHref || 'AuditLog.dc.html', unread: (e.at || 0) > seen }));
+    const alerts = [
+      { text: '14 Teltonika RUT956 units are waiting for preparation', when: 'Batch TEL-2026-004', href: 'DevicePrep.dc.html', alert: true },
+      { text: 'Cat6 patch cable 1 m is below its minimum level', when: 'Low stock · 18 of 25', href: 'InventoryItem.dc.html', alert: true },
+      { text: 'Qatar Foundation: 2 CO₂ sensors scheduled to install on 08 Oct', when: 'Upcoming deployment', href: 'Deployments.dc.html', alert: true }
+    ].map(a => Object.assign(a, { unread: !seen }));
+    const all = fromStore.concat(alerts);
+    const unread = all.filter(n => n.unread).length;
+    return {
+      bellOpen: S._shell === 'bell', bellExp: S._shell === 'bell' ? 'true' : 'false', bellZ: S._shell === 'bell' ? '40' : 'auto',
+      menuOpen: S._shell === 'menu', menuExp: S._shell === 'menu' ? 'true' : 'false',
+      unread: unread > 9 ? '9+' : String(unread), hasUnread: unread > 0,
+      notes: all.map(n => ({ text: n.text, when: n.when, href: n.href, bg: n.unread ? '#F4FBF8' : '#fff', dot: n.alert ? '#E08A00' : (n.unread ? '#0B7A6B' : '#D5DBE3') })),
+      toggleBell: () => this.setState({ _shell: this.state._shell === 'bell' ? '' : 'bell' }),
+      toggleMenu: () => this.setState({ _shell: this.state._shell === 'menu' ? '' : 'menu' }),
+      closeAll: () => this.setState({ _shell: '' }),
+      markRead: () => this.writeStore(s => { s.ui = Object.assign({}, s.ui || {}, { seenAt: Date.now() }); })
+    };
+  }
+  // CSV export through the host's downloads capability, with an inline fallback (preview to copy) when it is unavailable.
+  exportVals(spec) {
+    const st = this.state, ex = st.ex || null;
+    const q2 = v => { const t = String(v == null ? '' : v); return /[",\n\r]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
+    const csv = [spec.cols.map(c => q2(c[0])).join(',')].concat(spec.rows.map(r => spec.cols.map(c => q2(c[1](r))).join(','))).join('\n');
+    const meta = spec.rows.length + (spec.rows.length === 1 ? ' row' : ' rows') + ' · ' + spec.cols.length + ' columns';
+    const save = async () => {
+      let dl = null;
+      try { dl = (window.claude && window.claude.use) ? await window.claude.use('downloads') : null; } catch (e) { dl = null; }
+      if (!dl) { this.setState({ ex: Object.assign({}, this.state.ex, { err: 'Downloads aren’t available in this preview. Select the CSV above and copy it into a .csv file instead.' }) }); return; }
+      try {
+        await dl.save({ filename: spec.file, data: csv });
+        this.writeStore(s => { this.logEvent(s, { action: 'Report exported', item: spec.item, itemHref: spec.href, from: '—', to: spec.file, note: meta }); });
+        this.setState(Object.assign({ ex: null }, spec.doneState ? spec.doneState(spec.file + ' saved · ' + meta) : {}));
+      } catch (e) {
+        this.setState({ ex: Object.assign({}, this.state.ex, { err: e && e.code === 'declined' ? 'Download cancelled.' : 'The download didn’t start (' + ((e && e.code) || 'unavailable') + '). Copy the CSV above instead.' }) });
+      }
+    };
+    return {
+      exOpen: !!ex, exTitle: spec.title, exDesc: spec.desc, exFile: spec.file, exMeta: meta, exCsv: csv,
+      exErr: (ex && ex.err) || '', exHasErr: !!(ex && ex.err),
+      openExport: () => this.setState({ ex: { err: '' } }), exClose: () => this.setState({ ex: null }), exSave: save
+    };
+  }
+  renderVals() { return Object.assign(this._screenVals(), { shell: this.shellVals() }); }
+  _screenVals() {
     const S = this.state;
     const KEY = 'Cat6 patch cable 1 m';
     const ST0 = this.readStore();
@@ -430,8 +570,8 @@ class Component extends DCLogic {
     ].map(([date, time, type, qty, from, to, fac, user, ini, note, bal]) => ({ date, time, type, qty, from, to, fac, user, ini, note, bal }));
     // New movements (store moves + derived), oldest first to run the balance on from the sample's 18 pcs.
     const fmtQ = q => (q > 0 ? '+' : (q < 0 ? '−' : '')) + Math.abs(q);
-    const fresh = recMoves.map(m => ({ date: m.date, time: m.time || '', type: m.type || 'Adjusted', q: Number(m.qty) || 0, from: m.from || '', to: m.to || '', fac: m.fac || '', user: m.user || 'Chetan', ini: INI[m.user] || 'CH', note: m.note || '', at: m.at || 0 })).concat(derived).sort((a, b) => a.at - b.at);
-    let bal = 18; fresh.forEach(m => { bal += m.q; m.bal = bal; m.qty = fmtQ(m.q); });
+    const fresh = recMoves.map(m => ({ date: m.date, time: m.time || '', type: m.type || 'Adjusted', q: Number(m.qty) || 0, shown: m.shown || '', from: m.from || '', to: m.to || '', fac: m.fac || '', user: m.user || 'Chetan', ini: INI[m.user] || 'CH', note: m.note || '', at: m.at || 0 })).concat(derived).sort((a, b) => a.at - b.at);
+    let bal = 18; fresh.forEach(m => { bal += m.q; m.bal = bal; m.qty = m.shown ? String(m.shown) : fmtQ(m.q); });
     const ledger = fresh.reverse().concat(base).map(m => ({
       date: m.date, time: m.time, type: m.type, qty: m.qty, from: m.from, to: m.to, fac: m.fac, user: m.user, ini: m.ini, note: m.note, bal: m.bal,
       cls: MT[m.type] || 's-prep', bg: U[m.ini] || '#E3E7EC', hasFac: !!m.fac, noFac: !m.fac,
@@ -469,7 +609,45 @@ class Component extends DCLogic {
       const r = ensure(s); if (r.reordered) return; r.reordered = true; r.reorderedAt = Date.now();
       this.logEvent(s, { action: 'Reorder placed', item: KEY, itemHref: 'InventoryItem.dc.html', from: onHand + ' pcs on hand', to: 'Gulf Network Supplies', note: 'REQ-2026-031 · 50 pcs · awaiting Nitin' });
     });
-    return {
+    // Move stock between locations (total unchanged).
+    const LOCN = { c1: ['Shelf C1', 'MRD Office · Shelf C1'], rahul: ['Rahul', 'With technician · Rahul'] };
+    const qtyAt = k => k === 'c1' ? c1 : rahul;
+    const mvS = S.mv || null;
+    const mvQ = mvS ? parseInt(mvS.qty, 10) : NaN;
+    let mvErr = '';
+    if (mvS) {
+      if (mvS.from === mvS.to) mvErr = 'Choose two different locations.';
+      else if (isNaN(mvQ) || mvQ < 1) mvErr = 'Enter a quantity of 1 or more.';
+      else if (mvQ > qtyAt(mvS.from)) mvErr = 'Only ' + qtyAt(mvS.from) + ' pcs at ' + LOCN[mvS.from][1] + '.';
+    }
+    const mvSet = patch => this.setState({ mv: Object.assign({}, this.state.mv, patch, { touched: true }) });
+    const exV = this.exportVals({
+      title: 'Export movement ledger', desc: 'Every movement of ' + KEY + ' shown below, newest first, with running balance.',
+      file: 'mrd-ledger-cat6-1m-' + new Date().toISOString().slice(0, 10) + '.csv', item: KEY + ' ledger (' + ledger.length + ' rows)', href: 'InventoryItem.dc.html',
+      cols: [['Date', m => m.date], ['Time', m => m.time], ['Movement', m => m.type], ['Qty', m => String(m.qty).replace('−', '-')], ['From', m => m.from], ['To', m => m.to], ['Facility', m => m.fac], ['User', m => m.user], ['Note / ref', m => m.note], ['Balance', m => m.bal]],
+      rows: ledger, doneState: msg => ({ msg })
+    });
+    return Object.assign(exV, {
+      hasMsg: !!S.msg, msg: S.msg || '', dismissMsg: () => this.setState({ msg: '' }),
+      mvOpen: !!mvS, mvStart: () => this.setState({ mv: { from: 'c1', to: 'rahul', qty: '1', note: '', touched: false } }), mvClose: () => this.setState({ mv: null }),
+      mvLocs: Object.keys(LOCN).map(k => ({ v: k, l: LOCN[k][1] + ' (' + qtyAt(k) + ' pcs)' })),
+      mvFrom: mvS ? mvS.from : 'c1', mvTo: mvS ? mvS.to : 'rahul', mvQty: mvS ? mvS.qty : '1', mvNote: mvS ? mvS.note : '',
+      onMvFrom: e => mvSet({ from: e.target.value }), onMvTo: e => mvSet({ to: e.target.value }), onMvQty: e => mvSet({ qty: e.target.value }), onMvNote: e => mvSet({ note: e.target.value }),
+      mvErr: mvS && mvS.touched ? mvErr : '', mvHasErr: !!(mvS && mvS.touched && mvErr),
+      mvCommit: () => {
+        if (mvErr) { mvSet({}); return; }
+        const m0 = this.state.mv, q = mvQ, now = new Date();
+        const fromN = LOCN[m0.from][0], toN = LOCN[m0.to][0];
+        this.writeStore(s => {
+          const r = ensure(s);
+          r.locs[fromN] = (Number(r.locs[fromN]) || 0) - q;
+          r.locs[toN] = (Number(r.locs[toN]) || 0) + q;
+          r.moves.unshift({ date: dLabel(now), time: tLabel(now), type: 'Transferred', qty: 0, shown: String(q), from: fromN === 'Rahul' ? 'Rahul (technician)' : fromN, to: toN === 'Rahul' ? 'Rahul (technician)' : toN, user: 'Chetan', note: m0.note || 'Moved between locations', at: now.getTime() });
+          this.logEvent(s, { action: 'Moved', item: q + ' × ' + KEY, itemHref: 'InventoryItem.dc.html', from: LOCN[m0.from][1], to: LOCN[m0.to][1], note: m0.note || '' });
+        });
+        this.setState({ mv: null, msg: q + ' pcs moved to ' + LOCN[m0.to][1] + ' · logged to the ledger and audit log' });
+      }
+    }, {
       onHand, c1, rahul, minLevel: MIN, kpis, ledger, months, ledgerCount: ledger.length,
       showLow: onHand < MIN, lowTitle: onHand + ' pcs on hand, ' + (MIN - onHand) + ' below the minimum of ' + MIN + '.',
       lowText: 'Only ' + avail + ' are free: 4 are with Rahul for the Qatar Foundation install on 08 Oct. Last reorder: CAB-2026-004, 12 Aug.',
@@ -486,7 +664,7 @@ class Component extends DCLogic {
       toConfirm: () => this.setState({ modal: 'confirm' }), backToForm: () => this.setState({ modal: 'form' }),
       locLabel, confirmText: 'You are about to ' + (S.dir === 'add' ? 'add ' : 'remove ') + (isNaN(n) ? 0 : n) + ' pcs ' + (S.dir === 'add' ? 'to ' : 'from ') + locLabel + '.',
       commit
-    };
+    });
   }
 }
 </script>

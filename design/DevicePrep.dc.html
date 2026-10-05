@@ -94,6 +94,10 @@ textarea.inp{height:64px;padding:9px 11px;resize:vertical}
 .stp.done{color:#0A6648}.stp.done .dot{background:#0B7A6B;border-color:#0B7A6B}
 .stp.cur{color:#0E1726;font-weight:500}.stp.cur .dot{border-color:#0B7A6B;box-shadow:0 0 0 3px rgba(11,122,107,.15)}
 .tag{display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:6px;font-size:11px;font-weight:600;background:#E1F4EC;color:#0A6648}
+.lbls{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.lblc{border:1.5px dashed #8794A6;border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:3px;font-size:12px;break-inside:avoid;page-break-inside:avoid;background:#fff}
+.lblc .k{color:#5E6B7D;display:inline-block;width:62px}
+@media print{body *{visibility:hidden!important}.pmodal,.pmodal *{visibility:visible!important}.pmodal{position:absolute!important;left:0!important;top:0!important;transform:none!important;width:100%!important;max-height:none!important;overflow:visible!important;box-shadow:none!important}.noprint{display:none!important}.pscroll{max-height:none!important;overflow:visible!important}}
 @media (max-width:900px){.side{display:none}.mtop{display:flex}.main{padding:20px 16px 40px}.top{padding:12px 16px}}
 </style>
 </helmet>
@@ -137,7 +141,7 @@ textarea.inp{height:64px;padding:9px 11px;resize:vertical}
 <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
 <div class="mtop" style="align-items: center; justify-content: space-between; padding: 12px 16px; background: #0C1424; color: #fff">
 <span style="font-weight: 600">Moonrock R&amp;D</span>
-<button class="btn sm" aria-label="Open menu" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
+<button class="btn sm" aria-label="Open menu" aria-expanded="{{shell.menuExp}}" onClick="{{shell.toggleMenu}}" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
 </div>
 <header class="top">
 <a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
@@ -145,7 +149,24 @@ textarea.inp{height:64px;padding:9px 11px;resize:vertical}
 <span class="b s-prep" title="All records shown are sample data">Sample data</span>
 <a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
 <a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
-<button class="btn ic" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg></button>
+<div style="position: relative; z-index: {{shell.bellZ}}">
+<button class="btn ic" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="{{shell.bellExp}}" onClick="{{shell.toggleBell}}" style="position: relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg><sc-if value="{{shell.hasUnread}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #DC3B3A; color: #fff; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #fff">{{shell.unread}}</span></sc-if></button>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="Notifications" style="position: absolute; right: 0; top: calc(100% + 8px); z-index: 41; width: 360px; max-width: calc(100vw - 32px); background: #fff; border: 1px solid #DCE1E8; border-radius: 12px; box-shadow: 0 16px 40px rgba(14,23,38,.18); overflow: hidden; text-align: left">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #EEF1F4"><span style="font-weight: 600; font-size: 14px; color: #0E1726">Notifications</span><button onClick="{{shell.markRead}}" style="border: 0; background: none; padding: 4px; font: inherit; font-size: 12.5px; color: #0B7A6B; cursor: pointer">Mark all as read</button></div>
+<div style="max-height: 380px; overflow-y: auto">
+<sc-for list="{{shell.notes}}" as="n" hint-placeholder-count="4">
+<a href="{{n.href}}" style="display: flex; gap: 10px; padding: 11px 14px; border-bottom: 1px solid #F1F4F7; color: #0E1726; background: {{n.bg}}">
+<span style="width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: 0 0 8px; background: {{n.dot}}"></span>
+<span style="flex: 1; min-width: 0; font-size: 13px; line-height: 1.4"><span style="display: block">{{n.text}}</span><span style="display: block; font-size: 12px; color: #5E6B7D">{{n.when}}</span></span>
+</a>
+</sc-for>
+</div>
+<a href="AuditLog.dc.html" style="display: block; padding: 10px 14px; font-size: 13px; font-weight: 500; text-align: center; border-top: 1px solid #EEF1F4">Open audit log</a>
+</div>
+</sc-if>
+</div>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}"><button aria-label="Close notifications" onClick="{{shell.closeAll}}" style="position: fixed; inset: 0; z-index: 30; background: transparent; border: 0; padding: 0; cursor: default"></button></sc-if>
 </header>
 
 <main class="main" style="gap: 20px">
@@ -193,6 +214,7 @@ textarea.inp{height:64px;padding:9px 11px;resize:vertical}
 <label class="sr" for="prep-scan">Scan or type a serial number</label>
 <input id="prep-scan" class="mono" value="{{q}}" onChange="{{onQ}}" placeholder="Scan or type serial…" style="flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font-size: 13px; color: #0E1726">
 </div>
+<button class="btn" onClick="{{scanQ}}" style="height: 38px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"></path><path d="M7 8v8M10 8v8M13 8v8M17 8v8"></path></svg>Scan serial</button>
 <span style="flex: 1"></span>
 <span class="muted" style="font-size: 12px; display: flex; align-items: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"></rect><path d="M7 10h.01M11 10h.01M15 10h.01M7 14h10"></path></svg>Tab through fields · scanner input supported</span>
 </div>
@@ -308,7 +330,7 @@ textarea.inp{height:64px;padding:9px 11px;resize:vertical}
 <div class="fs" style="border-top: 0">
 <h3><span class="no">1</span>Identity<span class="tag" style="margin-left: auto">From receiving</span></h3>
 <div class="g2">
-<div class="fld"><label for="f-sn">Serial number</label><input id="f-sn" class="inp mono" value="{{f.sn}}" onChange="{{onSn}}"></div>
+<div class="fld"><label for="f-sn">Serial number</label><div style="display: flex; gap: 6px"><input id="f-sn" class="inp mono" value="{{f.sn}}" onChange="{{onSn}}" style="flex: 1; min-width: 0"><button class="btn" onClick="{{scanSn}}" aria-label="Scan serial number" style="height: 38px; padding: 0 10px">Scan</button></div></div>
 <div class="fld"><label for="f-imei">{{idLabel}}</label><input id="f-imei" class="inp mono" value="{{f.imei}}" onChange="{{onImei}}"></div>
 <div class="fld"><label for="f-mac">MAC address</label><input id="f-mac" class="inp mono" value="{{f.mac}}" onChange="{{onMac}}"></div>
 <div class="fld"><label for="f-dev">Device ID <span class="muted" style="font-weight: 400">· auto</span></label><input id="f-dev" class="inp mono" value="{{f.devId}}" readonly></div>
@@ -331,9 +353,8 @@ textarea.inp{height:64px;padding:9px 11px;resize:vertical}
 <div style="display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap">
 <div class="fld" style="flex: 1 1 260px"><label for="f-sim">Available SIM <span class="muted" style="font-weight: 400">· batch SIM-2026-005</span></label>
 <select id="f-sim" class="inp mono" value="{{f.sim}}" onChange="{{onSim}}"><sc-for list="{{simOpts}}" as="o" hint-placeholder-count="5"><option value="{{o.v}}">{{o.l}}</option></sc-for></select></div>
-<button class="btn" onClick="{{scan}}" style="height: 38px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"></path><path d="M7 8v8M10 8v8M13 8v8M17 8v8"></path></svg>Scan ICCID</button>
+<button class="btn" onClick="{{scanIccid}}" style="height: 38px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"></path><path d="M7 8v8M10 8v8M13 8v8M17 8v8"></path></svg>Scan ICCID</button>
 </div>
-<sc-if value="{{scanning}}" hint-placeholder-val="{{ false }}"><div style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; background: #E3F2F6; color: #0E5E73; font-size: 12.5px"><span style="width: 8px; height: 8px; border-radius: 50%; background: #0E5E73"></span>Scanner ready — scan the barcode on the SIM carrier card. The ICCID field fills automatically.</div></sc-if>
 <div class="g2">
 <div class="fld"><label for="f-iccid">ICCID</label><input id="f-iccid" class="inp mono" value="{{f.iccid}}" onChange="{{onIccid}}" placeholder="89968…"></div>
 <div class="fld"><label for="f-msisdn">Phone number (MSISDN) <span class="muted" style="font-weight: 400">· autofilled</span></label><input id="f-msisdn" class="inp mono" value="{{f.msisdn}}" readonly></div>
@@ -403,6 +424,57 @@ textarea.inp{height:64px;padding:9px 11px;resize:vertical}
 </div>
 </sc-if>
 
+<!-- Label sheet modal -->
+<sc-if value="{{lblOpen}}" hint-placeholder-val="{{ false }}">
+<div class="noprint" onClick="{{lblClose}}" style="position: fixed; inset: 0; background: rgba(14,23,38,.45); z-index: 40"></div>
+<div class="pmodal" role="dialog" aria-modal="true" aria-label="Print device labels" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(760px, calc(100% - 32px)); max-height: calc(100vh - 48px); background: #fff; border-radius: 14px; z-index: 41; box-shadow: 0 20px 48px rgba(14,23,38,.25); display: flex; flex-direction: column">
+<div style="padding: 20px 22px 8px; display: flex; justify-content: space-between; gap: 12px; align-items: flex-start">
+<div><h2 style="font-size: 17px; font-weight: 600">Device labels</h2><p class="muted" style="font-size: 13px; margin-top: 4px">{{lblSub}}</p></div>
+<button class="btn ic sm noprint" onClick="{{lblClose}}" aria-label="Close label sheet" style="width: 32px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<div class="noprint" style="padding: 4px 22px 10px; display: flex; flex-wrap: wrap; gap: 6px" role="group" aria-label="Devices to label">
+<sc-for list="{{lblRows}}" as="r" hint-placeholder-count="4"><button type="button" role="checkbox" aria-checked="{{r.aria}}" class="{{r.cls}}" onClick="{{r.toggle}}" style="width: auto"><span class="bx"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span><span class="mono">{{r.sn}}</span></button></sc-for>
+</div>
+<div class="pscroll" style="padding: 10px 22px 16px; overflow-y: auto; flex: 1">
+<div class="lbls">
+<sc-for list="{{lblPick}}" as="r" hint-placeholder-count="4">
+<div class="lblc">
+<span style="font-weight: 600; font-size: 12.5px; color: #0E1726">Moonrock R&amp;D · {{r.product}}</span>
+<span><span class="k">S/N</span><span class="mono" style="font-weight: 600">{{r.sn}}</span></span>
+<span><span class="k">{{r.idLbl}}</span><span class="mono">{{r.imei}}</span></span>
+<span><span class="k">Device ID</span><span class="mono">{{r.devId}}</span></span>
+<span><span class="k">IP</span><span class="mono">{{r.ip}}</span></span>
+</div>
+</sc-for>
+</div>
+<sc-if value="{{lblNone}}" hint-placeholder-val="{{ false }}"><p class="muted" style="font-size: 13px; text-align: center; padding: 20px 8px">No devices selected. Pick at least one device above, or mark a device ready first.</p></sc-if>
+</div>
+<div class="noprint" style="padding: 14px 22px; border-top: 1px solid #E3E7EC; display: flex; justify-content: flex-end; align-items: center; gap: 10px; flex-wrap: wrap">
+<span class="muted" style="font-size: 12px; flex: 1 1 200px">Opens your browser's print dialog — choose the Prep bench label printer there.</span>
+<button class="btn" onClick="{{lblClose}}">Cancel</button>
+<button class="btn p" onClick="{{lblPrint}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"></path><rect x="3" y="9" width="18" height="8" rx="2"></rect><path d="M7 14h10v7H7z"></path></svg>Print {{lblN}} labels</button>
+</div>
+</div>
+</sc-if>
+
+<!-- Scan dialog -->
+<sc-if value="{{scanOpen}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{scanClose}}" style="position: fixed; inset: 0; background: rgba(14,23,38,.45); z-index: 50"></div>
+<div role="dialog" aria-modal="true" aria-label="{{scanTitle}}" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(440px, calc(100% - 32px)); background: #fff; border-radius: 14px; z-index: 51; box-shadow: 0 20px 48px rgba(14,23,38,.25); display: flex; flex-direction: column">
+<div style="padding: 20px 22px 6px"><h2 style="font-size: 17px; font-weight: 600">{{scanTitle}}</h2><p class="muted" style="font-size: 13px; margin-top: 4px">{{scanHint}}</p></div>
+<div style="padding: 12px 22px; display: flex; flex-direction: column; gap: 8px">
+<label class="lbl" for="scan-val">{{scanLabel}}</label>
+<input id="scan-val" class="inp mono" autofocus="autofocus" value="{{scanVal}}" onChange="{{onScanVal}}" placeholder="{{scanPh}}">
+<span class="hint">USB / Bluetooth barcode scanners type into this field like a keyboard. No camera is used.</span>
+<sc-if value="{{scanHasErr}}" hint-placeholder-val="{{ false }}"><p role="alert" style="font-size: 12.5px; color: #A3201F; background: #FDEBEA; padding: 8px 10px; border-radius: 8px">{{scanErr}}</p></sc-if>
+</div>
+<div style="padding: 14px 22px; border-top: 1px solid #E3E7EC; display: flex; justify-content: flex-end; gap: 10px">
+<button class="btn" onClick="{{scanClose}}">Cancel</button>
+<button class="btn p" onClick="{{scanApply}}">Use this value</button>
+</div>
+</div>
+</sc-if>
+
 <!-- Toast -->
 <sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
 <div role="status" style="position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 60; display: flex; align-items: center; gap: 12px; padding: 12px 14px 12px 16px; border-radius: 12px; background: #0E1726; color: #fff; font-size: 13.5px; box-shadow: 0 12px 32px rgba(14,23,38,.3); max-width: calc(100% - 32px); flex-wrap: wrap">
@@ -410,6 +482,31 @@ textarea.inp{height:64px;padding:9px 11px;resize:vertical}
 <span>{{toastText}}</span>
 <sc-if value="{{toastLink}}" hint-placeholder-val="{{ true }}"><a href="DeviceDetail.dc.html" style="color: #7EE0CC; font-weight: 600">View device</a></sc-if>
 <button onClick="{{dismissToast}}" aria-label="Dismiss notification" style="border: 0; background: transparent; color: #B3BDCB; cursor: pointer; padding: 4px; display: flex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-if>
+<sc-if value="{{shell.menuOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 70; display: flex">
+<nav aria-label="Mobile navigation" style="width: min(300px, 85vw); height: 100%; overflow-y: auto; background: #0C1424; padding: 16px 12px; display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 8px 14px; color: #fff"><span style="font-weight: 600">Moonrock R&amp;D</span><button onClick="{{shell.closeAll}}" aria-label="Close menu" style="width: 40px; height: 40px; border: 0; border-radius: 8px; background: #1C2A42; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<a href="Main.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Dashboard</a>
+<a href="Search.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Search</a>
+<a href="Inventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">All inventory</a>
+<a href="Products.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Products</a>
+<a href="Batches.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Batches</a>
+<a href="ReceiveInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Receive stock</a>
+<a href="DevicePrep.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Device preparation</a>
+<a href="SimInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">SIM cards</a>
+<a href="Facilities.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Facilities</a>
+<a href="PocManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">POC projects</a>
+<a href="ContractManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Contracts</a>
+<a href="Deployments.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Deployments</a>
+<a href="CreateDeployment.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">New deployment</a>
+<a href="Reports.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Reports</a>
+<a href="AuditLog.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Audit log</a>
+<a href="Users.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Users &amp; roles</a>
+<a href="Settings.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Settings</a>
+</nav>
+<button aria-label="Close menu" onClick="{{shell.closeAll}}" style="flex: 1; border: 0; padding: 0; background: rgba(14,23,38,.5); cursor: default"></button>
 </div>
 </sc-if>
 </x-dc>
@@ -448,7 +545,7 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
-    try { const keep = Object.assign({}, this.state); ["scanning", "bulk", "toast"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:DevicePrep', JSON.stringify(keep)); } catch (e) {}
+    try { const keep = Object.assign({}, this.state); delete keep._shell; ["scanning", "bulk", "toast", "lbl", "lblSel", "scanDlg"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:DevicePrep', JSON.stringify(keep)); } catch (e) {}
   }
   constructor(props) {
     super(props);
@@ -524,7 +621,32 @@ class Component extends DCLogic {
       return m;
     });
   }
-  renderVals() {
+  // Shared shell: notifications bell (fed by the shared store) and the mobile navigation drawer.
+  shellVals() {
+    const S = this.state, st = this.readStore();
+    const seen = (st.ui && st.ui.seenAt) || 0;
+    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Stage changed': 'moved the stage of', 'POC decision': 'recorded a POC decision for', 'Contract ended': 'ended the contract for', 'Issue reported': 'reported an issue on', 'Reserved': 'reserved', 'Labels printed': 'printed labels for', 'File attached': 'attached a file to', 'File removed': 'removed a file from', 'User updated': 'updated user', 'Product edited': 'edited', 'Invite resent': 'resent the invite to', 'Document uploaded': 'uploaded a document to', 'Document removed': 'removed a document from', 'Contact added': 'added a contact to', 'Contact removed': 'removed a contact from', 'Contract updated': 'updated the contract for', 'Batch updated': 'updated batch', 'Batch archived': 'archived batch', 'Batch restored': 'restored batch', 'Facility updated': 'updated facility', 'Facility restored': 'restored facility', 'Report exported': 'exported', 'Record corrected': 'corrected', 'Note added': 'added a note to', 'Settings changed': 'updated settings ·', 'User invited': 'invited', 'Role changed': 'changed the role of', 'Verified on site': 'verified on site', 'Deployment cancelled': 'cancelled', 'Deployment updated': 'updated deployment' };
+    const fromStore = st.events.slice(0, 8).map(e => ({ text: (e.who || 'Chetan') + ' ' + (VERB[e.action] || String(e.action || '').toLowerCase()) + ' ' + e.item + (e.to && e.to !== '—' && e.action !== 'Imported' ? ' → ' + e.to : ''), when: e.when, href: e.itemHref || 'AuditLog.dc.html', unread: (e.at || 0) > seen }));
+    const alerts = [
+      { text: '14 Teltonika RUT956 units are waiting for preparation', when: 'Batch TEL-2026-004', href: 'DevicePrep.dc.html', alert: true },
+      { text: 'Cat6 patch cable 1 m is below its minimum level', when: 'Low stock · 18 of 25', href: 'InventoryItem.dc.html', alert: true },
+      { text: 'Qatar Foundation: 2 CO₂ sensors scheduled to install on 08 Oct', when: 'Upcoming deployment', href: 'Deployments.dc.html', alert: true }
+    ].map(a => Object.assign(a, { unread: !seen }));
+    const all = fromStore.concat(alerts);
+    const unread = all.filter(n => n.unread).length;
+    return {
+      bellOpen: S._shell === 'bell', bellExp: S._shell === 'bell' ? 'true' : 'false', bellZ: S._shell === 'bell' ? '40' : 'auto',
+      menuOpen: S._shell === 'menu', menuExp: S._shell === 'menu' ? 'true' : 'false',
+      unread: unread > 9 ? '9+' : String(unread), hasUnread: unread > 0,
+      notes: all.map(n => ({ text: n.text, when: n.when, href: n.href, bg: n.unread ? '#F4FBF8' : '#fff', dot: n.alert ? '#E08A00' : (n.unread ? '#0B7A6B' : '#D5DBE3') })),
+      toggleBell: () => this.setState({ _shell: this.state._shell === 'bell' ? '' : 'bell' }),
+      toggleMenu: () => this.setState({ _shell: this.state._shell === 'menu' ? '' : 'menu' }),
+      closeAll: () => this.setState({ _shell: '' }),
+      markRead: () => this.writeStore(s => { s.ui = Object.assign({}, s.ui || {}, { seenAt: Date.now() }); })
+    };
+  }
+  renderVals() { return Object.assign(this._screenVals(), { shell: this.shellVals() }); }
+  _screenVals() {
     const ST0 = this.readStore();
     const st = this.state, f = st.f;
     const devs = this.mergedDevices(ST0);
@@ -616,6 +738,18 @@ class Component extends DCLogic {
       });
     };
     const bulkTargets = devs.filter(d => d.p === 'rut' && d.status === 'unconf');
+    const sd = st.scanDlg || {};
+    const lsel = st.lblSel || {};
+    const idLblFor = p => p === 'rut' ? 'IMEI' : p === 'ug' ? 'EUI' : 'DevEUI';
+    const lblSrc = [];
+    if (st.open && f.sn && !vis.some(d => d.sn === st.sel && d.status === 'ready')) lblSrc.push({ sn: f.sn, product: f.product, imei: f.imei, devId: f.devId, ip: f.p === 'rut' ? f.ip : '—', p: f.p });
+    vis.filter(d => d.status === 'ready').forEach(d => lblSrc.push({ sn: d.sn, product: d.product, imei: d.imei, devId: d.devId, ip: d.ip, p: d.p }));
+    const lblRows = lblSrc.map(d => {
+      const on = lsel[d.sn] !== false;
+      return { sn: d.sn, product: d.product, imei: d.imei || '—', devId: d.devId || '—', ip: d.ip || '—', idLbl: idLblFor(d.p), on, cls: 'ck' + (on ? ' on' : ''), aria: on ? 'true' : 'false',
+        toggle: () => this.setState({ lblSel: Object.assign({}, this.state.lblSel || {}, { [d.sn]: (this.state.lblSel || {})[d.sn] === false }) }) };
+    });
+    const lblPick = lblRows.filter(r => r.on);
     const bo = st.bulkOpts;
     const bulkOpts = [
       ['fw', 'Update firmware to RUT9M_R_00.07.08.3', 'Pushed over LAN from the prep bench'],
@@ -631,7 +765,7 @@ class Component extends DCLogic {
       open: st.open, close: () => this.setState({ open: false, scanning: false }),
       title: 'Prepare ' + f.product, f, isRut, notRut: !isRut, idLabel: isRut ? 'IMEI' : f.p === 'ug' ? 'Gateway EUI' : 'DevEUI',
       shippedFw: f.shipped, steps, doneN: stepDone.filter(Boolean).length, checks, simOpts, profiles, techs,
-      scanning: st.scanning, scan: () => this.setState({ scanning: !this.state.scanning }),
+      scanning: false,
       onSn: setF('sn'), onImei: setF('imei'), onMac: setF('mac'), onFw: setF('fw'), onProfile: setF('profile'),
       onIccid: setF('iccid'), onIp: setF('ip'), onApn: setF('apn'), onDate: setF('date'), onTech: setF('tech'), onNotes: setF('notes'),
       onSim: e => { const s = this.state.sims.find(x => x.iccid === e.target.value) || { iccid: '', msisdn: '' }; this.setState({ f: Object.assign({}, this.state.f, { sim: s.iccid, iccid: s.iccid, msisdn: s.msisdn }) }); },
@@ -650,7 +784,51 @@ class Component extends DCLogic {
         const devices = this.state.devices.map(d => ids[d.sn] ? Object.assign({}, d, { done: 2, tech: 'Chetan', fresh: false }) : d);
         this.setState({ devices, bulk: false, toast: { text: n + ' devices moved to In preparation', link: false } });
       },
-      printLabels: () => this.setState({ toast: { text: 'Label job sent · ' + ready.length + ' labels to Prep bench printer', link: false } }),
+      // Label sheet: one label per ready device in the current filter, plus the device open in the drawer.
+      printLabels: () => this.setState({ lbl: true, lblSel: {} }),
+      lblOpen: !!st.lbl, lblClose: () => this.setState({ lbl: false }),
+      lblRows, lblPick, lblN: lblPick.length, lblNone: lblPick.length === 0,
+      lblSub: lblRows.length + ' device' + (lblRows.length === 1 ? '' : 's') + ' available · ' + lblPick.length + ' selected for printing',
+      lblPrint: () => {
+        if (!lblPick.length) return;
+        try { window.print(); } catch (e) {}
+        const drawerSn = this.state.open ? this.state.sel : null;
+        const inclDrawer = !!(drawerSn && lblPick.some(r => r.sn === drawerSn));
+        this.writeStore(S => {
+          this.logEvent(S, { action: 'Labels printed', item: lblPick.length + ' device label' + (lblPick.length === 1 ? '' : 's'), itemHref: 'DevicePrep.dc.html', from: '—', to: 'Prep bench printer', note: lblPick.map(r => r.sn).join(', ') });
+        });
+        const patch = { lbl: false, toast: { text: 'Print dialog opened · ' + lblPick.length + ' label' + (lblPick.length === 1 ? '' : 's'), link: false } };
+        if (inclDrawer) patch.f = Object.assign({}, this.state.f, { checks: Object.assign({}, this.state.f.checks, { label: true }) });
+        this.setState(patch);
+      },
+      // Scan dialog: accepts typed or scanner (keyboard-wedge) input; no camera.
+      scanQ: () => this.setState({ scanDlg: { field: 'q', val: '', err: '' } }),
+      scanSn: () => this.setState({ scanDlg: { field: 'sn', val: '', err: '' } }),
+      scanIccid: () => this.setState({ scanDlg: { field: 'iccid', val: '', err: '' } }),
+      scanOpen: !!st.scanDlg, scanClose: () => this.setState({ scanDlg: null }),
+      scanTitle: sd.field === 'iccid' ? 'Scan SIM ICCID' : 'Scan serial number',
+      scanHint: sd.field === 'iccid' ? 'Scan the barcode on the SIM carrier card or type the ICCID. It fills the ICCID field and matches the SIM pool.' : sd.field === 'sn' ? 'Scan the serial label on the device. It replaces the serial in this form.' : 'Scan a device serial to jump straight to its preparation form.',
+      scanLabel: sd.field === 'iccid' ? 'ICCID' : 'Serial number', scanPh: sd.field === 'iccid' ? '89968…' : 'e.g. 1108675310',
+      scanVal: sd.val || '', scanErr: sd.err || '', scanHasErr: !!sd.err,
+      onScanVal: e => this.setState({ scanDlg: Object.assign({}, this.state.scanDlg, { val: e.target.value, err: '' }) }),
+      scanApply: () => {
+        const cur = this.state.scanDlg || {};
+        const v = String(cur.val || '').replace(/\s+/g, '').trim();
+        const fail = err => this.setState({ scanDlg: Object.assign({}, cur, { err }) });
+        if (!v) return fail('Nothing scanned yet — scan or type a value first.');
+        if (cur.field === 'iccid') {
+          if (!/^\d{18,22}$/.test(v)) return fail('An ICCID is 18–22 digits. Check the scan and try again.');
+          const owner = (ST0.units[v] || {}).device;
+          if (owner && owner !== this.state.f.sn) return fail('This SIM is already assigned to ' + owner + '.');
+          const sim = this.state.sims.find(x => x.iccid === v);
+          this.setState({ scanDlg: null, f: Object.assign({}, this.state.f, { iccid: v, sim: sim ? v : '', msisdn: sim ? sim.msisdn : '', checks: Object.assign({}, this.state.f.checks, { sim: true }) }), toast: { text: sim ? 'ICCID scanned · matched ' + sim.msisdn : 'ICCID scanned · not in the SIM pool, MSISDN left blank', link: false } });
+          return;
+        }
+        if (cur.field === 'sn') { this.setState({ scanDlg: null, f: Object.assign({}, this.state.f, { sn: v }) }); return; }
+        const hit = devs.find(d => d.sn.toLowerCase() === v.toLowerCase());
+        if (hit) { this.setState({ scanDlg: null, q: '', open: true, sel: hit.sn, scanning: false, f: this.formFor(hit, freeSims, tel, ipN) }); return; }
+        this.setState({ scanDlg: null, q: v, toast: { text: 'No device with serial ' + v + ' — showing the filter instead', link: false } });
+      },
       hasToast: !!st.toast, toastText: st.toast ? st.toast.text : '', toastLink: !!(st.toast && st.toast.link),
       dismissToast: () => this.setState({ toast: null })
     };

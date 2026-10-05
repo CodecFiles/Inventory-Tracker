@@ -119,7 +119,7 @@ h1,h2,h3,h4,p{margin:0}
 <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
 <div class="mtop" style="align-items: center; justify-content: space-between; padding: 12px 16px; background: #0C1424; color: #fff">
 <span style="font-weight: 600">Moonrock R&amp;D</span>
-<button class="btn sm" aria-label="Open menu" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
+<button class="btn sm" aria-label="Open menu" aria-expanded="{{shell.menuExp}}" onClick="{{shell.toggleMenu}}" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
 </div>
 <header class="top">
 <a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
@@ -127,7 +127,24 @@ h1,h2,h3,h4,p{margin:0}
 <span class="b s-prep" title="All records shown are sample data">Sample data</span>
 <a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
 <a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
-<button class="btn ic" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg></button>
+<div style="position: relative; z-index: {{shell.bellZ}}">
+<button class="btn ic" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="{{shell.bellExp}}" onClick="{{shell.toggleBell}}" style="position: relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg><sc-if value="{{shell.hasUnread}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #DC3B3A; color: #fff; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #fff">{{shell.unread}}</span></sc-if></button>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="Notifications" style="position: absolute; right: 0; top: calc(100% + 8px); z-index: 41; width: 360px; max-width: calc(100vw - 32px); background: #fff; border: 1px solid #DCE1E8; border-radius: 12px; box-shadow: 0 16px 40px rgba(14,23,38,.18); overflow: hidden; text-align: left">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #EEF1F4"><span style="font-weight: 600; font-size: 14px; color: #0E1726">Notifications</span><button onClick="{{shell.markRead}}" style="border: 0; background: none; padding: 4px; font: inherit; font-size: 12.5px; color: #0B7A6B; cursor: pointer">Mark all as read</button></div>
+<div style="max-height: 380px; overflow-y: auto">
+<sc-for list="{{shell.notes}}" as="n" hint-placeholder-count="4">
+<a href="{{n.href}}" style="display: flex; gap: 10px; padding: 11px 14px; border-bottom: 1px solid #F1F4F7; color: #0E1726; background: {{n.bg}}">
+<span style="width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: 0 0 8px; background: {{n.dot}}"></span>
+<span style="flex: 1; min-width: 0; font-size: 13px; line-height: 1.4"><span style="display: block">{{n.text}}</span><span style="display: block; font-size: 12px; color: #5E6B7D">{{n.when}}</span></span>
+</a>
+</sc-for>
+</div>
+<a href="AuditLog.dc.html" style="display: block; padding: 10px 14px; font-size: 13px; font-weight: 500; text-align: center; border-top: 1px solid #EEF1F4">Open audit log</a>
+</div>
+</sc-if>
+</div>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}"><button aria-label="Close notifications" onClick="{{shell.closeAll}}" style="position: fixed; inset: 0; z-index: 30; background: transparent; border: 0; padding: 0; cursor: default"></button></sc-if>
 </header>
 
 <main class="main">
@@ -139,11 +156,18 @@ h1,h2,h3,h4,p{margin:0}
 <p class="muted" style="font-size: 13.5px">{{headSub}}</p>
 </div>
 <div style="display: flex; gap: 10px; flex-wrap: wrap">
-<a class="btn" href="Reports.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"></path></svg>Export</a>
+<button class="btn" onClick="{{exportList}}" title="CSV of the facilities shown below"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"></path></svg>Export</button>
 <button class="btn p" onClick="{{openAdd}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add facility</button>
 </div>
 </div>
 </div>
+
+<sc-if value="{{hasExMsg}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; border-radius: 10px; background: {{exBg}}; border: 1px solid {{exBd}}; font-size: 13.5px; color: #1B2638">
+<div style="display: flex; align-items: center; gap: 12px"><span style="flex: 1">{{exMsg}}</span><button class="btn sm" onClick="{{clearEx}}" style="background: transparent">Dismiss</button></div>
+<sc-if value="{{exShowCsv}}" hint-placeholder-val="{{ false }}"><label class="sr" for="fexcsv">CSV to copy</label><textarea id="fexcsv" class="in" readonly="readonly" value="{{exCsv}}" style="height: 140px; padding: 10px 12px; font-family: 'Geist Mono', monospace; font-size: 12px"></textarea></sc-if>
+</div>
+</sc-if>
 
 <!-- Lifecycle funnel -->
 <section class="card" aria-label="Facilities by lifecycle stage" style="padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 14px">
@@ -207,7 +231,7 @@ h1,h2,h3,h4,p{margin:0}
 <sc-if value="{{showGrid}}" hint-placeholder-val="{{ true }}">
 <section aria-label="Facilities" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px">
 <sc-for list="{{list}}" as="f" hint-placeholder-count="6">
-<a class="card fcard" href="FacilityDetail.dc.html" aria-label="Open {{f.name}}">
+<a class="card fcard" href="FacilityDetail.dc.html" onClick="{{f.open}}" aria-label="Open {{f.name}}">
 <div class="ph" style="height: 132px">
 <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"></path><path d="M5 21V7l7-4v18"></path><path d="M12 21V10l7 3v8"></path><path d="M8 9h1M8 12h1M8 15h1M15 15h1M15 18h1"></path></svg>
 <span class="b {{f.cls}}" style="position: absolute; top: 12px; left: 12px; box-shadow: 0 1px 2px rgba(14,23,38,.12)">{{f.stage}}</span>
@@ -255,7 +279,7 @@ h1,h2,h3,h4,p{margin:0}
 <tbody>
 <sc-for list="{{list}}" as="f" hint-placeholder-count="6">
 <tr>
-<td><a href="FacilityDetail.dc.html" style="color: #0E1726; font-weight: 500">{{f.name}}</a><div class="muted" style="font-size: 12px">{{f.type}}</div></td>
+<td><a href="FacilityDetail.dc.html" onClick="{{f.open}}" style="color: #0E1726; font-weight: 500">{{f.name}}</a><div class="muted" style="font-size: 12px">{{f.type}}</div></td>
 <td>{{f.client}}</td>
 <td class="muted">{{f.loc}}</td>
 <td><span class="b {{f.cls}}">{{f.stage}}</span></td>
@@ -264,7 +288,7 @@ h1,h2,h3,h4,p{margin:0}
 <td class="muted">{{f.last}}</td>
 <td><div style="display: flex; flex-direction: column; gap: 5px; width: 140px"><div class="mini" role="img" aria-label="{{f.prog}}"><sc-for list="{{f.segs}}" as="g" hint-placeholder-count="7"><span style="background: {{g.c}}"></span></sc-for></div><span class="muted" style="font-size: 11.5px">{{f.short}}</span></div></td>
 <td><span style="display: flex; align-items: center; gap: 8px"><span class="av" style="background: {{f.abg}}; width: 24px; height: 24px; flex-basis: 24px; font-size: 10px">{{f.ini}}</span>{{f.lead}}</span></td>
-<td style="text-align: right"><a class="btn sm" href="FacilityDetail.dc.html">Open</a></td>
+<td style="text-align: right"><a class="btn sm" href="FacilityDetail.dc.html" onClick="{{f.open}}">Open</a></td>
 </tr>
 </sc-for>
 </tbody>
@@ -293,14 +317,16 @@ h1,h2,h3,h4,p{margin:0}
 <label class="fld">Facility type<select class="in" value="{{nf.type}}" onChange="{{onNfType}}"><option>Corporate HQ</option><option>Education campus</option><option>Retail</option><option>Commercial office</option><option>Warehouse</option><option>Healthcare</option></select></label>
 <label class="fld">Initial stage<select class="in" value="{{nf.stage}}" onChange="{{onNfStage}}"><option value="Site inspection">Site inspection</option><option value="BMS scan">BMS network scan</option><option value="POC">POC</option></select><span class="h">Most facilities start at Site inspection.</span></label>
 <label class="fld">Project lead<select class="in" value="{{nf.lead}}" onChange="{{onNfLead}}"><option value="Aisha">Aisha · Operations</option><option value="Nitin">Nitin · Operations</option><option value="Chetan">Chetan · Admin</option></select></label>
-<label class="fld">Primary contact<input class="in" type="text" placeholder="Name and role"></label>
-<label class="fld">Contact phone or email<input class="in" type="text" placeholder="+968 •••• ••••"></label>
+<label class="fld">Primary contact<input class="in" type="text" value="{{nf.cName}}" onChange="{{onNfCName}}" placeholder="Name, e.g. Omar H."></label>
+<label class="fld">Contact role<input class="in" type="text" value="{{nf.cRole}}" onChange="{{onNfCRole}}" placeholder="e.g. Facilities Manager"></label>
+<label class="fld">Contact phone<input class="in" type="tel" value="{{nf.cPhone}}" onChange="{{onNfCPhone}}" placeholder="+968 …"></label>
+<label class="fld">Contact email<input class="in" type="email" value="{{nf.cEmail}}" onChange="{{onNfCEmail}}" placeholder="name@client.com"></label>
 <div style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px">
 <span style="font-size: 13px; font-weight: 500">Facility photo</span>
-<label style="display: flex; align-items: center; gap: 14px; padding: 18px; border: 1.5px dashed #C3CCD7; border-radius: 10px; background: #FAFBFC; cursor: pointer">
+<label style="position: relative; display: flex; align-items: center; gap: 14px; padding: 18px; border: 1.5px dashed #C3CCD7; border-radius: 10px; background: #FAFBFC; cursor: pointer">
 <span style="width: 44px; height: 44px; border-radius: 10px; background: #DCE4EA; color: #4A5668; display: flex; align-items: center; justify-content: center; flex: 0 0 44px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"></path></svg></span>
-<span style="font-size: 13px"><strong style="font-weight: 600; color: #0B7A6B">Upload an image</strong> or drag it here<span class="muted" style="display: block; font-size: 12px">JPG or PNG, up to 10 MB. Used on facility cards and the detail banner.</span></span>
-<input class="sr" type="file" accept="image/*">
+<span style="font-size: 13px"><strong style="font-weight: 600; color: #0B7A6B">{{nfPhotoLabel}}</strong><span class="muted" style="display: block; font-size: 12px">{{nfPhotoSub}}</span></span>
+<input type="file" accept="image/*" style="position:absolute;width:1px;height:1px;opacity:0" onChange="{{onNfPhoto}}">
 </label>
 </div>
 </div>
@@ -309,6 +335,31 @@ h1,h2,h3,h4,p{margin:0}
 <div style="display: flex; gap: 8px"><button class="btn" onClick="{{closeAdd}}">Cancel</button><button class="btn p" onClick="{{createFac}}">Create facility</button></div>
 </div>
 </div>
+</div>
+</sc-if>
+<sc-if value="{{shell.menuOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 70; display: flex">
+<nav aria-label="Mobile navigation" style="width: min(300px, 85vw); height: 100%; overflow-y: auto; background: #0C1424; padding: 16px 12px; display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 8px 14px; color: #fff"><span style="font-weight: 600">Moonrock R&amp;D</span><button onClick="{{shell.closeAll}}" aria-label="Close menu" style="width: 40px; height: 40px; border: 0; border-radius: 8px; background: #1C2A42; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<a href="Main.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Dashboard</a>
+<a href="Search.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Search</a>
+<a href="Inventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">All inventory</a>
+<a href="Products.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Products</a>
+<a href="Batches.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Batches</a>
+<a href="ReceiveInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Receive stock</a>
+<a href="DevicePrep.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Device preparation</a>
+<a href="SimInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">SIM cards</a>
+<a href="Facilities.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Facilities</a>
+<a href="PocManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">POC projects</a>
+<a href="ContractManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Contracts</a>
+<a href="Deployments.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Deployments</a>
+<a href="CreateDeployment.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">New deployment</a>
+<a href="Reports.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Reports</a>
+<a href="AuditLog.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Audit log</a>
+<a href="Users.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Users &amp; roles</a>
+<a href="Settings.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Settings</a>
+</nav>
+<button aria-label="Close menu" onClick="{{shell.closeAll}}" style="flex: 1; border: 0; padding: 0; background: rgba(14,23,38,.5); cursor: default"></button>
 </div>
 </sc-if>
 </x-dc>
@@ -342,10 +393,30 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
-    try { const keep = Object.assign({}, this.state); ["add", "nf", "addErr"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:Facilities', JSON.stringify(keep)); } catch (e) {}
+    try { const keep = Object.assign({}, this.state); delete keep._shell; ["add", "nf", "addErr", "exMsg", "exOk", "exCsv"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:Facilities', JSON.stringify(keep)); } catch (e) {}
   }
-  constructor(props) { super(props); this.state = { tab: 'all', view: 'grid', q: '', add: false, nf: this.blankNf(), addErr: '' }; }
-  blankNf() { return { name: '', client: '', loc: '', type: 'Corporate HQ', stage: 'Site inspection', lead: 'Aisha' }; }
+  constructor(props) { super(props); this.state = { tab: 'all', view: 'grid', q: '', add: false, nf: this.blankNf(), addErr: '', exMsg: '', exOk: true, exCsv: '' }; }
+  blankNf() { return { name: '', client: '', loc: '', type: 'Corporate HQ', stage: 'Site inspection', lead: 'Aisha', cName: '', cRole: '', cPhone: '', cEmail: '', photo: null }; }
+  stamp() { const M = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']; const d = new Date(); return String(d.getDate()).padStart(2, '0') + ' ' + M[d.getMonth()] + ' ' + d.getFullYear() + ', ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  fmtSize(n) { const b = +n || 0; return b < 1024 ? b + ' B' : b < 1048576 ? Math.round(b / 1024) + ' KB' : (b / 1048576).toFixed(1) + ' MB'; }
+  // Facilities CSV of the rows currently shown, through the downloads capability; inline fallback when unavailable.
+  async exportFacilities(rows) {
+    const q2 = v => { const t = String(v == null ? '' : v); return /[",\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
+    const cols = [['Facility', f => f.name], ['Client', f => f.client], ['Location', f => f.loc], ['Type', f => f.type], ['Stage', f => f.stage], ['Phase', f => f.tag], ['Progress', f => f.short], ['Devices deployed', f => f.devices], ['Last deployment', f => f.last], ['Project lead', f => f.lead], ['Note', f => f.note], ['Archived', f => f.archived ? 'Yes' : 'No']];
+    const csv = [cols.map(c => q2(c[0])).join(',')].concat(rows.map(f => cols.map(c => q2(c[1](f))).join(','))).join('\n');
+    const filename = 'mrd-facilities-' + (this.state.tab === 'all' ? '' : this.state.tab + '-') + '2026-10-05.csv';
+    if (!rows.length) { this.setState({ exMsg: 'No facilities match the current filters, so there is nothing to export.', exOk: false, exCsv: '' }); return; }
+    let dl = null;
+    try { dl = (window.claude && window.claude.use) ? await window.claude.use('downloads') : null; } catch (e) { dl = null; }
+    if (!dl) { this.setState({ exMsg: 'Downloads aren’t available in this preview, so nothing was saved. The CSV of the ' + rows.length + ' facilities shown is below — select it and copy it instead.', exOk: false, exCsv: csv }); return; }
+    try {
+      await dl.save({ filename, data: csv });
+      this.writeStore(s => { s.exports = Array.isArray(s.exports) ? s.exports : []; s.exports.unshift({ file: filename, who: 'Chetan', ini: 'CH', bg: '#CDEFE7', when: this.nowLabel(), fmt: 'CSV', report: 'Facilities', rows: rows.length }); s.exports = s.exports.slice(0, 50); });
+      this.setState({ exMsg: filename + ' saved · ' + rows.length + (rows.length === 1 ? ' facility.' : ' facilities.'), exOk: true, exCsv: '' });
+    } catch (e) {
+      this.setState({ exMsg: e && e.code === 'declined' ? 'Download cancelled.' : 'The download didn’t start (' + ((e && e.code) || 'unavailable') + '). The CSV is below to copy instead.', exOk: false, exCsv: e && e.code === 'declined' ? '' : csv });
+    }
+  }
   setFac(s, name, patch) {
     s.facilities = s.facilities || {};
     s.facilities[name] = Object.assign({}, s.facilities[name] || {}, patch);
@@ -355,7 +426,7 @@ class Component extends DCLogic {
     return {
       'Qatar Foundation': ['1108675311', '8996802026093001435', '6247B1820041', 'F4E2C6A10B37', '6136D2470112', '6136D2470113', '6136D2470114', '6136D2470115', '6136D2470121', '6136D2470122', '6136D2470123', '6136D2470124'],
       'Lulu Hypermarket': ['1107442106', '6247B1820045', '8996802026071500822', '6136D2460041', '6136D2460042', '6136D2460043', '6136D2460044', '6136D2460045'],
-      'Bank Muscat Head Office': ['1108675302']
+      'Bank Muscat Head Office': ['1108675302', '1107442100', '1107442101', '1107442102', '1107442104', '1107442105', '1107442107', '1107442108', '6247B1820038', '6247B1820039', '3AXD50000731102', '3AXD50000731103', 'F4E2C6A10B21', 'F4E2C6A10B22', 'F4E2C6A10B23']
     };
   }
   createFacility() {
@@ -366,13 +437,48 @@ class Component extends DCLogic {
     const taken = ['Qatar Foundation', 'Bank Muscat Head Office', 'Lulu Hypermarket', 'Al Khuwair Business Tower', 'Sohar Logistics Hub', 'Ruwi Medical Centre'].concat(Object.keys(S.facilities || {}).filter(n => S.facilities[n] && S.facilities[n].added));
     if (taken.some(n => n.toLowerCase() === name.toLowerCase())) { this.setState({ addErr: 'A facility with this name already exists.' }); return; }
     const client = nf.client && nf.client !== '+ New client' ? nf.client : name;
+    const cName = String(nf.cName || '').trim(), cEmail = String(nf.cEmail || '').trim(), cPhone = String(nf.cPhone || '').trim();
+    if (!cName && (cEmail || cPhone || String(nf.cRole || '').trim())) { this.setState({ addErr: 'Add the contact’s name, or clear the contact fields.' }); return; }
+    if (cEmail && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(cEmail)) { this.setState({ addErr: 'The contact email doesn’t look right.' }); return; }
+    const contact = cName ? { id: 'c' + Date.now().toString(36), name: cName, role: String(nf.cRole || '').trim(), phone: cPhone, email: cEmail, by: 'Chetan', when: this.stamp() } : null;
     this.writeStore(s => {
-      this.setFac(s, name, { added: true, stage: nf.stage || 'Site inspection', client, loc: String(nf.loc || '').trim(), type: nf.type || 'Corporate HQ', lead: nf.lead || 'Aisha', created: this.nowLabel() });
+      const rec = { added: true, stage: nf.stage || 'Site inspection', client, loc: String(nf.loc || '').trim(), type: nf.type || 'Corporate HQ', lead: nf.lead || 'Aisha', created: this.nowLabel() };
+      if (contact) { rec.contacts = [contact]; rec.primaryContact = contact.id; }
+      if (nf.photo) rec.photo = Object.assign({}, nf.photo, { by: 'Chetan', when: this.stamp() });
+      this.setFac(s, name, rec);
+      s.ui = Object.assign({}, s.ui || {}, { facility: name });
       this.logEvent(s, { action: 'Facility added', item: name, itemHref: 'FacilityDetail.dc.html', from: '', to: nf.stage || 'Site inspection', note: client + (nf.loc ? ' · ' + String(nf.loc).trim() : '') + ' · ' + (nf.type || '') });
+      if (contact) this.logEvent(s, { action: 'Contact added', item: name, itemHref: 'FacilityDetail.dc.html', from: '', to: cName, note: cName + (contact.role ? ' · ' + contact.role : '') });
+      if (nf.photo) this.logEvent(s, { action: 'Document uploaded', item: name, itemHref: 'FacilityDetail.dc.html', from: '', to: '', note: 'Facility photo · ' + nf.photo.name + ' · ' + this.fmtSize(nf.photo.size) });
     });
     this.setState({ add: false, nf: this.blankNf(), addErr: '', tab: 'all', q: '' });
   }
-  renderVals() {
+  // Shared shell: notifications bell (fed by the shared store) and the mobile navigation drawer.
+  shellVals() {
+    const S = this.state, st = this.readStore();
+    const seen = (st.ui && st.ui.seenAt) || 0;
+    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Stage changed': 'moved the stage of', 'POC decision': 'recorded a POC decision for', 'Contract ended': 'ended the contract for', 'Issue reported': 'reported an issue on', 'Reserved': 'reserved', 'Labels printed': 'printed labels for', 'File attached': 'attached a file to', 'File removed': 'removed a file from', 'User updated': 'updated user', 'Product edited': 'edited', 'Invite resent': 'resent the invite to', 'Document uploaded': 'uploaded a document to', 'Document removed': 'removed a document from', 'Contact added': 'added a contact to', 'Contact removed': 'removed a contact from', 'Contract updated': 'updated the contract for', 'Batch updated': 'updated batch', 'Batch archived': 'archived batch', 'Batch restored': 'restored batch', 'Facility updated': 'updated facility', 'Facility restored': 'restored facility', 'Report exported': 'exported', 'Record corrected': 'corrected', 'Note added': 'added a note to', 'Settings changed': 'updated settings ·', 'User invited': 'invited', 'Role changed': 'changed the role of', 'Verified on site': 'verified on site', 'Deployment cancelled': 'cancelled', 'Deployment updated': 'updated deployment' };
+    const fromStore = st.events.slice(0, 8).map(e => ({ text: (e.who || 'Chetan') + ' ' + (VERB[e.action] || String(e.action || '').toLowerCase()) + ' ' + e.item + (e.to && e.to !== '—' && e.action !== 'Imported' ? ' → ' + e.to : ''), when: e.when, href: e.itemHref || 'AuditLog.dc.html', unread: (e.at || 0) > seen }));
+    const alerts = [
+      { text: '14 Teltonika RUT956 units are waiting for preparation', when: 'Batch TEL-2026-004', href: 'DevicePrep.dc.html', alert: true },
+      { text: 'Cat6 patch cable 1 m is below its minimum level', when: 'Low stock · 18 of 25', href: 'InventoryItem.dc.html', alert: true },
+      { text: 'Qatar Foundation: 2 CO₂ sensors scheduled to install on 08 Oct', when: 'Upcoming deployment', href: 'Deployments.dc.html', alert: true }
+    ].map(a => Object.assign(a, { unread: !seen }));
+    const all = fromStore.concat(alerts);
+    const unread = all.filter(n => n.unread).length;
+    return {
+      bellOpen: S._shell === 'bell', bellExp: S._shell === 'bell' ? 'true' : 'false', bellZ: S._shell === 'bell' ? '40' : 'auto',
+      menuOpen: S._shell === 'menu', menuExp: S._shell === 'menu' ? 'true' : 'false',
+      unread: unread > 9 ? '9+' : String(unread), hasUnread: unread > 0,
+      notes: all.map(n => ({ text: n.text, when: n.when, href: n.href, bg: n.unread ? '#F4FBF8' : '#fff', dot: n.alert ? '#E08A00' : (n.unread ? '#0B7A6B' : '#D5DBE3') })),
+      toggleBell: () => this.setState({ _shell: this.state._shell === 'bell' ? '' : 'bell' }),
+      toggleMenu: () => this.setState({ _shell: this.state._shell === 'menu' ? '' : 'menu' }),
+      closeAll: () => this.setState({ _shell: '' }),
+      markRead: () => this.writeStore(s => { s.ui = Object.assign({}, s.ui || {}, { seenAt: Date.now() }); })
+    };
+  }
+  renderVals() { return Object.assign(this._screenVals(), { shell: this.shellVals() }); }
+  _screenVals() {
     const s = this.state;
     const S = this.readStore();
     const FS = S.facilities || {};
@@ -435,11 +541,12 @@ class Component extends DCLogic {
       return Object.assign({}, b, {
         client: o.client || b.client, loc: o.loc || b.loc, type: o.type || b.type, stage, cls: GC[stage] || 'g-insp', idx, hold, lead, ini: p[0], abg: p[1],
         tag: ph === 'poc' ? 'POC' : ph === 'con' ? 'Contract' : ph === 'done' ? 'Closed' : 'Pre-POC', tcls: ph === 'poc' ? 't-poc' : ph === 'con' ? 't-con' : 't-pre',
-        devices, last, note, grp, archived: !!o.archived
+        devices, last, note, grp, archived: !!o.archived, photo: o.photo && o.photo.name ? 'Photo: ' + o.photo.name : b.photo
       });
     });
     const cur = (i, hold) => hold ? '#DC3B3A' : (i === 3 || i === 4) ? '#7A5AF8' : i >= 5 ? '#12A374' : '#3B4758';
     const decorate = f => Object.assign({}, f, {
+      open: () => this.writeStore(st => { st.ui = Object.assign({}, st.ui || {}, { facility: f.name }); }),
       segs: names.map((n, k) => { const i = k + 1; return { t: n, c: i < f.idx ? '#0B7A6B' : i === f.idx ? cur(i, f.hold) : '#E3E7EC' }; }),
       prog: f.hold ? 'Paused at stage ' + f.idx + ' of 7 · ' + names[f.idx - 1] : f.idx > 7 ? 'Completed · all stages closed' : 'Stage ' + f.idx + ' of 7 · ' + (f.stage === 'Contract pending' ? 'Contract pending' : names[f.idx - 1]),
       short: f.hold ? 'Paused · ' + f.idx + ' of 7' : f.idx > 7 ? 'Completed' : f.idx + ' of 7 · ' + (f.stage === 'Contract pending' ? 'Contract pending' : names[f.idx - 1])
@@ -487,7 +594,16 @@ class Component extends DCLogic {
       toGrid: () => this.setState({ view: 'grid' }), toTable: () => this.setState({ view: 'table' }),
       addOpen: s.add, openAdd: () => this.setState({ add: true, addErr: '' }), closeAdd: () => this.setState({ add: false, addErr: '' }),
       nf, onNfName: setNf('name'), onNfClient: setNf('client'), onNfLoc: setNf('loc'), onNfType: setNf('type'), onNfStage: setNf('stage'), onNfLead: setNf('lead'),
-      addErr: !!s.addErr, addErrMsg: s.addErr || '', createFac: () => this.createFacility()
+      addErr: !!s.addErr, addErrMsg: s.addErr || '', createFac: () => this.createFacility(),
+      onNfCName: setNf('cName'), onNfCRole: setNf('cRole'), onNfCPhone: setNf('cPhone'), onNfCEmail: setNf('cEmail'),
+      onNfPhoto: e => {
+        const input = e && e.target; const f = input && input.files && input.files[0];
+        if (!f) return;
+        if (f.type && !/^image\//.test(f.type)) { this.setState({ addErr: f.name + ' is not an image.' }); return; }
+        this.setState({ nf: Object.assign({}, nf, { photo: { name: f.name, size: f.size || 0, type: f.type || '' } }), addErr: '' });
+      },
+      nfPhotoLabel: nf.photo ? nf.photo.name : 'Upload an image', nfPhotoSub: nf.photo ? this.fmtSize(nf.photo.size) + ' · file name and size are saved; the image itself isn’t stored in this prototype' : 'JPG or PNG, up to 10 MB. Used on facility cards and the detail banner.',
+      exportList: () => this.exportFacilities(list), hasExMsg: !!s.exMsg, exMsg: s.exMsg || '', exBg: s.exOk ? '#E1F4EC' : '#FFF8EB', exBd: s.exOk ? '#BFE3D3' : '#F3D9A6', exShowCsv: !!s.exCsv, exCsv: s.exCsv || '', clearEx: () => this.setState({ exMsg: '', exCsv: '' })
     };
   }
 }

@@ -131,7 +131,7 @@ h1,h2,h3,h4,p{margin:0}
 <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
 <div class="mtop" style="align-items: center; justify-content: space-between; padding: 12px 16px; background: #0C1424; color: #fff">
 <span style="font-weight: 600">Moonrock R&amp;D</span>
-<button class="btn sm" aria-label="Open menu" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
+<button class="btn sm" aria-label="Open menu" aria-expanded="{{shell.menuExp}}" onClick="{{shell.toggleMenu}}" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
 </div>
 <header class="top">
 <a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
@@ -139,7 +139,24 @@ h1,h2,h3,h4,p{margin:0}
 <span class="b s-prep" title="All records shown are sample data">Sample data</span>
 <a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
 <a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
-<button class="btn ic" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg></button>
+<div style="position: relative; z-index: {{shell.bellZ}}">
+<button class="btn ic" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="{{shell.bellExp}}" onClick="{{shell.toggleBell}}" style="position: relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg><sc-if value="{{shell.hasUnread}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #DC3B3A; color: #fff; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #fff">{{shell.unread}}</span></sc-if></button>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="Notifications" style="position: absolute; right: 0; top: calc(100% + 8px); z-index: 41; width: 360px; max-width: calc(100vw - 32px); background: #fff; border: 1px solid #DCE1E8; border-radius: 12px; box-shadow: 0 16px 40px rgba(14,23,38,.18); overflow: hidden; text-align: left">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #EEF1F4"><span style="font-weight: 600; font-size: 14px; color: #0E1726">Notifications</span><button onClick="{{shell.markRead}}" style="border: 0; background: none; padding: 4px; font: inherit; font-size: 12.5px; color: #0B7A6B; cursor: pointer">Mark all as read</button></div>
+<div style="max-height: 380px; overflow-y: auto">
+<sc-for list="{{shell.notes}}" as="n" hint-placeholder-count="4">
+<a href="{{n.href}}" style="display: flex; gap: 10px; padding: 11px 14px; border-bottom: 1px solid #F1F4F7; color: #0E1726; background: {{n.bg}}">
+<span style="width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: 0 0 8px; background: {{n.dot}}"></span>
+<span style="flex: 1; min-width: 0; font-size: 13px; line-height: 1.4"><span style="display: block">{{n.text}}</span><span style="display: block; font-size: 12px; color: #5E6B7D">{{n.when}}</span></span>
+</a>
+</sc-for>
+</div>
+<a href="AuditLog.dc.html" style="display: block; padding: 10px 14px; font-size: 13px; font-weight: 500; text-align: center; border-top: 1px solid #EEF1F4">Open audit log</a>
+</div>
+</sc-if>
+</div>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}"><button aria-label="Close notifications" onClick="{{shell.closeAll}}" style="position: fixed; inset: 0; z-index: 30; background: transparent; border: 0; padding: 0; cursor: default"></button></sc-if>
 </header>
 
 <main class="main">
@@ -257,13 +274,13 @@ h1,h2,h3,h4,p{margin:0}
 <div class="drop">
 <span style="width: 40px; height: 40px; border-radius: 10px; background: #fff; border: 1px solid #E3E7EC; display: flex; align-items: center; justify-content: center; color: #3B4758"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"></path><path d="M7 9l5-5 5 5"></path><path d="M4 16v4h16v-4"></path></svg></span>
 <span style="font-size: 13.5px; font-weight: 500">Drop invoice, packing list or delivery note</span>
-<span class="muted" style="font-size: 12px">PDF, JPG or PNG · up to 20 MB each</span>
-<button class="btn sm" onClick="{{addDoc}}">Browse files</button>
+<span class="muted" style="font-size: 12px">PDF, JPG or PNG · up to 20 MB each · saved on batch {{batch}} when you confirm</span>
+<label class="btn sm" style="position: relative"><input type="file" multiple="multiple" accept=".pdf,.jpg,.jpeg,.png" style="position: absolute; width: 1px; height: 1px; opacity: 0" onChange="{{onDocFile}}">Browse files</label>
 </div>
 <sc-for list="{{docs}}" as="d" hint-placeholder-count="0">
 <div style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid #E3E7EC; border-radius: 10px">
-<span style="width: 30px; height: 30px; border-radius: 7px; background: #FDEBEA; color: #A3201F; font-size: 9.5px; font-weight: 700; display: flex; align-items: center; justify-content: center">PDF</span>
-<span style="flex: 1; min-width: 0"><span class="mono" style="display: block; font-weight: 500">{{d.name}}</span><span class="muted" style="font-size: 12px">{{d.meta}}</span></span>
+<span style="width: 30px; height: 30px; border-radius: 7px; background: #FDEBEA; color: #A3201F; font-size: 9.5px; font-weight: 700; display: flex; align-items: center; justify-content: center">{{d.ext}}</span>
+<span style="flex: 1; min-width: 0"><span class="mono" style="display: block; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{d.name}}</span><span class="muted" style="font-size: 12px">{{d.meta}}</span></span>
 <button class="btn sm ic" aria-label="Remove {{d.name}}" onClick="{{d.remove}}" style="width: 32px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
 </div>
 </sc-for>
@@ -354,13 +371,15 @@ h1,h2,h3,h4,p{margin:0}
 <span style="width: 40px; height: 40px; border-radius: 10px; background: #fff; border: 1px solid #E3E7EC; display: flex; align-items: center; justify-content: center; color: #3B4758"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path><path d="M9 13h6M9 17h6"></path></svg></span>
 <span style="font-size: 13.5px; font-weight: 500">Drop the supplier's CSV or XLSX</span>
 <span class="muted" style="font-size: 12px">First row should be column headers · up to 5,000 rows</span>
-<button class="btn sm" onClick="{{loadCsv}}">Choose file</button>
+<label class="btn sm" style="position: relative"><input type="file" accept=".csv,.txt,text/csv" style="position: absolute; width: 1px; height: 1px; opacity: 0" onChange="{{onCsvFile}}">Choose file</label>
+<button class="btn sm" onClick="{{loadCsv}}" style="background: transparent; border-color: transparent; color: #0B7A6B">Use the sample supplier file</button>
+<sc-if value="{{hasCsvErr}}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size: 12.5px; color: #A3201F">{{csvErr}}</span></sc-if>
 </div>
 </sc-if>
 <sc-if value="{{csvLoaded}}" hint-placeholder-val="{{ true }}">
 <div style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid #BFE3D3; background: #F4FBF8; border-radius: 10px">
 <span style="width: 30px; height: 30px; border-radius: 7px; background: #E1F4EC; color: #0A6648; font-size: 9.5px; font-weight: 700; display: flex; align-items: center; justify-content: center">CSV</span>
-<span style="flex: 1; min-width: 0"><span class="mono" style="display: block; font-weight: 500">AlNoor_RUT956_shipment_88341.csv</span><span class="muted" style="font-size: 12px">20 rows · 4 columns · 2 KB</span></span>
+<span style="flex: 1; min-width: 0"><span class="mono" style="display: block; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{csvName}}</span><span class="muted" style="font-size: 12px">{{csvInfo}}</span></span>
 <button class="btn sm" onClick="{{clearCsv}}">Remove</button>
 </div>
 <div class="tw" style="border: 1px solid #E3E7EC; border-radius: 10px">
@@ -368,7 +387,7 @@ h1,h2,h3,h4,p{margin:0}
 <thead><tr><th>CSV column</th><th>Sample value</th><th>Maps to field</th></tr></thead>
 <tbody>
 <sc-for list="{{maps}}" as="m" hint-placeholder-count="4">
-<tr><td class="mono">{{m.col}}</td><td class="mono muted">{{m.sample}}</td><td style="padding: 6px 14px"><select class="inp" style="height: 34px; max-width: 220px" aria-label="Field for {{m.col}}" value="{{m.val}}" onChange="{{m.on}}"><option value="sn">Serial number</option><option value="imei">IMEI</option><option value="mac">MAC address</option><option value="ignore">Ignore column</option></select></td></tr>
+<tr><td class="mono">{{m.col}}</td><td class="mono muted">{{m.sample}}</td><td style="padding: 6px 14px"><select class="inp" style="height: 34px; max-width: 220px" aria-label="Field for {{m.col}}" value="{{m.val}}" onChange="{{m.on}}"><option value="sn">{{c1}}</option><option value="imei">{{c2}}</option><option value="mac">{{c3}}</option><option value="ignore">Ignore column</option></select></td></tr>
 </sc-for>
 </tbody>
 </table>
@@ -463,6 +482,31 @@ h1,h2,h3,h4,p{margin:0}
 </main>
 </div>
 </div>
+<sc-if value="{{shell.menuOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 70; display: flex">
+<nav aria-label="Mobile navigation" style="width: min(300px, 85vw); height: 100%; overflow-y: auto; background: #0C1424; padding: 16px 12px; display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 8px 14px; color: #fff"><span style="font-weight: 600">Moonrock R&amp;D</span><button onClick="{{shell.closeAll}}" aria-label="Close menu" style="width: 40px; height: 40px; border: 0; border-radius: 8px; background: #1C2A42; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<a href="Main.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Dashboard</a>
+<a href="Search.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Search</a>
+<a href="Inventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">All inventory</a>
+<a href="Products.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Products</a>
+<a href="Batches.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Batches</a>
+<a href="ReceiveInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Receive stock</a>
+<a href="DevicePrep.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Device preparation</a>
+<a href="SimInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">SIM cards</a>
+<a href="Facilities.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Facilities</a>
+<a href="PocManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">POC projects</a>
+<a href="ContractManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Contracts</a>
+<a href="Deployments.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Deployments</a>
+<a href="CreateDeployment.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">New deployment</a>
+<a href="Reports.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Reports</a>
+<a href="AuditLog.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Audit log</a>
+<a href="Users.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Users &amp; roles</a>
+<a href="Settings.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Settings</a>
+</nav>
+<button aria-label="Close menu" onClick="{{shell.closeAll}}" style="flex: 1; border: 0; padding: 0; background: rgba(14,23,38,.5); cursor: default"></button>
+</div>
+</sc-if>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1500}}'>
 class Component extends DCLogic {
@@ -494,7 +538,7 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
-    try { const keep = Object.assign({}, this.state); ["done"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:ReceiveInventory', JSON.stringify(keep)); } catch (e) {}
+    try { const keep = Object.assign({}, this.state); delete keep._shell; ["done", "csvFile", "csvErr"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:ReceiveInventory', JSON.stringify(keep)); } catch (e) {}
   }
   constructor(props) {
     super(props);
@@ -511,6 +555,27 @@ class Component extends DCLogic {
       bulk: lines.join('\n'), csv: true, map: { serial_number: 'sn', imei: 'imei', mac_address: 'mac', carton: 'ignore' }
     };
   }
+  sizeLabel(n) { if (typeof n !== 'number') return String(n || ''); return n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; }
+  // Supplier CSV: parsed in the browser into rows of identifiers; only the parsed values are kept, in memory, for this receipt.
+  readCsv(file) {
+    if (!file) return;
+    const done = text => {
+      const lines = String(text || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      if (lines.length < 2) { this.setState({ csvErr: file.name + ' has no data rows. The first row must be column headers.' }); return; }
+      const split = l => l.split(/[,;\t]/).map(x => x.trim().replace(/^"|"$/g, ''));
+      const head = split(lines[0]).map((h, i) => h || 'column_' + (i + 1));
+      const rows = lines.slice(1, 5001).map(split);
+      const guess = h => /serial|^s\/?n$|^sn$|iccid/i.test(h) ? 'sn' : /imei|eui|msisdn/i.test(h) ? 'imei' : /mac/i.test(h) ? 'mac' : 'ignore';
+      const map = {}; let hasSn = false;
+      head.forEach(h => { let g = guess(h); if (g === 'sn') { if (hasSn) g = 'ignore'; hasSn = true; } map[h] = g; });
+      if (!hasSn && head.length) map[head[0]] = 'sn';
+      this.setState({ csv: 'file', csvFile: { name: String(file.name || 'import.csv'), size: +file.size || 0, head, rows }, csvMap: map, csvErr: '' });
+    };
+    try {
+      if (file.text) { file.text().then(done, () => this.setState({ csvErr: 'Could not read ' + file.name + '.' })); return; }
+      const r = new FileReader(); r.onload = () => done(r.result); r.onerror = () => this.setState({ csvErr: 'Could not read ' + file.name + '.' }); r.readAsText(file);
+    } catch (e) { this.setState({ csvErr: 'Could not read ' + (file.name || 'the file') + '.' }); }
+  }
   setRow(i, k, v) {
     const rows = this.state.rows.slice();
     const r = Object.assign({}, rows[i]);
@@ -518,7 +583,32 @@ class Component extends DCLogic {
     rows[i] = r;
     this.setState({ rows });
   }
-  renderVals() {
+  // Shared shell: notifications bell (fed by the shared store) and the mobile navigation drawer.
+  shellVals() {
+    const S = this.state, st = this.readStore();
+    const seen = (st.ui && st.ui.seenAt) || 0;
+    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Stage changed': 'moved the stage of', 'POC decision': 'recorded a POC decision for', 'Contract ended': 'ended the contract for', 'Issue reported': 'reported an issue on', 'Reserved': 'reserved', 'Labels printed': 'printed labels for', 'File attached': 'attached a file to', 'File removed': 'removed a file from', 'User updated': 'updated user', 'Product edited': 'edited', 'Invite resent': 'resent the invite to', 'Document uploaded': 'uploaded a document to', 'Document removed': 'removed a document from', 'Contact added': 'added a contact to', 'Contact removed': 'removed a contact from', 'Contract updated': 'updated the contract for', 'Batch updated': 'updated batch', 'Batch archived': 'archived batch', 'Batch restored': 'restored batch', 'Facility updated': 'updated facility', 'Facility restored': 'restored facility', 'Report exported': 'exported', 'Record corrected': 'corrected', 'Note added': 'added a note to', 'Settings changed': 'updated settings ·', 'User invited': 'invited', 'Role changed': 'changed the role of', 'Verified on site': 'verified on site', 'Deployment cancelled': 'cancelled', 'Deployment updated': 'updated deployment' };
+    const fromStore = st.events.slice(0, 8).map(e => ({ text: (e.who || 'Chetan') + ' ' + (VERB[e.action] || String(e.action || '').toLowerCase()) + ' ' + e.item + (e.to && e.to !== '—' && e.action !== 'Imported' ? ' → ' + e.to : ''), when: e.when, href: e.itemHref || 'AuditLog.dc.html', unread: (e.at || 0) > seen }));
+    const alerts = [
+      { text: '14 Teltonika RUT956 units are waiting for preparation', when: 'Batch TEL-2026-004', href: 'DevicePrep.dc.html', alert: true },
+      { text: 'Cat6 patch cable 1 m is below its minimum level', when: 'Low stock · 18 of 25', href: 'InventoryItem.dc.html', alert: true },
+      { text: 'Qatar Foundation: 2 CO₂ sensors scheduled to install on 08 Oct', when: 'Upcoming deployment', href: 'Deployments.dc.html', alert: true }
+    ].map(a => Object.assign(a, { unread: !seen }));
+    const all = fromStore.concat(alerts);
+    const unread = all.filter(n => n.unread).length;
+    return {
+      bellOpen: S._shell === 'bell', bellExp: S._shell === 'bell' ? 'true' : 'false', bellZ: S._shell === 'bell' ? '40' : 'auto',
+      menuOpen: S._shell === 'menu', menuExp: S._shell === 'menu' ? 'true' : 'false',
+      unread: unread > 9 ? '9+' : String(unread), hasUnread: unread > 0,
+      notes: all.map(n => ({ text: n.text, when: n.when, href: n.href, bg: n.unread ? '#F4FBF8' : '#fff', dot: n.alert ? '#E08A00' : (n.unread ? '#0B7A6B' : '#D5DBE3') })),
+      toggleBell: () => this.setState({ _shell: this.state._shell === 'bell' ? '' : 'bell' }),
+      toggleMenu: () => this.setState({ _shell: this.state._shell === 'menu' ? '' : 'menu' }),
+      closeAll: () => this.setState({ _shell: '' }),
+      markRead: () => this.writeStore(s => { s.ui = Object.assign({}, s.ui || {}, { seenAt: Date.now() }); })
+    };
+  }
+  renderVals() { return Object.assign(this._screenVals(), { shell: this.shellVals() }); }
+  _screenVals() {
     const S = this.state;
     const ST0 = this.readStore();
     const storeHas = {};
@@ -557,11 +647,16 @@ class Component extends DCLogic {
     const bSn = bLines.map(l => l.split(/[\t,;]+/)[0].trim());
     const bSeen = {}; let bDup = 0;
     bSn.forEach(s => { if (bSeen[s] || storeHas[s]) bDup++; bSeen[s] = true; });
-    const mapVals = Object.keys(S.map).map(k => S.map[k]);
+    const realCsv = S.csv === 'file' && S.csvFile ? S.csvFile : null;
+    const curMap = realCsv ? (S.csvMap || {}) : S.map;
+    const mapVals = Object.keys(curMap).map(k => curMap[k]);
     const csvHasSn = mapVals.indexOf('sn') >= 0;
+    const colOf = f => realCsv ? realCsv.head.findIndex(h => curMap[h] === f) : -1;
+    const realCsvIds = realCsv && csvHasSn ? realCsv.rows.map(r => [colOf('sn'), colOf('imei'), colOf('mac')].map(i => i > -1 ? (r[i] || '').trim() : '')).filter(x => x[0]) : [];
     let entered = 0, dup = 0;
     if (S.mode === 'manual') { entered = manualEntered; dup = manualDup; }
     else if (S.mode === 'bulk') { entered = bSn.length; dup = bDup; }
+    else if (realCsv) { const cs = {}; realCsvIds.forEach(x => { if (cs[x[0]] || storeHas[x[0]]) dup++; cs[x[0]] = true; }); entered = realCsvIds.length; }
     else { entered = S.csv && csvHasSn ? 20 : 0; dup = 0; if (entered) for (let i = 0; i < 20; i++) { if (storeHas['11086753' + (20 + i)]) dup++; } }
     if (isQty) { entered = qty; dup = 0; }
     const visible = S.allRows ? S.rows : S.rows.slice(0, 14);
@@ -579,7 +674,8 @@ class Component extends DCLogic {
     const bulkOk = bDup === 0 && bSn.length === qty;
     const bulkMsg = bSn.length + ' serial' + (bSn.length === 1 ? '' : 's') + ' detected · ' + bDup + ' duplicate' + (bDup === 1 ? '' : 's') + (bSn.length === qty ? ' · matches quantity' : ' · quantity is ' + qty);
     const mapsDef = [['serial_number', '1108675320'], ['imei', '860548043912951'], ['mac_address', '00:1E:42:3A:7C:41'], ['carton', 'CTN-01']];
-    const maps = mapsDef.map(([col, sample]) => ({ col, sample, val: S.map[col], on: e => { const m = Object.assign({}, S.map); m[col] = e.target.value; this.setState({ map: m }); } }));
+    const maps = realCsv ? realCsv.head.map((col, i) => ({ col, sample: (realCsv.rows[0] || [])[i] || '—', val: curMap[col] || 'ignore', on: e => { const m = Object.assign({}, this.state.csvMap || {}); m[col] = e.target.value; this.setState({ csvMap: m }); } }))
+      : mapsDef.map(([col, sample]) => ({ col, sample, val: S.map[col], on: e => { const m = Object.assign({}, S.map); m[col] = e.target.value; this.setState({ map: m }); } }));
     const missing = Math.max(0, qty - entered);
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     const dp = S.date.split('-');
@@ -607,7 +703,7 @@ class Component extends DCLogic {
       { label: 'Unit identities', v: isQty ? 'Not needed' : entered + ' of ' + qty + (dup ? ' · fix 1' : ''), bg: unitsOk ? '#E1F4EC' : dup ? '#FDEBEA' : '#FFF3DC', fg: unitsOk ? '#0A6648' : dup ? '#A3201F' : '#8A4B00', path: unitsOk ? okP : dotP },
       { label: 'Review and confirm', v: S.done ? 'Done' : 'Pending', bg: S.done ? '#E1F4EC' : '#EEF1F5', fg: S.done ? '#0A6648' : '#5E6B7D', path: S.done ? okP : dotP }
     ];
-    const docs = S.docs.map((d, i) => ({ name: d.name, meta: d.meta, remove: () => this.setState({ docs: S.docs.filter((x, j) => j !== i) }) }));
+    const docs = S.docs.map((d, i) => ({ name: d.name, ext: (String(d.name).split('.').pop() || 'FILE').slice(0, 4).toUpperCase(), meta: d.meta || (this.sizeLabel(d.size) + (d.type ? ' · ' + d.type : '') + ' · added by ' + (d.by || 'Chetan') + ', ' + (d.when || '')), remove: () => this.setState({ docs: S.docs.filter((x, j) => j !== i) }) }));
     // Batches received through this screen (shared store) come first.
     const storeBatches = [];
     const byBatch = {};
@@ -636,8 +732,11 @@ class Component extends DCLogic {
       rows, entered, pctW: Math.min(100, qty ? entered / qty * 100 : 0) + '%', hasDup: dup > 0, dupCount: dup,
       moreRows: !S.allRows, hiddenRows: 6, showAllRows: () => this.setState({ allRows: true }),
       bulk: S.bulk, bulkMsg, bulkNoteCls: 'note ' + (bulkOk ? 'n-ok' : 'n-warn'),
-      csvLoaded: S.csv, csvEmpty: !S.csv, maps,
-      csvMsg: csvHasSn ? '20 rows ready · Serial number, IMEI and MAC mapped · "carton" ignored · no duplicates found' : 'Map one column to Serial number to continue',
+      csvLoaded: S.csv === true || !!realCsv, csvEmpty: !(S.csv === true || !!realCsv), maps,
+      csvName: realCsv ? realCsv.name : 'AlNoor_RUT956_shipment_88341.csv (sample)', csvInfo: realCsv ? realCsv.rows.length + ' rows · ' + realCsv.head.length + ' columns · ' + this.sizeLabel(realCsv.size) : '20 rows · 4 columns · 2 KB',
+      hasCsvErr: !!S.csvErr, csvErr: S.csvErr || '',
+      onCsvFile: e => { const t = e && e.target; const f = t && t.files && t.files[0]; if (f) this.readCsv(f); try { t.value = ''; } catch (x) {} },
+      csvMsg: !csvHasSn ? 'Map one column to ' + p.cols[0] + ' to continue' : realCsv ? realCsvIds.length + ' rows with a ' + p.cols[0].toLowerCase() + (dup && S.mode === 'csv' ? ' · ' + dup + ' duplicate' + (dup === 1 ? '' : 's') : ' · no duplicates found') + (realCsvIds.length !== qty ? ' · quantity is ' + qty : ' · matches quantity') : '20 rows ready · Serial number, IMEI and MAC mapped · "carton" ignored · no duplicates found',
       csvNoteCls: 'note ' + (csvHasSn ? 'n-ok' : 'n-err'),
       dateLabel, poInv: (S.po || '—') + ' / ' + (S.inv || '—'),
       unitsLine: isQty ? 'Counted stock' : entered + ' of ' + qty + ' serialised',
@@ -655,7 +754,12 @@ class Component extends DCLogic {
       onInv: e => this.setState({ inv: e.target.value }),
       onNotes: e => this.setState({ notes: e.target.value }),
       onBulk: e => this.setState({ bulk: e.target.value }),
-      addDoc: () => this.setState({ docs: S.docs.concat([S.docs.length ? { name: 'PackingList_88341.pdf', meta: 'Packing list · 92 KB' } : { name: 'INV-AN-88341.pdf', meta: 'Supplier invoice · 188 KB' }]) }),
+      onDocFile: e => {
+        const t = e && e.target; const list = t && t.files ? Array.prototype.slice.call(t.files) : [];
+        if (!list.length) return;
+        this.setState({ docs: this.state.docs.concat(list.map(f => ({ name: String(f.name || 'document'), size: +f.size || 0, type: String(f.type || ''), by: 'Chetan', when: this.nowLabel() }))) });
+        try { t.value = ''; } catch (x) {}
+      },
       applyBulk: () => {
         const nr = [];
         for (let i = 0; i < Math.max(qty, bLines.length); i++) {
@@ -664,13 +768,15 @@ class Component extends DCLogic {
         }
         this.setState({ rows: nr, mode: 'manual', allRows: true });
       },
-      loadCsv: () => this.setState({ csv: true }),
-      clearCsv: () => this.setState({ csv: false }),
+      loadCsv: () => this.setState({ csv: true, csvFile: null, csvErr: '' }),
+      clearCsv: () => this.setState({ csv: false, csvFile: null, csvMap: null, csvErr: '' }),
       fixDup: () => {
         const seen = {};
         const nr = S.rows.map(r => { const k = r.sn.trim(); if (k && (seen[k] || storeHas[k])) return { sn: '', imei: '', mac: '' }; if (k) seen[k] = true; return r; });
         const nb = S.bulk.split('\n').filter((l, i, arr) => { const k = l.split(/[\t,;]+/)[0].trim(); return !k || (!storeHas[k] && arr.findIndex(x => x.split(/[\t,;]+/)[0].trim() === k) === i); }).join('\n');
-        this.setState({ rows: nr, bulk: nb });
+        const upd = { rows: nr, bulk: nb };
+        if (realCsv) { const si = colOf('sn'), cs = {}; upd.csvFile = Object.assign({}, realCsv, { rows: realCsv.rows.filter(r => { const k = (r[si] || '').trim(); if (!k) return true; if (cs[k] || storeHas[k]) return false; cs[k] = true; return true; }) }); }
+        this.setState(upd);
       },
       toStep1: () => this.setState({ step: 1 }),
       toStep2: () => this.setState({ step: isQty ? 3 : 2 }),
@@ -683,6 +789,7 @@ class Component extends DCLogic {
         if (needUnits) {
           if (S.mode === 'manual') ids = S.rows.map(r => [r.sn, r.imei, r.mac]);
           else if (S.mode === 'bulk') ids = bLines.map(l => l.split(/[\t,;]+/));
+          else if (realCsv) ids = realCsvIds.slice();
           else if (S.csv && csvHasSn) { for (let i = 0; i < 20; i++) ids.push(['11086753' + (20 + i), '8605480439129' + (51 + i * 2), '00:1E:42:3A:7C:' + (65 + i).toString(16).toUpperCase()]); }
           ids = ids.map(x => x.map(y => (y || '').trim())).filter(x => x[0]).slice(0, qty);
         }
@@ -703,6 +810,12 @@ class Component extends DCLogic {
             s.added.push(u);
           });
           this.logEvent(s, { action: 'Received', item: 'Batch ' + batch + ' · ' + qty + ' × ' + p.name, itemHref: 'BatchDetail.dc.html', from: S.sup, to: S.loc, note: (needUnits ? ids.length + ' serialised · ' : 'Counted stock · ') + (S.po || 'no PO') + (S.inv ? ' · ' + S.inv : '') });
+          // Batch record: PO / invoice / notes and document metadata (name, size, type) — never file contents.
+          s.batches = s.batches || {};
+          const prevB = s.batches[batch] || {};
+          const newDocs = S.docs.filter(d => typeof d.size === 'number').map(d => ({ name: d.name, size: d.size, type: d.type || '', by: d.by || 'Chetan', when: d.when || this.nowLabel() }));
+          s.batches[batch] = Object.assign({}, prevB, { product: p.name, sup: S.sup, qty, received: dateLabel, loc: S.loc, po: S.po || '', inv: S.inv || '', notes: S.notes || '', docs: (prevB.docs || []).concat(newDocs) });
+          newDocs.forEach(d => this.logEvent(s, { action: 'Document uploaded', item: 'Batch ' + batch, itemHref: 'BatchDetail.dc.html', from: '—', to: d.name, note: this.sizeLabel(d.size) + (d.type ? ' · ' + d.type : '') }));
         });
         this.setState({ done: true, step: 1, batch, batchTyped: false });
       },

@@ -136,7 +136,7 @@ h1,h2,h3,h4,p{margin:0}
 <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
 <div class="mtop" style="align-items: center; justify-content: space-between; padding: 12px 16px; background: #0C1424; color: #fff">
 <span style="font-weight: 600">Moonrock R&amp;D</span>
-<button class="btn sm" aria-label="Open menu" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
+<button class="btn sm" aria-label="Open menu" aria-expanded="{{shell.menuExp}}" onClick="{{shell.toggleMenu}}" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
 </div>
 <header class="top">
 <a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
@@ -144,7 +144,24 @@ h1,h2,h3,h4,p{margin:0}
 <span class="b s-prep" title="All records shown are sample data">Sample data</span>
 <a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
 <a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
-<button class="btn ic" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg></button>
+<div style="position: relative; z-index: {{shell.bellZ}}">
+<button class="btn ic" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="{{shell.bellExp}}" onClick="{{shell.toggleBell}}" style="position: relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg><sc-if value="{{shell.hasUnread}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #DC3B3A; color: #fff; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #fff">{{shell.unread}}</span></sc-if></button>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="Notifications" style="position: absolute; right: 0; top: calc(100% + 8px); z-index: 41; width: 360px; max-width: calc(100vw - 32px); background: #fff; border: 1px solid #DCE1E8; border-radius: 12px; box-shadow: 0 16px 40px rgba(14,23,38,.18); overflow: hidden; text-align: left">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #EEF1F4"><span style="font-weight: 600; font-size: 14px; color: #0E1726">Notifications</span><button onClick="{{shell.markRead}}" style="border: 0; background: none; padding: 4px; font: inherit; font-size: 12.5px; color: #0B7A6B; cursor: pointer">Mark all as read</button></div>
+<div style="max-height: 380px; overflow-y: auto">
+<sc-for list="{{shell.notes}}" as="n" hint-placeholder-count="4">
+<a href="{{n.href}}" style="display: flex; gap: 10px; padding: 11px 14px; border-bottom: 1px solid #F1F4F7; color: #0E1726; background: {{n.bg}}">
+<span style="width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: 0 0 8px; background: {{n.dot}}"></span>
+<span style="flex: 1; min-width: 0; font-size: 13px; line-height: 1.4"><span style="display: block">{{n.text}}</span><span style="display: block; font-size: 12px; color: #5E6B7D">{{n.when}}</span></span>
+</a>
+</sc-for>
+</div>
+<a href="AuditLog.dc.html" style="display: block; padding: 10px 14px; font-size: 13px; font-weight: 500; text-align: center; border-top: 1px solid #EEF1F4">Open audit log</a>
+</div>
+</sc-if>
+</div>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}"><button aria-label="Close notifications" onClick="{{shell.closeAll}}" style="position: fixed; inset: 0; z-index: 30; background: transparent; border: 0; padding: 0; cursor: default"></button></sc-if>
 </header>
 
 <main class="main">
@@ -152,26 +169,26 @@ h1,h2,h3,h4,p{margin:0}
 <nav aria-label="Breadcrumb" class="muted" style="font-size: 13px; display: flex; gap: 6px; flex-wrap: wrap"><a href="Main.dc.html">Dashboard</a><span aria-hidden="true">/</span><a href="Products.dc.html">Products</a><span aria-hidden="true">/</span><a href="Products.dc.html">Teltonika Devices</a><span aria-hidden="true">/</span><span style="color: #0E1726">Teltonika RUT956</span></nav>
 
 <section class="card" style="padding: 20px; display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start">
-<div style="width: 132px; height: 132px; flex: 0 0 132px; border-radius: 12px; background: #E9EEF2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: #3B4758">
+<label title="{{photoTitle}}" style="position: relative; cursor: pointer; width: 132px; height: 132px; flex: 0 0 132px; border-radius: 12px; background: #E9EEF2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: #3B4758; text-align: center; padding: 6px"><input type="file" accept="image/*" style="position: absolute; width: 1px; height: 1px; opacity: 0" onChange="{{onPhoto}}">
 <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="18" height="7" rx="2"></rect><path d="M7 16.5h.01M11 16.5h.01"></path><path d="M17 13V5"></path><path d="M14 7.5a4 4 0 0 1 6 0"></path></svg>
-<span style="font-size: 11.5px; color: #5E6B7D">Product photo · Upload</span>
-</div>
+<span style="font-size: 11.5px; color: #5E6B7D; word-break: break-all">{{photoLabel}}</span>
+</label>
 <div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
 <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap">
 <div style="display: flex; flex-direction: column; gap: 4px">
 <h1 style="font-size: 26px; font-weight: 600; letter-spacing: -.02em">Teltonika RUT956</h1>
-<p class="muted" style="font-size: 14px">Teltonika · <span class="mono">RUT956</span> · industrial 4G LTE router, the BMS gateway for every Exergio site</p>
+<p class="muted" style="font-size: 14px">{{hBrand}} · <span class="mono">{{hModel}}</span> · {{hDesc}}</p>
 </div>
 <div style="display: flex; gap: 10px; flex-wrap: wrap">
-<button class="btn" onClick="{{goSettings}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg>Edit</button>
+<button class="btn" onClick="{{openEdit}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg>Edit</button>
 <sc-if value="{{notArch}}" hint-placeholder-val="{{ true }}"><button class="btn" onClick="{{openArchive}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1"></rect><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"></path><path d="M10 13h4"></path></svg>Archive</button></sc-if><sc-if value="{{isArch}}" hint-placeholder-val="{{ false }}"><button class="btn" onClick="{{restore}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path></svg>Restore</button></sc-if>
 <a class="btn p" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive stock</a>
 </div>
 </div>
 <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center">
-<span class="pill">Teltonika Devices</span>
+<span class="pill">{{catLabel}}</span>
 <span class="pill ser"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5h2M18 5h2v2M20 17v2h-2M6 19H4v-2"></path><path d="M8 9v6M11 9v6M14 9v6M17 9v6"></path></svg>Serialised</span>
-<span class="pill cfg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg>Requires configuration</span>
+<sc-if value="{{cfgOn}}" hint-placeholder-val="{{ true }}"><span class="pill cfg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg>Requires configuration</span></sc-if><sc-if value="{{cfgOff}}" hint-placeholder-val="{{ false }}"><span class="pill">No configuration needed</span></sc-if>
 <span class="b {{stCls}}">{{stLabel}}</span>
 <span class="lock" style="margin-left: 4px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Edit &amp; archive: Admin only</span>
 </div>
@@ -243,9 +260,7 @@ h1,h2,h3,h4,p{margin:0}
 <div class="card" style="display: flex; flex-direction: column">
 <div class="ch"><h2>Specifications</h2></div>
 <dl style="margin: 0; padding: 0 18px 14px; display: grid; grid-template-columns: 110px 1fr; gap: 8px 12px; font-size: 13px">
-<dt class="muted">Cellular</dt><dd style="margin: 0">LTE Cat 4</dd>
-<dt class="muted">SIM</dt><dd style="margin: 0">Dual SIM</dd>
-<dt class="muted">Positioning</dt><dd style="margin: 0">GNSS</dd>
+<sc-for list="{{specs}}" as="sp" hint-placeholder-count="3"><dt class="muted">{{sp.k}}</dt><dd style="margin: 0">{{sp.v}}</dd></sc-for>
 </dl>
 <div style="border-top: 1px solid #EEF1F4; padding: 14px 18px 18px; display: flex; flex-direction: column; gap: 10px">
 <span class="ov">Tracked identity fields</span>
@@ -291,7 +306,7 @@ h1,h2,h3,h4,p{margin:0}
 <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 14px 18px">
 <sc-for list="{{unitChips}}" as="c" hint-placeholder-count="6"><button class="{{c.cls}}" aria-pressed="{{c.pressed}}" onClick="{{c.pick}}">{{c.label}}<strong>{{c.n}}</strong></button></sc-for>
 <span style="flex: 1"></span>
-<button class="btn sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"></path></svg>Export units</button>
+<button class="btn sm" onClick="{{openExport}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"></path></svg>Export units</button>
 </div>
 <div class="tw" style="border-top: 1px solid #E3E7EC">
 <table class="tbl">
@@ -379,8 +394,8 @@ h1,h2,h3,h4,p{margin:0}
 <div class="card" style="padding: 18px 20px; display: flex; flex-direction: column; gap: 12px">
 <h2 style="font-size: 15px; font-weight: 600">Minimum stock</h2>
 <div style="display: flex; gap: 14px; flex-wrap: wrap">
-<div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px"><label for="min-ready" style="font-weight: 500">Ready for deployment</label><input id="min-ready" class="in" type="number" value="{{minReady}}" onChange="{{onMin}}" style="width: 140px"></div>
-<div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px"><label for="min-total" style="font-weight: 500">Total in office</label><input id="min-total" class="in" type="number" value="10" style="width: 140px"></div>
+<div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px"><label for="min-ready" style="font-weight: 500">Ready for deployment</label><input id="min-ready" class="in" type="number" min="0" value="{{minReady}}" onChange="{{onMin}}" style="width: 140px"></div>
+<div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px"><label for="min-total" style="font-weight: 500">Total in office</label><input id="min-total" class="in" type="number" min="0" value="{{minTotal}}" onChange="{{onMinTotal}}" style="width: 140px"></div>
 </div>
 <span class="muted" style="font-size: 12px">Alerts go to Admins and Operations when stock drops below either level.</span>
 </div>
@@ -388,7 +403,18 @@ h1,h2,h3,h4,p{margin:0}
 
 <div style="flex: 1.4 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
 <div class="card">
-<div class="ch"><div><h2>Required fields per unit</h2><p class="muted" style="font-size: 12.5px">Captured at receiving or during preparation</p></div><button class="btn sm">Add field</button></div>
+<div class="ch"><div><h2>Required fields per unit</h2><p class="muted" style="font-size: 12.5px">Captured at receiving or during preparation</p></div><button class="btn sm" onClick="{{afStart}}">Add field</button></div>
+<sc-if value="{{afOpen}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; padding: 0 18px 14px">
+<div style="display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; flex: 1 1 160px"><label for="af-name" style="font-weight: 500">Field name</label><input id="af-name" class="in" value="{{afName}}" onChange="{{onAfName}}" placeholder="e.g. Asset tag" style="height: 36px"></div>
+<div style="display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; flex: 0 1 150px"><label for="af-type" style="font-weight: 500">Type</label><select id="af-type" class="in" value="{{afType}}" onChange="{{onAfType}}" style="height: 36px"><option value="Text">Text</option><option value="Number">Number</option><option value="MAC address">MAC address</option><option value="IP address">IP address</option><option value="Date">Date</option><option value="Select">Select</option></select></div>
+<div style="display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; flex: 0 1 140px"><label for="af-when" style="font-weight: 500">Captured at</label><select id="af-when" class="in" value="{{afWhen}}" onChange="{{onAfWhen}}" style="height: 36px"><option value="Receiving">Receiving</option><option value="Preparation">Preparation</option><option value="Labelling">Labelling</option><option value="Deployment">Deployment</option></select></div>
+<button class="{{afReqCls}}" onClick="{{toggleAfReq}}" role="checkbox" aria-checked="{{afReqAria}}" style="height: 36px">Required</button>
+<button class="btn sm" onClick="{{afCancel}}" style="height: 36px">Cancel</button><button class="btn sm p" onClick="{{afSave}}" style="height: 36px">Add</button>
+<sc-if value="{{afHasErr}}" hint-placeholder-val="{{ false }}"><span style="flex: 1 1 100%; font-size: 12.5px; color: #A3201F">{{afErr}}</span></sc-if>
+</div>
+</sc-if>
+
 <div class="tw">
 <table class="tbl">
 <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Unique</th><th>Captured at</th></tr></thead>
@@ -401,7 +427,16 @@ h1,h2,h3,h4,p{margin:0}
 </div>
 </div>
 <div class="card" style="padding: 18px 20px; display: flex; flex-direction: column; gap: 12px">
-<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap"><div><h2 style="font-size: 15px; font-weight: 600">Preparation checklist template</h2><p class="muted" style="font-size: 12.5px">Every RUT956 goes through these steps on the prep bench</p></div><button class="btn sm">Add step</button></div>
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap"><div><h2 style="font-size: 15px; font-weight: 600">Preparation checklist template</h2><p class="muted" style="font-size: 12.5px">Every RUT956 goes through these steps on the prep bench</p></div><button class="btn sm" onClick="{{asStart}}">Add step</button></div>
+<sc-if value="{{asOpen}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; padding: 10px 12px; border: 1px dashed #B9C2CE; border-radius: 10px">
+<div style="display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; flex: 1 1 160px"><label for="as-title" style="font-weight: 500">Step</label><input id="as-title" class="in" value="{{asTitle}}" onChange="{{onAsTitle}}" placeholder="e.g. Photograph serial label" style="height: 36px"></div>
+<div style="display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; flex: 2 1 220px"><label for="as-desc" style="font-weight: 500">Instructions</label><input id="as-desc" class="in" value="{{asDesc}}" onChange="{{onAsDesc}}" style="height: 36px"></div>
+<button class="btn sm" onClick="{{asCancel}}" style="height: 36px">Cancel</button><button class="btn sm p" onClick="{{asSave}}" style="height: 36px">Add step</button>
+<sc-if value="{{asHasErr}}" hint-placeholder-val="{{ false }}"><span style="flex: 1 1 100%; font-size: 12.5px; color: #A3201F">{{asErr}}</span></sc-if>
+</div>
+</sc-if>
+
 <sc-for list="{{steps}}" as="s" hint-placeholder-count="6">
 <div class="step">
 <span class="num">{{s.n}}</span>
@@ -410,7 +445,7 @@ h1,h2,h3,h4,p{margin:0}
 </div>
 </sc-for>
 </div>
-<div style="display: flex; justify-content: flex-end; gap: 10px"><button class="btn" onClick="{{goOverview}}">Cancel</button><button class="btn p" onClick="{{saveSettings}}">Save settings</button></div>
+<div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; flex-wrap: wrap"><span class="muted" style="font-size: 12px; flex: 1 1 200px">Configuration and minimum levels are saved with Save settings. Fields and steps are added immediately.</span><button class="btn" onClick="{{goOverview}}">Cancel</button><button class="btn p" onClick="{{saveSettings}}">Save settings</button></div>
 </div>
 </section>
 </div>
@@ -419,6 +454,50 @@ h1,h2,h3,h4,p{margin:0}
 </div>
 </div>
 
+<!-- Edit product -->
+<sc-if value="{{edOpen}}" hint-placeholder-val="{{ false }}">
+<div class="ovl">
+<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="ed-t" style="max-width: 560px; max-height: calc(100vh - 32px); overflow-y: auto">
+<div style="padding: 20px 22px 6px"><h2 id="ed-t" style="font-size: 17px; font-weight: 600">Edit Teltonika RUT956</h2><p class="muted" style="font-size: 13px; margin-top: 4px">Catalogue details shown on this page and in Products. The name links units and history, so it can't be renamed here.</p></div>
+<div style="padding: 12px 22px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px"><label for="ed-brand" style="font-weight: 500">Brand</label><input id="ed-brand" class="in" value="{{ed.brand}}" onChange="{{onEdBrand}}"></div>
+<div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px"><label for="ed-model" style="font-weight: 500">Model</label><input id="ed-model" class="in" value="{{ed.model}}" onChange="{{onEdModel}}"></div>
+<div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px"><label for="ed-cat" style="font-weight: 500">Category</label><select id="ed-cat" class="in" value="{{ed.cat}}" onChange="{{onEdCat}}"><sc-for list="{{catOpts}}" as="o" hint-placeholder-count="8"><option value="{{o.v}}">{{o.l}}</option></sc-for></select></div>
+</div>
+<div style="padding: 0 22px 12px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px"><label for="ed-desc" style="font-weight: 500">Description</label><input id="ed-desc" class="in" value="{{ed.desc}}" onChange="{{onEdDesc}}"></div>
+<div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px"><label for="ed-specs" style="font-weight: 500">Specifications <span class="muted" style="font-weight: 400">· one per line, “Label: value”</span></label><textarea id="ed-specs" class="in" value="{{ed.specs}}" onChange="{{onEdSpecs}}" style="height: 110px; padding: 10px 12px; resize: vertical"></textarea></div>
+<sc-if value="{{edHasErr}}" hint-placeholder-val="{{ false }}"><p role="alert" style="font-size: 12.5px; color: #A3201F; background: #FDEBEA; padding: 8px 10px; border-radius: 8px">{{edErr}}</p></sc-if>
+</div>
+<div style="display: flex; justify-content: flex-end; gap: 10px; padding: 14px 22px 20px; border-top: 1px solid #EEF1F4"><button class="btn" onClick="{{edClose}}">Cancel</button><button class="btn p" onClick="{{edSave}}">Save changes</button></div>
+</div>
+</div>
+</sc-if>
+<!-- Export CSV -->
+<sc-if value="{{exOpen}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{exClose}}" style="position: fixed; inset: 0; background: rgba(14,23,38,.45); z-index: 50"></div>
+<div role="dialog" aria-modal="true" aria-label="{{exTitle}}" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(640px, calc(100% - 32px)); max-height: calc(100vh - 32px); overflow-y: auto; background: #fff; border-radius: 14px; z-index: 51; box-shadow: 0 20px 48px rgba(14,23,38,.25); display: flex; flex-direction: column">
+<div style="padding: 20px 22px 6px; display: flex; justify-content: space-between; gap: 12px; align-items: flex-start">
+<div><h2 style="font-size: 17px; font-weight: 600">{{exTitle}}</h2><p style="font-size: 13px; margin-top: 4px; color: #5E6B7D">{{exDesc}}</p></div>
+<button onClick="{{exClose}}" aria-label="Close export" style="width: 32px; height: 32px; border: 1px solid #D5DBE3; border-radius: 8px; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #1B2638; flex: 0 0 32px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<div style="padding: 10px 22px; display: flex; flex-direction: column; gap: 8px">
+<label for="ex-csv" style="display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: 12.5px; font-weight: 500; color: #3B4758"><span>Preview · <span style="font-family: 'Geist Mono', ui-monospace, monospace">{{exFile}}</span></span><span style="font-weight: 400; color: #5E6B7D">{{exMeta}}</span></label>
+<textarea id="ex-csv" readonly="readonly" value="{{exCsv}}" style="width: 100%; min-height: 200px; border: 1px solid #D5DBE3; border-radius: 8px; padding: 9px 11px; font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12px; color: #0E1726; background: #F8FAFB; resize: vertical"></textarea>
+<sc-if value="{{exHasErr}}" hint-placeholder-val="{{ false }}"><p role="alert" style="font-size: 12.5px; color: #8A4B00; background: #FFF3DC; padding: 8px 10px; border-radius: 8px">{{exErr}}</p></sc-if>
+</div>
+<div style="padding: 14px 22px; border-top: 1px solid #E3E7EC; display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap">
+<button class="btn" onClick="{{exClose}}">Close</button>
+<button class="btn p" onClick="{{exSave}}">Download CSV</button>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{hasMsg}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 60; display: flex; align-items: center; gap: 12px; padding: 12px 14px 12px 16px; border-radius: 12px; background: #0E1726; color: #fff; font-size: 13.5px; box-shadow: 0 12px 32px rgba(14,23,38,.3); max-width: calc(100% - 32px)">
+<span>{{msg}}</span>
+<button onClick="{{dismissMsg}}" aria-label="Dismiss" style="border: 0; background: transparent; color: #B3BDCB; cursor: pointer; padding: 4px; display: flex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-if>
 <sc-if value="{{showArchive}}" hint-placeholder-val="{{ false }}">
 <div class="ovl">
 <div class="dlg" role="alertdialog" aria-modal="true" aria-labelledby="ar-t">
@@ -433,6 +512,31 @@ h1,h2,h3,h4,p{margin:0}
 <button class="btn p" onClick="{{confirmArchive}}">Archive product</button>
 </div>
 </div>
+</div>
+</sc-if>
+<sc-if value="{{shell.menuOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 70; display: flex">
+<nav aria-label="Mobile navigation" style="width: min(300px, 85vw); height: 100%; overflow-y: auto; background: #0C1424; padding: 16px 12px; display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 8px 14px; color: #fff"><span style="font-weight: 600">Moonrock R&amp;D</span><button onClick="{{shell.closeAll}}" aria-label="Close menu" style="width: 40px; height: 40px; border: 0; border-radius: 8px; background: #1C2A42; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<a href="Main.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Dashboard</a>
+<a href="Search.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Search</a>
+<a href="Inventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">All inventory</a>
+<a href="Products.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Products</a>
+<a href="Batches.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Batches</a>
+<a href="ReceiveInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Receive stock</a>
+<a href="DevicePrep.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Device preparation</a>
+<a href="SimInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">SIM cards</a>
+<a href="Facilities.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Facilities</a>
+<a href="PocManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">POC projects</a>
+<a href="ContractManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Contracts</a>
+<a href="Deployments.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Deployments</a>
+<a href="CreateDeployment.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">New deployment</a>
+<a href="Reports.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Reports</a>
+<a href="AuditLog.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Audit log</a>
+<a href="Users.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Users &amp; roles</a>
+<a href="Settings.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Settings</a>
+</nav>
+<button aria-label="Close menu" onClick="{{shell.closeAll}}" style="flex: 1; border: 0; padding: 0; background: rgba(14,23,38,.5); cursor: default"></button>
 </div>
 </sc-if>
 </x-dc>
@@ -466,14 +570,70 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
-    try { const keep = Object.assign({}, this.state); ["arch", "minReady"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:ProductDetail', JSON.stringify(keep)); } catch (e) {}
+    try { const keep = Object.assign({}, this.state); delete keep._shell; ["arch", "minReady", "ex", "msg", "ed", "af", "as", "cfgDraft", "minTotalDraft"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:ProductDetail', JSON.stringify(keep)); } catch (e) {}
   }
-  constructor(props) { super(props); this.state = { tab: 'overview', uf: 'all', page: 0, arch: false, cfg: true, minDraft: null }; }
-  renderVals() {
+  constructor(props) { super(props); this.state = { tab: 'overview', uf: 'all', page: 0, arch: false, cfgDraft: null, minDraft: null, minTotalDraft: null }; }
+  // Shared shell: notifications bell (fed by the shared store) and the mobile navigation drawer.
+  shellVals() {
+    const S = this.state, st = this.readStore();
+    const seen = (st.ui && st.ui.seenAt) || 0;
+    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Stage changed': 'moved the stage of', 'POC decision': 'recorded a POC decision for', 'Contract ended': 'ended the contract for', 'Issue reported': 'reported an issue on', 'Reserved': 'reserved', 'Labels printed': 'printed labels for', 'File attached': 'attached a file to', 'File removed': 'removed a file from', 'User updated': 'updated user', 'Product edited': 'edited', 'Invite resent': 'resent the invite to', 'Document uploaded': 'uploaded a document to', 'Document removed': 'removed a document from', 'Contact added': 'added a contact to', 'Contact removed': 'removed a contact from', 'Contract updated': 'updated the contract for', 'Batch updated': 'updated batch', 'Batch archived': 'archived batch', 'Batch restored': 'restored batch', 'Facility updated': 'updated facility', 'Facility restored': 'restored facility', 'Report exported': 'exported', 'Record corrected': 'corrected', 'Note added': 'added a note to', 'Settings changed': 'updated settings ·', 'User invited': 'invited', 'Role changed': 'changed the role of', 'Verified on site': 'verified on site', 'Deployment cancelled': 'cancelled', 'Deployment updated': 'updated deployment' };
+    const fromStore = st.events.slice(0, 8).map(e => ({ text: (e.who || 'Chetan') + ' ' + (VERB[e.action] || String(e.action || '').toLowerCase()) + ' ' + e.item + (e.to && e.to !== '—' && e.action !== 'Imported' ? ' → ' + e.to : ''), when: e.when, href: e.itemHref || 'AuditLog.dc.html', unread: (e.at || 0) > seen }));
+    const alerts = [
+      { text: '14 Teltonika RUT956 units are waiting for preparation', when: 'Batch TEL-2026-004', href: 'DevicePrep.dc.html', alert: true },
+      { text: 'Cat6 patch cable 1 m is below its minimum level', when: 'Low stock · 18 of 25', href: 'InventoryItem.dc.html', alert: true },
+      { text: 'Qatar Foundation: 2 CO₂ sensors scheduled to install on 08 Oct', when: 'Upcoming deployment', href: 'Deployments.dc.html', alert: true }
+    ].map(a => Object.assign(a, { unread: !seen }));
+    const all = fromStore.concat(alerts);
+    const unread = all.filter(n => n.unread).length;
+    return {
+      bellOpen: S._shell === 'bell', bellExp: S._shell === 'bell' ? 'true' : 'false', bellZ: S._shell === 'bell' ? '40' : 'auto',
+      menuOpen: S._shell === 'menu', menuExp: S._shell === 'menu' ? 'true' : 'false',
+      unread: unread > 9 ? '9+' : String(unread), hasUnread: unread > 0,
+      notes: all.map(n => ({ text: n.text, when: n.when, href: n.href, bg: n.unread ? '#F4FBF8' : '#fff', dot: n.alert ? '#E08A00' : (n.unread ? '#0B7A6B' : '#D5DBE3') })),
+      toggleBell: () => this.setState({ _shell: this.state._shell === 'bell' ? '' : 'bell' }),
+      toggleMenu: () => this.setState({ _shell: this.state._shell === 'menu' ? '' : 'menu' }),
+      closeAll: () => this.setState({ _shell: '' }),
+      markRead: () => this.writeStore(s => { s.ui = Object.assign({}, s.ui || {}, { seenAt: Date.now() }); })
+    };
+  }
+  // CSV export through the host's downloads capability, with an inline fallback (preview to copy) when it is unavailable.
+  exportVals(spec) {
+    const st = this.state, ex = st.ex || null;
+    const q2 = v => { const t = String(v == null ? '' : v); return /[",\n\r]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
+    const csv = [spec.cols.map(c => q2(c[0])).join(',')].concat(spec.rows.map(r => spec.cols.map(c => q2(c[1](r))).join(','))).join('\n');
+    const meta = spec.rows.length + (spec.rows.length === 1 ? ' row' : ' rows') + ' · ' + spec.cols.length + ' columns';
+    const save = async () => {
+      let dl = null;
+      try { dl = (window.claude && window.claude.use) ? await window.claude.use('downloads') : null; } catch (e) { dl = null; }
+      if (!dl) { this.setState({ ex: Object.assign({}, this.state.ex, { err: 'Downloads aren’t available in this preview. Select the CSV above and copy it into a .csv file instead.' }) }); return; }
+      try {
+        await dl.save({ filename: spec.file, data: csv });
+        this.writeStore(s => { this.logEvent(s, { action: 'Report exported', item: spec.item, itemHref: spec.href, from: '—', to: spec.file, note: meta }); });
+        this.setState(Object.assign({ ex: null }, spec.doneState ? spec.doneState(spec.file + ' saved · ' + meta) : {}));
+      } catch (e) {
+        this.setState({ ex: Object.assign({}, this.state.ex, { err: e && e.code === 'declined' ? 'Download cancelled.' : 'The download didn’t start (' + ((e && e.code) || 'unavailable') + '). Copy the CSV above instead.' }) });
+      }
+    };
+    return {
+      exOpen: !!ex, exTitle: spec.title, exDesc: spec.desc, exFile: spec.file, exMeta: meta, exCsv: csv,
+      exErr: (ex && ex.err) || '', exHasErr: !!(ex && ex.err),
+      openExport: () => this.setState({ ex: { err: '' } }), exClose: () => this.setState({ ex: null }), exSave: save
+    };
+  }
+  renderVals() { return Object.assign(this._screenVals(), { shell: this.shellVals() }); }
+  _screenVals() {
     const S = this.state;
     const NAME = 'Teltonika RUT956';
     const ST0 = this.readStore();
-    const PR = Object.assign({ added: [], archived: {}, restored: {}, min: {} }, ST0.products || {});
+    const PR = Object.assign({ added: [], archived: {}, restored: {}, min: {}, edits: {} }, ST0.products || {});
+    const ED = (PR.edits || {})[NAME] || {};
+    const CATS = [['tel', 'Teltonika Devices'], ['co2', 'CO₂ Sensors'], ['gw', 'LoRaWAN Gateways'], ['sim', 'M2M SIM Cards'], ['net', 'Network Equipment'], ['vfd', 'VFDs'], ['ctrl', 'Controllers & BMS'], ['cab', 'Cables & Accessories']];
+    const catLabelOf = k => (CATS.filter(c => c[0] === k)[0] || CATS[0])[1];
+    const DEF = { brand: 'Teltonika', model: 'RUT956', cat: 'tel', desc: 'industrial 4G LTE router, the BMS gateway for every Exergio site', specs: ['Cellular: LTE Cat 4', 'SIM: Dual SIM', 'Positioning: GNSS'] };
+    const CUR = { brand: ED.brand !== undefined ? ED.brand : DEF.brand, model: ED.model !== undefined ? ED.model : DEF.model, cat: ED.cat || DEF.cat, desc: ED.desc !== undefined ? ED.desc : DEF.desc, specs: ED.specs || DEF.specs };
+    const cfgSaved = ED.cfg !== undefined ? !!ED.cfg : true;
+    const minTotalSaved = ED.minTotal !== undefined ? Number(ED.minTotal) : 10;
     const ST = { unconf: ['Unconfigured', 's-unconf', '#8A96A8'], prep: ['In preparation', 's-prep', '#E08A00'], ready: ['Ready for deployment', 's-ready', '#2F6FE4'], reserved: ['Reserved', 's-reserved', '#7C4DDB'], stock: ['In stock', 's-stock', '#1A8FAD'], deployed: ['Deployed', 's-deployed', '#12A374'], maint: ['Under maintenance', 's-maint', '#E86A1C'], transit: ['In transit', 's-transit', '#5468E0'], returned: ['Returned', 's-returned', '#9C8F7E'], damaged: ['Damaged', 's-damaged', '#DC3B3A'], retired: ['Retired', 's-retired', '#A2A9B4'] };
     const TCLS = { POC: 't-poc', Contract: 't-con', Replacement: 't-rep', Additional: 't-add' };
     const pad = (n, l) => { let s = String(n); while (s.length < l) s = '0' + s; return s; };
@@ -547,7 +707,7 @@ class Component extends DCLogic {
     const facMap = {}; const facOrder = [];
     all.filter(u => u.st === 'deployed').forEach(u => { if (!facMap[u.where]) { facMap[u.where] = { v: 0, types: {} }; facOrder.push(u.where); } facMap[u.where].v++; if (u.type) facMap[u.where].types[u.type] = (facMap[u.where].types[u.type] || 0) + 1; });
     const facs = facOrder.map(name => { const f = facMap[name]; const type = Object.keys(f.types).sort((a, b) => f.types[b] - f.types[a])[0] || 'POC'; return { name, sub: FSUB[name] || 'Deployed from MRD Office', type, tcls: TCLS[type] || 't-poc', v: f.v }; }).sort((a, b) => b.v - a.v);
-    const idFields = [['S/N', 'receiving'], ['IMEI', 'receiving'], ['MAC', 'receiving'], ['Device ID', 'labelling'], ['Firmware', 'prep'], ['SIM', 'prep'], ['IP', 'prep']].map(([name, when]) => ({ name, when: '· ' + when, hint: name + ' is captured at ' + when }));
+    const idFields = [['S/N', 'receiving'], ['IMEI', 'receiving'], ['MAC', 'receiving'], ['Device ID', 'labelling'], ['Firmware', 'prep'], ['SIM', 'prep'], ['IP', 'prep']].concat((ED.extraFields || []).map(f => [f.name, String(f.when || '').toLowerCase()])).map(([name, when]) => ({ name, when: '· ' + when, hint: name + ' is captured at ' + when }));
     const readyUnits = all.filter(u => u.st === 'ready').map(u => ({ sn: u.sn, dev: u.dev, iccid: u.iccid, ip: u.ip, when: u.when || '—' }));
     const AV = { CH: '#CDEFE7', NI: '#F6E3C4', AI: '#E6DDFB', RA: '#DCE6FB', SA: '#FBE0DC' };
     const storeActs = (ST0.events || []).filter(e => e && (seen[String(e.item || '').split(' ').pop()] || String(e.item || '').indexOf(NAME) >= 0 || String(e.note || '').indexOf(NAME) >= 0)).slice(0, 5).map(e => ({ ini: e.ini || 'CH', bg: AV[e.ini] || '#E3E7EC', who: e.who || 'Chetan', what: String(e.action || '').toLowerCase() + (e.to && e.to !== '—' ? ' → ' + e.to : ''), obj: String(e.item || '').replace(NAME, 'RUT956'), when: e.when || '' }));
@@ -569,7 +729,7 @@ class Component extends DCLogic {
     Object.keys(addedBatch).forEach(id => { if (bMeta.some(b => b.id === id)) return; const u = all.filter(x => x.batch === id)[0]; const ev = (ST0.events || []).filter(e => e && e.action === 'Received' && String(e.item || '').indexOf('Batch ' + id + ' ') === 0)[0]; const nt = ev ? String(ev.note || '').split(' · ') : []; bMeta.unshift({ id, date: u.recv || '05 Oct 2026', by: ev ? ev.who || 'Chetan' : 'Chetan', supplier: u.sup || (ev && ev.from) || '—', po: nt[1] && nt[1] !== 'no PO' ? nt[1] : '—', inv: nt[2] || '—' }); });
     const batches = bMeta.map(b => { const list = all.filter(u => u.batch === b.id); const sns = list.map(u => u.sn).sort(); return Object.assign({}, b, { qty: list.length, range: sns.length ? sns[0] + ' – ' + sns[sns.length - 1] : '—', note: list.length ? noteOf(list) : '', parts: list.length ? partsOf(list) : [], damaged: list.filter(u => u.st === 'damaged').length }); }).filter(b => b.qty > 0);
     const lastRecv = bMeta[0].date;
-    const reqFields = [['Serial number (S/N)', 'Text', 'Required', 'Unique', 'Receiving'], ['IMEI', 'Text · 15 digits', 'Required', 'Unique', 'Receiving'], ['MAC address', 'MAC address', 'Required', 'Unique', 'Receiving'], ['Device ID', 'Auto · MRD-TEL-####', 'Required', 'Unique', 'Labelling'], ['Firmware', 'Text', 'Required', '—', 'Preparation'], ['SIM', 'Link to SIM', 'Required', 'Unique', 'Preparation'], ['IP address', 'IP address', 'Required', 'Unique', 'Preparation']].map(([name, type, req, uniq, when]) => ({ name, type, req, uniq, when }));
+    const reqFields = [['Serial number (S/N)', 'Text', 'Required', 'Unique', 'Receiving'], ['IMEI', 'Text · 15 digits', 'Required', 'Unique', 'Receiving'], ['MAC address', 'MAC address', 'Required', 'Unique', 'Receiving'], ['Device ID', 'Auto · MRD-TEL-####', 'Required', 'Unique', 'Labelling'], ['Firmware', 'Text', 'Required', '—', 'Preparation'], ['SIM', 'Link to SIM', 'Required', 'Unique', 'Preparation'], ['IP address', 'IP address', 'Required', 'Unique', 'Preparation']].concat((ED.extraFields || []).map(f => [f.name, f.type, f.req ? 'Required' : 'Optional', '—', f.when])).map(([name, type, req, uniq, when]) => ({ name, type, req, uniq, when }));
     const steps = [
       ['Firmware update', 'Flash the approved release, currently RUT9M_R_00.07.08.3', 'Firmware'],
       ['Apply config profile', 'Load "Exergio BMS gateway v2.3" (VPN, Modbus, firewall)', 'Profile'],
@@ -577,21 +737,106 @@ class Component extends DCLogic {
       ['Assign IP', 'Reserve a static IP from the SIM operator range (10.64.12.x / 10.72.4.x)', 'IP'],
       ['Connectivity test', 'Ping the Exergio cloud and check RSSI; attach the result', 'Test'],
       ['Label', 'Print and stick the Device ID / S/N label, store on Shelf A2', 'Label']
-    ].map(([title, desc, tag], i) => ({ n: i + 1, title, desc, tag }));
+    ].concat((ED.extraSteps || []).map(x => [x.title, x.desc || '', 'Custom'])).map(([title, desc, tag], i) => ({ n: i + 1, title, desc, tag }));
     const tabs = [['overview', 'Overview', ''], ['units', 'Units', String(total)], ['batches', 'Batches', String(batches.length)], ['settings', 'Settings', '']].map(([id, label, n]) => ({ label, n, cls: 'tab' + (S.tab === id ? ' on' : ''), sel: S.tab === id ? 'true' : 'false', pick: () => this.setState({ tab: id }) }));
     // Archived flag and minimum ready level live in the shared store (store.products).
     const isArch = !!PR.archived[NAME];
     const minStore = PR.min[NAME] !== undefined ? Number(PR.min[NAME]) : 5;
     const nReady = cnt('ready');
     const nUnconf = cnt('unconf');
-    const ensure = s => { s.products = Object.assign({ added: [], archived: {}, restored: {}, min: {} }, s.products || {}); return s.products; };
+    const ensure = s => { s.products = Object.assign({ added: [], archived: {}, restored: {}, min: {}, edits: {} }, s.products || {}); s.products.edits = s.products.edits || {}; return s.products; };
     const saveSettings = () => {
       const st = this.state; const v = st.minDraft === null || st.minDraft === undefined ? null : parseInt(st.minDraft, 10);
-      if (v !== null && !isNaN(v) && v >= 0 && v !== minStore) this.writeStore(s => { ensure(s).min[NAME] = v; this.logEvent(s, { action: 'Settings changed', item: NAME, itemHref: 'ProductDetail.dc.html', from: 'Min ready ' + minStore, to: 'Min ready ' + v, note: 'Minimum ready-for-deployment level' }); });
-      this.setState({ tab: 'overview', minDraft: null });
+      const vt = st.minTotalDraft === null || st.minTotalDraft === undefined ? null : parseInt(st.minTotalDraft, 10);
+      const cfgNext = st.cfgDraft === null || st.cfgDraft === undefined ? cfgSaved : !!st.cfgDraft;
+      if ((v !== null && (isNaN(v) || v < 0)) || (vt !== null && (isNaN(vt) || vt < 0))) { this.setState({ msg: 'Minimum levels must be whole numbers of 0 or more.' }); return; }
+      const ch = [];
+      if (v !== null && v !== minStore) ch.push(['Min ready', minStore, v]);
+      if (vt !== null && vt !== minTotalSaved) ch.push(['Min in office', minTotalSaved, vt]);
+      if (cfgNext !== cfgSaved) ch.push(['Requires configuration', cfgSaved ? 'Yes' : 'No', cfgNext ? 'Yes' : 'No']);
+      if (ch.length) this.writeStore(s => {
+        const pr = ensure(s);
+        if (v !== null && v !== minStore) pr.min[NAME] = v;
+        const e = Object.assign({}, pr.edits[NAME] || {});
+        if (vt !== null && vt !== minTotalSaved) e.minTotal = vt;
+        if (cfgNext !== cfgSaved) e.cfg = cfgNext;
+        pr.edits[NAME] = e;
+        this.logEvent(s, { action: 'Settings changed', item: NAME, itemHref: 'ProductDetail.dc.html', from: ch.map(c => c[0] + ' ' + c[1]).join(' · '), to: ch.map(c => c[0] + ' ' + c[2]).join(' · '), note: 'Product settings' });
+      });
+      this.setState({ tab: 'overview', minDraft: null, minTotalDraft: null, cfgDraft: null, msg: ch.length ? 'Settings saved · ' + ch.map(c => c[0].toLowerCase()).join(', ') : 'No changes to save' });
     };
     const t = S.tab;
-    return {
+    const cfgNow = S.cfgDraft === null || S.cfgDraft === undefined ? cfgSaved : !!S.cfgDraft;
+    const pushEdit = (patch, ev) => this.writeStore(s => { const pr = ensure(s); pr.edits[NAME] = Object.assign({}, pr.edits[NAME] || {}, patch); this.logEvent(s, Object.assign({ item: NAME, itemHref: 'ProductDetail.dc.html' }, ev)); });
+    // Edit modal
+    const ed = S.ed || null;
+    const specRows = CUR.specs.map(l => { const i = l.indexOf(':'); return i > 0 ? { k: l.slice(0, i).trim(), v: l.slice(i + 1).trim() } : { k: '·', v: l }; });
+    // Add field / step forms
+    const af = S.af || null, as = S.as || null;
+    const exV = this.exportVals({
+      title: 'Export RUT956 units', desc: 'A CSV of all ' + filtered.length + ' units in the current filter (' + (S.uf === 'all' ? 'all statuses' : ST[S.uf][0]) + '), not just this page.',
+      file: 'mrd-rut956-units-' + new Date().toISOString().slice(0, 10) + '.csv', item: NAME + ' units (' + filtered.length + ' rows)', href: 'ProductDetail.dc.html',
+      cols: [['S/N', u => u.sn], ['IMEI', u => u.imei], ['Device ID', u => u.dev], ['SIM (ICCID)', u => u.iccid], ['IP', u => u.ip], ['Status', u => ST[u.st][0]], ['Location / facility', u => u.where], ['Deployment type', u => u.type || ''], ['Batch', u => u.batch]],
+      rows: filtered, doneState: msg => ({ msg })
+    });
+    return Object.assign(exV, {
+      hasMsg: !!S.msg, msg: S.msg || '', dismissMsg: () => this.setState({ msg: '' }),
+      hBrand: CUR.brand || '—', hModel: CUR.model || '—', hDesc: CUR.desc || '', catLabel: catLabelOf(CUR.cat), specs: specRows,
+      photoLabel: ED.photo ? ED.photo.name : 'Product photo · Upload', photoTitle: ED.photo ? ED.photo.name + ' · ' + ED.photo.by + ' · ' + ED.photo.when + ' (file name only — contents not stored)' : 'Upload a product photo',
+      onPhoto: e => {
+        const fl = e && e.target && e.target.files && e.target.files[0]; if (!fl) return;
+        const meta = { name: fl.name, size: fl.size || 0, type: fl.type || '', by: 'Chetan', when: this.nowLabel() };
+        pushEdit({ photo: meta }, { action: 'Product edited', from: ED.photo ? ED.photo.name : 'No photo', to: meta.name, note: 'Product photo (metadata only)' });
+        try { e.target.value = ''; } catch (err) {}
+        this.setState({ msg: 'Photo ' + meta.name + ' recorded · only its name, size and type are stored in this prototype' });
+      },
+      openEdit: () => this.setState({ ed: { brand: CUR.brand, model: CUR.model, cat: CUR.cat, desc: CUR.desc, specs: CUR.specs.join('\n'), err: '' } }),
+      edOpen: !!ed, ed: ed || { brand: '', model: '', cat: 'tel', desc: '', specs: '', err: '' }, edErr: (ed && ed.err) || '', edHasErr: !!(ed && ed.err),
+      catOpts: CATS.map(([v, l]) => ({ v, l })),
+      onEdBrand: e => this.setState({ ed: Object.assign({}, this.state.ed, { brand: e.target.value, err: '' }) }),
+      onEdModel: e => this.setState({ ed: Object.assign({}, this.state.ed, { model: e.target.value, err: '' }) }),
+      onEdCat: e => this.setState({ ed: Object.assign({}, this.state.ed, { cat: e.target.value }) }),
+      onEdDesc: e => this.setState({ ed: Object.assign({}, this.state.ed, { desc: e.target.value }) }),
+      onEdSpecs: e => this.setState({ ed: Object.assign({}, this.state.ed, { specs: e.target.value }) }),
+      edClose: () => this.setState({ ed: null }),
+      edSave: () => {
+        const d = this.state.ed || {};
+        const next = { brand: String(d.brand || '').trim(), model: String(d.model || '').trim(), cat: d.cat || 'tel', desc: String(d.desc || '').trim(), specs: String(d.specs || '').split(/\r?\n/).map(x => x.trim()).filter(Boolean) };
+        if (!next.brand || !next.model) { this.setState({ ed: Object.assign({}, d, { err: 'Brand and model are required.' }) }); return; }
+        const LB = { brand: 'Brand', model: 'Model', cat: 'Category', desc: 'Description', specs: 'Specifications' };
+        const diffs = Object.keys(next).filter(k => JSON.stringify(next[k]) !== JSON.stringify(CUR[k]));
+        if (!diffs.length) { this.setState({ ed: null, msg: 'No changes to save' }); return; }
+        const show = (k, v) => k === 'cat' ? catLabelOf(v) : k === 'specs' ? v.length + ' lines' : v;
+        const patch = {}; diffs.forEach(k => { patch[k] = next[k]; });
+        pushEdit(patch, { action: 'Product edited', from: diffs.map(k => LB[k] + ': ' + show(k, CUR[k])).join(' · '), to: diffs.map(k => LB[k] + ': ' + show(k, next[k])).join(' · '), note: diffs.map(k => LB[k]).join(', ') });
+        this.setState({ ed: null, msg: 'Product updated · ' + diffs.map(k => LB[k].toLowerCase()).join(', ') });
+      },
+      afOpen: !!af, afName: af ? af.name : '', afType: af ? af.type : 'Text', afWhen: af ? af.when : 'Receiving',
+      afReqCls: 'btn sm' + (af && af.req ? ' p' : ''), afReqAria: af && af.req ? 'true' : 'false', afErr: (af && af.err) || '', afHasErr: !!(af && af.err),
+      afStart: () => this.setState({ af: { name: '', type: 'Text', when: 'Receiving', req: false, err: '' } }), afCancel: () => this.setState({ af: null }),
+      onAfName: e => this.setState({ af: Object.assign({}, this.state.af, { name: e.target.value, err: '' }) }),
+      onAfType: e => this.setState({ af: Object.assign({}, this.state.af, { type: e.target.value }) }),
+      onAfWhen: e => this.setState({ af: Object.assign({}, this.state.af, { when: e.target.value }) }),
+      toggleAfReq: () => this.setState({ af: Object.assign({}, this.state.af, { req: !this.state.af.req }) }),
+      afSave: () => {
+        const f = this.state.af || {}; const name = String(f.name || '').trim();
+        if (!name) { this.setState({ af: Object.assign({}, f, { err: 'Give the field a name.' }) }); return; }
+        if (reqFields.some(r => r.name.toLowerCase() === name.toLowerCase())) { this.setState({ af: Object.assign({}, f, { err: name + ' is already tracked.' }) }); return; }
+        const nf = { name, type: f.type || 'Text', req: !!f.req, when: f.when || 'Receiving' };
+        pushEdit({ extraFields: (ED.extraFields || []).concat([nf]) }, { action: 'Product edited', from: '—', to: 'Field: ' + name, note: nf.type + ' · ' + (nf.req ? 'required' : 'optional') + ' · captured at ' + nf.when.toLowerCase() });
+        this.setState({ af: null, msg: 'Field ' + name + ' added for future units' });
+      },
+      asOpen: !!as, asTitle: as ? as.title : '', asDesc: as ? as.desc : '', asErr: (as && as.err) || '', asHasErr: !!(as && as.err),
+      asStart: () => this.setState({ as: { title: '', desc: '', err: '' } }), asCancel: () => this.setState({ as: null }),
+      onAsTitle: e => this.setState({ as: Object.assign({}, this.state.as, { title: e.target.value, err: '' }) }),
+      onAsDesc: e => this.setState({ as: Object.assign({}, this.state.as, { desc: e.target.value }) }),
+      asSave: () => {
+        const x = this.state.as || {}; const title = String(x.title || '').trim();
+        if (!title) { this.setState({ as: Object.assign({}, x, { err: 'Name the step.' }) }); return; }
+        pushEdit({ extraSteps: (ED.extraSteps || []).concat([{ title, desc: String(x.desc || '').trim() }]) }, { action: 'Product edited', from: '—', to: 'Checklist step: ' + title, note: 'Preparation checklist template' });
+        this.setState({ as: null, msg: 'Step ' + title + ' added to the checklist template' });
+      }
+    }, {
       tabs, isOverview: t === 'overview', isUnits: t === 'units', isBatches: t === 'batches', isSettings: t === 'settings',
       dist, distAria, locs, facs, idFields, readyUnits, activity, batches, reqFields, steps,
       units, unitChips, pages,
@@ -602,13 +847,15 @@ class Component extends DCLogic {
       isArch, notArch: !isArch, stLabel: isArch ? 'Archived' : 'Active', stCls: isArch ? 's-retired' : 's-deployed',
       unitFooter: filtered.length ? ('Showing ' + (page * per + 1) + '–' + Math.min(filtered.length, page * per + per) + ' of ' + filtered.length + ' units') : 'No units',
       prevPage: () => this.setState({ page: Math.max(0, page - 1) }), nextPage: () => this.setState({ page: Math.min(pageCount - 1, page + 1) }),
-      goSettings: () => this.setState({ tab: 'settings' }), goOverview: () => this.setState({ tab: 'overview', minDraft: null }),
+      goSettings: () => this.setState({ tab: 'settings' }), goOverview: () => this.setState({ tab: 'overview', minDraft: null, minTotalDraft: null, cfgDraft: null }),
       openArchive: () => this.setState({ arch: true }), closeArchive: () => this.setState({ arch: false }), showArchive: S.arch && !isArch,
       confirmArchive: () => { this.writeStore(s => { const pr = ensure(s); pr.archived[NAME] = true; delete pr.restored[NAME]; this.logEvent(s, { action: 'Product archived', item: NAME, itemHref: 'ProductDetail.dc.html', from: 'Active', to: 'Archived', note: inOfficeN + ' in office · ' + deployedN + ' deployed' }); }); this.setState({ arch: false }); },
       restore: () => this.writeStore(s => { const pr = ensure(s); delete pr.archived[NAME]; pr.restored[NAME] = true; this.logEvent(s, { action: 'Product restored', item: NAME, itemHref: 'ProductDetail.dc.html', from: 'Archived', to: 'Active', note: '' }); }),
-      cfgSw: 'sw' + (S.cfg ? ' on' : ''), cfgAria: S.cfg ? 'true' : 'false', toggleCfg: () => this.setState({ cfg: !this.state.cfg }),
+      cfgSw: 'sw' + (cfgNow ? ' on' : ''), cfgAria: cfgNow ? 'true' : 'false', toggleCfg: () => this.setState({ cfgDraft: !cfgNow }),
+      cfgOn: cfgSaved, cfgOff: !cfgSaved,
+      minTotal: S.minTotalDraft === null || S.minTotalDraft === undefined ? String(minTotalSaved) : S.minTotalDraft, onMinTotal: e => this.setState({ minTotalDraft: e.target.value }),
       minReady: S.minDraft === null || S.minDraft === undefined ? String(minStore) : S.minDraft, onMin: e => this.setState({ minDraft: e.target.value }), saveSettings
-    };
+    });
   }
 }
 </script>

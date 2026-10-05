@@ -126,7 +126,7 @@ h1,h2,h3,h4,p{margin:0}
 <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
 <div class="mtop" style="align-items: center; justify-content: space-between; padding: 12px 16px; background: #0C1424; color: #fff">
 <span style="font-weight: 600">Moonrock R&amp;D</span>
-<button class="btn sm" aria-label="Open menu" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
+<button class="btn sm" aria-label="Open menu" aria-expanded="{{shell.menuExp}}" onClick="{{shell.toggleMenu}}" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
 </div>
 <header class="top">
 <a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
@@ -134,7 +134,24 @@ h1,h2,h3,h4,p{margin:0}
 <span class="b s-prep" title="All records shown are sample data">Sample data</span>
 <a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
 <a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
-<button class="btn ic" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg></button>
+<div style="position: relative; z-index: {{shell.bellZ}}">
+<button class="btn ic" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="{{shell.bellExp}}" onClick="{{shell.toggleBell}}" style="position: relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg><sc-if value="{{shell.hasUnread}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #DC3B3A; color: #fff; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #fff">{{shell.unread}}</span></sc-if></button>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="Notifications" style="position: absolute; right: 0; top: calc(100% + 8px); z-index: 41; width: 360px; max-width: calc(100vw - 32px); background: #fff; border: 1px solid #DCE1E8; border-radius: 12px; box-shadow: 0 16px 40px rgba(14,23,38,.18); overflow: hidden; text-align: left">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #EEF1F4"><span style="font-weight: 600; font-size: 14px; color: #0E1726">Notifications</span><button onClick="{{shell.markRead}}" style="border: 0; background: none; padding: 4px; font: inherit; font-size: 12.5px; color: #0B7A6B; cursor: pointer">Mark all as read</button></div>
+<div style="max-height: 380px; overflow-y: auto">
+<sc-for list="{{shell.notes}}" as="n" hint-placeholder-count="4">
+<a href="{{n.href}}" style="display: flex; gap: 10px; padding: 11px 14px; border-bottom: 1px solid #F1F4F7; color: #0E1726; background: {{n.bg}}">
+<span style="width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: 0 0 8px; background: {{n.dot}}"></span>
+<span style="flex: 1; min-width: 0; font-size: 13px; line-height: 1.4"><span style="display: block">{{n.text}}</span><span style="display: block; font-size: 12px; color: #5E6B7D">{{n.when}}</span></span>
+</a>
+</sc-for>
+</div>
+<a href="AuditLog.dc.html" style="display: block; padding: 10px 14px; font-size: 13px; font-weight: 500; text-align: center; border-top: 1px solid #EEF1F4">Open audit log</a>
+</div>
+</sc-if>
+</div>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}"><button aria-label="Close notifications" onClick="{{shell.closeAll}}" style="position: fixed; inset: 0; z-index: 30; background: transparent; border: 0; padding: 0; cursor: default"></button></sc-if>
 </header>
 
 <main class="main">
@@ -272,7 +289,8 @@ h1,h2,h3,h4,p{margin:0}
 <sc-for list="{{roleOpts}}" as="o" hint-placeholder-count="4"><button class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}"><span class="dot"></span><span><span style="display: block; font-weight: 600; font-size: 13.5px">{{o.name}}</span><span class="muted" style="font-size: 12px; line-height: 1.4">{{o.desc}}</span></span></button></sc-for>
 </div>
 </div>
-<div><label class="lbl" for="isc">Facility scope <span class="muted" style="font-weight: 400">(optional)</span></label><select id="isc" class="fld"><option>All facilities</option><option>Qatar Foundation only</option><option>Bank Muscat Head Office only</option><option>Lulu Hypermarket only</option><option>Muscat facilities</option></select><p class="muted" style="font-size: 12px; margin-top: 6px">Limit what a Technician or Viewer sees to specific sites. Office stock stays visible to Operations and Admin.</p></div>
+<div><label class="lbl" for="isc">Facility scope <span class="muted" style="font-weight: 400">(optional)</span></label><select id="isc" class="fld" value="{{invScope}}" onChange="{{onInvScope}}"><sc-for list="{{scopeOpts}}" as="o" hint-placeholder-count="5"><option value="{{o.v}}">{{o.v}}</option></sc-for></select><p class="muted" style="font-size: 12px; margin-top: 6px">Limit what a Technician or Viewer sees to specific sites. Office stock stays visible to Operations and Admin.</p></div>
+<sc-if value="{{invHasErr}}" hint-placeholder-val="{{ false }}"><p role="alert" style="font-size: 12.5px; color: #A3201F; background: #FDEBEA; padding: 8px 10px; border-radius: 8px">{{invErr}}</p></sc-if>
 </div>
 <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; padding: 14px 22px; border-top: 1px solid #E3E7EC"><span class="muted" style="font-size: 12px">{{inv.foot}}</span><span style="display: flex; gap: 10px"><button class="btn" onClick="{{closeInvite}}">Cancel</button><button class="btn p" onClick="{{sendInvite}}">{{inv.cta}}</button></span></div>
 </div>
@@ -304,6 +322,31 @@ h1,h2,h3,h4,p{margin:0}
 </main>
 </div>
 </div>
+<sc-if value="{{shell.menuOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 70; display: flex">
+<nav aria-label="Mobile navigation" style="width: min(300px, 85vw); height: 100%; overflow-y: auto; background: #0C1424; padding: 16px 12px; display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 8px 14px; color: #fff"><span style="font-weight: 600">Moonrock R&amp;D</span><button onClick="{{shell.closeAll}}" aria-label="Close menu" style="width: 40px; height: 40px; border: 0; border-radius: 8px; background: #1C2A42; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<a href="Main.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Dashboard</a>
+<a href="Search.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Search</a>
+<a href="Inventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">All inventory</a>
+<a href="Products.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Products</a>
+<a href="Batches.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Batches</a>
+<a href="ReceiveInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Receive stock</a>
+<a href="DevicePrep.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Device preparation</a>
+<a href="SimInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">SIM cards</a>
+<a href="Facilities.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Facilities</a>
+<a href="PocManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">POC projects</a>
+<a href="ContractManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Contracts</a>
+<a href="Deployments.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Deployments</a>
+<a href="CreateDeployment.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">New deployment</a>
+<a href="Reports.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Reports</a>
+<a href="AuditLog.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Audit log</a>
+<a href="Users.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Users &amp; roles</a>
+<a href="Settings.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Settings</a>
+</nav>
+<button aria-label="Close menu" onClick="{{shell.closeAll}}" style="flex: 1; border: 0; padding: 0; background: rgba(14,23,38,.5); cursor: default"></button>
+</div>
+</sc-if>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1400}}'>
 class Component extends DCLogic {
@@ -335,7 +378,7 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
-    try { const keep = Object.assign({}, this.state); ["toast", "confirm", "inv"].concat(this.readStore().users ? ["roles", "status", "extra"] : []).forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:Users', JSON.stringify(keep)); } catch (e) {}
+    try { const keep = Object.assign({}, this.state); delete keep._shell; ["toast", "confirm", "inv", "invErr"].concat(this.readStore().users ? ["roles", "status", "extra"] : []).forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:Users', JSON.stringify(keep)); } catch (e) {}
   }
   // Users bookkeeping (roles, status, invites) lives in the shared store under s.users.
   // Until the first write it falls back to this screen's sample / legacy local state.
@@ -346,7 +389,7 @@ class Component extends DCLogic {
     const roles = Object.assign({}, this._seed.roles, U.roles || {});
     const status = Object.assign({}, this._seed.status, U.status || {});
     (U.added || []).forEach(a => { if (!roles[a.key]) roles[a.key] = a.role; if (!status[a.key]) status[a.key] = a.status || 'Invited'; });
-    return { roles, status, extra };
+    return { roles, status, extra, edits: U.edits || {} };
   }
   writeUsers(fn) {
     const S = this.state;
@@ -355,7 +398,7 @@ class Component extends DCLogic {
         // First write: seed from the sample (plus anything this screen held locally before the store existed).
         s.users = { roles: Object.assign({}, S.roles), status: Object.assign({}, S.status), added: (S.extra || []).map(x => ({ key: x.key, name: x.name, email: x.email, role: S.roles[x.key], status: S.status[x.key] || 'Invited', last: x.last })) };
       }
-      s.users.roles = s.users.roles || {}; s.users.status = s.users.status || {}; s.users.added = s.users.added || [];
+      s.users.roles = s.users.roles || {}; s.users.status = s.users.status || {}; s.users.added = s.users.added || []; s.users.edits = s.users.edits || {};
       fn(s, s.users);
     });
   }
@@ -369,13 +412,39 @@ class Component extends DCLogic {
       tab: 'users', q: '', rf: 'all', toast: '',
       roles: { chetan: 'Admin', nitin: 'Operations', aisha: 'Operations', rahul: 'Technician', saif: 'Technician', exergio: 'Viewer', invite1: 'Technician' },
       status: { chetan: 'Active', nitin: 'Active', aisha: 'Active', rahul: 'Active', saif: 'Active', exergio: 'Active', invite1: 'Invited' },
-      extra: [], confirm: null, inv: null, invRole: 'Technician', invEmail: '', invName: ''
+      extra: [], confirm: null, inv: null, invRole: 'Technician', invEmail: '', invName: '', invScope: 'All facilities', invErr: ''
     };
   }
-  renderVals() {
+  // Shared shell: notifications bell (fed by the shared store) and the mobile navigation drawer.
+  shellVals() {
+    const S = this.state, st = this.readStore();
+    const seen = (st.ui && st.ui.seenAt) || 0;
+    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Stage changed': 'moved the stage of', 'POC decision': 'recorded a POC decision for', 'Contract ended': 'ended the contract for', 'Issue reported': 'reported an issue on', 'Reserved': 'reserved', 'Labels printed': 'printed labels for', 'File attached': 'attached a file to', 'File removed': 'removed a file from', 'User updated': 'updated user', 'Product edited': 'edited', 'Invite resent': 'resent the invite to', 'Document uploaded': 'uploaded a document to', 'Document removed': 'removed a document from', 'Contact added': 'added a contact to', 'Contact removed': 'removed a contact from', 'Contract updated': 'updated the contract for', 'Batch updated': 'updated batch', 'Batch archived': 'archived batch', 'Batch restored': 'restored batch', 'Facility updated': 'updated facility', 'Facility restored': 'restored facility', 'Report exported': 'exported', 'Record corrected': 'corrected', 'Note added': 'added a note to', 'Settings changed': 'updated settings ·', 'User invited': 'invited', 'Role changed': 'changed the role of', 'Verified on site': 'verified on site', 'Deployment cancelled': 'cancelled', 'Deployment updated': 'updated deployment' };
+    const fromStore = st.events.slice(0, 8).map(e => ({ text: (e.who || 'Chetan') + ' ' + (VERB[e.action] || String(e.action || '').toLowerCase()) + ' ' + e.item + (e.to && e.to !== '—' && e.action !== 'Imported' ? ' → ' + e.to : ''), when: e.when, href: e.itemHref || 'AuditLog.dc.html', unread: (e.at || 0) > seen }));
+    const alerts = [
+      { text: '14 Teltonika RUT956 units are waiting for preparation', when: 'Batch TEL-2026-004', href: 'DevicePrep.dc.html', alert: true },
+      { text: 'Cat6 patch cable 1 m is below its minimum level', when: 'Low stock · 18 of 25', href: 'InventoryItem.dc.html', alert: true },
+      { text: 'Qatar Foundation: 2 CO₂ sensors scheduled to install on 08 Oct', when: 'Upcoming deployment', href: 'Deployments.dc.html', alert: true }
+    ].map(a => Object.assign(a, { unread: !seen }));
+    const all = fromStore.concat(alerts);
+    const unread = all.filter(n => n.unread).length;
+    return {
+      bellOpen: S._shell === 'bell', bellExp: S._shell === 'bell' ? 'true' : 'false', bellZ: S._shell === 'bell' ? '40' : 'auto',
+      menuOpen: S._shell === 'menu', menuExp: S._shell === 'menu' ? 'true' : 'false',
+      unread: unread > 9 ? '9+' : String(unread), hasUnread: unread > 0,
+      notes: all.map(n => ({ text: n.text, when: n.when, href: n.href, bg: n.unread ? '#F4FBF8' : '#fff', dot: n.alert ? '#E08A00' : (n.unread ? '#0B7A6B' : '#D5DBE3') })),
+      toggleBell: () => this.setState({ _shell: this.state._shell === 'bell' ? '' : 'bell' }),
+      toggleMenu: () => this.setState({ _shell: this.state._shell === 'menu' ? '' : 'menu' }),
+      closeAll: () => this.setState({ _shell: '' }),
+      markRead: () => this.writeStore(s => { s.ui = Object.assign({}, s.ui || {}, { seenAt: Date.now() }); })
+    };
+  }
+  renderVals() { return Object.assign(this._screenVals(), { shell: this.shellVals() }); }
+  _screenVals() {
     const ST0 = this.readStore();
     const UV = this.usersView(ST0);
     const S = Object.assign({}, this.state, { roles: UV.roles, status: UV.status, extra: UV.extra });
+    const EDITS = UV.edits || {};
     const HREF = 'Users.dc.html';
     const ROLES = ['Admin', 'Operations', 'Technician', 'Viewer'];
     const MODS = [
@@ -405,7 +474,13 @@ class Component extends DCLogic {
       { key: 'saif', name: 'Saif', email: 'saif@moonrock.om', ini: 'SA', bg: '#FBE0DC', last: 'Mon 28 Sep, 12:44', tf: true, scope: 'All facilities' },
       { key: 'exergio', name: 'Exergio Partner', email: 'partner@[exergio domain]', ini: 'EX', bg: '#E3E7EC', last: 'Tue 22 Sep, 09:30', tf: true, scope: 'Exergio facilities', ext: true },
       { key: 'invite1', name: 'Pending invite', email: '[invited email]', ini: '—', bg: '#F1F4F7', last: 'Invite sent Fri 2 Oct · expires 9 Oct', tf: null, scope: 'All facilities' }
-    ].concat(S.extra);
+    ].concat(S.extra).map(u => {
+      // Saved edits (name, email, facility scope, invite status line) overlay the sample record.
+      const ed = EDITS[u.key]; if (!ed) return u;
+      const m = Object.assign({}, u, ed);
+      if (ed.name && ed.name !== u.name && u.ini !== '—') m.ini = ed.name.split(/\s+/).map(w => w[0] || '').join('').slice(0, 2).toUpperCase() || u.ini;
+      return m;
+    });
     const q = (S.q || '').trim().toLowerCase();
     const shown = base.filter(u => (S.rf === 'all' || S.roles[u.key] === S.rf) && (!q || (u.name + ' ' + u.email).toLowerCase().indexOf(q) >= 0));
     const users = shown.map(u => {
@@ -421,9 +496,16 @@ class Component extends DCLogic {
         tfIcon: u.tf ? 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM8.5 12l2.5 2.5 4.5-5' : 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM12 8v5M12 16h.01',
         editAria: 'Edit ' + u.name, deactAria: 'Deactivate ' + u.name,
         onRole: (e) => { const to = e.target.value; if (to !== role) this.setState({ confirm: { kind: 'role', key: u.key, name: u.name, from: role, to } }); },
-        edit: () => this.setState({ inv: { mode: 'edit', key: u.key, name: u.name }, invRole: role, invEmail: u.email, invName: u.name }),
+        edit: () => this.setState({ inv: { mode: 'edit', key: u.key, name: u.name }, invRole: role, invEmail: u.email, invName: u.name, invScope: u.scope, invErr: '' }),
         deact: () => this.setState({ confirm: { kind: 'deact', key: u.key, name: u.name } }),
-        resend: () => this.setState({ toast: 'Invitation re-sent to ' + u.email + '. It expires in 7 days.' }),
+        resend: () => {
+          const last = 'Invite re-sent ' + this.nowLabel().replace('Today', 'today') + ' · expires in 7 days';
+          this.writeUsers((s, US) => {
+            US.edits[u.key] = Object.assign({}, US.edits[u.key] || {}, { last });
+            this.logEvent(s, { action: 'Invite resent', item: u.name + ' · ' + u.email, itemHref: HREF, from: '—', to: u.email, note: 'New link · expires in 7 days' });
+          });
+          this.setState({ toast: 'Invitation re-sent to ' + u.email + '. It expires in 7 days. Logged to the audit log.' });
+        },
         revoke: () => this.setState({ confirm: { kind: 'revoke', key: u.key, name: u.email } }),
         reactivate: () => {
           this.writeUsers((s, US) => { US.status[u.key] = 'Active'; this.logEvent(s, { action: 'User reactivated', item: u.name + ' · ' + u.email, itemHref: HREF, from: 'Deactivated', to: 'Active', note: '' }); });
@@ -456,12 +538,14 @@ class Component extends DCLogic {
       ['External accounts', 'Partners limited to the Viewer role and their facilities', 'Viewer only', 's-ready']
     ].map(([name, desc, val, cls]) => ({ name, desc, val, cls }));
     const AV = { CH: '#CDEFE7', NI: '#F6E3C4', AI: '#E6DDFB', RA: '#DCE6FB', SA: '#FBE0DC' };
-    const UACT = { 'Role changed': 1, 'User invited': 1, 'User deactivated': 1, 'User reactivated': 1 };
+    const UACT = { 'Role changed': 1, 'User invited': 1, 'User deactivated': 1, 'User reactivated': 1, 'User updated': 1, 'Invite resent': 1 };
     const storeChanges = (ST0.events || []).filter(e => UACT[e.action]).map(e => {
       const who = String(e.item || '').split(' · ')[0];
       const what = e.action === 'Role changed' ? 'changed ' + who + ' from ' + (e.from || '—') + ' to ' + (e.to || '—')
         : e.action === 'User invited' ? 'invited ' + (e.to ? (/^[AEIOU]/.test(e.to) ? 'an ' : 'a ') + e.to.toLowerCase() + ' ' : '') + '(' + (String(e.item || '').split(' · ')[1] || who) + ')'
         : e.action === 'User reactivated' ? 'reactivated ' + who
+        : e.action === 'User updated' ? 'updated ' + who + (e.note ? ' (' + e.note + ')' : '')
+        : e.action === 'Invite resent' ? 're-sent the invitation to ' + (e.to || who)
         : (e.note === 'Invitation revoked' ? 'revoked the invitation for ' + (String(e.item || '').split(' · ')[1] || who) : 'deactivated ' + who);
       return { ini: e.ini || '··', bg: AV[e.ini] || '#E3E7EC', who: e.who || '—', what, when: e.when || '' };
     });
@@ -474,7 +558,7 @@ class Component extends DCLogic {
 
     // confirmation
     const c = S.confirm;
-    let cf = { gain: [], lose: [] };
+    let cf = { title: '', body: '', gain: [], lose: [], hasGain: false, hasLose: false, foot: '', cta: '', ctaCls: 'btn' };
     if (c && c.kind === 'role') {
       const gain = [], lose = [];
       MODS.forEach((m, i) => { const a = level(c.from, i), b = level(c.to, i); if (b > a) gain.push({ name: m[0], from: LV[a], to: LV[b] }); if (b < a) lose.push({ name: m[0], from: LV[a], to: LV[b] }); });
@@ -500,25 +584,43 @@ class Component extends DCLogic {
     };
 
     const inv = S.inv;
+    const SCOPES = ['All facilities', 'Qatar Foundation only', 'Bank Muscat Head Office only', 'Lulu Hypermarket only', 'Muscat facilities', 'Exergio facilities'];
     const isEdit = inv && inv.mode === 'edit';
-    const invInfo = isEdit ? { title: 'Edit ' + inv.name, sub: 'Update name, role or facility scope. Email is the sign-in identity and can\'t be changed here.', cta: 'Save changes', foot: 'Role changes are confirmed and logged.' }
+    const invInfo = isEdit ? { title: 'Edit ' + inv.name, sub: 'Update name, email, role or facility scope. A new email becomes their sign-in identity from their next sign-in.', cta: 'Save changes', foot: 'Every change is logged; role changes are confirmed first.' }
       : { title: 'Invite user', sub: 'They\'ll get an email link to set a password or sign in with Microsoft 365.', cta: 'Send invite', foot: 'Invites expire after 7 days.' };
     const sendInvite = () => {
+      const email = (S.invEmail || '').trim();
+      const nameIn = (S.invName || '').trim();
+      const scope = S.invScope || 'All facilities';
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { this.setState({ invErr: 'Enter a valid work email address.' }); return; }
+      const clash = base.find(x => x.key !== (inv && inv.key) && String(x.email).toLowerCase() === email.toLowerCase() && S.status[x.key] !== 'Deactivated');
+      if (clash) { this.setState({ invErr: email + ' already belongs to ' + clash.name + '.' }); return; }
       if (isEdit) {
-        if (S.invRole !== S.roles[inv.key]) { this.setState({ inv: null, confirm: { kind: 'role', key: inv.key, name: inv.name, from: S.roles[inv.key], to: S.invRole } }); return; }
-        this.setState({ inv: null, toast: inv.name + ' updated.' }); return;
+        if (!nameIn) { this.setState({ invErr: 'Name can\'t be empty.' }); return; }
+        const u0 = base.find(x => x.key === inv.key) || { name: inv.name, email: '', scope: '' };
+        const diffs = [];
+        if (nameIn !== u0.name) diffs.push(['Name', u0.name, nameIn]);
+        if (email !== u0.email) diffs.push(['Email', u0.email, email]);
+        if (scope !== u0.scope) diffs.push(['Scope', u0.scope, scope]);
+        if (diffs.length) {
+          this.writeUsers((s, US) => {
+            US.edits[inv.key] = Object.assign({}, US.edits[inv.key] || {}, { name: nameIn, email, scope });
+            this.logEvent(s, { action: 'User updated', item: nameIn + ' · ' + email, itemHref: HREF, from: diffs.map(d => d[0] + ': ' + d[1]).join(' · '), to: diffs.map(d => d[0] + ': ' + d[2]).join(' · '), note: diffs.map(d => d[0].toLowerCase()).join(', ') });
+          });
+        }
+        if (S.invRole !== S.roles[inv.key]) { this.setState({ inv: null, invErr: '', confirm: { kind: 'role', key: inv.key, name: nameIn, from: S.roles[inv.key], to: S.invRole } }); return; }
+        this.setState({ inv: null, invErr: '', toast: diffs.length ? nameIn + ' updated (' + diffs.map(d => d[0].toLowerCase()).join(', ') + '). Logged to the audit log.' : 'No changes to save.' }); return;
       }
-      const email = (S.invEmail || '').trim() || '[invited email]';
-      const name = (S.invName || '').trim() || 'Pending invite';
+      const name = nameIn || 'Pending invite';
       const role = S.invRole;
       this.writeUsers((s, US) => {
         let n = US.added.length + 2; while (US.roles['invite' + n] || US.added.some(a => a.key === 'invite' + n)) n++;
         const key = 'invite' + n;
-        US.added.push({ key, name, email, role, status: 'Invited', last: 'Invite sent Mon 5 Oct · expires 12 Oct' });
+        US.added.push({ key, name, email, role, scope, status: 'Invited', last: 'Invite sent ' + this.nowLabel().replace('Today', 'today') + ' · expires in 7 days' });
         US.roles[key] = role; US.status[key] = 'Invited';
-        this.logEvent(s, { action: 'User invited', item: name + ' · ' + email, itemHref: HREF, from: '', to: role, note: '' });
+        this.logEvent(s, { action: 'User invited', item: name + ' · ' + email, itemHref: HREF, from: '', to: role, note: scope });
       });
-      this.setState({ inv: null, toast: 'Invitation sent to ' + email + ' as ' + role + '.' });
+      this.setState({ inv: null, invErr: '', toast: 'Invitation recorded for ' + email + ' as ' + role + ' (' + scope + '). Email delivery isn’t connected in this prototype.' });
     };
 
     return {
@@ -527,8 +629,11 @@ class Component extends DCLogic {
       policies, changes, roleCards, matrix,
       hasToast: !!S.toast, toast: S.toast, hideToast: () => this.setState({ toast: '' }),
       invOpen: !!inv, inv: invInfo, roleOpts, invEmail: S.invEmail, invName: S.invName,
-      onInvEmail: (e) => this.setState({ invEmail: e.target.value }), onInvName: (e) => this.setState({ invName: e.target.value }),
-      openInvite: () => this.setState({ inv: { mode: 'new' }, invRole: 'Technician', invEmail: '', invName: '' }), closeInvite: () => this.setState({ inv: null }), sendInvite,
+      onInvEmail: (e) => this.setState({ invEmail: e.target.value, invErr: '' }), onInvName: (e) => this.setState({ invName: e.target.value, invErr: '' }),
+      invScope: S.invScope || 'All facilities', onInvScope: (e) => this.setState({ invScope: e.target.value }),
+      scopeOpts: SCOPES.concat(SCOPES.indexOf(S.invScope) < 0 && S.invScope ? [S.invScope] : []).map(v => ({ v })),
+      invErr: S.invErr || '', invHasErr: !!S.invErr,
+      openInvite: () => this.setState({ inv: { mode: 'new' }, invRole: 'Technician', invEmail: '', invName: '', invScope: 'All facilities', invErr: '' }), closeInvite: () => this.setState({ inv: null }), sendInvite,
       cfOpen: !!c, cf, cfCancel: () => this.setState({ confirm: null }), cfConfirm
     };
   }
