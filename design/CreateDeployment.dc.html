@@ -411,6 +411,14 @@ I confirm the equipment has physically left the MRD office
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1300}}'>
 class Component extends DCLogic {
+  // Prototype persistence: this screen's data survives reloads and is shared by every screen in this browser.
+  componentDidMount() {
+    this._init = JSON.parse(JSON.stringify(this.state));
+    try { const raw = window.localStorage.getItem('mrd-proto:v1:CreateDeployment'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
+  }
+  componentDidUpdate() {
+    try { const keep = Object.assign({}, this.state); ["confirm", "done", "toast"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:CreateDeployment', JSON.stringify(keep)); } catch (e) {}
+  }
   constructor(props) {
     super(props);
     this.state = this.initial();

@@ -194,6 +194,9 @@ h1,h2,h3,h4,p{margin:0}
 </div>
 <div style="display: flex; justify-content: flex-end; gap: 10px; padding: 14px 18px; border-top: 1px solid #EEF1F4"><button class="btn" onClick="{{saved}}">Save changes</button></div>
 </section>
+<section class="card">
+<div class="sh"><div><h2>Prototype data</h2><p>Changes you make on any screen of this prototype are saved in this browser and survive reloads. They are not shared with other people.</p></div><button class="btn danger" onClick="{{askReset}}">Reset sample data</button></div>
+</section>
 </sc-if>
 
 <!-- CATEGORIES -->
@@ -502,6 +505,14 @@ h1,h2,h3,h4,p{margin:0}
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1500}}'>
 class Component extends DCLogic {
+  // Prototype persistence: this screen's data survives reloads and is shared by every screen in this browser.
+  componentDidMount() {
+    this._init = JSON.parse(JSON.stringify(this.state));
+    try { const raw = window.localStorage.getItem('mrd-proto:v1:Settings'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
+  }
+  componentDidUpdate() {
+    try { const keep = Object.assign({}, this.state); ["toast", "addOpen", "statusOpen", "confirm", "form", "formErr"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:Settings', JSON.stringify(keep)); } catch (e) {}
+  }
   constructor(props) {
     super(props);
     this.state = {
@@ -719,12 +730,18 @@ class Component extends DCLogic {
     const c = S.confirm;
     let cf = {};
     if (c) {
-      if (c.kind === 'cat') cf = { title: 'Archive ' + c.name + '?', body: 'Its ' + c.items + (c.items === 1 ? ' product stays' : ' products stay') + ' in inventory, reports and history, but the category can\'t be picked for new products until it is restored.', foot: 'Nothing is deleted. The archive is recorded in the audit log.', ok: true, blocked: false, cta: 'Archive category', iconBg: '#FDEBEA', iconFg: '#A3201F' };
+      if (c.kind === 'reset') cf = { title: 'Reset all sample data?', body: 'Every screen goes back to the original sample records: imports, moves, status changes, new brands, locations, suppliers, deployments and notes are discarded.', foot: 'This only affects this browser. Screens that are already open show the original data after the canvas reloads.', ok: true, blocked: false, cta: 'Reset sample data', iconBg: '#FDEBEA', iconFg: '#A3201F' };
+      else if (c.kind === 'cat') cf = { title: 'Archive ' + c.name + '?', body: 'Its ' + c.items + (c.items === 1 ? ' product stays' : ' products stay') + ' in inventory, reports and history, but the category can\'t be picked for new products until it is restored.', foot: 'Nothing is deleted. The archive is recorded in the audit log.', ok: true, blocked: false, cta: 'Archive category', iconBg: '#FDEBEA', iconFg: '#A3201F' };
       else if (c.items > 0) cf = { title: c.name + ' can\'t be archived yet', body: c.items + ' items are stored at ' + c.name + '. Move them to another location first, then archive it. This keeps every unit\'s location history accurate.', foot: 'Tip: filter All inventory by this location and use bulk Move.', ok: false, blocked: true, cta: '', iconBg: '#FFF3DC', iconFg: '#8A4B00' };
       else cf = { title: 'Archive ' + c.name + '?', body: c.name + ' has 0 items, so it can be archived. It will disappear from location pickers but stays in past movement records.', foot: 'You can restore it at any time. The archive is recorded in the audit log.', ok: true, blocked: false, cta: 'Archive location', iconBg: '#FDEBEA', iconFg: '#A3201F' };
     }
     const cfConfirm = () => {
       if (!c) return;
+      if (c.kind === 'reset') {
+        try { const ls = window.localStorage; const ks = []; for (let i = 0; i < ls.length; i++) { const k = ls.key(i); if (k && k.indexOf('mrd-proto:') === 0) ks.push(k); } ks.forEach(k => ls.removeItem(k)); } catch (e) {}
+        this.setState(Object.assign({}, this._init || {}, { confirm: null, sec: 'general', toast: 'Sample data restored. Reload the canvas to reset screens that are already open.' }));
+        return;
+      }
       if (c.kind === 'cat') this.setState({ archCats: S.archCats.concat([c.name]), confirm: null, toast: c.name + ' archived. Logged to the audit log.' });
       else this.setState({ archLocs: S.archLocs.concat([c.name]), confirm: null, toast: c.name + ' archived. Logged to the audit log.' });
     };
@@ -751,6 +768,7 @@ class Component extends DCLogic {
       stAvOn: S.stAvail ? 'true' : 'false', stAvCls: 'sw' + (S.stAvail ? ' on' : ''), toggleStAv: () => this.setState({ stAvail: !S.stAvail }),
       createStatus: () => { const nm = (S.stName || '').trim() || 'New status'; const a = Object.assign({}, S.avail); a[nm] = S.stAvail; this.setState({ statusOpen: false, avail: a, extraStatuses: S.extraStatuses.concat([[nm, S.stColor, false, 0]]), toast: 'Status “' + nm + '” added. Logged to the audit log.' }); },
       suppliers, patterns, pools, thresholds, notifs,
+      askReset: () => this.setState({ confirm: { kind: 'reset' } }),
       cfOpen: !!c, cf, cfCancel: () => this.setState({ confirm: null }), cfConfirm,
       fmOpen: !!F0, fm, hasFormErr: !!S.formErr, formErr: S.formErr, closeForm: () => this.setState({ form: null, formErr: '' }), submitForm,
       openBrand: openForm('brand'), openField: openForm('field'), openLoc: openForm('loc'), editOffice: openForm('office'), openStage: openForm('stage'), openSup: openForm('sup'), openPool: openForm('pool'),

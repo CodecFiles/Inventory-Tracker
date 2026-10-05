@@ -341,6 +341,14 @@ textarea.in{height:76px;padding:10px 12px;resize:vertical}
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1400}}'>
 class Component extends DCLogic {
+  // Prototype persistence: this screen's data survives reloads and is shared by every screen in this browser.
+  componentDidMount() {
+    this._init = JSON.parse(JSON.stringify(this.state));
+    try { const raw = window.localStorage.getItem('mrd-proto:v1:InventoryItem'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
+  }
+  componentDidUpdate() {
+    try { const keep = Object.assign({}, this.state); ["modal"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:InventoryItem', JSON.stringify(keep)); } catch (e) {}
+  }
   constructor(props) { super(props); this.state = { modal: '', dir: 'remove', qty: '2', loc: 'c1', reason: '', note: '', c1: 14, rahul: 4, extra: [], reordered: false }; }
   renderVals() {
     const S = this.state;
