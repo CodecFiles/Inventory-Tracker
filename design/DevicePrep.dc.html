@@ -147,6 +147,7 @@ textarea.inp{height:64px;padding:9px 11px;resize:vertical}
 <a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
 <span style="flex: 1"></span>
 <span class="b s-prep" title="All records shown are sample data">Sample data</span>
+<span class="b {{shell.syncCls}}" title="{{shell.syncTip}}">{{shell.syncLabel}}</span>
 <a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
 <a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
 <div style="position: relative; z-index: {{shell.bellZ}}">
@@ -509,6 +510,12 @@ textarea.inp{height:64px;padding:9px 11px;resize:vertical}
 <button aria-label="Close menu" onClick="{{shell.closeAll}}" style="flex: 1; border: 0; padding: 0; background: rgba(14,23,38,.5); cursor: default"></button>
 </div>
 </sc-if>
+<sc-if value="{{shell.blocked}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 80; display: flex; align-items: center; gap: 12px; max-width: min(560px, calc(100vw - 32px)); padding: 12px 12px 12px 16px; border-radius: 12px; background: #7A1F1E; color: #fff; font-size: 13.5px; box-shadow: 0 12px 32px rgba(14,23,38,.3)">
+<span style="flex: 1">You have view access to this canvas, so that change wasn't saved. Ask the owner for edit access to change shared data.</span>
+<button onClick="{{shell.unblock}}" style="height: 32px; padding: 0 12px; border: 1px solid rgba(255,255,255,.4); border-radius: 8px; background: transparent; color: #fff; font: inherit; font-size: 12.5px; cursor: pointer">OK</button>
+</div>
+</sc-if>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1480}}'>
 class Component extends DCLogic {
@@ -517,6 +524,7 @@ class Component extends DCLogic {
     this._init = JSON.parse(JSON.stringify(this.state));
     this._onStore = e => { if (!e || !e.key || e.key === 'mrd-proto:store') this.forceUpdate(); };
     try { window.addEventListener('storage', this._onStore); } catch (e) {}
+    this._sharedInit();
     try { const raw = window.localStorage.getItem('mrd-proto:v1:DevicePrep'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
     // Counters, SIM pool and statuses are derived from the shared store; keep the local baselines at their sample values.
     let savedDevs = null; try { const sv = JSON.parse(window.localStorage.getItem('mrd-proto:v1:DevicePrep') || 'null'); savedDevs = sv && sv.devices; } catch (e) {}
@@ -530,9 +538,72 @@ class Component extends DCLogic {
     try { const s = JSON.parse(window.localStorage.getItem('mrd-proto:store') || 'null'); return Object.assign(empty, s || {}); } catch (e) { return empty; }
   }
   writeStore(mutate) {
-    const s = this.readStore(); mutate(s); s.events = s.events.slice(0, 200);
+    const s = this.readStore();
+    if (this._shared && this._shared.mode === 'live' && !this._shared.canEdit) { const t = JSON.parse(JSON.stringify(s)); mutate(t); const strip = o => { const c = Object.assign({}, o); delete c.ui; return JSON.stringify(c); }; if (strip(t) !== strip(s)) this.setState({ _blocked: true }); s.ui = t.ui || s.ui; try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {} this.forceUpdate(); return s; }
+    mutate(s); s.events = s.events.slice(0, 200);
     try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {}
+    this._pushShared(s);
     this.forceUpdate(); return s;
+  }
+  // Shared across viewers: the store is mirrored to one document in this artifact's database (mrd_prototype/store).
+  // Browser storage stays as the local cache; everyone who opens the canvas sees the same data, editors can change it.
+  _host() {
+    let w = window;
+    for (let i = 0; i < 8; i++) {
+      try { if (w.claude && typeof w.claude.use === 'function') return w.claude; } catch (e) { return null; }
+      let p = null; try { p = w.parent; } catch (e) { return null; }
+      if (!p || p === w) return null; w = p;
+    }
+    return null;
+  }
+  async _sharedInit() {
+    const host = this._host();
+    if (!host) { this._shared = { mode: 'local' }; this.forceUpdate(); return; }
+    let db = null; try { db = await host.use('db'); } catch (e) { db = null; }
+    if (!db) { this._shared = { mode: 'local' }; this.forceUpdate(); return; }
+    let canEdit = false; try { const u = await host.use('user'); canEdit = u ? !!(await u.canEdit()) : false; } catch (e) { canEdit = false; }
+    this._shared = { mode: 'live', canEdit, db };
+    try {
+      this._unsubShared = db.doc('mrd_prototype/store').onSnapshot(snap => {
+        const local = this.readStore();
+        let next = null;
+        if (snap && snap.exists) { const d = snap.data() || {}; if (typeof d.json === 'string') { try { next = JSON.parse(d.json); } catch (e) { next = null; } } }
+        if (!next) {
+          if (snap && !snap.exists) {
+            let seen = false; try { seen = !!window.localStorage.getItem('mrd-proto:shared-seen'); } catch (e) {}
+            const hasLocal = local.events.length || Object.keys(local.units).length || local.added.length;
+            if (!seen && canEdit && hasLocal) this._pushShared(local);
+            else if (seen || !canEdit) { try { window.localStorage.setItem('mrd-proto:store', JSON.stringify({ v: 1, units: {}, added: [], deployments: [], events: [], catalog: {}, ui: local.ui || {} })); } catch (e) {} this.forceUpdate(); }
+          }
+          return;
+        }
+        next.ui = local.ui || {};
+        try { window.localStorage.setItem('mrd-proto:shared-seen', '1'); } catch (e) {}
+        try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(next)); } catch (e) {}
+        this.forceUpdate();
+      }, err => { this._shared = { mode: 'local', err: err && err.code }; this.forceUpdate(); });
+    } catch (e) { this._shared = { mode: 'local' }; }
+    this.forceUpdate();
+  }
+  _pushShared(s) {
+    const sh = this._shared;
+    if (!sh || sh.mode !== 'live' || !sh.canEdit) return;
+    const out = Object.assign({}, s); delete out.ui;
+    let json = JSON.stringify(out);
+    if (json.length > 240000) { out.events = (out.events || []).slice(0, 40); json = JSON.stringify(out); }
+    sh.db.doc('mrd_prototype/store').set({ json, savedAt: Date.now() }).catch(err => { this._shared = Object.assign({}, sh, { lastErr: (err && err.code) || 'unavailable' }); this.forceUpdate(); });
+  }
+  _clearShared() {
+    const sh = this._shared;
+    if (sh && sh.mode === 'live' && sh.canEdit) { try { sh.db.doc('mrd_prototype/store').delete().catch(() => {}); } catch (e) {} }
+  }
+  syncInfo() {
+    const sh = this._shared;
+    if (!sh) return { label: 'Connecting…', cls: 's-unconf', tip: 'Connecting to the shared store', readOnly: false };
+    if (sh.mode === 'live' && sh.lastErr) return { label: 'Not saved', cls: 's-damaged', tip: 'The last change could not be saved to the shared store (' + sh.lastErr + ')', readOnly: false };
+    if (sh.mode === 'live' && sh.canEdit) return { label: 'Shared · live', cls: 's-deployed', tip: 'Changes are saved for everyone who opens this canvas', readOnly: false };
+    if (sh.mode === 'live') return { label: 'View only', cls: 's-ready', tip: 'You can see shared changes live; only people with edit access can change data', readOnly: true };
+    return { label: 'This browser only', cls: 's-prep', tip: 'The shared store is not available here, so changes stay in this browser', readOnly: false };
   }
   nowLabel() { const d = new Date(); return 'Today, ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
   patchUnit(s, ident, patch, prevSt) {
@@ -543,9 +614,9 @@ class Component extends DCLogic {
     const d = new Date();
     s.events.unshift(Object.assign({ id: 'e' + d.getTime() + Math.random().toString(36).slice(2, 6), at: d.getTime(), when: this.nowLabel(), who: 'Chetan', ini: 'CH', role: 'Admin', source: 'Web' }, ev));
   }
-  componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
+  componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} try { if (this._unsubShared) this._unsubShared(); } catch (e) {} }
   componentDidUpdate() {
-    try { const keep = Object.assign({}, this.state); delete keep._shell; ["scanning", "bulk", "toast", "lbl", "lblSel", "scanDlg"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:DevicePrep', JSON.stringify(keep)); } catch (e) {}
+    try { const keep = Object.assign({}, this.state); delete keep._shell; delete keep._blocked; ["scanning", "bulk", "toast", "lbl", "lblSel", "scanDlg"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:DevicePrep', JSON.stringify(keep)); } catch (e) {}
   }
   constructor(props) {
     super(props);
@@ -634,7 +705,9 @@ class Component extends DCLogic {
     ].map(a => Object.assign(a, { unread: !seen }));
     const all = fromStore.concat(alerts);
     const unread = all.filter(n => n.unread).length;
+    const SY = this.syncInfo();
     return {
+      syncLabel: SY.label, syncCls: SY.cls, syncTip: SY.tip, blocked: !!S._blocked, unblock: () => this.setState({ _blocked: false }),
       bellOpen: S._shell === 'bell', bellExp: S._shell === 'bell' ? 'true' : 'false', bellZ: S._shell === 'bell' ? '40' : 'auto',
       menuOpen: S._shell === 'menu', menuExp: S._shell === 'menu' ? 'true' : 'false',
       unread: unread > 9 ? '9+' : String(unread), hasUnread: unread > 0,
@@ -642,7 +715,7 @@ class Component extends DCLogic {
       toggleBell: () => this.setState({ _shell: this.state._shell === 'bell' ? '' : 'bell' }),
       toggleMenu: () => this.setState({ _shell: this.state._shell === 'menu' ? '' : 'menu' }),
       closeAll: () => this.setState({ _shell: '' }),
-      markRead: () => this.writeStore(s => { s.ui = Object.assign({}, s.ui || {}, { seenAt: Date.now() }); })
+      markRead: () => { const st = this.readStore(); st.ui = Object.assign({}, st.ui || {}, { seenAt: Date.now() }); try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(st)); } catch (e) {} this.forceUpdate(); }
     };
   }
   renderVals() { return Object.assign(this._screenVals(), { shell: this.shellVals() }); }
