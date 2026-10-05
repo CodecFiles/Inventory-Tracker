@@ -136,7 +136,7 @@ h1,h2,h3,h4,p{margin:0}
 <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap">
 <div style="display: flex; flex-direction: column; gap: 4px">
 <h1 style="font-size: 26px; font-weight: 600; letter-spacing: -.02em">Facilities</h1>
-<p class="muted" style="font-size: 13.5px">6 client sites across the MRD × Exergio lifecycle · 55 devices deployed · 2 under POC</p>
+<p class="muted" style="font-size: 13.5px">{{headSub}}</p>
 </div>
 <div style="display: flex; gap: 10px; flex-wrap: wrap">
 <a class="btn" href="Reports.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"></path></svg>Export</a>
@@ -169,8 +169,8 @@ h1,h2,h3,h4,p{margin:0}
 </div>
 <div style="flex: 0 0 150px; display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border-radius: 10px; background: #FDF3F2; border: 1px dashed #F1B8B4">
 <span style="font-size: 11.5px; font-weight: 500; color: #A3201F">On hold</span>
-<span style="font-size: 22px; font-weight: 600; line-height: 1.1">1</span>
-<span style="font-size: 11.5px; color: #4A5668">Ruwi Medical Centre</span>
+<span style="font-size: 22px; font-weight: 600; line-height: 1.1">{{holdN}}</span>
+<span style="font-size: 11.5px; color: #4A5668">{{holdWho}}</span>
 </div>
 </div>
 </section>
@@ -287,12 +287,12 @@ h1,h2,h3,h4,p{margin:0}
 <button class="btn ic sm" aria-label="Close" onClick="{{closeAdd}}" style="width: 32px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
 </div>
 <div style="padding: 18px 22px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px 16px">
-<label class="fld">Facility name<input class="in" type="text" placeholder="e.g. Research Complex B"></label>
-<label class="fld">Client<select class="in"><option>Select client…</option><option>Qatar Foundation</option><option>Bank Muscat</option><option>Lulu Group</option><option>+ New client</option></select></label>
-<label class="fld">Location<input class="in" type="text" placeholder="Area, city, country"></label>
-<label class="fld">Facility type<select class="in"><option>Corporate HQ</option><option>Education campus</option><option>Retail</option><option>Commercial office</option><option>Warehouse</option><option>Healthcare</option></select></label>
-<label class="fld">Initial stage<select class="in"><option>Site inspection</option><option>BMS network scan</option><option>POC</option></select><span class="h">Most facilities start at Site inspection.</span></label>
-<label class="fld">Project lead<select class="in"><option>Aisha · Operations</option><option>Nitin · Operations</option><option>Chetan · Admin</option></select></label>
+<label class="fld">Facility name<input class="in" type="text" value="{{nf.name}}" onChange="{{onNfName}}" placeholder="e.g. Research Complex B"><sc-if value="{{addErr}}" hint-placeholder-val="{{ false }}"><span class="h" style="color: #A3201F">{{addErrMsg}}</span></sc-if></label>
+<label class="fld">Client<select class="in" value="{{nf.client}}" onChange="{{onNfClient}}"><option value="">Select client…</option><option>Qatar Foundation</option><option>Bank Muscat</option><option>Lulu Group</option><option>+ New client</option></select></label>
+<label class="fld">Location<input class="in" type="text" value="{{nf.loc}}" onChange="{{onNfLoc}}" placeholder="Area, city, country"></label>
+<label class="fld">Facility type<select class="in" value="{{nf.type}}" onChange="{{onNfType}}"><option>Corporate HQ</option><option>Education campus</option><option>Retail</option><option>Commercial office</option><option>Warehouse</option><option>Healthcare</option></select></label>
+<label class="fld">Initial stage<select class="in" value="{{nf.stage}}" onChange="{{onNfStage}}"><option value="Site inspection">Site inspection</option><option value="BMS scan">BMS network scan</option><option value="POC">POC</option></select><span class="h">Most facilities start at Site inspection.</span></label>
+<label class="fld">Project lead<select class="in" value="{{nf.lead}}" onChange="{{onNfLead}}"><option value="Aisha">Aisha · Operations</option><option value="Nitin">Nitin · Operations</option><option value="Chetan">Chetan · Admin</option></select></label>
 <label class="fld">Primary contact<input class="in" type="text" placeholder="Name and role"></label>
 <label class="fld">Contact phone or email<input class="in" type="text" placeholder="+968 •••• ••••"></label>
 <div style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px">
@@ -306,7 +306,7 @@ h1,h2,h3,h4,p{margin:0}
 </div>
 <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; padding: 14px 22px; border-top: 1px solid #EEF1F4; background: #F8FAFB; border-radius: 0 0 12px 12px">
 <span class="muted" style="font-size: 12px">Admins and Operations can add facilities.</span>
-<div style="display: flex; gap: 8px"><button class="btn" onClick="{{closeAdd}}">Cancel</button><button class="btn p" onClick="{{closeAdd}}">Create facility</button></div>
+<div style="display: flex; gap: 8px"><button class="btn" onClick="{{closeAdd}}">Cancel</button><button class="btn p" onClick="{{createFac}}">Create facility</button></div>
 </div>
 </div>
 </div>
@@ -342,52 +342,152 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
-    try { const keep = Object.assign({}, this.state); ["add"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:Facilities', JSON.stringify(keep)); } catch (e) {}
+    try { const keep = Object.assign({}, this.state); ["add", "nf", "addErr"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:Facilities', JSON.stringify(keep)); } catch (e) {}
   }
-  constructor(props) { super(props); this.state = { tab: 'all', view: 'grid', q: '', add: false }; }
+  constructor(props) { super(props); this.state = { tab: 'all', view: 'grid', q: '', add: false, nf: this.blankNf(), addErr: '' }; }
+  blankNf() { return { name: '', client: '', loc: '', type: 'Corporate HQ', stage: 'Site inspection', lead: 'Aisha' }; }
+  setFac(s, name, patch) {
+    s.facilities = s.facilities || {};
+    s.facilities[name] = Object.assign({}, s.facilities[name] || {}, patch);
+  }
+  // Sample devices identifiable by serial / ICCID per facility (the rest of each sample count is not itemised here).
+  sampleIds() {
+    return {
+      'Qatar Foundation': ['1108675311', '8996802026093001435', '6247B1820041', 'F4E2C6A10B37', '6136D2470112', '6136D2470113', '6136D2470114', '6136D2470115', '6136D2470121', '6136D2470122', '6136D2470123', '6136D2470124'],
+      'Lulu Hypermarket': ['1107442106', '6247B1820045', '8996802026071500822', '6136D2460041', '6136D2460042', '6136D2460043', '6136D2460044', '6136D2460045'],
+      'Bank Muscat Head Office': ['1108675302']
+    };
+  }
+  createFacility() {
+    const nf = Object.assign(this.blankNf(), this.state.nf || {});
+    const name = String(nf.name || '').trim();
+    if (!name) { this.setState({ addErr: 'Enter a facility name.' }); return; }
+    const S = this.readStore();
+    const taken = ['Qatar Foundation', 'Bank Muscat Head Office', 'Lulu Hypermarket', 'Al Khuwair Business Tower', 'Sohar Logistics Hub', 'Ruwi Medical Centre'].concat(Object.keys(S.facilities || {}).filter(n => S.facilities[n] && S.facilities[n].added));
+    if (taken.some(n => n.toLowerCase() === name.toLowerCase())) { this.setState({ addErr: 'A facility with this name already exists.' }); return; }
+    const client = nf.client && nf.client !== '+ New client' ? nf.client : name;
+    this.writeStore(s => {
+      this.setFac(s, name, { added: true, stage: nf.stage || 'Site inspection', client, loc: String(nf.loc || '').trim(), type: nf.type || 'Corporate HQ', lead: nf.lead || 'Aisha', created: this.nowLabel() });
+      this.logEvent(s, { action: 'Facility added', item: name, itemHref: 'FacilityDetail.dc.html', from: '', to: nf.stage || 'Site inspection', note: client + (nf.loc ? ' · ' + String(nf.loc).trim() : '') + ' · ' + (nf.type || '') });
+    });
+    this.setState({ add: false, nf: this.blankNf(), addErr: '', tab: 'all', q: '' });
+  }
   renderVals() {
     const s = this.state;
+    const S = this.readStore();
+    const FS = S.facilities || {};
     const names = ['Site inspection', 'BMS scan', 'POC', 'POC study', 'Contract', 'Deployment', 'Active operations'];
-    const F = [
-      { name: 'Qatar Foundation', client: 'Qatar Foundation', loc: 'Education City, Doha, Qatar', type: 'Education campus', stage: 'POC', cls: 'g-poc', idx: 3, tag: 'POC', tcls: 't-poc', devices: 12, last: '03 Oct 2026', lead: 'Aisha', ini: 'AI', abg: '#E6DDFB', note: 'Day 5 of 61', grp: ['active', 'poc'], photo: 'Facility photo' },
-      { name: 'Bank Muscat Head Office', client: 'Bank Muscat', loc: 'Airport Heights, Muscat', type: 'Corporate HQ', stage: 'Active operations', cls: 'g-ops', idx: 7, tag: 'Contract', tcls: 't-con', devices: 35, last: '28 Sep 2026', lead: 'Nitin', ini: 'NI', abg: '#F6E3C4', note: 'Contract to Jun 2029', grp: ['active', 'contract'], photo: 'Facility photo' },
-      { name: 'Lulu Hypermarket', client: 'Lulu Group', loc: 'Bausher, Muscat', type: 'Retail', stage: 'POC study', cls: 'g-study', idx: 4, tag: 'POC', tcls: 't-poc', devices: 8, last: '16 Sep 2026', lead: 'Aisha', ini: 'AI', abg: '#E6DDFB', note: 'Review due 14 Oct', grp: ['active', 'poc'], photo: 'Facility photo' },
-      { name: 'Al Khuwair Business Tower', client: 'Al Khuwair Properties', loc: 'Al Khuwair, Muscat', type: 'Commercial office', stage: 'BMS scan', cls: 'g-bms', idx: 2, tag: 'Pre-POC', tcls: 't-pre', devices: 0, last: '—', lead: 'Saif', ini: 'SA', abg: '#FBE0DC', note: 'Scan 07 Oct', grp: ['active'], photo: 'No photo yet' },
-      { name: 'Sohar Logistics Hub', client: 'Sohar Logistics', loc: 'Sohar', type: 'Warehouse', stage: 'Site inspection', cls: 'g-insp', idx: 1, tag: 'Pre-POC', tcls: 't-pre', devices: 0, last: '—', lead: 'Rahul', ini: 'RA', abg: '#DCE6FB', note: 'Visit 12 Oct', grp: ['active'], photo: 'No photo yet' },
-      { name: 'Ruwi Medical Centre', client: 'Ruwi Medical Centre', loc: 'Ruwi, Muscat', type: 'Healthcare', stage: 'On hold', cls: 'g-hold', idx: 2, hold: true, tag: 'Pre-POC', tcls: 't-pre', devices: 0, last: '—', lead: 'Aisha', ini: 'AI', abg: '#E6DDFB', note: 'Since 15 Sep', grp: ['hold'], photo: 'No photo yet' }
+    const base = [
+      { name: 'Qatar Foundation', client: 'Qatar Foundation', loc: 'Education City, Doha, Qatar', type: 'Education campus', stage: 'POC', devices: 12, last: '03 Oct 2026', lead: 'Aisha', note: 'Day 5 of 61', photo: 'Facility photo' },
+      { name: 'Bank Muscat Head Office', client: 'Bank Muscat', loc: 'Airport Heights, Muscat', type: 'Corporate HQ', stage: 'Active operations', devices: 35, last: '28 Sep 2026', lead: 'Nitin', note: 'Contract to Jun 2029', photo: 'Facility photo' },
+      { name: 'Lulu Hypermarket', client: 'Lulu Group', loc: 'Bausher, Muscat', type: 'Retail', stage: 'POC study', devices: 8, last: '16 Sep 2026', lead: 'Aisha', note: 'Review due 14 Oct', photo: 'Facility photo' },
+      { name: 'Al Khuwair Business Tower', client: 'Al Khuwair Properties', loc: 'Al Khuwair, Muscat', type: 'Commercial office', stage: 'BMS scan', devices: 0, last: '—', lead: 'Saif', note: 'Scan 07 Oct', photo: 'No photo yet' },
+      { name: 'Sohar Logistics Hub', client: 'Sohar Logistics', loc: 'Sohar', type: 'Warehouse', stage: 'Site inspection', devices: 0, last: '—', lead: 'Rahul', note: 'Visit 12 Oct', photo: 'No photo yet' },
+      { name: 'Ruwi Medical Centre', client: 'Ruwi Medical Centre', loc: 'Ruwi, Muscat', type: 'Healthcare', stage: 'On hold', holdIdx: 2, devices: 0, last: '—', lead: 'Aisha', note: 'Since 15 Sep', photo: 'No photo yet' }
     ];
+    const baseNames = {};
+    base.forEach(f => { baseNames[f.name] = true; });
+    Object.keys(FS).forEach(n => { const a = FS[n]; if (!baseNames[n] && a && a.added) base.push({ name: n, client: a.client || n, loc: a.loc || '—', type: a.type || 'Facility', stage: a.stage || 'Site inspection', devices: 0, last: '—', lead: a.lead || 'Aisha', note: 'Added ' + String(a.created || 'today').replace(/^Today, .*/, 'today'), photo: 'No photo yet', added: true });
+    });
+    // Device counts: sample minus identifiable sample devices that have left, plus units deployed here through the store.
+    const SU = S.units || {};
+    const addedBy = {};
+    (S.added || []).forEach(a => { if (a && a.ident) addedBy[a.ident] = a; });
+    const unitOf = id => Object.assign({}, addedBy[id] || {}, SU[id] || {});
+    const left = (id, fac) => { const u = SU[id]; if (!u) return false; return (u.st !== undefined && u.st !== '' && u.st !== 'deployed') || (u.fac !== undefined && u.fac !== fac); };
+    const SAMPLE = this.sampleIds();
+    const sampleSn = {};
+    Object.keys(SAMPLE).forEach(f => SAMPLE[f].forEach(id => { sampleSn[id] = true; }));
+    const storeN = {};
+    Object.keys(Object.assign({}, addedBy, SU)).forEach(id => {
+      if (sampleSn[id]) return;
+      const u = unitOf(id);
+      if (!u.fac) return;
+      if (u.cat === 'sim') { const h = unitOf(u.device || ''); if (h.st !== 'deployed' || h.fac !== u.fac || (u.st && u.st !== 'deployed')) return; }
+      else if (u.st !== 'deployed') return;
+      storeN[u.fac] = (storeN[u.fac] || 0) + 1;
+    });
+    const MO = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const dnum = x => { const p = String(x || '').split(' '); return p.length < 3 ? 0 : (+p[2] || 0) * 10000 + (MO.indexOf(p[1]) + 1) * 100 + (+p[0] || 0); };
+    const lastDep = {};
+    (S.deployments || []).forEach(d => { if (d && d.fac && d.status !== 'Cancelled' && dnum(d.date) > dnum(lastDep[d.fac])) lastDep[d.fac] = d.date; });
+    const IDX = { 'Site inspection': 1, 'BMS scan': 2, 'POC': 3, 'POC study': 4, 'Contract pending': 5, 'Contract active': 5, 'Active operations': 7, 'Completed': 8 };
+    const GC = { 'Site inspection': 'g-insp', 'BMS scan': 'g-bms', 'POC': 'g-poc', 'POC study': 'g-study', 'Contract pending': 'g-cpend', 'Contract active': 'g-contract', 'Active operations': 'g-ops', 'Completed': 'g-done', 'On hold': 'g-hold' };
+    const PB = { Aisha: ['AI', '#E6DDFB'], Nitin: ['NI', '#F6E3C4'], Saif: ['SA', '#FBE0DC'], Rahul: ['RA', '#DCE6FB'], Chetan: ['CH', '#CDEFE7'] };
+    const F = base.map(b => {
+      const o = FS[b.name] || {};
+      const stage = o.stage || b.stage;
+      const hold = stage === 'On hold';
+      const idx = hold ? (b.holdIdx || 2) : (IDX[stage] || 1);
+      const ph = stage === 'POC' || stage === 'POC study' ? 'poc' : (idx >= 5 && idx <= 7) ? 'con' : stage === 'Completed' ? 'done' : 'pre';
+      const lead = o.lead || b.lead;
+      const p = PB[lead] || [String(lead).slice(0, 2).toUpperCase(), '#E3E7EC'];
+      const gone = (SAMPLE[b.name] || []).filter(id => left(id, b.name)).length;
+      const devices = Math.max(0, b.devices - gone) + (storeN[b.name] || 0);
+      const last = lastDep[b.name] && dnum(lastDep[b.name]) >= dnum(b.last) ? lastDep[b.name] : b.last;
+      const changed = !!o.stage && o.stage !== b.stage;
+      const note = o.archived ? 'Archived' : !changed ? (b.name === 'Lulu Hypermarket' && o.pocEnd ? 'POC to ' + String(o.pocEnd).slice(0, 6) : b.note)
+        : stage === 'POC' ? (o.pocEnd ? 'POC to ' + String(o.pocEnd).slice(0, 6) : 'POC running')
+        : stage === 'POC study' ? 'Study started' : stage === 'Contract pending' ? (o.decision === 'proceed' ? 'Proceeding to contract' : 'Draft terms')
+        : stage === 'Contract active' ? 'Contract signed' : stage === 'Completed' ? (o.decision === 'remove' ? 'POC equipment returned' : o.contract && o.contract.status === 'Ended' ? 'Contract ended' : 'Closed')
+        : stage === 'On hold' ? 'Paused' : 'Stage updated';
+      const grp = o.archived ? ['archived'] : hold ? ['hold'] : stage === 'Completed' ? ['closed'] : ['active'].concat(ph === 'poc' ? ['poc'] : ph === 'con' ? ['contract'] : []);
+      return Object.assign({}, b, {
+        client: o.client || b.client, loc: o.loc || b.loc, type: o.type || b.type, stage, cls: GC[stage] || 'g-insp', idx, hold, lead, ini: p[0], abg: p[1],
+        tag: ph === 'poc' ? 'POC' : ph === 'con' ? 'Contract' : ph === 'done' ? 'Closed' : 'Pre-POC', tcls: ph === 'poc' ? 't-poc' : ph === 'con' ? 't-con' : 't-pre',
+        devices, last, note, grp, archived: !!o.archived
+      });
+    });
     const cur = (i, hold) => hold ? '#DC3B3A' : (i === 3 || i === 4) ? '#7A5AF8' : i >= 5 ? '#12A374' : '#3B4758';
     const decorate = f => Object.assign({}, f, {
       segs: names.map((n, k) => { const i = k + 1; return { t: n, c: i < f.idx ? '#0B7A6B' : i === f.idx ? cur(i, f.hold) : '#E3E7EC' }; }),
-      prog: f.hold ? 'Paused at stage 2 of 7 · BMS scan' : 'Stage ' + f.idx + ' of 7 · ' + names[f.idx - 1],
-      short: f.hold ? 'Paused · 2 of 7' : f.idx + ' of 7 · ' + names[f.idx - 1]
+      prog: f.hold ? 'Paused at stage ' + f.idx + ' of 7 · ' + names[f.idx - 1] : f.idx > 7 ? 'Completed · all stages closed' : 'Stage ' + f.idx + ' of 7 · ' + (f.stage === 'Contract pending' ? 'Contract pending' : names[f.idx - 1]),
+      short: f.hold ? 'Paused · ' + f.idx + ' of 7' : f.idx > 7 ? 'Completed' : f.idx + ' of 7 · ' + (f.stage === 'Contract pending' ? 'Contract pending' : names[f.idx - 1])
     });
     const q = (s.q || '').trim().toLowerCase();
-    const inTab = f => s.tab === 'all' || f.grp.indexOf(s.tab) > -1;
+    const visibleAll = F.filter(f => !f.archived);
+    const inTab = f => s.tab === 'archived' ? f.archived : (s.tab === 'all' ? !f.archived : f.grp.indexOf(s.tab) > -1);
     const list = F.filter(f => inTab(f) && (!q || (f.name + ' ' + f.client + ' ' + f.loc).toLowerCase().indexOf(q) > -1)).map(decorate);
-    const tabs = [['all', 'All'], ['active', 'Active'], ['poc', 'POC'], ['contract', 'Contract'], ['hold', 'On hold']].map(([id, label]) => ({
-      label, n: id === 'all' ? F.length : F.filter(f => f.grp.indexOf(id) > -1).length,
+    const tabDefs = [['all', 'All'], ['active', 'Active'], ['poc', 'POC'], ['contract', 'Contract'], ['hold', 'On hold']];
+    if (F.some(f => f.grp.indexOf('closed') > -1)) tabDefs.push(['closed', 'Completed']);
+    if (F.some(f => f.archived)) tabDefs.push(['archived', 'Archived']);
+    const tabs = tabDefs.map(([id, label]) => ({
+      label, n: id === 'all' ? visibleAll.length : id === 'archived' ? F.filter(f => f.archived).length : F.filter(f => f.grp.indexOf(id) > -1).length,
       sel: s.tab === id ? 'true' : 'false', cls: 'chip' + (s.tab === id ? ' on' : ''), pick: () => this.setState({ tab: id })
     }));
     const clip = (i, last) => i === 0 ? 'polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%)' : last ? 'polygon(0 0, 100% 0, 100% 100%, 0 100%, 14px 50%)' : 'polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%, 14px 50%)';
-    const fdata = [
-      ['Site inspection', 1, 'Sohar Logistics Hub', 'pre'], ['BMS scan', 1, 'Al Khuwair Tower', 'pre'], ['POC', 1, 'Qatar Foundation', 'poc'], ['POC study', 1, 'Lulu Hypermarket', 'poc'],
-      ['Contract', 0, 'None right now', 'con'], ['Deployment', 0, 'None right now', 'con'], ['Active operations', 1, 'Bank Muscat HO', 'con']
-    ];
-    const bgs = { pre: '#EEF1F5', poc: '#F0EAFE', con: '#E1F4EC' }, fgs = { pre: '#3E4A5C', poc: '#5B32B4', con: '#0A6648' };
-    const funnel = fdata.map(([label, v, who, ph], i) => ({ n: i + 1, label, v, who, bg: bgs[ph], fg: fgs[ph], vc: v ? '#0E1726' : '#8A96A8', clip: clip(i, i === fdata.length - 1), ml: i === 0 ? '0' : '-6px', pl: i === 0 ? '14px' : '24px' }));
+    const shortN = { 'Al Khuwair Business Tower': 'Al Khuwair Tower', 'Bank Muscat Head Office': 'Bank Muscat HO' };
+    const live = F.filter(f => !f.archived && !f.hold && f.idx <= 7);
+    const phs = ['pre', 'pre', 'poc', 'poc', 'con', 'con', 'con'];
+    const funnel = names.map((label, i) => {
+      const at = live.filter(f => f.idx === i + 1);
+      const ph = phs[i];
+      return { label, v: at.length, who: at.length ? at.map(f => shortN[f.name] || f.name).join(', ') : 'None right now' , ph };
+    }).map(({ label, v, who, ph }, i) => {
+      const bgs = { pre: '#EEF1F5', poc: '#F0EAFE', con: '#E1F4EC' }, fgs = { pre: '#3E4A5C', poc: '#5B32B4', con: '#0A6648' };
+      return { n: i + 1, label, v, who, bg: bgs[ph], fg: fgs[ph], vc: v ? '#0E1726' : '#8A96A8', clip: clip(i, i === names.length - 1), ml: i === 0 ? '0' : '-6px', pl: i === 0 ? '14px' : '24px' };
+    });
+    const holds = F.filter(f => f.hold && !f.archived);
+    const devTotal = visibleAll.reduce((a, f) => a + f.devices, 0);
+    const pocN = visibleAll.filter(f => f.stage === 'POC' || f.stage === 'POC study').length;
     const isGrid = s.view === 'grid';
+    const nf = Object.assign(this.blankNf(), s.nf || {});
+    const setNf = k => e => this.setState({ nf: Object.assign({}, nf, { [k]: e && e.target ? e.target.value : '' }), addErr: '' });
     return {
       tabs, funnel, list, q: s.q,
+      headSub: visibleAll.length + ' client sites across the MRD × Exergio lifecycle · ' + devTotal + ' devices deployed · ' + pocN + ' under POC',
+      holdN: holds.length, holdWho: holds.length ? holds.map(f => f.name).join(', ') : 'None',
       onQ: e => this.setState({ q: e.target.value }),
       clear: () => this.setState({ q: '', tab: 'all' }),
-      countLabel: list.length + ' of ' + F.length + ' facilities',
+      countLabel: list.length + ' of ' + (s.tab === 'archived' ? F.filter(f => f.archived).length : visibleAll.length) + ' facilities',
       none: list.length === 0,
       showGrid: isGrid && list.length > 0, showTable: !isGrid && list.length > 0,
       isGrid: isGrid ? 'true' : 'false', isTable: isGrid ? 'false' : 'true',
       gridCls: 'chip' + (isGrid ? ' on' : ''), tableCls: 'chip' + (!isGrid ? ' on' : ''),
       toGrid: () => this.setState({ view: 'grid' }), toTable: () => this.setState({ view: 'table' }),
-      addOpen: s.add, openAdd: () => this.setState({ add: true }), closeAdd: () => this.setState({ add: false })
+      addOpen: s.add, openAdd: () => this.setState({ add: true, addErr: '' }), closeAdd: () => this.setState({ add: false, addErr: '' }),
+      nf, onNfName: setNf('name'), onNfClient: setNf('client'), onNfLoc: setNf('loc'), onNfType: setNf('type'), onNfStage: setNf('stage'), onNfLead: setNf('lead'),
+      addErr: !!s.addErr, addErrMsg: s.addErr || '', createFac: () => this.createFacility()
     };
   }
 }

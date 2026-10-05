@@ -199,7 +199,7 @@ h1,h2,h3,h4,p{margin:0}
 <section style="display: flex; flex-wrap: wrap; gap: 16px">
 <div class="card" style="flex: 3 1 520px; min-width: 0">
 <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 18px 14px">
-<div><h2 style="font-size: 16px; font-weight: 600">Facility pipeline</h2><p class="muted" style="font-size: 13px">6 facilities across the MRD × Exergio lifecycle</p></div>
+<div><h2 style="font-size: 16px; font-weight: 600">Facility pipeline</h2><p class="muted" style="font-size: 13px">{{facCount}} facilities across the MRD × Exergio lifecycle</p></div>
 <a href="Facilities.dc.html" style="font-size: 13px; font-weight: 500">All facilities →</a>
 </div>
 <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0; padding: 0 18px 16px">
@@ -439,14 +439,30 @@ class Component extends DCLogic {
       mk('LoRaWAN gateways', 'Milesight UG65', 6 + ST0.added.filter(u => u.cat === 'gw').length, [['Office stock', 2 + g('unconf', 'gw') + g('stock', 'gw') + g('prep', 'gw') + g('ready', 'gw') + g('reserved', 'gw') + g('maint', 'gw') + g('damaged', 'gw'), '#1A8FAD'], ['Deployed', 4 + g('deployed', 'gw'), '#12A374']], 'Inventory.dc.html'),
       mk('M2M SIM cards', 'Omantel · Ooredoo', 80 + ST0.added.filter(u => u.cat === 'sim').length, [['Available', 64 - simAsg + ST0.added.filter(u => u.cat === 'sim').length, '#1A8FAD'], ['Assigned, active', 14 + simAsg, '#12A374'], ['Deactivated', 2, '#8A96A8']], 'SimInventory.dc.html')
     ];
-    const lifecycle = [['Site inspection',1,'#8A96A8'],['BMS scan',1,'#1A8FAD'],['POC',1,'#7C4DDB'],['POC study',1,'#E08A00'],['Contract · active',1,'#12A374'],['On hold',1,'#DC3B3A']].map(([label, v, c]) => ({ label, v, c }));
-    const facilities = [
+    const facilities0 = [
       { name: 'Qatar Foundation', loc: 'Education City, Doha', stage: 'POC', cls: 'g-poc', devices: 12, last: '03 Oct 2026' },
       { name: 'Bank Muscat Head Office', loc: 'Airport Heights, Muscat', stage: 'Active operations', cls: 'g-contract', devices: 35, last: '28 Sep 2026' },
       { name: 'Lulu Hypermarket', loc: 'Bausher, Muscat', stage: 'POC study', cls: 'g-study', devices: 8, last: '16 Sep 2026' },
       { name: 'Al Khuwair Business Tower', loc: 'Al Khuwair, Muscat', stage: 'BMS scan', cls: 'g-bms', devices: 0, last: '—' },
-      { name: 'Sohar Logistics Hub', loc: 'Sohar', stage: 'Site inspection', cls: 'g-insp', devices: 0, last: '—' }
+      { name: 'Sohar Logistics Hub', loc: 'Sohar', stage: 'Site inspection', cls: 'g-insp', devices: 0, last: '—' },
+      { name: 'Ruwi Medical Centre', loc: 'Ruwi, Muscat', stage: 'On hold', cls: 'g-hold', devices: 0, last: '—' }
     ];
+    // Facilities: stages and devices from the shared store.
+    const FST = ST0.facilities || {};
+    const GCLS = { 'Site inspection': 'g-insp', 'BMS scan': 'g-bms', 'POC': 'g-poc', 'POC study': 'g-study', 'Contract pending': 'g-cpend', 'Contract active': 'g-contract', 'Active operations': 'g-contract', 'Completed': 'g-done', 'On hold': 'g-hold' };
+    const facNames = facilities0.map(f => f.name).concat(Object.keys(FST).filter(n => FST[n].added && !facilities0.some(f => f.name === n)));
+    const facAll = facNames.filter(n => !(FST[n] && FST[n].archived)).map(n => {
+      const f0 = facilities0.filter(f => f.name === n)[0] || { name: n, loc: (FST[n] && FST[n].loc) || '—', stage: 'Site inspection', devices: 0, last: '—' };
+      const stage = (FST[n] && FST[n].stage) || f0.stage;
+      let devices = f0.devices;
+      Object.keys(ST0.units).forEach(k => { const p = ST0.units[k]; if (k.indexOf('row:') === 0) return; const was = p.st0 === 'deployed', now = p.st === 'deployed' && p.fac === n; if (now && !was) devices++; else if (!now && was && p.fac0 === n && devices > 0) devices--; });
+      const deps = ST0.deployments.filter(d => d.fac === n);
+      const last = deps.length ? deps[deps.length - 1].date : f0.last;
+      return { name: n, loc: f0.loc, stage, cls: GCLS[stage] || 'g-insp', devices, last };
+    });
+    const facilities = facAll.slice(0, 5);
+    const LC = [['Site inspection', ['Site inspection'], '#8A96A8'], ['BMS scan', ['BMS scan'], '#1A8FAD'], ['POC', ['POC'], '#7C4DDB'], ['POC study', ['POC study'], '#E08A00'], ['Contract · active', ['Contract pending', 'Contract active', 'Active operations'], '#12A374'], ['On hold', ['On hold'], '#DC3B3A']];
+    const lifecycle = LC.map(([label, sts, c]) => ({ label, c, v: facAll.filter(f => sts.indexOf(f.stage) > -1).length }));
     const prep = [
       { name: 'Teltonika RUT956 × ' + Math.max(0, 14 + g('unconf', 'tel')), sub: 'TEL-2026-004 and newer receipts', status: 'Unconfigured', cls: 's-unconf' },
       { name: 'Teltonika RUT956 · 1107442109', sub: 'TEL-2026-003 · awaiting SIM', status: 'In preparation', cls: 's-prep' },
@@ -491,11 +507,11 @@ class Component extends DCLogic {
       { ini: 'NI', bg: '#F6E3C4', who: 'Nitin', what: 'received batch', obj: 'SIM-2026-005', when: 'Wed 30 Sep, 11:02' },
       { ini: 'AI', bg: '#E6DDFB', who: 'Aisha', what: 'moved to POC study', obj: 'Lulu Hypermarket', when: 'Tue 29 Sep, 16:25' }
     ];
-    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Settings changed': 'updated settings ·', 'Note added': 'added a note to', 'Record corrected': 'corrected' };
+    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Settings changed': 'updated settings ·', 'Note added': 'added a note to', 'Record corrected': 'corrected', 'Stage changed': 'moved the project stage of', 'Facility added': 'added facility', 'Facility archived': 'archived facility', 'POC decision': 'recorded a POC decision for', 'Contract ended': 'ended the contract for', 'Product added': 'added product', 'Product archived': 'archived', 'Product restored': 'restored', 'Stock adjusted': 'adjusted stock of', 'Reorder placed': 'placed a reorder for', 'Role changed': 'changed the role of', 'User invited': 'invited', 'User deactivated': 'deactivated', 'Report exported': 'exported', 'Report scheduled': 'scheduled', 'Issue reported': 'reported an issue on', 'Verified on site': 'verified on site', 'User reactivated': 'reactivated', 'Facility restored': 'restored facility', 'Facility updated': 'updated facility' };
     const storeActivity = ST0.events.slice(0, 5).map(e => ({ ini: e.ini || 'CH', bg: '#CDEFE7', who: e.who || 'Chetan', what: VERB[e.action] || String(e.action || '').toLowerCase(), obj: e.item + (e.to && e.action !== 'Imported' && e.action !== 'Settings changed' ? ' → ' + e.to : ''), when: e.when }));
     const storeDeps = ST0.deployments.slice().reverse().map(d => ({ ref: d.ref, date: String(d.date || '').slice(0, 6), fac: d.fac, item: (d.items || []).map(i => i.name ? i.name.replace('Teltonika ', '') + ' · ' + i.ident : i.ident).join(', ') || '—', type: d.type, tcls: { POC: 't-poc', Contract: 't-con', Replacement: 't-rep', Additional: 't-add' }[d.type] || 't-add', by: d.by || 'Chetan' }));
     const prepCount = Math.max(0, 17 + g('unconf') + g('prep') - ROWQ['row:r6'][1] * 0);
-    return { dist, prepCount, showBanner: this.state.banner, dismiss: () => this.setState({ banner: false }), ranges, kpis, stages, devices, lifecycle, facilities, prep, cats, monthsIn, monthsOut, pocCon, deps: storeDeps.concat(deps).slice(0, 5), low, batches, upcoming, activity: storeActivity.concat(activity).slice(0, 5) };
+    return { dist, prepCount, facCount: facAll.length, showBanner: this.state.banner, dismiss: () => this.setState({ banner: false }), ranges, kpis, stages, devices, lifecycle, facilities, prep, cats, monthsIn, monthsOut, pocCon, deps: storeDeps.concat(deps).slice(0, 5), low, batches, upcoming, activity: storeActivity.concat(activity).slice(0, 5) };
   }
 }
 </script>

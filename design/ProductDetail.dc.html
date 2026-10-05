@@ -164,7 +164,7 @@ h1,h2,h3,h4,p{margin:0}
 </div>
 <div style="display: flex; gap: 10px; flex-wrap: wrap">
 <button class="btn" onClick="{{goSettings}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg>Edit</button>
-<button class="btn" onClick="{{openArchive}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1"></rect><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"></path><path d="M10 13h4"></path></svg>Archive</button>
+<sc-if value="{{notArch}}" hint-placeholder-val="{{ true }}"><button class="btn" onClick="{{openArchive}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1"></rect><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"></path><path d="M10 13h4"></path></svg>Archive</button></sc-if><sc-if value="{{isArch}}" hint-placeholder-val="{{ false }}"><button class="btn" onClick="{{restore}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path></svg>Restore</button></sc-if>
 <a class="btn p" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive stock</a>
 </div>
 </div>
@@ -172,16 +172,16 @@ h1,h2,h3,h4,p{margin:0}
 <span class="pill">Teltonika Devices</span>
 <span class="pill ser"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5h2M18 5h2v2M20 17v2h-2M6 19H4v-2"></path><path d="M8 9v6M11 9v6M14 9v6M17 9v6"></path></svg>Serialised</span>
 <span class="pill cfg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg>Requires configuration</span>
-<span class="b s-deployed">Active</span>
+<span class="b {{stCls}}">{{stLabel}}</span>
 <span class="lock" style="margin-left: 4px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Edit &amp; archive: Admin only</span>
 </div>
 <div style="display: flex; flex-wrap: wrap; gap: 12px 0; padding-top: 4px">
-<div class="stat"><span class="muted" style="font-size: 12px">Total units</span><strong>30</strong></div>
-<div class="stat"><span class="muted" style="font-size: 12px">In MRD Office</span><strong>20</strong></div>
-<div class="stat"><span class="muted" style="font-size: 12px">Deployed</span><strong>10</strong></div>
-<div class="stat"><span class="muted" style="font-size: 12px">Ready / min</span><strong style="color: #A3201F">4 <span style="font-size: 14px; color: #5E6B7D; font-weight: 500">/ 5</span></strong></div>
-<div class="stat"><span class="muted" style="font-size: 12px">Batches</span><strong>2</strong></div>
-<div class="stat"><span class="muted" style="font-size: 12px">Last received</span><strong style="font-size: 15px; padding-top: 4px">22 Sep 2026</strong></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Total units</span><strong>{{total}}</strong></div>
+<div class="stat"><span class="muted" style="font-size: 12px">In MRD Office</span><strong>{{inOffice}}</strong></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Deployed</span><strong>{{deployed}}</strong></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Ready / min</span><strong style="color: {{readyColor}}">{{nReady}} <span style="font-size: 14px; color: #5E6B7D; font-weight: 500">/ {{minVal}}</span></strong></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Batches</span><strong>{{nBatches}}</strong></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Last received</span><strong style="font-size: 15px; padding-top: 4px">{{lastRecv}}</strong></div>
 </div>
 </div>
 </section>
@@ -196,25 +196,27 @@ h1,h2,h3,h4,p{margin:0}
 <div style="display: flex; flex-direction: column; gap: 16px">
 <section class="card" style="padding: 18px 20px; display: flex; flex-direction: column; gap: 14px">
 <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px">
-<div><h2 style="font-size: 15px; font-weight: 600">Status of all 30 units</h2><p class="muted" style="font-size: 12.5px">Click a status to see those units</p></div>
+<div><h2 style="font-size: 15px; font-weight: 600">Status of all {{total}} units</h2><p class="muted" style="font-size: 12.5px">Click a status to see those units</p></div>
 <a href="DevicePrep.dc.html" style="font-size: 13px; font-weight: 500">Preparation queue →</a>
 </div>
-<div class="seg" style="height: 14px; border-radius: 7px" role="img" aria-label="14 unconfigured, 1 in preparation, 4 ready, 10 deployed, 1 under maintenance">
+<div class="seg" style="height: 14px; border-radius: 7px" role="img" aria-label="{{distAria}}">
 <sc-for list="{{dist}}" as="d" hint-placeholder-count="5"><span style="width: {{d.w}}; background: {{d.c}}" title="{{d.label}} · {{d.v}} units"></span></sc-for>
 </div>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 4px">
 <sc-for list="{{dist}}" as="d" hint-placeholder-count="5"><button class="lg" onClick="{{d.pick}}"><span style="width: 10px; height: 10px; border-radius: 3px; background: {{d.c}}"></span>{{d.label}}<strong>{{d.v}}</strong></button></sc-for>
 </div>
+<sc-if value="{{readyLow}}" hint-placeholder-val="{{ true }}">
 <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-radius: 10px; background: #FFF8EB; border: 1px solid #F3D9A6; color: #6B3D00; font-size: 13px">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9.5 17H2.5z"></path><path d="M12 10v4M12 17h.01"></path></svg>
-<span style="flex: 1 1 300px"><strong style="font-weight: 600">4 ready, minimum is 5.</strong> The Al Khuwair POC kit (20 Oct) needs 1 more router; 14 unconfigured units are on Shelf A1–A2.</span>
+<span style="flex: 1 1 300px"><strong style="font-weight: 600">{{lowTitle}}</strong> {{lowText}}</span>
 <a class="btn sm" href="DevicePrep.dc.html" style="background: transparent; border-color: #F3D9A6; color: #6B3D00">Prepare units</a>
 </div>
+</sc-if>
 </section>
 
 <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px">
 <div class="card">
-<div class="ch"><h2>Stock by location</h2><span class="muted" style="font-size: 12.5px">20 in office</span></div>
+<div class="ch"><h2>Stock by location</h2><span class="muted" style="font-size: 12.5px">{{inOffice}} in office</span></div>
 <div style="padding: 0 18px 18px; display: flex; flex-direction: column; gap: 14px">
 <sc-for list="{{locs}}" as="l" hint-placeholder-count="4">
 <div style="display: flex; flex-direction: column; gap: 6px" title="{{l.label}}: {{l.v}} units">
@@ -226,7 +228,7 @@ h1,h2,h3,h4,p{margin:0}
 </div>
 
 <div class="card">
-<div class="ch"><h2>Units by facility</h2><span class="muted" style="font-size: 12.5px">10 deployed</span></div>
+<div class="ch"><h2>Units by facility</h2><span class="muted" style="font-size: 12.5px">{{deployed}} deployed</span></div>
 <sc-for list="{{facs}}" as="f" hint-placeholder-count="3">
 <a class="row" href="FacilityDetail.dc.html">
 <span style="width: 34px; height: 34px; flex: 0 0 34px; border-radius: 8px; background: #F1F4F7; display: flex; align-items: center; justify-content: center; color: #3B4758"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"></rect><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1"></path></svg></span>
@@ -341,7 +343,7 @@ h1,h2,h3,h4,p{margin:0}
 <dt class="muted">Purchase order</dt><dd style="margin: 0" class="mono">{{b.po}}</dd>
 <dt class="muted">Invoice</dt><dd style="margin: 0" class="mono">{{b.inv}}</dd>
 <dt class="muted">Serial range</dt><dd style="margin: 0" class="mono">{{b.range}}</dd>
-<dt class="muted">Damaged</dt><dd style="margin: 0">0</dd>
+<dt class="muted">Damaged</dt><dd style="margin: 0">{{b.damaged}}</dd>
 </dl>
 <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap">
 <span class="muted" style="font-size: 12.5px">{{b.note}}</span>
@@ -368,7 +370,7 @@ h1,h2,h3,h4,p{margin:0}
 <div class="rc" style="opacity: .6"><strong style="font-size: 13px">Hybrid</strong><span class="muted">Batch first, serials later</span></div>
 <div class="rc" style="opacity: .6"><strong style="font-size: 13px">Quantity</strong><span class="muted">Counted only</span></div>
 </div>
-<span class="muted" style="font-size: 12px">Locked: 30 serialised units exist. Archive and create a new product to change it.</span>
+<span class="muted" style="font-size: 12px">Locked: {{total}} serialised units exist. Archive and create a new product to change it.</span>
 </div>
 <div class="card" style="padding: 18px 20px; display: flex; gap: 12px; align-items: flex-start">
 <button class="{{cfgSw}}" role="switch" aria-checked="{{cfgAria}}" aria-labelledby="cfg-l" onClick="{{toggleCfg}}"></button>
@@ -408,7 +410,7 @@ h1,h2,h3,h4,p{margin:0}
 </div>
 </sc-for>
 </div>
-<div style="display: flex; justify-content: flex-end; gap: 10px"><button class="btn" onClick="{{goOverview}}">Cancel</button><button class="btn p" onClick="{{goOverview}}">Save settings</button></div>
+<div style="display: flex; justify-content: flex-end; gap: 10px"><button class="btn" onClick="{{goOverview}}">Cancel</button><button class="btn p" onClick="{{saveSettings}}">Save settings</button></div>
 </div>
 </section>
 </div>
@@ -423,12 +425,12 @@ h1,h2,h3,h4,p{margin:0}
 <div style="padding: 22px 22px 8px; display: flex; flex-direction: column; gap: 12px">
 <span style="width: 40px; height: 40px; border-radius: 10px; background: #F1F4F7; display: flex; align-items: center; justify-content: center; color: #3B4758"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1"></rect><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"></path><path d="M10 13h4"></path></svg></span>
 <h2 id="ar-t" style="font-size: 17px; font-weight: 600">Archive Teltonika RUT956?</h2>
-<p style="font-size: 13.5px; color: #3B4758">Archiving hides this product from receiving, preparation and new deployments. Nothing is deleted: all 30 units, 2 batches and the deployment history at 3 facilities stay searchable.</p>
-<p style="font-size: 12.5px; color: #8A4B00; background: #FFF8EB; border: 1px solid #F3D9A6; border-radius: 8px; padding: 8px 10px">20 units are still in the MRD Office and 10 are deployed. Deployed routers keep working and stay linked to their facilities.</p>
+<p style="font-size: 13.5px; color: #3B4758">Archiving hides this product from receiving, preparation and new deployments. Nothing is deleted: all {{total}} units, {{nBatches}} batches and the deployment history at {{nFacs}} facilities stay searchable.</p>
+<p style="font-size: 12.5px; color: #8A4B00; background: #FFF8EB; border: 1px solid #F3D9A6; border-radius: 8px; padding: 8px 10px">{{inOffice}} units are still in the MRD Office and {{deployed}} are deployed. Deployed routers keep working and stay linked to their facilities.</p>
 </div>
 <div style="display: flex; justify-content: flex-end; gap: 10px; padding: 14px 22px 20px">
 <button class="btn" onClick="{{closeArchive}}">Cancel</button>
-<button class="btn p" onClick="{{closeArchive}}">Archive product</button>
+<button class="btn p" onClick="{{confirmArchive}}">Archive product</button>
 </div>
 </div>
 </div>
@@ -464,12 +466,16 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
-    try { const keep = Object.assign({}, this.state); [].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:ProductDetail', JSON.stringify(keep)); } catch (e) {}
+    try { const keep = Object.assign({}, this.state); ["arch", "minReady"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:ProductDetail', JSON.stringify(keep)); } catch (e) {}
   }
-  constructor(props) { super(props); this.state = { tab: 'overview', uf: 'all', page: 0, arch: false, cfg: true, minReady: '5' }; }
+  constructor(props) { super(props); this.state = { tab: 'overview', uf: 'all', page: 0, arch: false, cfg: true, minDraft: null }; }
   renderVals() {
     const S = this.state;
-    const ST = { unconf: ['Unconfigured', 's-unconf', '#8A96A8'], prep: ['In preparation', 's-prep', '#E08A00'], ready: ['Ready for deployment', 's-ready', '#2F6FE4'], deployed: ['Deployed', 's-deployed', '#12A374'], maint: ['Under maintenance', 's-maint', '#E86A1C'] };
+    const NAME = 'Teltonika RUT956';
+    const ST0 = this.readStore();
+    const PR = Object.assign({ added: [], archived: {}, restored: {}, min: {} }, ST0.products || {});
+    const ST = { unconf: ['Unconfigured', 's-unconf', '#8A96A8'], prep: ['In preparation', 's-prep', '#E08A00'], ready: ['Ready for deployment', 's-ready', '#2F6FE4'], reserved: ['Reserved', 's-reserved', '#7C4DDB'], stock: ['In stock', 's-stock', '#1A8FAD'], deployed: ['Deployed', 's-deployed', '#12A374'], maint: ['Under maintenance', 's-maint', '#E86A1C'], transit: ['In transit', 's-transit', '#5468E0'], returned: ['Returned', 's-returned', '#9C8F7E'], damaged: ['Damaged', 's-damaged', '#DC3B3A'], retired: ['Retired', 's-retired', '#A2A9B4'] };
+    const TCLS = { POC: 't-poc', Contract: 't-con', Replacement: 't-rep', Additional: 't-add' };
     const pad = (n, l) => { let s = String(n); while (s.length < l) s = '0' + s; return s; };
     const all = [];
     const r4 = { 4: ['3001424', '10.64.12.34', '05 Oct, 08:20'], 6: ['3001425', '10.64.12.35', '02 Oct, 15:10'], 9: ['3001427', '10.64.12.37', '05 Oct, 09:40'], 13: ['3001429', '10.64.12.39', '30 Sep, 11:45'] };
@@ -481,16 +487,38 @@ class Component extends DCLogic {
       else if (i === 11) { st = 'deployed'; iccid = '8996802026093001435'; ip = '10.64.12.41'; where = 'Qatar Foundation'; type = 'POC'; tcls = 't-poc'; }
       else if (i === 2) { st = 'deployed'; iccid = '8996802026093001419'; ip = '10.64.12.33'; where = 'Bank Muscat Head Office'; type = 'Additional'; tcls = 't-add'; }
       else { unconfSeen++; where = 'MRD Office · ' + (unconfSeen <= 10 ? 'Shelf A1' : 'Shelf A2'); }
-      all.push({ sn: String(1108675300 + i), imei, dev: 'MRD-TEL-0' + (408 + i), iccid, ip, st, where, type, tcls, batch: 'TEL-2026-004' });
+      all.push({ sn: String(1108675300 + i), imei, dev: 'MRD-TEL-0' + (408 + i), iccid, ip, st, where, type, tcls, batch: 'TEL-2026-004', when: r4[i] ? r4[i][2] + ' · Chetan' : '' });
     }
     for (let i = 0; i < 10; i++) {
       let st = 'deployed', iccid = '8996802026093001' + (380 + i), ip = '10.64.12.' + (20 + i), where = 'Bank Muscat Head Office', type = 'Contract', tcls = 't-con';
       if (i === 9) { st = 'prep'; iccid = 'Awaiting SIM'; ip = '—'; where = 'MRD Office · Prep bench'; type = ''; tcls = ''; }
       if (i === 3) { st = 'maint'; iccid = 'Removed'; ip = '—'; where = 'MRD Office · Repair bench'; type = ''; tcls = ''; }
       if (i === 7) { iccid = '8996803026052000118'; ip = '10.72.4.18'; where = 'Lulu Hypermarket'; type = 'POC'; tcls = 't-poc'; }
-      all.push({ sn: String(1107442100 + i), imei: '8605480439129' + pad(20 + i * 3, 2), dev: 'MRD-TEL-0' + (398 + i), iccid, ip, st, where, type, tcls, batch: 'TEL-2026-003' });
+      all.push({ sn: String(1107442100 + i), imei: '8605480439129' + pad(20 + i * 3, 2), dev: 'MRD-TEL-0' + (398 + i), iccid, ip, st, where, type, tcls, batch: 'TEL-2026-003', when: '' });
     }
-    const order = { ready: 0, prep: 1, maint: 2, unconf: 3, deployed: 4 };
+    // Shared store: RUT956 units received on other screens, then status / SIM / IP / location patches by serial.
+    const seen = {}; all.forEach(u => { seen[u.sn] = true; });
+    const addedBatch = {};
+    (ST0.added || []).forEach(a => {
+      if (!a || a.name !== NAME || !a.ident || seen[a.ident]) return; seen[a.ident] = true;
+      all.push({ sn: a.ident, imei: a.imei || '—', dev: a.devId || '—', iccid: '—', ip: '—', st: a.st || 'unconf', where: (a.loc || 'MRD Office') + (a.loc2 ? ' · ' + a.loc2 : ''), type: '', tcls: '', batch: a.batch || '—', when: '', recv: a.recv || '', sup: a.sup || '' });
+      if (a.batch) addedBatch[a.batch] = true;
+    });
+    Object.keys(ST0.units || {}).forEach(id => { const p = ST0.units[id]; if (p && p.name === NAME && !seen[id]) { seen[id] = true; all.push({ sn: id, imei: p.imei || '—', dev: '—', iccid: '—', ip: '—', st: p.st || 'unconf', where: 'MRD Office', type: '', tcls: '', batch: p.batch || '—', when: '' }); } });
+    for (let k = 0; k < all.length; k++) {
+      const p = ST0.units[all[k].sn]; if (!p) continue;
+      const u = Object.assign({}, all[k]);
+      if (p.st && ST[p.st]) u.st = p.st;
+      if (p.sim !== undefined) u.iccid = p.sim || '—';
+      if (p.ip !== undefined) u.ip = p.ip || '—';
+      if (p.type !== undefined) { u.type = p.type || ''; u.tcls = TCLS[p.type] || ''; }
+      if (u.st === 'deployed') { if (p.fac || p.loc) u.where = p.fac || p.loc; }
+      else if (p.loc || p.loc2) { u.where = (p.loc || 'MRD Office') + (p.loc2 ? ' · ' + p.loc2 : ''); u.type = ''; u.tcls = ''; }
+      if (p.st === 'ready' && p.upd) u.when = p.upd + ' · Chetan';
+      all[k] = u;
+    }
+    const total = all.length;
+    const order = { ready: 0, reserved: 1, prep: 2, maint: 3, unconf: 4, stock: 5, transit: 6, returned: 7, damaged: 8, deployed: 9, retired: 10 };
     const filtered = all.filter(u => S.uf === 'all' || u.st === S.uf).sort((a, b) => order[a.st] - order[b.st]);
     const per = 10, pageCount = Math.max(1, Math.ceil(filtered.length / per));
     const page = Math.min(S.page, pageCount - 1);
@@ -500,31 +528,47 @@ class Component extends DCLogic {
     }));
     const cnt = k => all.filter(u => u.st === k).length;
     const goUnits = k => () => this.setState({ tab: 'units', uf: k, page: 0 });
-    const dist = ['unconf', 'prep', 'ready', 'deployed', 'maint'].map(k => ({ label: ST[k][0], c: ST[k][2], v: cnt(k), w: (cnt(k) / 30 * 100).toFixed(1) + '%', pick: goUnits(k) }));
-    const unitChips = [['all', 'All', all.length]].concat(['unconf', 'prep', 'ready', 'deployed', 'maint'].map(k => [k, ST[k][0], cnt(k)])).map(([id, label, n]) => ({ label, n, cls: 'fchip' + (S.uf === id ? ' on' : ''), pressed: S.uf === id ? 'true' : 'false', pick: () => this.setState({ uf: id, page: 0 }) }));
+    const stKeys = ['unconf', 'prep', 'ready', 'deployed', 'maint'].concat(['reserved', 'stock', 'transit', 'returned', 'damaged', 'retired'].filter(k => cnt(k) > 0));
+    const dist = stKeys.map(k => ({ label: ST[k][0], c: ST[k][2], v: cnt(k), w: (total ? cnt(k) / total * 100 : 0).toFixed(1) + '%', pick: goUnits(k) }));
+    const distAria = dist.map(d => d.v + ' ' + d.label.toLowerCase()).join(', ');
+    const unitChips = [['all', 'All', all.length]].concat(stKeys.map(k => [k, ST[k][0], cnt(k)])).map(([id, label, n]) => ({ label, n, cls: 'fchip' + (S.uf === id ? ' on' : ''), pressed: S.uf === id ? 'true' : 'false', pick: () => this.setState({ uf: id, page: 0 }) }));
     const pages = [];
     for (let p = 0; p < pageCount; p++) pages.push({ label: String(p + 1), cls: 'pg' + (p === page ? ' on' : ''), pick: (n => () => this.setState({ page: n }))(p) });
-    const tabs = [['overview', 'Overview', ''], ['units', 'Units', '30'], ['batches', 'Batches', '2'], ['settings', 'Settings', '']].map(([id, label, n]) => ({ label, n, cls: 'tab' + (S.tab === id ? ' on' : ''), sel: S.tab === id ? 'true' : 'false', pick: () => this.setState({ tab: id }) }));
-    const locs = [['Shelf A1', 'MRD Office', 10, 'unconfigured'], ['Shelf A2', 'MRD Office', 8, '4 ready · 4 unconfigured'], ['Prep bench', 'MRD Office', 1, 'awaiting SIM'], ['Repair bench', 'MRD Office', 1, 'LTE modem fault']].map(([label, x, v, sub]) => ({ label, v, sub, w: (v / 10 * 100) + '%' }));
-    const facs = [
-      { name: 'Bank Muscat Head Office', sub: 'Airport Heights, Muscat · Active operations', type: 'Contract', tcls: 't-con', v: 8 },
-      { name: 'Qatar Foundation', sub: 'Plant room B1 · since 01 Oct 2026', type: 'POC', tcls: 't-poc', v: 1 },
-      { name: 'Lulu Hypermarket', sub: 'Bausher, Muscat · POC study', type: 'POC', tcls: 't-poc', v: 1 }
-    ];
+    const deployedN = cnt('deployed');
+    const inOfficeN = all.filter(u => u.st !== 'deployed' && u.st !== 'retired').length;
+    // Stock by location: office units grouped by sub-location.
+    const LOCSUB = { 'Shelf A1': 'MRD Office', 'Prep bench': 'awaiting SIM', 'Repair bench': 'LTE modem fault' };
+    const locMap = {}; const locOrder = [];
+    all.filter(u => u.st !== 'deployed' && u.st !== 'retired').forEach(u => { const k = u.where.replace(/^MRD Office · /, '') || 'MRD Office'; if (!locMap[k]) { locMap[k] = {}; locOrder.push(k); } locMap[k][u.st] = (locMap[k][u.st] || 0) + 1; });
+    const locMax = Math.max(1, ...locOrder.map(k => Object.keys(locMap[k]).reduce((a, s) => a + locMap[k][s], 0)));
+    const locs = locOrder.map(label => { const m = locMap[label]; const v = Object.keys(m).reduce((a, s) => a + m[s], 0); const sub = Object.keys(m).length === 1 && LOCSUB[label] && label !== 'Shelf A1' ? LOCSUB[label] : Object.keys(m).sort((a, b) => order[a] - order[b]).map(s => m[s] + ' ' + (s === 'ready' ? 'ready' : ST[s][0].toLowerCase())).join(' · '); return { label, v, sub, w: (v / locMax * 100).toFixed(1) + '%' }; });
+    // Units by facility: deployed units grouped by facility.
+    const FSUB = { 'Bank Muscat Head Office': 'Airport Heights, Muscat · Active operations', 'Qatar Foundation': 'Plant room B1 · since 01 Oct 2026', 'Lulu Hypermarket': 'Bausher, Muscat · POC study' };
+    const facMap = {}; const facOrder = [];
+    all.filter(u => u.st === 'deployed').forEach(u => { if (!facMap[u.where]) { facMap[u.where] = { v: 0, types: {} }; facOrder.push(u.where); } facMap[u.where].v++; if (u.type) facMap[u.where].types[u.type] = (facMap[u.where].types[u.type] || 0) + 1; });
+    const facs = facOrder.map(name => { const f = facMap[name]; const type = Object.keys(f.types).sort((a, b) => f.types[b] - f.types[a])[0] || 'POC'; return { name, sub: FSUB[name] || 'Deployed from MRD Office', type, tcls: TCLS[type] || 't-poc', v: f.v }; }).sort((a, b) => b.v - a.v);
     const idFields = [['S/N', 'receiving'], ['IMEI', 'receiving'], ['MAC', 'receiving'], ['Device ID', 'labelling'], ['Firmware', 'prep'], ['SIM', 'prep'], ['IP', 'prep']].map(([name, when]) => ({ name, when: '· ' + when, hint: name + ' is captured at ' + when }));
-    const readyUnits = all.filter(u => u.st === 'ready').map(u => ({ sn: u.sn, dev: u.dev, iccid: u.iccid, ip: u.ip, when: r4[parseInt(u.sn.slice(-2), 10)][2] + ' · Chetan' }));
-    const activity = [
+    const readyUnits = all.filter(u => u.st === 'ready').map(u => ({ sn: u.sn, dev: u.dev, iccid: u.iccid, ip: u.ip, when: u.when || '—' }));
+    const AV = { CH: '#CDEFE7', NI: '#F6E3C4', AI: '#E6DDFB', RA: '#DCE6FB', SA: '#FBE0DC' };
+    const storeActs = (ST0.events || []).filter(e => e && (seen[String(e.item || '').split(' ').pop()] || String(e.item || '').indexOf(NAME) >= 0 || String(e.note || '').indexOf(NAME) >= 0)).slice(0, 5).map(e => ({ ini: e.ini || 'CH', bg: AV[e.ini] || '#E3E7EC', who: e.who || 'Chetan', what: String(e.action || '').toLowerCase() + (e.to && e.to !== '—' ? ' → ' + e.to : ''), obj: String(e.item || '').replace(NAME, 'RUT956'), when: e.when || '' }));
+    const activity = storeActs.concat([
       { ini: 'CH', bg: '#CDEFE7', who: 'Chetan', what: 'marked Ready', obj: '1108675309', when: 'Today, 09:42' },
       { ini: 'CH', bg: '#CDEFE7', who: 'Chetan', what: 'assigned IP 10.64.12.37 to', obj: '1108675309', when: 'Today, 09:39' },
       { ini: 'CH', bg: '#CDEFE7', who: 'Chetan', what: 'deployed to Qatar Foundation', obj: '1108675311', when: 'Thu 1 Oct, 13:20' },
       { ini: 'SA', bg: '#FBE0DC', who: 'Saif', what: 'deployed to Bank Muscat HO', obj: '1108675302', when: 'Mon 28 Sep, 10:05' },
       { ini: 'NI', bg: '#F6E3C4', who: 'Nitin', what: 'received 20 units in', obj: 'TEL-2026-004', when: 'Tue 22 Sep, 11:30' }
+    ]).slice(0, 5);
+    // Batches: sample batches plus batches of RUT956 units received on other screens; progress from current unit states.
+    const BUCKET = { unconf: ['Unconfigured', '#8A96A8'], stock: ['Unconfigured', '#8A96A8'], ready: ['Ready', '#2F6FE4'], reserved: ['Ready', '#2F6FE4'], deployed: ['Deployed', '#12A374'], prep: ['In preparation', '#E08A00'], maint: ['Under maintenance', '#E86A1C'], transit: ['In transit', '#5468E0'], returned: ['Returned', '#9C8F7E'], damaged: ['Damaged', '#DC3B3A'], retired: ['Retired', '#A2A9B4'] };
+    const partsOf = list => { const m = {}; const ord = []; list.forEach(u => { const b = BUCKET[u.st]; if (!m[b[0]]) { m[b[0]] = { label: b[0], c: b[1], v: 0 }; ord.push(b[0]); } m[b[0]].v++; }); return ord.map(k => m[k]).sort((a, b) => b.v - a.v).map(p => Object.assign(p, { w: (p.v / list.length * 100) + '%' })); };
+    const noteOf = list => { const d = list.filter(u => u.st === 'deployed').length, r = list.filter(u => u.st !== 'unconf' && u.st !== 'stock' && u.st !== 'transit').length; return d * 2 >= list.length ? d + ' of ' + list.length + ' deployed (' + Math.round(d / list.length * 100) + '%)' : r + ' of ' + list.length + ' prepared (' + Math.round(r / list.length * 100) + '%)'; };
+    const bMeta = [
+      { id: 'TEL-2026-004', date: '22 Sep 2026', by: 'Nitin', supplier: 'Al Noor Technologies LLC', po: 'PO-MRD-2026-0412', inv: 'INV-AN-88213' },
+      { id: 'TEL-2026-003', date: '12 Aug 2026', by: 'Nitin', supplier: 'Al Noor Technologies LLC', po: 'PO-MRD-2026-0288', inv: 'INV-AN-87540' }
     ];
-    const mk = parts => parts.map(([label, v, c, t]) => ({ label, v, c, w: (v / t * 100) + '%' }));
-    const batches = [
-      { id: 'TEL-2026-004', date: '22 Sep 2026', by: 'Nitin', qty: 20, supplier: 'Al Noor Technologies LLC', po: 'PO-MRD-2026-0412', inv: 'INV-AN-88213', range: '1108675300 – 1108675319', note: '6 of 20 prepared (30%)', parts: mk([['Unconfigured', 14, '#8A96A8', 20], ['Ready', 4, '#2F6FE4', 20], ['Deployed', 2, '#12A374', 20]]) },
-      { id: 'TEL-2026-003', date: '12 Aug 2026', by: 'Nitin', qty: 10, supplier: 'Al Noor Technologies LLC', po: 'PO-MRD-2026-0288', inv: 'INV-AN-87540', range: '1107442100 – 1107442109', note: '8 of 10 deployed (80%)', parts: mk([['Deployed', 8, '#12A374', 10], ['In preparation', 1, '#E08A00', 10], ['Under maintenance', 1, '#E86A1C', 10]]) }
-    ];
+    Object.keys(addedBatch).forEach(id => { if (bMeta.some(b => b.id === id)) return; const u = all.filter(x => x.batch === id)[0]; const ev = (ST0.events || []).filter(e => e && e.action === 'Received' && String(e.item || '').indexOf('Batch ' + id + ' ') === 0)[0]; const nt = ev ? String(ev.note || '').split(' · ') : []; bMeta.unshift({ id, date: u.recv || '05 Oct 2026', by: ev ? ev.who || 'Chetan' : 'Chetan', supplier: u.sup || (ev && ev.from) || '—', po: nt[1] && nt[1] !== 'no PO' ? nt[1] : '—', inv: nt[2] || '—' }); });
+    const batches = bMeta.map(b => { const list = all.filter(u => u.batch === b.id); const sns = list.map(u => u.sn).sort(); return Object.assign({}, b, { qty: list.length, range: sns.length ? sns[0] + ' – ' + sns[sns.length - 1] : '—', note: list.length ? noteOf(list) : '', parts: list.length ? partsOf(list) : [], damaged: list.filter(u => u.st === 'damaged').length }); }).filter(b => b.qty > 0);
+    const lastRecv = bMeta[0].date;
     const reqFields = [['Serial number (S/N)', 'Text', 'Required', 'Unique', 'Receiving'], ['IMEI', 'Text · 15 digits', 'Required', 'Unique', 'Receiving'], ['MAC address', 'MAC address', 'Required', 'Unique', 'Receiving'], ['Device ID', 'Auto · MRD-TEL-####', 'Required', 'Unique', 'Labelling'], ['Firmware', 'Text', 'Required', '—', 'Preparation'], ['SIM', 'Link to SIM', 'Required', 'Unique', 'Preparation'], ['IP address', 'IP address', 'Required', 'Unique', 'Preparation']].map(([name, type, req, uniq, when]) => ({ name, type, req, uniq, when }));
     const steps = [
       ['Firmware update', 'Flash the approved release, currently RUT9M_R_00.07.08.3', 'Firmware'],
@@ -534,17 +578,36 @@ class Component extends DCLogic {
       ['Connectivity test', 'Ping the Exergio cloud and check RSSI; attach the result', 'Test'],
       ['Label', 'Print and stick the Device ID / S/N label, store on Shelf A2', 'Label']
     ].map(([title, desc, tag], i) => ({ n: i + 1, title, desc, tag }));
+    const tabs = [['overview', 'Overview', ''], ['units', 'Units', String(total)], ['batches', 'Batches', String(batches.length)], ['settings', 'Settings', '']].map(([id, label, n]) => ({ label, n, cls: 'tab' + (S.tab === id ? ' on' : ''), sel: S.tab === id ? 'true' : 'false', pick: () => this.setState({ tab: id }) }));
+    // Archived flag and minimum ready level live in the shared store (store.products).
+    const isArch = !!PR.archived[NAME];
+    const minStore = PR.min[NAME] !== undefined ? Number(PR.min[NAME]) : 5;
+    const nReady = cnt('ready');
+    const nUnconf = cnt('unconf');
+    const ensure = s => { s.products = Object.assign({ added: [], archived: {}, restored: {}, min: {} }, s.products || {}); return s.products; };
+    const saveSettings = () => {
+      const st = this.state; const v = st.minDraft === null || st.minDraft === undefined ? null : parseInt(st.minDraft, 10);
+      if (v !== null && !isNaN(v) && v >= 0 && v !== minStore) this.writeStore(s => { ensure(s).min[NAME] = v; this.logEvent(s, { action: 'Settings changed', item: NAME, itemHref: 'ProductDetail.dc.html', from: 'Min ready ' + minStore, to: 'Min ready ' + v, note: 'Minimum ready-for-deployment level' }); });
+      this.setState({ tab: 'overview', minDraft: null });
+    };
     const t = S.tab;
     return {
       tabs, isOverview: t === 'overview', isUnits: t === 'units', isBatches: t === 'batches', isSettings: t === 'settings',
-      dist, locs, facs, idFields, readyUnits, activity, batches, reqFields, steps,
+      dist, distAria, locs, facs, idFields, readyUnits, activity, batches, reqFields, steps,
       units, unitChips, pages,
+      total, inOffice: inOfficeN, deployed: deployedN, nReady, minVal: minStore, readyColor: nReady < minStore ? '#A3201F' : '#0E1726',
+      nBatches: batches.length, lastRecv, nFacs: facs.length,
+      readyLow: nReady < minStore, lowTitle: nReady + ' ready, minimum is ' + minStore + '.',
+      lowText: 'Prepare ' + (minStore - nReady) + ' more router' + (minStore - nReady === 1 ? '' : 's') + ' to reach the minimum; ' + nUnconf + ' unconfigured unit' + (nUnconf === 1 ? ' is' : 's are') + ' in the MRD Office.',
+      isArch, notArch: !isArch, stLabel: isArch ? 'Archived' : 'Active', stCls: isArch ? 's-retired' : 's-deployed',
       unitFooter: filtered.length ? ('Showing ' + (page * per + 1) + '–' + Math.min(filtered.length, page * per + per) + ' of ' + filtered.length + ' units') : 'No units',
       prevPage: () => this.setState({ page: Math.max(0, page - 1) }), nextPage: () => this.setState({ page: Math.min(pageCount - 1, page + 1) }),
-      goSettings: () => this.setState({ tab: 'settings' }), goOverview: () => this.setState({ tab: 'overview' }),
-      openArchive: () => this.setState({ arch: true }), closeArchive: () => this.setState({ arch: false }), showArchive: S.arch,
+      goSettings: () => this.setState({ tab: 'settings' }), goOverview: () => this.setState({ tab: 'overview', minDraft: null }),
+      openArchive: () => this.setState({ arch: true }), closeArchive: () => this.setState({ arch: false }), showArchive: S.arch && !isArch,
+      confirmArchive: () => { this.writeStore(s => { const pr = ensure(s); pr.archived[NAME] = true; delete pr.restored[NAME]; this.logEvent(s, { action: 'Product archived', item: NAME, itemHref: 'ProductDetail.dc.html', from: 'Active', to: 'Archived', note: inOfficeN + ' in office · ' + deployedN + ' deployed' }); }); this.setState({ arch: false }); },
+      restore: () => this.writeStore(s => { const pr = ensure(s); delete pr.archived[NAME]; pr.restored[NAME] = true; this.logEvent(s, { action: 'Product restored', item: NAME, itemHref: 'ProductDetail.dc.html', from: 'Archived', to: 'Active', note: '' }); }),
       cfgSw: 'sw' + (S.cfg ? ' on' : ''), cfgAria: S.cfg ? 'true' : 'false', toggleCfg: () => this.setState({ cfg: !this.state.cfg }),
-      minReady: S.minReady, onMin: e => this.setState({ minReady: e.target.value })
+      minReady: S.minDraft === null || S.minDraft === undefined ? String(minStore) : S.minDraft, onMin: e => this.setState({ minDraft: e.target.value }), saveSettings
     };
   }
 }

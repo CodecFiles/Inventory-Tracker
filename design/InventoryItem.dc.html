@@ -141,7 +141,7 @@ textarea.in{height:76px;padding:10px 12px;resize:vertical}
 <span class="pill"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"></path></svg>Quantity-tracked</span>
 <span class="pill">Cables &amp; Accessories</span>
 <span class="mono muted">SKU MRD-CAB-C6-1M</span>
-<span class="b s-damaged">Low stock</span>
+<sc-if value="{{showLow}}" hint-placeholder-val="{{ true }}"><span class="b s-damaged">Low stock</span></sc-if>
 </div>
 </div>
 </div>
@@ -195,7 +195,7 @@ textarea.in{height:76px;padding:10px 12px;resize:vertical}
 <tbody>
 <tr><td style="font-weight: 500">MRD Office (Muscat)</td><td>Shelf C1</td><td style="text-align: right; font-weight: 600">{{c1}}</td><td style="text-align: right" class="muted">0</td><td class="muted">Default bin · bag of 10</td></tr>
 <tr><td style="font-weight: 500"><span style="display: inline-flex; align-items: center; gap: 8px"><span style="width: 22px; height: 22px; border-radius: 50%; background: #DCE6FB; font-size: 10px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center">RA</span>With technician</span></td><td>Rahul</td><td style="text-align: right; font-weight: 600">{{rahul}}</td><td style="text-align: right">4</td><td><a href="FacilityDetail.dc.html">Qatar Foundation</a> <span class="muted">· install 08 Oct</span></td></tr>
-<tr style="background: #F8FAFB"><td style="font-weight: 600">Total</td><td></td><td style="text-align: right; font-weight: 600">{{onHand}}</td><td style="text-align: right; font-weight: 600">4</td><td class="muted">Min level 25 · reorder 50</td></tr>
+<tr style="background: #F8FAFB"><td style="font-weight: 600">Total</td><td></td><td style="text-align: right; font-weight: 600">{{onHand}}</td><td style="text-align: right; font-weight: 600">4</td><td class="muted">Min level {{minLevel}} · reorder 50</td></tr>
 </tbody>
 </table>
 </div>
@@ -238,7 +238,7 @@ textarea.in{height:76px;padding:10px 12px;resize:vertical}
 <dt>Unit of measure</dt><dd>pcs</dd>
 <dt>Tracking</dt><dd>Quantity</dd>
 <dt>Default location</dt><dd>MRD Office · Shelf C1</dd>
-<dt>Min level</dt><dd>25 pcs</dd>
+<dt>Min level</dt><dd>{{minLevel}} pcs</dd>
 <dt>Reorder quantity</dt><dd>50 pcs</dd>
 <dt>Preferred supplier</dt><dd>Gulf Network Supplies</dd>
 <dt>Unit cost</dt><dd>OMR 0.450</dd>
@@ -369,15 +369,45 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
-    try { const keep = Object.assign({}, this.state); ["modal"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:InventoryItem', JSON.stringify(keep)); } catch (e) {}
+    try { const keep = Object.assign({}, this.state); ["modal", "c1", "rahul", "extra", "reordered"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:InventoryItem', JSON.stringify(keep)); } catch (e) {}
   }
-  constructor(props) { super(props); this.state = { modal: '', dir: 'remove', qty: '2', loc: 'c1', reason: '', note: '', c1: 14, rahul: 4, extra: [], reordered: false }; }
+  constructor(props) { super(props); this.state = { modal: '', dir: 'remove', qty: '2', loc: 'c1', reason: '', note: '' }; }
   renderVals() {
     const S = this.state;
-    const onHand = S.c1 + S.rahul;
+    const KEY = 'Cat6 patch cable 1 m';
+    const ST0 = this.readStore();
+    // Stock bookkeeping lives in the shared store (store.stock[KEY]); seeded from the sample counts on first write.
+    const seed = () => ({ onHand: 18, locs: { 'Shelf C1': 14, 'Rahul': 4 }, moves: [], reordered: false });
+    const rec = ((ST0.stock || {})[KEY]) || seed();
+    const recLocs = rec.locs || {};
+    const recMoves = rec.moves || [];
+    const MN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const dLabel = d => String(d.getDate()).padStart(2, '0') + ' ' + MN[d.getMonth()] + ' ' + d.getFullYear();
+    const tLabel = d => String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    const INI = { Chetan: 'CH', Nitin: 'NI', Aisha: 'AI', Rahul: 'RA', Saif: 'SA' };
+    // Derived movements: quantities issued in deployments, and receipts recorded on the Receive screen.
+    const derived = [];
+    let issued = 0, received = 0;
+    (ST0.deployments || []).forEach((d, i) => (d.items || []).forEach(it => {
+      const n = it && it.name === KEY ? Number(it.qty) || 0 : 0; if (!n) return; issued += n;
+      const ev = (ST0.events || []).filter(e => e && String(e.note || '').indexOf(d.ref) === 0)[0];
+      const by = (d.by || 'Chetan');
+      derived.push({ date: d.date || '05 Oct 2026', time: ev ? tLabel(new Date(ev.at)) : '', type: 'Issued', q: -n, from: 'Shelf C1', to: d.fac || 'Facility', fac: d.fac || '', user: by, ini: INI[by] || by.slice(0, 2).toUpperCase(), note: d.ref || 'Deployment', at: ev && ev.at ? ev.at : i + 1 });
+    }));
+    (ST0.events || []).forEach(e => {
+      const m = e && e.action === 'Received' && /^Batch (\S+) · (\d+) × (.+)$/.exec(e.item || '');
+      if (!m || m[3] !== KEY || recMoves.some(x => x.type === 'Received' && String(x.note || '').indexOf(m[1]) >= 0)) return;
+      const n = parseInt(m[2], 10); received += n; const d = new Date(e.at || Date.now());
+      derived.push({ date: dLabel(d), time: tLabel(d), type: 'Received', q: n, from: e.from || 'Supplier', to: 'Shelf C1', fac: '', user: e.who || 'Chetan', ini: e.ini || 'CH', note: m[1], at: e.at || 0 });
+    });
+    const c1 = (Number(recLocs['Shelf C1']) || 0) - issued + received;
+    const rahul = Number(recLocs['Rahul']) || 0;
+    const onHand = c1 + rahul;
+    const PR = ST0.products || {};
+    const MIN = PR.min && PR.min[KEY] !== undefined ? Number(PR.min[KEY]) : 25;
     const n = parseInt(S.qty, 10);
     const delta = isNaN(n) ? 0 : (S.dir === 'add' ? n : -n);
-    const locQty = S.loc === 'c1' ? S.c1 : S.rahul;
+    const locQty = S.loc === 'c1' ? c1 : rahul;
     const after = onHand + delta;
     let errText = '';
     if (isNaN(n) || n < 1) errText = 'Enter a quantity of 1 or more.';
@@ -398,36 +428,52 @@ class Component extends DCLogic {
       ['22 Apr 2026', '10:00', 'Issued', '−25', 'Shelf C1', 'Bank Muscat HO', 'Bank Muscat Head Office', 'Aisha', 'AI', 'POC install, floors 1–6', 15],
       ['14 Apr 2026', '13:45', 'Received', '+40', 'Gulf Network Supplies', 'Shelf C1', '', 'Nitin', 'NI', 'CAB-2026-001', 40]
     ].map(([date, time, type, qty, from, to, fac, user, ini, note, bal]) => ({ date, time, type, qty, from, to, fac, user, ini, note, bal }));
-    const ledger = S.extra.concat(base).map(m => ({
+    // New movements (store moves + derived), oldest first to run the balance on from the sample's 18 pcs.
+    const fmtQ = q => (q > 0 ? '+' : (q < 0 ? '−' : '')) + Math.abs(q);
+    const fresh = recMoves.map(m => ({ date: m.date, time: m.time || '', type: m.type || 'Adjusted', q: Number(m.qty) || 0, from: m.from || '', to: m.to || '', fac: m.fac || '', user: m.user || 'Chetan', ini: INI[m.user] || 'CH', note: m.note || '', at: m.at || 0 })).concat(derived).sort((a, b) => a.at - b.at);
+    let bal = 18; fresh.forEach(m => { bal += m.q; m.bal = bal; m.qty = fmtQ(m.q); });
+    const ledger = fresh.reverse().concat(base).map(m => ({
       date: m.date, time: m.time, type: m.type, qty: m.qty, from: m.from, to: m.to, fac: m.fac, user: m.user, ini: m.ini, note: m.note, bal: m.bal,
-      cls: MT[m.type], bg: U[m.ini], hasFac: !!m.fac, noFac: !m.fac,
+      cls: MT[m.type] || 's-prep', bg: U[m.ini] || '#E3E7EC', hasFac: !!m.fac, noFac: !m.fac,
       qcls: m.qty.charAt(0) === '+' ? 'qp' : (m.qty.charAt(0) === '−' ? 'qn' : 'qz'),
       refCls: /^(DEP|CAB)-/.test(m.note) ? 'mono' : ''
     }));
     const avail = onHand - 4;
     const kpis = [
-      { label: 'On hand', value: String(onHand), sub: 'Shelf C1 ' + S.c1 + ' · Rahul ' + S.rahul, dot: '#DC3B3A', color: onHand < 25 ? '#A3201F' : '#0E1726' },
+      { label: 'On hand', value: String(onHand), sub: 'Shelf C1 ' + c1 + ' · Rahul ' + rahul, dot: '#DC3B3A', color: onHand < MIN ? '#A3201F' : '#0E1726' },
       { label: 'Available', value: String(avail), sub: 'on hand minus reserved', dot: '#1A8FAD', color: '#0E1726' },
-      { label: 'Minimum level', value: '25', sub: 'reorder quantity 50 pcs', dot: '#8A96A8', color: '#0E1726' },
+      { label: 'Minimum level', value: String(MIN), sub: 'reorder quantity 50 pcs', dot: '#8A96A8', color: '#0E1726' },
       { label: 'Reserved', value: '4', sub: 'Qatar Foundation · 08 Oct', dot: '#7C4DDB', color: '#0E1726' },
-      { label: 'Issued · last 90 days', value: '26', sub: '6 this quarter (since 1 Oct)', dot: '#12A374', color: '#0E1726' }
+      { label: 'Issued · last 90 days', value: String(26 + issued), sub: (6 + issued) + ' this quarter (since 1 Oct)', dot: '#12A374', color: '#0E1726' }
     ];
-    const mv = [25, 0, 0, 6, 0, 14, 6], ml = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'];
-    const months = mv.map((v, i) => ({ v, label: ml[i], h: (v / 25 * 100) + '%' }));
+    const mv = [25, 0, 0, 6, 0, 14, 6 + issued], ml = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'];
+    const mMax = Math.max(25, ...mv);
+    const months = mv.map((v, i) => ({ v, label: ml[i], h: (v / mMax * 100).toFixed(1) + '%' }));
     const locLabel = S.loc === 'c1' ? 'MRD Office · Shelf C1' : 'With technician · Rahul';
+    const ensure = s => { s.stock = s.stock || {}; if (!s.stock[KEY]) s.stock[KEY] = seed(); const r = s.stock[KEY]; r.locs = r.locs || {}; r.moves = r.moves || []; return r; };
     const commit = () => {
-      const st = this.state; const q = parseInt(st.qty, 10); const d = st.dir === 'add' ? q : -q;
-      const total = st.c1 + st.rahul + d;
-      const entry = { date: '05 Oct 2026', time: 'Just now', type: 'Adjusted', qty: (d > 0 ? '+' : '−') + Math.abs(d), from: st.loc === 'c1' ? 'Shelf C1' : 'Rahul (technician)', to: d > 0 ? 'Stock count' : 'Write-off', fac: '', user: 'Chetan', ini: 'CH', note: st.reason + (st.note ? ': ' + st.note : ''), bal: total };
-      const upd = { modal: '', extra: [entry].concat(st.extra), qty: '2', reason: '', note: '' };
-      if (st.loc === 'c1') upd.c1 = st.c1 + d; else upd.rahul = st.rahul + d;
-      this.setState(upd);
+      const st = this.state; const q = parseInt(st.qty, 10); if (isNaN(q) || q < 1) return; const d = st.dir === 'add' ? q : -q;
+      const locName = st.loc === 'c1' ? 'Shelf C1' : 'Rahul';
+      const now = new Date();
+      this.writeStore(s => {
+        const r = ensure(s);
+        r.locs[locName] = (Number(r.locs[locName]) || 0) + d;
+        r.onHand = (Number(r.onHand) || 0) + d;
+        const note = st.reason + (st.note ? ': ' + st.note : '');
+        r.moves.unshift({ date: dLabel(now), time: tLabel(now), type: 'Adjusted', qty: d, from: st.loc === 'c1' ? 'Shelf C1' : 'Rahul (technician)', to: d > 0 ? 'Stock count' : 'Write-off', user: 'Chetan', note, at: now.getTime() });
+        this.logEvent(s, { action: 'Stock adjusted', item: KEY, itemHref: 'InventoryItem.dc.html', from: onHand + ' pcs', to: (onHand + d) + ' pcs', note: (d > 0 ? '+' : '−') + Math.abs(d) + ' at ' + locLabel + ' · ' + note });
+      });
+      this.setState({ modal: '', qty: '2', reason: '', note: '' });
     };
+    const reorder = () => this.writeStore(s => {
+      const r = ensure(s); if (r.reordered) return; r.reordered = true; r.reorderedAt = Date.now();
+      this.logEvent(s, { action: 'Reorder placed', item: KEY, itemHref: 'InventoryItem.dc.html', from: onHand + ' pcs on hand', to: 'Gulf Network Supplies', note: 'REQ-2026-031 · 50 pcs · awaiting Nitin' });
+    });
     return {
-      onHand, c1: S.c1, rahul: S.rahul, kpis, ledger, months, ledgerCount: ledger.length,
-      showLow: onHand < 25, lowTitle: onHand + ' pcs on hand, ' + (25 - onHand) + ' below the minimum of 25.',
+      onHand, c1, rahul, minLevel: MIN, kpis, ledger, months, ledgerCount: ledger.length,
+      showLow: onHand < MIN, lowTitle: onHand + ' pcs on hand, ' + (MIN - onHand) + ' below the minimum of ' + MIN + '.',
       lowText: 'Only ' + avail + ' are free: 4 are with Rahul for the Qatar Foundation install on 08 Oct. Last reorder: CAB-2026-004, 12 Aug.',
-      notReordered: !S.reordered, reordered: S.reordered, reorder: () => this.setState({ reordered: true }),
+      notReordered: !rec.reordered, reordered: !!rec.reordered, reorder,
       openAdjust: () => this.setState({ modal: 'form' }), closeModal: () => this.setState({ modal: '' }),
       showForm: S.modal === 'form', showConfirm: S.modal === 'confirm',
       loc: S.loc, onLoc: e => this.setState({ loc: e.target.value }),

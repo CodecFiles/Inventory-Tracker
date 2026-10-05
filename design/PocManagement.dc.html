@@ -154,7 +154,11 @@ h1,h2,h3,h4,p{margin:0}
 </section>
 
 <section style="display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch">
+<sc-if value="{{noCards}}" hint-placeholder-val="{{ false }}">
+<div class="card" style="flex: 1 1 100%; padding: 28px 22px; text-align: center; color: #5E6B7D; font-size: 13.5px">No facility is in POC or POC study right now.</div>
+</sc-if>
 <!-- Active POC -->
+<sc-if value="{{qfActive}}" hint-placeholder-val="{{ true }}">
 <div class="card" style="flex: 3 1 560px; min-width: 0; padding: 20px 22px; display: flex; flex-direction: column; gap: 18px; border-top: 3px solid #7A5AF8">
 <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap">
 <div style="display: flex; flex-direction: column; gap: 4px">
@@ -181,7 +185,7 @@ h1,h2,h3,h4,p{margin:0}
 </div>
 </div>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px">
-<div class="st"><span class="l">POC devices</span><span class="v">12 <span class="muted" style="font-size: 12px; font-weight: 400">+ 2 reserved</span></span><span class="muted" style="font-size: 11.5px">RUT956 · UG65 · 8 CO₂ · SIM · switch</span></div>
+<div class="st"><span class="l">POC devices</span><span class="v">{{qfDevN}} <span class="muted" style="font-size: 12px; font-weight: 400">+ 2 reserved</span></span><span class="muted" style="font-size: 11.5px">RUT956 · UG65 · 8 CO₂ · SIM · switch</span></div>
 <div class="st"><span class="l">Objectives</span><span class="v">1 of 4 done</span><span style="height: 6px; background: #EEF1F5; border-radius: 3px; margin-top: 4px"><span style="display: block; width: 25%; height: 6px; background: #7A5AF8; border-radius: 3px"></span></span></div>
 <div class="st"><span class="l">Next milestone</span><span class="v">08 Oct</span><span class="muted" style="font-size: 11.5px">Install 2 × EM500-CO2 · L4</span></div>
 <div class="st"><span class="l">Project lead</span><span class="v" style="display: flex; align-items: center; gap: 6px"><span class="av" style="width: 22px; height: 22px; flex-basis: 22px; font-size: 9.5px; background: #E6DDFB">AI</span>Aisha</span><span class="muted" style="font-size: 11.5px">with Rahul, Saif</span></div>
@@ -193,26 +197,28 @@ h1,h2,h3,h4,p{margin:0}
 <span class="muted" style="font-size: 12px; align-self: center">Study review scheduled Dec 2026</span>
 </div>
 </div>
+</sc-if>
 
 <!-- POC study -->
-<div class="card" style="flex: 2 1 400px; min-width: 0; padding: 20px 22px; display: flex; flex-direction: column; gap: 16px; border-top: 3px solid #E08A00">
+<sc-if value="{{luluShow}}" hint-placeholder-val="{{ true }}">
+<div class="card" style="flex: 2 1 400px; min-width: 0; padding: 20px 22px; display: flex; flex-direction: column; gap: 16px; border-top: 3px solid {{lulu.top}}">
 <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px">
 <div style="display: flex; flex-direction: column; gap: 4px">
-<span class="ov" style="color: #8A4B00">In POC study</span>
+<span class="ov" style="color: {{lulu.ovc}}">{{lulu.ov}}</span>
 <a href="FacilityDetail.dc.html" style="font-size: 18px; font-weight: 600; color: #0E1726; letter-spacing: -.01em">Lulu Hypermarket</a>
-<span class="muted" style="font-size: 12.5px">Bausher, Muscat · POC 15 Jul – 15 Sep 2026 (ended)</span>
+<span class="muted" style="font-size: 12.5px">{{lulu.sub}}</span>
 </div>
-<span class="b g-study" style="height: 26px; font-size: 12.5px">POC study</span>
+<span class="b {{lulu.bcls}}" style="height: 26px; font-size: 12.5px">{{lulu.badge}}</span>
 </div>
 <div style="display: flex; gap: 10px; flex-wrap: wrap">
-<div class="st" style="flex: 1 1 120px"><span class="l">Review due</span><span class="v" style="color: #8A4B00">14 Oct</span><span class="muted" style="font-size: 11.5px">in 9 days</span></div>
-<div class="st" style="flex: 1 1 120px"><span class="l">Devices on site</span><span class="v">8</span><span class="muted" style="font-size: 11.5px">RUT956 · 5 CO₂ · UG65 · SIM</span></div>
+<div class="st" style="flex: 1 1 120px"><span class="l">{{lulu.dueL}}</span><span class="v" style="color: #8A4B00">{{lulu.due}}</span><span class="muted" style="font-size: 11.5px">{{lulu.dueSub}}</span></div>
+<div class="st" style="flex: 1 1 120px"><span class="l">Devices on site</span><span class="v">{{luluN}}</span><span class="muted" style="font-size: 11.5px">{{luluMix}}</span></div>
 </div>
 <sc-if value="{{undecided}}" hint-placeholder-val="{{ true }}">
 <div style="border: 1px solid #F3D9A6; background: #FFFBF2; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
-<div><h3 style="font-size: 14px; font-weight: 600">Decision needed</h3><p style="font-size: 12.5px; color: #5C4310; margin-top: 2px">Exergio's evaluation is in. Choose what happens to the POC and its 8 devices.</p></div>
+<div><h3 style="font-size: 14px; font-weight: 600">Decision needed</h3><p style="font-size: 12.5px; color: #5C4310; margin-top: 2px">Exergio's evaluation is in. Choose what happens to the POC and its {{luluN}} devices.</p></div>
 <div style="display: flex; flex-direction: column; gap: 8px">
-<a class="btn p" href="ContractManagement.dc.html" style="justify-content: flex-start"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>Proceed to contract<span style="margin-left: auto; font-weight: 400; font-size: 12px; opacity: .85">keep POC devices</span></a>
+<button class="btn p" onClick="{{proceed}}" style="justify-content: flex-start"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>Proceed to contract<span style="margin-left: auto; font-weight: 400; font-size: 12px; opacity: .85">keep POC devices</span></button>
 <button class="btn" onClick="{{openExtend}}" style="justify-content: flex-start"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>Extend POC<span class="muted" style="margin-left: auto; font-weight: 400; font-size: 12px">set a new end date</span></button>
 <button class="btn dout" onClick="{{openRemove}}" style="justify-content: flex-start"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14l-4-4 4-4"></path><path d="M5 10h10a5 5 0 0 1 0 10h-3"></path></svg>Remove equipment<span style="margin-left: auto; font-weight: 400; font-size: 12px">return to MRD Office</span></button>
 </div>
@@ -223,10 +229,30 @@ h1,h2,h3,h4,p{margin:0}
 <div role="status" style="border: 1px solid {{dec.bd}}; background: {{dec.bg}}; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
 <strong style="font-size: 14px; font-weight: 600">{{dec.title}}</strong>
 <p style="font-size: 12.5px; color: #3B4758">{{dec.body}}</p>
-<div><button class="btn sm" onClick="{{undo}}">Undo decision</button></div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap"><sc-if value="{{canUndo}}" hint-placeholder-val="{{ true }}"><button class="btn sm" onClick="{{undo}}">Undo decision</button></sc-if><sc-if value="{{dec.hasLink}}" hint-placeholder-val="{{ false }}"><a class="btn sm" href="{{dec.href}}">{{dec.link}}</a></sc-if></div>
 </div>
 </sc-if>
 </div>
+</sc-if>
+
+<!-- Other POC / study facilities from the shared store -->
+<sc-for list="{{otherCards}}" as="c" hint-placeholder-count="1">
+<div class="card" style="flex: 2 1 360px; min-width: 0; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; border-top: 3px solid {{c.top}}">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span class="ov" style="color: {{c.ovc}}">{{c.ov}}</span>
+<a href="FacilityDetail.dc.html" style="font-size: 18px; font-weight: 600; color: #0E1726; letter-spacing: -.01em">{{c.name}}</a>
+<span class="muted" style="font-size: 12.5px">{{c.sub}}</span>
+</div>
+<span class="b {{c.bcls}}" style="height: 26px; font-size: 12.5px">{{c.stage}}</span>
+</div>
+<div style="display: flex; gap: 10px; flex-wrap: wrap">
+<div class="st" style="flex: 1 1 120px"><span class="l">POC devices on site</span><span class="v">{{c.n}}</span><span class="muted" style="font-size: 11.5px">{{c.mix}}</span></div>
+<div class="st" style="flex: 1 1 120px"><span class="l">{{c.infoL}}</span><span class="v" style="font-size: 14px">{{c.info}}</span></div>
+</div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto"><a class="btn sm" href="FacilityDetail.dc.html">Open facility</a><a class="btn sm" href="CreateDeployment.dc.html">Deploy more equipment</a></div>
+</div>
+</sc-for>
 </section>
 
 <section style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
@@ -264,12 +290,14 @@ h1,h2,h3,h4,p{margin:0}
 </div>
 
 <!-- Upcoming POC -->
+<sc-if value="{{akUpcoming}}" hint-placeholder-val="{{ true }}">
 <div class="card" style="flex: 2 1 360px; min-width: 0; display: flex; flex-direction: column">
 <div style="padding: 18px 18px 14px; display: flex; flex-direction: column; gap: 10px">
 <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px">
 <div><span class="ov">Upcoming POC</span><a href="FacilityDetail.dc.html" style="display: block; font-size: 16px; font-weight: 600; color: #0E1726; margin-top: 2px">Al Khuwair Business Tower</a><span class="muted" style="font-size: 12.5px">Al Khuwair, Muscat · lead Saif</span></div>
-<span class="b g-bms">BMS scan 07 Oct</span>
+<span class="b {{akCls}}">{{akBadge}}</span>
 </div>
+<sc-if value="{{akHasDev}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12.5px; color: #5B32B4; font-weight: 500">{{akDevNote}}</span></sc-if>
 <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; font-size: 11.5px">
 <span style="display: flex; flex-direction: column; gap: 4px"><span style="height: 4px; border-radius: 2px; background: #0B7A6B"></span><span style="color: #3B4758">Inspection · 24 Sep</span></span>
 <span style="display: flex; flex-direction: column; gap: 4px"><span style="height: 4px; border-radius: 2px; background: #1A8FAD"></span><span style="color: #3B4758; font-weight: 600">BMS scan · 07 Oct</span></span>
@@ -293,6 +321,7 @@ h1,h2,h3,h4,p{margin:0}
 <button class="btn sm {{kitBtnCls}}" onClick="{{toggleKit}}">{{kitBtn}}</button>
 </div>
 </div>
+</sc-if>
 </section>
 </main>
 </div>
@@ -303,14 +332,11 @@ h1,h2,h3,h4,p{margin:0}
 <div style="position: fixed; inset: 0; background: rgba(14,23,38,.45); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 60">
 <div class="card" role="alertdialog" aria-modal="true" aria-labelledby="rmT" style="width: 100%; max-width: 500px; padding: 22px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 24px 64px rgba(14,23,38,.25)">
 <span style="width: 40px; height: 40px; border-radius: 10px; background: #FDEBEA; color: #A3201F; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14l-4-4 4-4"></path><path d="M5 10h10a5 5 0 0 1 0 10h-3"></path></svg></span>
-<div><h2 id="rmT" style="font-size: 17px; font-weight: 600">Remove POC equipment from Lulu Hypermarket?</h2><p class="muted" style="font-size: 13.5px; margin-top: 6px">8 devices will be scheduled for collection and returned to MRD Office with status <strong style="color: #0E1726; font-weight: 600">Returned</strong>. Their deployment history, SIM and IP records are preserved. The facility moves to Completed (no contract).</p></div>
-<ul style="margin: 0; padding: 10px 14px 10px 30px; background: #F8FAFB; border-radius: 9px; font-size: 12.5px; color: #3B4758; display: flex; flex-direction: column; gap: 3px">
-<li>Teltonika RUT956 · <span class="mono">1107442106</span> (SIM will be suspended)</li>
-<li>Milesight UG65 · <span class="mono">6247B1820045</span></li>
-<li>Milesight EM500-CO2 × 5</li>
-<li>Omantel M2M SIM × 1</li>
+<div><h2 id="rmT" style="font-size: 17px; font-weight: 600">Remove POC equipment from Lulu Hypermarket?</h2><p class="muted" style="font-size: 13.5px; margin-top: 6px">{{luluN}} devices will be returned to MRD Office with status <strong style="color: #0E1726; font-weight: 600">Returned</strong>. Their deployment history, SIM and IP records are preserved. The facility moves to Completed (no contract).</p></div>
+<ul style="margin: 0; padding: 10px 14px 10px 30px; background: #F8FAFB; border-radius: 9px; font-size: 12.5px; color: #3B4758; display: flex; flex-direction: column; gap: 3px; max-height: 200px; overflow-y: auto">
+<sc-for list="{{rmItems}}" as="m" hint-placeholder-count="4"><li>{{m.label}} · <span class="mono">{{m.sn}}</span></li></sc-for>
 </ul>
-<div style="display: flex; justify-content: flex-end; gap: 8px"><button class="btn" onClick="{{closeRemove}}">Cancel</button><button class="btn danger" onClick="{{confirmRemove}}">Remove 8 devices</button></div>
+<div style="display: flex; justify-content: flex-end; gap: 8px"><button class="btn" onClick="{{closeRemove}}">Cancel</button><button class="btn danger" onClick="{{confirmRemove}}">Remove {{luluN}} devices</button></div>
 </div>
 </div>
 </sc-if>
@@ -319,9 +345,9 @@ h1,h2,h3,h4,p{margin:0}
 <sc-if value="{{extendOpen}}" hint-placeholder-val="{{ false }}">
 <div style="position: fixed; inset: 0; background: rgba(14,23,38,.45); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 60">
 <div class="card" role="dialog" aria-modal="true" aria-labelledby="exT" style="width: 100%; max-width: 460px; padding: 22px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 24px 64px rgba(14,23,38,.25)">
-<div><h2 id="exT" style="font-size: 17px; font-weight: 600">Extend Lulu Hypermarket POC</h2><p class="muted" style="font-size: 13px; margin-top: 4px">The 8 devices stay on site as POC equipment until the new end date.</p></div>
-<label class="fld">Extend by<select class="in"><option>4 weeks · new end 02 Nov 2026</option><option>6 weeks · new end 16 Nov 2026</option><option>8 weeks · new end 30 Nov 2026</option></select></label>
-<label class="fld">Reason<input class="in" type="text" placeholder="e.g. Client wants data from cooler months"></label>
+<div><h2 id="exT" style="font-size: 17px; font-weight: 600">Extend Lulu Hypermarket POC</h2><p class="muted" style="font-size: 13px; margin-top: 4px">The {{luluN}} devices stay on site as POC equipment until the new end date.</p></div>
+<label class="fld">Extend by<select class="in" value="{{extEnd}}" onChange="{{onExtEnd}}"><option value="02 Nov 2026">4 weeks · new end 02 Nov 2026</option><option value="16 Nov 2026">6 weeks · new end 16 Nov 2026</option><option value="30 Nov 2026">8 weeks · new end 30 Nov 2026</option></select></label>
+<label class="fld">Reason<input class="in" type="text" value="{{extReason}}" onChange="{{onExtReason}}" placeholder="e.g. Client wants data from cooler months"></label>
 <div style="display: flex; justify-content: flex-end; gap: 8px"><button class="btn" onClick="{{closeExtend}}">Cancel</button><button class="btn p" onClick="{{confirmExtend}}">Extend POC</button></div>
 </div>
 </div>
@@ -334,7 +360,16 @@ class Component extends DCLogic {
     this._init = JSON.parse(JSON.stringify(this.state));
     this._onStore = e => { if (!e || !e.key || e.key === 'mrd-proto:store') this.forceUpdate(); };
     try { window.addEventListener('storage', this._onStore); } catch (e) {}
-    try { const raw = window.localStorage.getItem('mrd-proto:v1:PocManagement'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
+    try { const raw = window.localStorage.getItem('mrd-proto:v1:PocManagement'); const saved = this.migrateLocal(raw ? JSON.parse(raw) : null); if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
+    // A Lulu decision recorded before the shared store existed is applied once, then forgotten locally.
+    try {
+      const legacy = this._legacyDecision; this._legacyDecision = null;
+      const fl = (this.readStore().facilities || {})['Lulu Hypermarket'] || {};
+      if ((legacy === 'removed' || legacy === 'extended') && !fl.decision) {
+        const rows = this.renderVals().rmItems.map(m => ({ sn: m.sn, model: m.label }));
+        this.decideLulu(legacy === 'removed' ? 'remove' : 'extend', rows);
+      }
+    } catch (e) {}
   }
   // Shared prototype store: one record in browser storage that every screen reads and writes (key mrd-proto:store).
   readStore() {
@@ -361,58 +396,206 @@ class Component extends DCLogic {
   }
   constructor(props) {
     super(props);
-    this.state = { fac: 'all', all: false, keep: {}, dialog: null, decision: null, kit: false };
+    this.state = { fac: 'all', all: false, dialog: null, kit: false, extEnd: '02 Nov 2026', extReason: '' };
+  }
+  // Older saves kept the Lulu decision and the retain toggles locally; the shared store owns them now.
+  migrateLocal(saved) {
+    if (!saved || typeof saved !== 'object') return saved;
+    const keep = saved.keep;
+    this._legacyDecision = saved.decision || null;
+    delete saved.decision; delete saved.keep;
+    if (keep && typeof keep === 'object' && Object.keys(keep).length) {
+      const facOf = {};
+      this.sampleRows().forEach(r => { facOf[r[3]] = r[0]; });
+      const S = this.readStore();
+      const FS = S.facilities || {};
+      const need = Object.keys(keep).filter(sn => facOf[sn] && !((FS[facOf[sn]] || {}).retain || {}).hasOwnProperty(sn));
+      if (need.length) this.writeStore(s => { need.forEach(sn => { const f = facOf[sn]; const cur = (s.facilities || {})[f] || {}; this.setFac(s, f, { retain: Object.assign({}, cur.retain || {}, { [sn]: !!keep[sn] }) }); }); });
+    }
+    return saved;
+  }
+  setFac(s, name, patch) {
+    s.facilities = s.facilities || {};
+    s.facilities[name] = Object.assign({}, s.facilities[name] || {}, patch);
+  }
+  todayLabel() { const M = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']; const d = new Date(); return String(d.getDate()).padStart(2, '0') + ' ' + M[d.getMonth()] + ' ' + d.getFullYear(); }
+  sampleRows() {
+    const QF = 'Qatar Foundation', LU = 'Lulu Hypermarket';
+    return [
+      [QF, 'LTE router', 'Teltonika RUT956', '1108675311', '01 Oct 2026', true],
+      [QF, 'M2M SIM', 'Omantel', '8996802026093001435', '01 Oct 2026', true],
+      [QF, 'LoRaWAN gateway', 'Milesight UG65', '6247B1820041', '01 Oct 2026', true],
+      [QF, 'PoE switch', 'UniFi Switch Lite 8 PoE', 'F4E2C6A10B37', '01 Oct 2026', false],
+      [LU, 'LTE router', 'Teltonika RUT956', '1107442106', '15 Jul 2026', true],
+      [LU, 'LoRaWAN gateway', 'Milesight UG65', '6247B1820045', '16 Sep 2026', true],
+      [LU, 'M2M SIM', 'Omantel', '8996802026071500822', '15 Jul 2026', true],
+      [QF, 'CO₂ sensor', 'Milesight EM500-CO2', '6136D2470112', '01 Oct 2026', true],
+      [QF, 'CO₂ sensor', 'Milesight EM500-CO2', '6136D2470113', '01 Oct 2026', true],
+      [QF, 'CO₂ sensor', 'Milesight EM500-CO2', '6136D2470114', '01 Oct 2026', true],
+      [QF, 'CO₂ sensor', 'Milesight EM500-CO2', '6136D2470115', '01 Oct 2026', true],
+      [QF, 'CO₂ sensor', 'Milesight EM500-CO2', '6136D2470121', '03 Oct 2026', true],
+      [QF, 'CO₂ sensor', 'Milesight EM500-CO2', '6136D2470122', '03 Oct 2026', true],
+      [QF, 'CO₂ sensor', 'Milesight EM500-CO2', '6136D2470123', '03 Oct 2026', true],
+      [QF, 'CO₂ sensor', 'Milesight EM500-CO2', '6136D2470124', '03 Oct 2026', true],
+      [LU, 'CO₂ sensor', 'Milesight EM500-CO2', '6136D2460041', '15 Jul 2026', false],
+      [LU, 'CO₂ sensor', 'Milesight EM500-CO2', '6136D2460042', '15 Jul 2026', false],
+      [LU, 'CO₂ sensor', 'Milesight EM500-CO2', '6136D2460043', '15 Jul 2026', false],
+      [LU, 'CO₂ sensor', 'Milesight EM500-CO2', '6136D2460044', '15 Jul 2026', false],
+      [LU, 'CO₂ sensor', 'Milesight EM500-CO2', '6136D2460045', '15 Jul 2026', false]
+    ];
+  }
+  // Record a POC decision for Lulu Hypermarket in the shared store (facility stage + devices), keeping an undo snapshot.
+  decideLulu(kind, rows) {
+    const LU = 'Lulu Hypermarket';
+    const st = this.state;
+    this.writeStore(s => {
+      s.facilities = s.facilities || {};
+      const prev = JSON.parse(JSON.stringify(s.facilities[LU] || {}));
+      delete prev._undo;
+      const prevStage = prev.stage || 'POC study';
+      const undo = { fac: prev, units: {} };
+      let patch, note;
+      if (kind === 'proceed') {
+        patch = { stage: 'Contract pending', decision: 'proceed', contract: { ref: 'CN-EXG-LU-2026-D1', start: '01 Nov 2026', end: '31 Oct 2029', status: 'Pending' } };
+        note = 'Proceed to contract · draft CN-EXG-LU-2026-D1 · ' + rows.length + ' POC devices stay on site';
+      } else if (kind === 'extend') {
+        patch = { stage: 'POC', decision: 'extend', pocEnd: st.extEnd || '02 Nov 2026' };
+        note = 'POC extended to ' + patch.pocEnd + (st.extReason && st.extReason.trim() ? ' · ' + st.extReason.trim() : '');
+      } else {
+        patch = { stage: 'Completed', decision: 'remove' };
+        note = 'Remove equipment · ' + rows.length + ' devices returned to MRD Office';
+        rows.forEach(r => {
+          undo.units[r.sn] = s.units[r.sn] ? JSON.parse(JSON.stringify(s.units[r.sn])) : null;
+          this.patchUnit(s, r.sn, { st: 'returned', loc: 'MRD Office', loc2: 'Returns bay', fac: '', type: '' }, 'deployed');
+          this.logEvent(s, { action: 'Status changed', item: r.sn, itemHref: 'DeviceDetail.dc.html', from: 'Deployed · ' + LU, to: 'Returned · MRD Office', note: 'POC equipment removed · ' + r.model });
+        });
+      }
+      patch._undo = undo;
+      this.setFac(s, LU, patch);
+      this.logEvent(s, { action: 'POC decision', item: LU, itemHref: 'PocManagement.dc.html', from: prevStage, to: patch.stage, note });
+      if (prevStage !== patch.stage) this.logEvent(s, { action: 'Stage changed', item: LU, itemHref: 'FacilityDetail.dc.html', from: prevStage, to: patch.stage, note: 'POC decision' });
+    });
+  }
+  undoLulu() {
+    const LU = 'Lulu Hypermarket';
+    this.writeStore(s => {
+      s.facilities = s.facilities || {};
+      const cur = s.facilities[LU];
+      if (!cur) return;
+      const retain = cur.retain;
+      const u = cur._undo || { fac: { stage: 'POC study' }, units: {} };
+      Object.keys(u.units || {}).forEach(id => { if (u.units[id]) s.units[id] = u.units[id]; else delete s.units[id]; });
+      const back = Object.assign({}, u.fac || {});
+      if (retain) back.retain = retain;
+      if (Object.keys(back).length) s.facilities[LU] = back; else delete s.facilities[LU];
+      this.logEvent(s, { action: 'POC decision', item: LU, itemHref: 'PocManagement.dc.html', from: cur.stage || '', to: back.stage || 'POC study', note: 'Decision undone' });
+    });
   }
   renderVals() {
     const s = this.state;
-    const kpis = [
-      { label: 'Active POCs', value: '1', sub: 'Qatar Foundation · day 5 of 61', dot: '#7A5AF8', href: 'FacilityDetail.dc.html' },
-      { label: 'In POC study', value: '1', sub: 'Lulu · review due 14 Oct', dot: '#E08A00', href: 'FacilityDetail.dc.html' },
-      { label: 'Upcoming', value: '1', sub: 'Al Khuwair · install 20 Oct', dot: '#1A8FAD', href: 'FacilityDetail.dc.html' },
-      { label: 'POC equipment deployed', value: '20', sub: '12 at QF · 8 at Lulu', dot: '#7A5AF8', href: 'Inventory.dc.html' },
-      { label: 'Converted to contract', value: '1 / 2', sub: 'Bank Muscat · Jun 2026', dot: '#12A374', href: 'ContractManagement.dc.html' }
-    ];
-    const qfMiles = [{ t: '08 Oct · 2 × CO₂ sensors', x: '11.5%' }, { t: '15 Oct · optimisation on', x: '23%' }, { t: 'Nov · energy comparison', x: '70%' }];
-    const removed = s.decision === 'removed';
-    const R = [
-      ['qf', 'LTE router', 'Teltonika RUT956', '1108675311', '01 Oct 2026', true],
-      ['qf', 'M2M SIM', 'Omantel', '8996802026093001435', '01 Oct 2026', true],
-      ['qf', 'LoRaWAN gateway', 'Milesight UG65', '6247B1820041', '01 Oct 2026', true],
-      ['qf', 'PoE switch', 'UniFi Switch Lite 8 PoE', 'F4E2C6A10B37', '01 Oct 2026', false],
-      ['lulu', 'LTE router', 'Teltonika RUT956', '1107442106', '15 Jul 2026', true],
-      ['lulu', 'LoRaWAN gateway', 'Milesight UG65', '6247B1820045', '16 Sep 2026', true],
-      ['lulu', 'M2M SIM', 'Omantel', '8996802026071500822', '15 Jul 2026', true],
-      ['qf', 'CO₂ sensor', 'Milesight EM500-CO2', '6136D2470112', '01 Oct 2026', true],
-      ['qf', 'CO₂ sensor', 'Milesight EM500-CO2', '6136D2470113', '01 Oct 2026', true],
-      ['qf', 'CO₂ sensor', 'Milesight EM500-CO2', '6136D2470114', '01 Oct 2026', true],
-      ['qf', 'CO₂ sensor', 'Milesight EM500-CO2', '6136D2470115', '01 Oct 2026', true],
-      ['qf', 'CO₂ sensor', 'Milesight EM500-CO2', '6136D2470121', '03 Oct 2026', true],
-      ['qf', 'CO₂ sensor', 'Milesight EM500-CO2', '6136D2470122', '03 Oct 2026', true],
-      ['qf', 'CO₂ sensor', 'Milesight EM500-CO2', '6136D2470123', '03 Oct 2026', true],
-      ['qf', 'CO₂ sensor', 'Milesight EM500-CO2', '6136D2470124', '03 Oct 2026', true],
-      ['lulu', 'CO₂ sensor', 'Milesight EM500-CO2', '6136D2460041', '15 Jul 2026', false],
-      ['lulu', 'CO₂ sensor', 'Milesight EM500-CO2', '6136D2460042', '15 Jul 2026', false],
-      ['lulu', 'CO₂ sensor', 'Milesight EM500-CO2', '6136D2460043', '15 Jul 2026', false],
-      ['lulu', 'CO₂ sensor', 'Milesight EM500-CO2', '6136D2460044', '15 Jul 2026', false],
-      ['lulu', 'CO₂ sensor', 'Milesight EM500-CO2', '6136D2460045', '15 Jul 2026', false]
-    ];
-    const facName = { qf: 'Qatar Foundation', lulu: 'Lulu Hypermarket' };
-    const isOn = (sn, def) => Object.prototype.hasOwnProperty.call(s.keep, sn) ? s.keep[sn] : def;
-    const filtered = R.filter(r => s.fac === 'all' || r[0] === s.fac);
+    const S = this.readStore();
+    const FS = S.facilities || {};
+    const QF = 'Qatar Foundation', LU = 'Lulu Hypermarket', AK = 'Al Khuwair Business Tower';
+    const BASE = {
+      [QF]: { stage: 'POC', loc: 'Education City, Doha' }, 'Bank Muscat Head Office': { stage: 'Active operations', loc: 'Airport Heights, Muscat', hadPoc: true },
+      [LU]: { stage: 'POC study', loc: 'Bausher, Muscat' }, [AK]: { stage: 'BMS scan', loc: 'Al Khuwair, Muscat' },
+      'Sohar Logistics Hub': { stage: 'Site inspection', loc: 'Sohar' }, 'Ruwi Medical Centre': { stage: 'On hold', loc: 'Ruwi, Muscat' }
+    };
+    const facNames = Object.keys(BASE).concat(Object.keys(FS).filter(n => !BASE[n] && FS[n] && FS[n].added));
+    const facOf = n => Object.assign({}, BASE[n] || {}, FS[n] || {});
+    const stageOf = n => facOf(n).stage || 'Site inspection';
+    const live = n => !facOf(n).archived;
+    const GC = { 'Site inspection': 'g-insp', 'BMS scan': 'g-bms', 'POC': 'g-poc', 'POC study': 'g-study', 'Contract pending': 'g-cpend', 'Contract active': 'g-contract', 'Active operations': 'g-ops', 'Completed': 'g-done', 'On hold': 'g-hold' };
+    // Register: sample rows minus devices that have left (status, facility or type changed in the store), plus POC units deployed through the store.
+    const SU = S.units || {};
+    const addedBy = {};
+    (S.added || []).forEach(a => { if (a && a.ident) addedBy[a.ident] = a; });
+    const unitOf = id => Object.assign({}, addedBy[id] || {}, SU[id] || {});
+    const left = (id, fac) => { const u = SU[id]; if (!u) return false; return (u.st !== undefined && u.st !== '' && u.st !== 'deployed') || (u.fac !== undefined && u.fac !== fac) || (u.type !== undefined && u.type !== 'POC'); };
+    const depOf = {};
+    (S.deployments || []).forEach(dp => (dp.items || []).forEach(it => { if (it && it.ident) { depOf[it.ident] = dp; if (it.sim) depOf[it.sim] = dp; } }));
+    const R = [];
+    const sampleSn = {};
+    this.sampleRows().forEach(r => { sampleSn[r[3]] = true; if (!left(r[3], r[0])) R.push({ fac: r[0], dev: r[1], model: r[2], sn: r[3], date: r[4], def: r[5] }); });
+    const CATM = { tel: 'LTE router', sim: 'M2M SIM', gw: 'LoRaWAN gateway', net: 'PoE switch', co2: 'CO₂ sensor', vfd: 'VFD', cab: 'Accessory' };
+    Object.keys(Object.assign({}, addedBy, SU)).forEach(id => {
+      if (sampleSn[id]) return;
+      const u = unitOf(id);
+      if (!u.fac) return;
+      if (u.cat === 'sim') {
+        const h = unitOf(u.device || '');
+        if (!(h.st === 'deployed' && h.type === 'POC' && h.fac === u.fac) || (u.st && u.st !== 'deployed')) return;
+      } else if (!(u.st === 'deployed' && u.type === 'POC')) return;
+      const dp = depOf[id];
+      R.push({ fac: u.fac, dev: CATM[u.cat] || 'Device', model: u.name || (u.cat === 'sim' ? 'M2M SIM' : '—'), sn: id, date: dp && dp.date ? dp.date : this.todayLabel(), def: u.cat !== 'co2', fromStore: true });
+    });
+    const retainOf = f => (FS[f] && FS[f].retain) || {};
+    const isOn = r => { const m = retainOf(r.fac); return Object.prototype.hasOwnProperty.call(m, r.sn) ? !!m[r.sn] : r.def; };
+    const alias = { qf: QF, lulu: LU };
+    const curFac = alias[s.fac] || s.fac || 'all';
+    const regFacs = [];
+    R.forEach(r => { if (regFacs.indexOf(r.fac) < 0) regFacs.push(r.fac); });
+    const selFac = curFac === 'all' || regFacs.indexOf(curFac) > -1 ? curFac : 'all';
+    const filtered = R.filter(r => selFac === 'all' || r.fac === selFac);
     const visible = s.all ? filtered : filtered.slice(0, 8);
-    const reg = visible.map(([f, dev, model, sn, date, def]) => {
-      const on = isOn(sn, def), ret = removed && f === 'lulu';
+    const reg = visible.map(r => {
+      const on = isOn(r);
       return {
-        dev, model, sn, date, fac: facName[f], on: on ? 'true' : 'false', yn: on ? 'Yes' : 'No',
-        tbg: on ? '#0B7A6B' : '#C3CCD7', jc: on ? 'flex-end' : 'flex-start',
-        st: ret ? 'Return pending' : 'Deployed', scls: ret ? 's-returned' : 's-deployed',
-        toggle: () => { const k = Object.assign({}, this.state.keep); k[sn] = !on; this.setState({ keep: k }); }
+        dev: r.dev, model: r.model, sn: r.sn, date: r.date, fac: r.fac, on: on ? 'true' : 'false', yn: on ? 'Yes' : 'No',
+        tbg: on ? '#0B7A6B' : '#C3CCD7', jc: on ? 'flex-end' : 'flex-start', st: 'Deployed', scls: 's-deployed',
+        toggle: () => this.writeStore(st => { const cur = ((st.facilities || {})[r.fac] || {}).retain || {}; this.setFac(st, r.fac, { retain: Object.assign({}, cur, { [r.sn]: !on }) }); })
       };
     });
-    const keepCount = filtered.filter(r => isOn(r[3], r[5])).length;
-    const fchips = [['all', 'All', R.length], ['qf', 'Qatar Foundation', R.filter(r => r[0] === 'qf').length], ['lulu', 'Lulu', R.filter(r => r[0] === 'lulu').length]].map(([id, label, n]) => ({
-      label, n, sel: s.fac === id ? 'true' : 'false', cls: 'chip' + (s.fac === id ? ' on' : ''), pick: () => this.setState({ fac: id, all: false })
+    const keepCount = filtered.filter(isOn).length;
+    const shortName = n => n === LU ? 'Lulu' : n === AK ? 'Al Khuwair' : n;
+    const fchips = [['all', 'All', R.length]].concat(regFacs.map(f => [f, shortName(f), R.filter(r => r.fac === f).length])).map(([id, label, n]) => ({
+      label, n, sel: selFac === id ? 'true' : 'false', cls: 'chip' + (selFac === id ? ' on' : ''), pick: () => this.setState({ fac: id, all: false })
     }));
+    const countAt = f => R.filter(r => r.fac === f).length;
+    const mixOf = f => { const c = {}; R.filter(r => r.fac === f).forEach(r => { const k = r.dev === 'CO₂ sensor' ? 'CO₂' : r.dev === 'M2M SIM' ? 'SIM' : r.model.replace(/^(Teltonika|Milesight|UniFi) /, ''); c[k] = (c[k] || 0) + 1; }); return Object.keys(c).map(k => (c[k] > 1 ? c[k] + ' ' : '') + k).join(' · ') || 'No POC devices'; };
+    // Lulu card: study, or the result of the recorded decision.
+    const fl = facOf(LU), luSt = stageOf(LU), decision = fl.decision || '';
+    const luluN = countAt(LU);
+    const luluShow = live(LU) && (luSt === 'POC study' || !!decision);
+    const LCARD = {
+      'POC study': { ov: 'In POC study', ovc: '#8A4B00', top: '#E08A00', sub: 'Bausher, Muscat · POC 15 Jul – 15 Sep 2026 (ended)', dueL: 'Review due', due: '14 Oct', dueSub: 'in 9 days' },
+      'POC': { ov: 'POC extended', ovc: '#5B32B4', top: '#7A5AF8', sub: 'Bausher, Muscat · POC 15 Jul 2026 – ' + (fl.pocEnd || '02 Nov 2026'), dueL: 'New POC end', due: String(fl.pocEnd || '02 Nov 2026').slice(0, 6), dueSub: 'extension recorded' },
+      'Contract pending': { ov: 'Converting to contract', ovc: '#1D4FB8', top: '#2F6FE4', sub: 'Bausher, Muscat · draft CN-EXG-LU-2026-D1', dueL: 'Contract', due: 'Pending', dueSub: 'proposed from 01 Nov 2026' },
+      'Contract active': { ov: 'Converted to contract', ovc: '#0A6648', top: '#12A374', sub: 'Bausher, Muscat · CN-EXG-LU-2026-D1', dueL: 'Contract', due: 'Active', dueSub: 'POC closed' },
+      'Completed': { ov: 'POC closed', ovc: '#646C79', top: '#8A96A8', sub: 'Bausher, Muscat · equipment returned, no contract', dueL: 'Outcome', due: 'Closed', dueSub: 'no contract' }
+    };
+    const lc = LCARD[luSt] || LCARD['POC study'];
+    const lulu = Object.assign({}, lc, { badge: luSt, bcls: GC[luSt] || 'g-study' });
+    const D = {
+      remove: { title: 'Equipment removed · Lulu Hypermarket closed', body: 'POC devices are now Returned at the MRD Office (Returns bay). History, SIM and IP records are preserved. Lulu Hypermarket moved to Completed with no contract.', bg: '#F8FAFB', bd: '#E3E7EC', hasLink: true, href: 'Inventory.dc.html', link: 'View returned devices' },
+      extend: { title: 'POC extended to ' + (fl.pocEnd || '02 Nov 2026'), body: 'Lulu Hypermarket is back in POC. The ' + luluN + ' devices remain on site as POC equipment.', bg: '#FAF7FF', bd: '#D7C8FA', hasLink: false, href: 'FacilityDetail.dc.html', link: '' },
+      proceed: { title: 'Proceeding to contract', body: 'Lulu Hypermarket is now Contract pending (draft CN-EXG-LU-2026-D1). The ' + luluN + ' POC devices stay on site; ' + R.filter(r => r.fac === LU && isOn(r)).length + ' are marked to remain at contract.', bg: '#F6F9FF', bd: '#C8D8FA', hasLink: true, href: 'ContractManagement.dc.html', link: 'Open contract →' }
+    };
+    // Other facilities in POC or POC study (e.g. Qatar Foundation after it moves to study, or added sites).
+    const otherCards = facNames.filter(n => n !== LU && live(n) && (stageOf(n) === 'POC' || stageOf(n) === 'POC study') && !(n === QF && stageOf(n) === 'POC')).map(n => {
+      const f = facOf(n), stg = stageOf(n), study = stg === 'POC study';
+      return { name: n, stage: stg, bcls: GC[stg], ov: study ? 'In POC study' : 'Active POC', ovc: study ? '#8A4B00' : '#5B32B4', top: study ? '#E08A00' : '#7A5AF8',
+        sub: (f.loc || '') + (f.pocEnd ? ' · POC to ' + f.pocEnd : ''), n: countAt(n), mix: mixOf(n),
+        infoL: study ? 'Evaluation' : 'POC end', info: study ? 'Decision pending' : (f.pocEnd || 'Not set') };
+    });
+    const qfActive = live(QF) && stageOf(QF) === 'POC';
+    const actives = facNames.filter(n => live(n) && stageOf(n) === 'POC');
+    const studies = facNames.filter(n => live(n) && stageOf(n) === 'POC study');
+    const upcomingF = [AK].filter(n => live(n) && (stageOf(n) === 'Site inspection' || stageOf(n) === 'BMS scan'));
+    const CONTRACTY = ['Contract pending', 'Contract active', 'Active operations'];
+    const hadPoc = facNames.filter(n => BASE[n] && BASE[n].hadPoc || n === LU || n === QF || countAt(n) > 0 || !!facOf(n).decision);
+    const converted = hadPoc.filter(n => CONTRACTY.indexOf(stageOf(n)) > -1);
+    const concluded = converted.length + hadPoc.filter(n => stageOf(n) === 'POC study' || (stageOf(n) === 'Completed' && facOf(n).decision === 'remove')).length;
+    const pocTotal = R.length;
+    const subFor = (arr, fn) => arr.length ? arr.map(fn).join(' · ') : 'None right now';
+    const kpis = [
+      { label: 'Active POCs', value: '' + actives.length, sub: subFor(actives, n => n === QF ? 'Qatar Foundation · day 5 of 61' : shortName(n) + (facOf(n).pocEnd ? ' · to ' + String(facOf(n).pocEnd).slice(0, 6) : '')), dot: '#7A5AF8', href: 'FacilityDetail.dc.html' },
+      { label: 'In POC study', value: '' + studies.length, sub: subFor(studies, n => n === LU ? 'Lulu · review due 14 Oct' : shortName(n)), dot: '#E08A00', href: 'FacilityDetail.dc.html' },
+      { label: 'Upcoming', value: '' + upcomingF.length, sub: subFor(upcomingF, n => n === AK ? 'Al Khuwair · install 20 Oct' : shortName(n)), dot: '#1A8FAD', href: 'FacilityDetail.dc.html' },
+      { label: 'POC equipment deployed', value: '' + pocTotal, sub: regFacs.length ? regFacs.map(f => countAt(f) + ' at ' + (f === QF ? 'QF' : shortName(f))).join(' · ') : 'None on site', dot: '#7A5AF8', href: 'Inventory.dc.html' },
+      { label: 'Converted to contract', value: converted.length + ' / ' + concluded, sub: converted.length ? converted.map(n => n === 'Bank Muscat Head Office' ? 'Bank Muscat · Jun 2026' : shortName(n)).join(' · ') : 'None yet', dot: '#12A374', href: 'ContractManagement.dc.html' }
+    ];
+    const qfMiles = [{ t: '08 Oct · 2 × CO₂ sensors', x: '11.5%' }, { t: '15 Oct · optimisation on', x: '23%' }, { t: 'Nov · energy comparison', x: '70%' }];
     const kitRows = [
       { item: 'Teltonika RUT956', qty: 1, sub: 'Reserve from Ready stock · 4 available', ok: true, res: true },
       { item: 'Omantel M2M SIM', qty: 1, sub: '64 available · assign during prep', ok: true, res: true },
@@ -423,21 +606,26 @@ class Component extends DCLogic {
       item: k.item, qty: k.qty, sub: k.sub, ok: k.ok, warn: !k.ok, isRes: s.kit && k.res,
       ibg: k.ok ? '#E1F4EC' : '#FFF3DC', ifg: k.ok ? '#0A6648' : '#8A4B00', sc: k.ok ? '#5E6B7D' : '#8A4B00'
     }));
-    const D = {
-      removed: { title: 'Return scheduled · 8 devices', body: 'Devices are marked Return pending and will become Returned when checked in at MRD Office. History is preserved. Lulu Hypermarket moves to Completed.', bg: '#F8FAFB', bd: '#E3E7EC' },
-      extended: { title: 'POC extended to 02 Nov 2026', body: 'Lulu Hypermarket is back in POC. The 8 devices remain on site as POC equipment.', bg: '#FAF7FF', bd: '#D7C8FA' }
-    };
+    const akSt = stageOf(AK), akN = countAt(AK);
+    const luluRows = R.filter(r => r.fac === LU);
+    const rmItems = luluRows.map(r => ({ label: r.model, sn: r.sn }));
     return {
-      kpis, qfMiles, reg, fchips, kit,
+      kpis, qfMiles, reg, fchips, kit, otherCards, lulu, luluN, luluMix: mixOf(LU), rmItems,
+      qfActive, qfDevN: countAt(QF), luluShow, noCards: !qfActive && !luluShow && otherCards.length === 0,
+      akUpcoming: upcomingF.length > 0, akBadge: akSt === 'BMS scan' ? 'BMS scan 07 Oct' : akSt, akCls: GC[akSt] || 'g-bms',
+      akHasDev: akN > 0, akDevNote: akN + ' POC device' + (akN === 1 ? '' : 's') + ' already deployed on site',
       keepLabel: keepCount + ' of ' + filtered.length + ' devices marked to remain at contract',
       shown: reg.length, total: filtered.length, canMore: filtered.length > 8,
       moreLabel: s.all ? 'Show fewer' : 'Show all ' + filtered.length, toggleAll: () => this.setState({ all: !s.all }),
-      undecided: !s.decision, decided: !!s.decision, dec: s.decision ? D[s.decision] : D.removed,
-      undo: () => this.setState({ decision: null }),
+      undecided: luSt === 'POC study' && !decision, decided: !!decision, dec: D[decision] || D.remove,
+      undo: () => this.undoLulu(), canUndo: !!decision && ['Contract active', 'Active operations'].indexOf(luSt) < 0 && !(fl.contract && fl.contract.status === 'Ended'),
+      proceed: () => this.decideLulu('proceed', luluRows),
       removeOpen: s.dialog === 'remove', openRemove: () => this.setState({ dialog: 'remove' }), closeRemove: () => this.setState({ dialog: null }),
-      confirmRemove: () => this.setState({ dialog: null, decision: 'removed' }),
+      confirmRemove: () => { this.setState({ dialog: null }); this.decideLulu('remove', luluRows); },
       extendOpen: s.dialog === 'extend', openExtend: () => this.setState({ dialog: 'extend' }), closeExtend: () => this.setState({ dialog: null }),
-      confirmExtend: () => this.setState({ dialog: null, decision: 'extended' }),
+      extEnd: s.extEnd || '02 Nov 2026', onExtEnd: e => this.setState({ extEnd: e && e.target ? e.target.value : s.extEnd }),
+      extReason: s.extReason || '', onExtReason: e => this.setState({ extReason: e && e.target ? e.target.value : '' }),
+      confirmExtend: () => { this.decideLulu('extend', luluRows); this.setState({ dialog: null, extReason: '' }); },
       kitNote: s.kit ? '3 items reserved for 20 Oct · UG65 still needs configuration' : 'Reserving holds stock so other deployments cannot use it.',
       kitBtn: s.kit ? 'Release reservation' : 'Reserve available kit', kitBtnCls: s.kit ? '' : 'p',
       toggleKit: () => this.setState({ kit: !s.kit })

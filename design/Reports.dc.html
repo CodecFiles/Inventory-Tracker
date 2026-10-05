@@ -301,21 +301,24 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
-    try { const keep = Object.assign({}, this.state); ["schedOpen", "toast"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:Reports', JSON.stringify(keep)); } catch (e) {}
+    try { const keep = Object.assign({}, this.state); ["schedOpen", "toast", "exports"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:Reports', JSON.stringify(keep)); } catch (e) {}
   }
   constructor(props) {
     super(props);
     this.state = {
-      sel: 'tel', range: '30d', fcat: 'all', ffac: 'all', fstat: 'all', from: '2026-09-05', to: '2026-10-05', schedOpen: false, freq: 'weekly', recips: 'chetan@moonrock.om, nitin@moonrock.om', toast: '',
-      exports: [
+      sel: 'tel', range: '30d', fcat: 'all', ffac: 'all', fstat: 'all', from: '2026-09-05', to: '2026-10-05', schedOpen: false, freq: 'weekly', recips: 'chetan@moonrock.om, nitin@moonrock.om', toast: ''
+    };
+  }
+  // Sample export history; exports made in the prototype live in the shared store (s.exports, newest first).
+  sampleExports() {
+    return [
         { file: 'teltonika-config-status_2026-10-05.xlsx', who: 'Chetan', ini: 'CH', bg: '#CDEFE7', when: 'Today, 09:44', fmt: 'Excel' },
         { file: 'poc-equipment_qatar-foundation.pdf', who: 'Aisha', ini: 'AI', bg: '#E6DDFB', when: 'Sat 3 Oct, 15:02', fmt: 'PDF' },
         { file: 'sim-allocation_2026-10-01.csv', who: 'Nitin', ini: 'NI', bg: '#F6E3C4', when: 'Thu 1 Oct, 10:18', fmt: 'CSV' },
         { file: 'contract-equipment_CN-EXG-BM-2026-01.xlsx', who: 'Exergio Partner', ini: 'EX', bg: '#E3E7EC', when: 'Wed 30 Sep, 17:40', fmt: 'Excel' },
         { file: 'current-inventory_2026-09-30.xlsx', who: 'Nitin', ini: 'NI', bg: '#F6E3C4', when: 'Wed 30 Sep, 08:00', fmt: 'Excel' },
         { file: 'batch-report_TEL-2026-004.pdf', who: 'Chetan', ini: 'CH', bg: '#CDEFE7', when: 'Tue 22 Sep, 16:31', fmt: 'PDF' }
-      ]
-    };
+    ];
   }
   renderVals() {
     const st = this.state;
@@ -338,7 +341,7 @@ class Component extends DCLogic {
         cols: ['Item', 'Serial / SKU', 'Category', 'Batch', 'Status', 'Location', 'Qty', 'Received', 'Supplier', 'Facility', 'Deployment', 'SIM', 'IP', 'Notes'], show: 7, mono: [1, 3], badge: 4,
         rows: [
           ['Teltonika RUT956', '1108675309', 'Teltonika routers', 'TEL-2026-003', 'Ready for deployment', 'MRD Office · Shelf A2', '1'],
-          ['Teltonika RUT956', '1108675311', 'Teltonika routers', 'TEL-2026-003', 'Deployed', 'Qatar Foundation · Plant room B1', '1'],
+          ['Teltonika RUT956', '1108675311', 'Teltonika routers', 'TEL-2026-004', 'Deployed', 'Qatar Foundation · Plant room B1', '1'],
           ['Milesight EM500-CO2', '6136D1748210', 'CO₂ sensors', 'CO2-2026-002', 'In stock', 'MRD Office · Shelf B2', '1'],
           ['Milesight EM500-CO2', '6136D1748203', 'CO₂ sensors', 'CO2-2026-002', 'Reserved', 'MRD Office · Shelf B2', '1'],
           ['Milesight UG65', '6247B1820048', 'LoRaWAN gateways', 'GW-2026-001', 'Unconfigured', 'MRD Office · Shelf A3', '1'],
@@ -379,7 +382,7 @@ class Component extends DCLogic {
           ['1108675306', 'TEL-2026-003', 'Ready for deployment', 'Rahul', '8996802026093001415', '10.64.12.33'],
           ['1108675309', 'TEL-2026-003', 'Ready for deployment', 'Chetan', '8996802026093001427', '10.64.12.37'],
           ['1108675313', 'TEL-2026-003', 'Ready for deployment', 'Rahul', '8996802026093001431', '10.64.12.39'],
-          ['1108675311', 'TEL-2026-003', 'Deployed', 'Chetan', '8996802026093001419', '10.64.12.35'],
+          ['1108675311', 'TEL-2026-004', 'Deployed', 'Chetan', '8996802026093001435', '10.64.12.41'],
           ['1108675302', 'TEL-2026-003', 'Deployed', 'Saif', '8996802026093001408', '10.64.12.32'],
           ['1107442109', 'TEL-2026-003', 'In preparation', 'Rahul', '—', '—'],
           ['1108675320', 'TEL-2026-004', 'Unconfigured', '—', '—', '—']
@@ -388,7 +391,7 @@ class Component extends DCLogic {
         cols: ['ICCID', 'Operator', 'Status', 'Router', 'IP address', 'Location'], mono: [0, 3, 4], badge: 2,
         rows: [
           ['8996802026093001427', 'Omantel', 'Assigned', '1108675309', '10.64.12.37', 'MRD Office'],
-          ['8996802026093001419', 'Omantel', 'Active', '1108675311', '10.64.12.35', 'Qatar Foundation'],
+          ['8996802026093001435', 'Omantel', 'Active', '1108675311', '10.64.12.41', 'Qatar Foundation'],
           ['8996802026093001408', 'Omantel', 'Active', '1108675302', '10.64.12.32', 'Bank Muscat Head Office'],
           ['8996802026071100233', 'Omantel', 'Active', '1107442106', '10.64.11.21', 'Lulu Hypermarket'],
           ['8996802026093001412', 'Omantel', 'Assigned', '1108675304', '10.64.12.31', 'MRD Office'],
@@ -457,19 +460,104 @@ class Component extends DCLogic {
           ['GW-2026-001', 'Milesight UG65', 'Milesight IoT', '14 Jul 2026', '4', '2', '2']
         ] }
     ];
-    const SC = { 'Ready for deployment': 's-ready', 'Deployed': 's-deployed', 'In stock': 's-stock', 'Reserved': 's-reserved', 'Unconfigured': 's-unconf', 'In preparation': 's-prep', 'Assigned': 's-reserved', 'Active': 's-deployed', 'Available': 's-stock', 'Deactivated': 's-retired', 'Below minimum': 's-maint', 'At minimum': 's-prep', 'Under maintenance': 's-maint', 'Scheduled': 's-transit', 'Draft': 's-unconf', 'Completed': 's-deployed', 'Active operations': 'g-ops', 'POC': 'g-poc', 'POC study': 'g-study', 'BMS scan': 'g-bms', 'Site inspection': 'g-insp', 'On hold': 'g-hold' };
+    // ---- Shared store overlay: sample rows + what other screens have changed ----
+    const ST0 = this.readStore();
+    const UN = ST0.units || {};
+    const LBL = { unconf: 'Unconfigured', prep: 'In preparation', ready: 'Ready for deployment', reserved: 'Reserved', stock: 'In stock', deployed: 'Deployed', maint: 'Under maintenance', transit: 'In transit', returned: 'Returned', damaged: 'Damaged', retired: 'Retired' };
+    const lbl = k => LBL[k] || '';
+    const addedL = (ST0.added || []).filter(u => u && u.ident);
+    const isTel = (u, id) => u && (u.cat === 'tel' || /RUT956/i.test((u.name || '') + ' ' + (u.model || '')));
+    const locOf = u => (u.loc || '—') + (u.loc2 ? ' · ' + u.loc2 : '');
+    const pref = ST0.deployments || [];
+    const depsNew = pref.slice().reverse();
+    const byId = {}; R.forEach(x => { byId[x.id] = x; });
+    const extraN = {};
+    const setRows = (id, rows, add) => { byId[id].rows = rows; extraN[id] = (extraN[id] || 0) + (add || 0); };
+    // Current inventory: overlay status / location by serial, add received units.
+    (() => {
+      const r0 = byId.cur, seen = {};
+      const rows = r0.rows.map(row => { seen[row[1]] = 1; const P = UN[row[1]]; if (!P) return row; const x = row.slice(); if (lbl(P.st)) x[4] = lbl(P.st); if (P.loc) x[5] = locOf(P); return x; });
+      const add = addedL.filter(u => !seen[u.ident]).map(u => { const U = Object.assign({}, u, UN[u.ident] || {}); return [U.name || U.model || 'Item', u.ident, U.cat === 'tel' ? 'Teltonika routers' : U.cat === 'sim' ? 'SIM cards' : U.cat === 'co2' ? 'CO₂ sensors' : U.cat === 'gw' ? 'LoRaWAN gateways' : U.cat === 'net' ? 'Network switches' : U.cat === 'vfd' ? 'VFDs' : U.cat === 'cab' ? 'Cables' : '—', U.batch || '—', lbl(U.st) || 'Unconfigured', locOf(U), '1']; });
+      setRows('cur', add.reverse().concat(rows), add.length);
+    })();
+    // Inventory by facility: stage from the shared facilities record when another screen has set it.
+    (() => {
+      const F = ST0.facilities || {};
+      setRows('fac', byId.fac.rows.map(row => { const f = F[row[0]]; if (!f || typeof f.stage !== 'string' || !f.stage) return row; const x = row.slice(); x[1] = f.stage; return x; }));
+    })();
+    // Teltonika configuration status: overlay units by serial, add received RUT956 units.
+    (() => {
+      const seen = {};
+      const tel = row => { const P = UN[row[0]]; if (!P) return row; const x = row.slice(); if (lbl(P.st)) x[2] = lbl(P.st); if (P.configuredBy) x[3] = P.configuredBy; if (P.sim !== undefined) x[4] = P.sim || '—'; if (P.ip !== undefined) x[5] = P.ip || '—'; return x; };
+      const rows = byId.tel.rows.map(row => { seen[row[0]] = 1; return tel(row); });
+      const add = [];
+      addedL.filter(u => isTel(u) && !seen[u.ident]).forEach(u => { seen[u.ident] = 1; add.push(tel([u.ident, u.batch || '—', lbl(u.st) || 'Unconfigured', '—', '—', '—'])); });
+      Object.keys(UN).filter(id => !seen[id] && isTel(UN[id])).forEach(id => { seen[id] = 1; add.push(tel([id, UN[id].batch || '—', lbl(UN[id].st) || 'Unconfigured', '—', '—', '—'])); });
+      setRows('tel', add.reverse().concat(rows), add.length);
+    })();
+    // SIM allocation: overlay SIM patches (device / ip / status) and routers that now carry a SIM.
+    (() => {
+      const routerOf = {}; Object.keys(UN).forEach(id => { const P = UN[id]; if (P && P.sim && P.cat !== 'sim') routerOf[P.sim] = id; });
+      const rel = {}; R.find(x => x.id === 'sim').rows.forEach(row => { if (row[3] !== '—') { const RP = UN[row[3]]; if (RP && RP.sim !== undefined && RP.sim !== row[0]) rel[row[0]] = 1; } });
+      const simRow = (row) => {
+        const P = UN[row[0]];
+        if (!P && !routerOf[row[0]] && !rel[row[0]]) return row;
+        const Q = P || {}, x = row.slice();
+        const dev = Q.device !== undefined ? Q.device : routerOf[row[0]] ? routerOf[row[0]] : rel[row[0]] ? '' : (row[3] === '—' ? '' : row[3]);
+        const D = dev ? (UN[dev] || null) : null;
+        if (Q.st === 'retired' || Q.st === 'damaged') { x[2] = 'Deactivated'; x[3] = '—'; x[4] = '—'; return x; }
+        if (!dev) { x[2] = 'Available'; x[3] = '—'; x[4] = '—'; x[5] = Q.loc && !Q.fac ? locOf(Q) : (row[2] === 'Available' ? row[5] : 'MRD Office · Drawer S1'); return x; }
+        x[3] = dev;
+        x[4] = Q.ip || (D && D.ip) || (dev === row[3] ? row[4] : '—');
+        if (D && D.st === 'deployed') { x[2] = 'Active'; x[5] = D.fac || D.loc || x[5]; }
+        else if (D && D.st) { x[2] = Q.active ? 'Active' : 'Assigned'; x[5] = D.loc || 'MRD Office'; }
+        else if (dev !== row[3]) { x[2] = Q.active ? 'Active' : 'Assigned'; x[5] = Q.fac || 'MRD Office'; }
+        return x;
+      };
+      const seen = {};
+      const rows = byId.sim.rows.map(row => { seen[row[0]] = 1; return simRow(row); });
+      const add = [];
+      addedL.filter(u => (u.cat === 'sim') && !seen[u.ident]).forEach(u => { seen[u.ident] = 1; add.push(simRow([u.ident, /ooredoo/i.test(u.brand || u.name || '') ? 'Ooredoo' : 'Omantel', 'Available', '—', '—', locOf(u)])); });
+      Object.keys(UN).filter(id => !seen[id] && UN[id].cat === 'sim').forEach(id => { seen[id] = 1; add.push(simRow([id, 'Omantel', 'Available', '—', '—', 'MRD Office'])); });
+      Object.keys(routerOf).filter(id => !seen[id]).forEach(id => { seen[id] = 1; add.push(simRow([id, 'Omantel', 'Assigned', '—', '—', 'MRD Office'])); });
+      setRows('sim', add.reverse().concat(rows), add.length);
+    })();
+    // Deployment reports: store deployments (newest first) ahead of the sample, unit status overlaid.
+    (() => {
+      const stOf = (id, d) => { const P = UN[id]; return P && lbl(P.st) ? lbl(P.st) : d; };
+      const ser = []; depsNew.forEach(d => (d.items || []).forEach(it => { if (it && it.ident && !it.qty) ser.push({ d, it }); }));
+      const dd = ser.map(({ d, it }) => [it.ident, it.name || '—', d.fac || '—', d.type || '—', d.date || '—', d.ref || '—', d.by || '—']);
+      const dSeen = {}; dd.forEach(x => { dSeen[x[0]] = 1; });
+      setRows('depdev', dd.concat(byId.depdev.rows.filter(row => { const P = UN[row[0]]; return !dSeen[row[0]] && !(P && P.st && P.st !== 'deployed' && P.st !== 'maint' && P.fac !== row[2]); })), dd.length);
+      const poc = ser.filter(x => x.d.type === 'POC').map(({ d, it }) => [d.fac || '—', it.name || '—', it.ident, d.date || '—', '—', stOf(it.ident, 'Deployed')]);
+      setRows('poc', poc.concat(byId.poc.rows.map(row => { const x = row.slice(); x[5] = stOf(row[2], row[5]); return x; })), poc.length);
+      const con = ser.filter(x => x.d.type === 'Contract' || x.d.type === 'Additional' || x.d.type === 'Replacement').map(({ d, it }) => [d.contract || d.fac || '—', it.name || '—', it.ident, 'No', d.date || '—', stOf(it.ident, 'Deployed')]);
+      setRows('con', con.concat(byId.con.rows.map(row => { const x = row.slice(); x[5] = stOf(row[2], row[5]); return x; })), con.length);
+      const hist = depsNew.map(d => { const its = d.items || []; const sum = its.length === 1 ? (its[0].name || its[0].ident) + (its[0].qty ? ' × ' + its[0].qty : ' · ' + its[0].ident) : its.slice(0, 3).map(i => (i.name || i.ident) + (i.qty ? ' × ' + i.qty : '')).join(' + ') + (its.length > 3 ? ' + ' + (its.length - 3) + ' more' : ''); return [d.ref || '—', d.date || '—', d.fac || '—', sum || '—', d.type || '—', d.by || '—', d.status || 'Completed']; });
+      const hSeen = {}; hist.forEach(x => { hSeen[x[0]] = 1; });
+      setRows('hist', hist.concat(byId.hist.rows.filter(row => !hSeen[row[0]])), hist.length);
+    })();
+    R.forEach(x => { x.total = x.total + (extraN[x.id] || 0); });
+    const SCHED = {}; (ST0.schedules || []).forEach(sc => { if (sc && sc.report && !SCHED[sc.report]) SCHED[sc.report] = sc; });
+    const SC = { 'Ready for deployment': 's-ready', 'Deployed': 's-deployed', 'In stock': 's-stock', 'Reserved': 's-reserved', 'Unconfigured': 's-unconf', 'In preparation': 's-prep', 'Assigned': 's-reserved', 'Active': 's-deployed', 'Available': 's-stock', 'Deactivated': 's-retired', 'Below minimum': 's-maint', 'At minimum': 's-prep', 'Under maintenance': 's-maint', 'Scheduled': 's-transit', 'In transit': 's-transit', 'Returned': 's-returned', 'Damaged': 's-damaged', 'Retired': 's-retired', 'Planned': 's-transit', 'Cancelled': 's-retired', 'Draft': 's-unconf', 'Completed': 's-deployed', 'Active operations': 'g-ops', 'POC': 'g-poc', 'POC study': 'g-study', 'BMS scan': 'g-bms', 'Site inspection': 'g-insp', 'On hold': 'g-hold' };
     const fix = (s) => String(s).replace(/&amp;/g, '&');
     const stamp = '2026-10-05';
     const addExport = (r, fmt) => {
       const ext = fmt === 'Excel' ? 'xlsx' : fmt.toLowerCase();
       const file = r.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-$/, '') + '_' + stamp + '.' + ext;
-      this.setState({ exports: [{ file, who: 'Chetan', ini: 'CH', bg: '#CDEFE7', when: 'Just now', fmt }].concat(st.exports).slice(0, 7), toast: file + ' exported · ' + r.total + ' rows' });
+      this.writeStore(s => {
+        s.exports = Array.isArray(s.exports) ? s.exports : [];
+        s.exports.unshift({ file, who: 'Chetan', ini: 'CH', bg: '#CDEFE7', when: this.nowLabel(), fmt, report: r.title, rows: r.total });
+        s.exports = s.exports.slice(0, 50);
+        this.logEvent(s, { action: 'Report exported', item: file, itemHref: 'Reports.dc.html', from: '', to: fmt, note: r.title + ' · ' + r.total + ' rows' });
+      });
+      this.setState({ toast: file + ' exported · ' + r.total + ' rows' });
     };
     const meta = (r) => ({ pdfOk: !r.wide, wide: !!r.wide, wideTip: 'PDF unavailable: ' + r.cols.length + ' columns is too wide for a page. Use Excel or CSV.' });
     const order = ['Inventory', 'Devices', 'Deployments', 'Batches'];
     const groups = order.map(name => {
       const items = R.filter(r => r.g === name).map(r => Object.assign({}, meta(r), {
-        title: r.title, desc: r.desc, last: r.last, icon: IC[r.icon],
+        title: r.title, desc: r.desc, last: (SCHED[r.title] ? 'Scheduled ' + SCHED[r.title].freq + ' · ' : '') + r.last, icon: IC[r.icon],
         cls: 'rcard' + (st.sel === r.id ? ' on' : ''), pressed: st.sel === r.id ? 'true' : 'false',
         pick: () => this.setState({ sel: r.id, fstat: 'all', fcat: 'all', ffac: 'all' }),
         csv: () => addExport(r, 'CSV'), xlsx: () => addExport(r, 'Excel'), pdf: () => addExport(r, 'PDF')
@@ -506,11 +594,19 @@ class Component extends DCLogic {
       onFrom: (e) => this.setState({ from: val(e, st.from) }), onTo: (e) => this.setState({ to: val(e, st.to) }),
       clearFilters: () => this.setState({ fcat: 'all', ffac: 'all', fstat: 'all' }),
       expCsv: () => addExport(r, 'CSV'), expXlsx: () => addExport(r, 'Excel'), expPdf: () => addExport(r, 'PDF'),
-      exports: st.exports,
+      exports: (Array.isArray(ST0.exports) ? ST0.exports : []).filter(x => x && x.file).map(x => ({ file: x.file, who: x.who || '—', ini: x.ini || '··', bg: x.bg || '#E3E7EC', when: x.when || '', fmt: x.fmt || '' })).concat(this.sampleExports()).slice(0, 7),
       schedOpen: st.schedOpen, openSched: () => this.setState({ schedOpen: true }), closeSched: () => this.setState({ schedOpen: false }),
       freqHint: (FQ.find(x => x[0] === st.freq) || FQ[1])[2],
       recips: st.recips, onRecips: (e) => this.setState({ recips: val(e, '') }),
-      saveSched: () => this.setState({ schedOpen: false, toast: r.title + ' scheduled · ' + (FQ.find(x => x[0] === st.freq) || FQ[1])[1].toLowerCase() }),
+      saveSched: () => {
+        const fq = (FQ.find(x => x[0] === this.state.freq) || FQ[1]), recips = (this.state.recips || '').trim();
+        this.writeStore(s => {
+          s.schedules = (Array.isArray(s.schedules) ? s.schedules : []).filter(x => x && x.report !== r.title);
+          s.schedules.unshift({ report: r.title, freq: fq[1].toLowerCase(), recips });
+          this.logEvent(s, { action: 'Report scheduled', item: r.title, itemHref: 'Reports.dc.html', from: '', to: fq[1], note: fq[2] + (recips ? ' · to ' + recips : '') });
+        });
+        this.setState({ schedOpen: false, toast: r.title + ' scheduled · ' + fq[1].toLowerCase() });
+      },
       hasToast: !!st.toast, toast: st.toast, closeToast: () => this.setState({ toast: '' })
     };
   }

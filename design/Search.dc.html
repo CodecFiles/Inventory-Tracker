@@ -216,6 +216,18 @@ mark{background:#C9EFE6;color:#04211C;border-radius:3px;padding:0 1px;font-weigh
 <sc-if value="{{noBatches}}" hint-placeholder-val="{{ false }}"><p class="empty">No batches match.</p></sc-if>
 </sc-if>
 
+<sc-if value="{{secCat}}" hint-placeholder-val="{{ true }}">
+<div class="grp">Products &amp; suppliers <span class="ftab" style="height: auto; margin: 0; padding: 0; border: 0"><span class="n">{{nCat}}</span></span></div>
+<sc-for list="{{catHits}}" as="p" hint-placeholder-count="1">
+<a class="hit" href="{{p.href}}">
+<span style="width: 34px; height: 34px; border-radius: 9px; background: #F1F4F7; color: #3B4758; display: flex; align-items: center; justify-content: center; flex: 0 0 34px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg></span>
+<span style="flex: 1; min-width: 0"><span style="display: block; font-size: 13.5px"><span style="font-weight: 500">{{p.pre}}<mark>{{p.mid}}</mark>{{p.post}}</span> <span class="muted" style="font-size: 12px">· {{p.kind}}</span></span><span class="muted" style="font-size: 12px">{{p.sub}}</span></span>
+<span class="b {{p.cls}}">{{p.status}}</span>
+</a>
+</sc-for>
+<sc-if value="{{noCat}}" hint-placeholder-val="{{ false }}"><p class="empty">No products or suppliers match.</p></sc-if>
+</sc-if>
+
 <sc-if value="{{secFac}}" hint-placeholder-val="{{ true }}">
 <div class="grp">Facilities <span class="ftab" style="height: auto; margin: 0; padding: 0; border: 0"><span class="n">{{nFac}}</span></span></div>
 <sc-for list="{{facs}}" as="f" hint-placeholder-count="0">
@@ -339,6 +351,20 @@ class Component extends DCLogic {
       { sn: '1107442103', product: 'Teltonika RUT956', status: 'Under maintenance', cls: 's-maint', imei: '860548043912949', mac: '00:1E:42:3A:7B:DF', devId: 'MRD-TEL-0399', ip: '10.64.12.22', iccid: '8996802026093001402', loc: 'MRD Office · Repair bench', batch: 'TEL-2026-003', canDeploy: false, fw: 'RUT9M_R_00.07.06' },
       { sn: '6247B1820051', product: 'Milesight UG65', status: 'Unconfigured', cls: 's-unconf', imei: '', mac: '24:E1:24:F5:1A:07', devId: 'GW EUI 24E124FFFEF51A07', ip: '', iccid: '', loc: 'MRD Office · Shelf B3', batch: 'GW-2026-001', canDeploy: false, fw: '60.0.0.42' }
     ];
+    // The rest of the sample RUT956 batches (TEL-2026-004: 1108675300–19, TEL-2026-003: 1107442100–09), so a batch search lists every unit.
+    const have0 = {}; devs.forEach(d => { have0[d.sn] = true; });
+    const pad2 = n => (n < 10 ? '0' : '') + n;
+    const R4 = { 2: 'deployed', 4: 'ready', 6: 'ready', 9: 'ready', 11: 'deployed', 13: 'ready' };
+    let unc = 0;
+    for (let i = 0; i < 20; i++) {
+      const sn = String(1108675300 + i); const k = R4[i] || 'unconf'; if (k === 'unconf') unc++;
+      if (have0[sn]) continue;
+      devs.push({ sn, product: 'Teltonika RUT956', status: LBL[k], cls: 's-' + k, imei: '8605480439128' + pad2(10 + i * 4), mac: '', devId: 'MRD-TEL-0' + (408 + i), ip: '', iccid: '', loc: k === 'ready' ? 'MRD Office · Shelf A2' : 'MRD Office · ' + (unc <= 10 ? 'Shelf A1' : 'Shelf A2'), batch: 'TEL-2026-004', canDeploy: k === 'ready', fw: k === 'ready' ? 'RUT9M_R_00.07.08.3' : '—' });
+    }
+    for (let i = 0; i < 10; i++) {
+      const sn = String(1107442100 + i); if (have0[sn]) continue;
+      devs.push({ sn, product: 'Teltonika RUT956', status: LBL.deployed, cls: 's-deployed', imei: '8605480439129' + pad2(20 + i * 3), mac: '', devId: 'MRD-TEL-0' + (398 + i), ip: '', iccid: '', loc: i === 7 ? 'Lulu Hypermarket' : 'Bank Muscat Head Office', batch: 'TEL-2026-003', canDeploy: false, fw: 'RUT9M_R_00.07.08.3' });
+    }
     // Overlay the shared store on the sample devices, then add store units this screen has no sample row for.
     const locOf = u => u.fac && (u.st === 'deployed' || !u.loc || u.loc === u.fac) ? u.fac : (u.loc || 'MRD Office') + (u.loc2 ? ' · ' + u.loc2 : '');
     const overlay = (d, u) => {
@@ -357,18 +383,18 @@ class Component extends DCLogic {
     (ST0.added || []).forEach(u => { if (u && u.ident && !seen[u.ident] && !isSimUnit(u.ident, u)) { seen[u.ident] = true; devs.push(fromStore(u)); } });
     Object.keys(ST0.units).forEach(id => { const u = ST0.units[id]; if (!seen[id] && !isSimUnit(id, u)) { seen[id] = true; devs.push(fromStore(Object.assign({ ident: id }, u))); } });
     for (let i = 0; i < devs.length; i++) devs[i] = overlay(devs[i], ST0.units[devs[i].sn]);
-    const fieldDefs = [['sn', 'Serial number', 'serial'], ['imei', 'IMEI', 'imei'], ['mac', 'MAC address', 'mac'], ['devId', 'Device ID', 'id'], ['ip', 'IP address', 'ip'], ['iccid', 'SIM ICCID', 'iccid']];
+    const fieldDefs = [['sn', 'Serial number', 'serial'], ['imei', 'IMEI', 'imei'], ['mac', 'MAC address', 'mac'], ['devId', 'Device ID', 'id'], ['ip', 'IP address', 'ip'], ['iccid', 'SIM ICCID', 'iccid'], ['batch', 'Batch', 'batch']];
     const devHits = [];
-    if (t.length >= 2 && (!scope || ['serial', 'imei', 'mac', 'id', 'ip', 'iccid'].indexOf(scope) >= 0)) {
+    if (t.length >= 2 && (!scope || ['serial', 'imei', 'mac', 'id', 'ip', 'iccid', 'batch'].indexOf(scope) >= 0)) {
       devs.forEach(d => {
         for (const [k, label, sc] of fieldDefs) {
           if (scope && scope !== sc) continue;
           const s = d[k] ? split(d[k]) : null;
           if (s) { devHits.push(Object.assign({}, d, s, { field: label, key: k })); break; }
         }
-        // Units created or changed on other screens also match on name and batch.
+        // Units created or changed on other screens also match on name.
         if (d.fromStore && !scope && !devHits.some(h => h.sn === d.sn)) {
-          for (const [k, label] of [['product', 'Name'], ['batch', 'Batch']]) { const s = d[k] ? split(d[k]) : null; if (s) { devHits.push(Object.assign({}, d, s, { field: label, key: k })); break; } }
+          const s = d.product ? split(d.product) : null; if (s) devHits.push(Object.assign({}, d, s, { field: 'Name', key: 'product' }));
         }
       });
     }
@@ -398,12 +424,33 @@ class Component extends DCLogic {
       { id: 'CO2-2026-002', product: 'Milesight EM500-CO2', date: '03 Sep 2026', range: null, meta: '40 units' },
       { id: 'GW-2026-001', product: 'Milesight UG65', date: '15 Jul 2026', range: null, meta: '6 gateways' }
     ];
+    // Batches received on other screens: grouped from store.added, plus quantity receipts recorded as 'Received' events.
+    const bIdx = {}; batchData.forEach(b => { bIdx[b.id] = b; });
+    (ST0.added || []).forEach(u => {
+      if (!u || !u.batch) return;
+      const b = bIdx[u.batch] || (bIdx[u.batch] = batchData[batchData.push({ id: u.batch, product: u.name || 'Unit', date: u.recv || '05 Oct 2026', range: null, meta: '', n: 0, sup: u.sup || '', store: true }) - 1]);
+      if (b.store) { b.n++; b.meta = (b.sup ? b.sup + ' · ' : '') + b.n + (b.n === 1 ? ' unit' : ' units'); }
+    });
+    (ST0.events || []).forEach(e => { const m = e && e.action === 'Received' && /^Batch (\S+) · (\d+) × (.+)$/.exec(e.item || ''); if (m && !bIdx[m[1]]) { bIdx[m[1]] = { id: m[1], product: m[3], date: e.when || '05 Oct 2026', range: null, meta: (e.from ? e.from + ' · ' : '') + m[2] + ' received' }; batchData.push(bIdx[m[1]]); } });
     const batches = (t.length >= 2 && (!scope || scope === 'batch' || scope === 'serial')) ? batchData.map(b => {
       const own = devHits.find(h => h.batch === b.id && h.key === 'sn');
-      if (own && scope !== 'batch') return { id: b.id, product: b.product, date: b.date, sub: 'Contains ' + own.sn + ' · serials ' + b.range[0] + '–' + b.range[1] + ' · ' + b.meta };
+      if (own && b.range && scope !== 'batch') return { id: b.id, product: b.product, date: b.date, sub: 'Contains ' + own.sn + ' · serials ' + b.range[0] + '–' + b.range[1] + ' · ' + b.meta };
       if (scope !== 'serial' && b.id.toLowerCase().indexOf(t) >= 0) return { id: b.id, product: b.product, date: b.date, sub: b.meta };
       return null;
     }).filter(Boolean) : [];
+    // Products (sample catalogue + products added on the Products screen) and suppliers (sample + Settings catalogue).
+    const PR = ST0.products || {};
+    const prodData = [['Teltonika RUT956', 'Teltonika', 'RUT956', 'Teltonika Devices'], ['Teltonika RUT241', 'Teltonika', 'RUT241', 'Teltonika Devices'], ['Teltonika RUT950', 'Teltonika', 'RUT950', 'Teltonika Devices'], ['Milesight EM500-CO2', 'Milesight', 'EM500-CO2', 'CO₂ Sensors'], ['Milesight AM319', 'Milesight', 'AM319', 'CO₂ Sensors'], ['Milesight UG65', 'Milesight', 'UG65-868M', 'LoRaWAN Gateways'], ['Omantel M2M SIM', 'Omantel', 'M2M Pooled 5 GB', 'M2M SIM Cards'], ['Ooredoo M2M SIM', 'Ooredoo', 'M2M IoT 2 GB', 'M2M SIM Cards'], ['UniFi Switch Lite 8 PoE', 'Ubiquiti', 'USW-Lite-8-PoE', 'Network Equipment'], ['UniFi Switch Flex Mini', 'Ubiquiti', 'USW-Flex-Mini', 'Network Equipment'], ['ABB ACS580 VFD', 'ABB', 'ACS580-01', 'VFDs'], ['Danfoss VLT FC 102', 'Danfoss', 'FC-102P7K5', 'VFDs'], ['Siemens PXC4.E16', 'Siemens', 'PXC4.E16', 'Controllers & BMS'], ['Loytec BACnet router', 'Loytec', 'LIP-ME201C', 'Controllers & BMS'], ['Belimo damper actuator', 'Belimo', 'LRB24-3', 'Controllers & BMS'], ['Cat6 patch cable 3 m', 'Generic', 'Cat6 U/UTP 3 m', 'Cables & Accessories'], ['Cat6 patch cable 1 m', 'Generic', 'Cat6 U/UTP 1 m', 'Cables & Accessories'], ['24 V DIN-rail PSU', 'Mean Well', 'HDR-30-24', 'Cables & Accessories'], ['RS-485 shielded cable', 'Belden', '9841', 'Cables & Accessories']]
+      .map(([name, brand, model, cat]) => ({ name, brand, model, cat, track: '', isNew: false }));
+    (PR.added || []).forEach(a => { if (a && a.name && !prodData.some(p => p.name.toLowerCase() === a.name.toLowerCase())) prodData.push({ name: a.name, brand: a.brand || '', model: a.model || '', cat: a.catLabel || '', track: a.track || '', isNew: true }); });
+    const prodArch = name => (PR.archived || {})[name] ? true : ((PR.restored || {})[name] ? false : name === 'Teltonika RUT950');
+    const supData = [['Al Noor Technologies LLC', 'Teltonika Devices'], ['SensorTech Trading', 'CO₂ Sensors · LoRaWAN Gateways'], ['Gulf Network Supplies', 'Network Equipment · Cables'], ['Gulf Electro-Mechanical Supplies', 'VFDs'], ['Omantel Business', 'M2M SIM Cards'], ['Ooredoo Business', 'M2M SIM Cards']].map(([name, cats]) => ({ name, cats, contact: '' }));
+    ((ST0.catalog && ST0.catalog.suppliers) || []).forEach(x => { const nm = x && (typeof x === 'string' ? x : x.name); if (!nm) return; const ex = supData.filter(y => y.name === nm)[0]; const cats = x.cats ? (Array.isArray(x.cats) ? x.cats.join(' · ') : String(x.cats)) : ''; if (ex) { if (cats) ex.cats = cats; if (x.contact) ex.contact = x.contact; } else supData.push({ name: nm, cats, contact: x.contact || '' }); });
+    const catHits = [];
+    if (t.length >= 2 && (!scope || scope === 'product' || scope === 'supplier')) {
+      if (scope !== 'supplier') prodData.forEach(p => { const h = split(p.name) || (split(p.brand + ' ' + p.model) ? Object.assign({ pre: p.name, mid: '', post: '' }) : null); if (h) { const ar = prodArch(p.name); catHits.push(Object.assign({ kind: 'Product', sub: [p.brand, p.model, p.cat, p.track].filter(Boolean).join(' · '), status: ar ? 'Archived' : (p.isNew ? 'New' : 'Active'), cls: ar ? 's-retired' : (p.isNew ? 's-ready' : 's-deployed'), href: /cable|PSU/i.test(p.name) ? 'InventoryItem.dc.html' : (/SIM$/.test(p.name) ? 'SimInventory.dc.html' : 'ProductDetail.dc.html') }, h)); } });
+      if (scope !== 'product') supData.forEach(x => { const h = split(x.name); if (h) catHits.push(Object.assign({ kind: 'Supplier', sub: [x.cats, x.contact].filter(Boolean).join(' · ') || 'Supplier', status: 'Supplier', cls: 's-stock', href: 'Settings.dc.html' }, h)); });
+    }
     const facData = [
       ['Qatar Foundation', 'Education City, Doha · 12 devices', 'POC', 'g-poc'],
       ['Bank Muscat Head Office', 'Airport Heights, Muscat · 35 devices', 'Active operations', 'g-contract'],
@@ -430,15 +477,15 @@ class Component extends DCLogic {
     const acts = storeActs.concat((t.length >= 2 && !scope) ? actData.map(([ini, bg, who, what, obj, when]) => { const h = split(obj); return h ? Object.assign({ ini, bg, who, what, when }, h) : null; }).filter(Boolean) : []);
     const best = devHits[0] || null;
     const others = devHits.slice(1);
-    const total = devHits.length + sims.length + batches.length + facs.length + acts.length;
+    const total = devHits.length + sims.length + batches.length + catHits.length + facs.length + acts.length;
     const hasQ = raw.length > 0;
     const tab = st.tab;
-    const tabs = [['all', 'All', total], ['devices', 'Devices', devHits.length], ['sims', 'SIMs', sims.length], ['batches', 'Batches', batches.length], ['facilities', 'Facilities', facs.length], ['activity', 'Activity', acts.length]].map(([id, label, n]) => ({
+    const tabs = [['all', 'All', total], ['devices', 'Devices', devHits.length], ['sims', 'SIMs', sims.length], ['batches', 'Batches', batches.length], ['catalog', 'Products & suppliers', catHits.length], ['facilities', 'Facilities', facs.length], ['activity', 'Activity', acts.length]].map(([id, label, n]) => ({
       label, n, cls: 'ftab' + (tab === id ? ' on' : ''), sel: tab === id ? 'true' : 'false', pick: () => this.setState({ tab: id })
     }));
     const on = id => tab === 'all' || tab === id;
     const setQ = v => () => this.setState({ q: v, tab: 'all' });
-    const tokens = [['serial:', 'Serial number'], ['imei:', 'IMEI'], ['mac:', 'MAC address'], ['id:', 'Device ID'], ['iccid:', 'SIM ICCID or phone'], ['ip:', 'IP address'], ['batch:', 'Batch ID'], ['facility:', 'Facility or client']].map(([label, title]) => ({ label, title, pick: () => this.setState({ q: label + (term || ''), tab: 'all' }) }));
+    const tokens = [['serial:', 'Serial number'], ['imei:', 'IMEI'], ['mac:', 'MAC address'], ['id:', 'Device ID'], ['iccid:', 'SIM ICCID or phone'], ['ip:', 'IP address'], ['batch:', 'Batch ID'], ['product:', 'Product, brand or model'], ['supplier:', 'Supplier'], ['facility:', 'Facility or client']].map(([label, title]) => ({ label, title, pick: () => this.setState({ q: label + (term || ''), tab: 'all' }) }));
     const fields = [
       ['Serial number', '1108675309'], ['IMEI', '860548043912877'], ['MAC address', '00:1E:42:3A:7C:19'], ['Device ID', 'MRD-TEL-0417'],
       ['SIM / ICCID', '8996802026093001427'], ['IP address', '10.64.12.37'], ['Product', 'RUT956'], ['Model', 'EM500-CO2'],
@@ -454,11 +501,11 @@ class Component extends DCLogic {
       hasQ, term, tokens, tabs, fields, recent,
       tokIccid: () => this.setState({ q: 'iccid:' + term }),
       showResults: hasQ && total > 0, showNone: hasQ && total === 0, showEmpty: !hasQ,
-      secDevices: on('devices'), secSims: on('sims'), secBatches: on('batches'), secFac: on('facilities'), secAct: on('activity'),
-      nDevices: devHits.length, nSims: sims.length, nBatches: batches.length, nFac: facs.length, nAct: acts.length,
+      secDevices: on('devices'), secSims: on('sims'), secBatches: on('batches'), secCat: on('catalog'), secFac: on('facilities'), secAct: on('activity'),
+      nDevices: devHits.length, nSims: sims.length, nBatches: batches.length, nCat: catHits.length, nFac: facs.length, nAct: acts.length,
       hasBest: !!best && on('devices'), best: best || {}, otherDevices: others,
       noOtherDevices: !!best && others.length === 0, noDevices: !best,
-      sims, noSims: sims.length === 0, batches, noBatches: batches.length === 0, facs, noFac: facs.length === 0, acts, noAct: acts.length === 0,
+      sims, noSims: sims.length === 0, batches, noBatches: batches.length === 0, catHits, noCat: catHits.length === 0, facs, noFac: facs.length === 0, acts, noAct: acts.length === 0,
       preview,
       summary: hasQ ? total + ' results across 1,284 items · sample data' : 'Searching 1,284 items, 80 SIMs, 6 facilities'
     };

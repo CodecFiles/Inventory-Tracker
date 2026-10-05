@@ -88,6 +88,7 @@ h1,h2,h3,h4,p{margin:0}
 .mi:hover{background:#F4F6F8;color:#0E1726}
 .bar{height:8px;background:#EEF1F5;border-radius:4px;position:relative}
 .tr{display:flex;gap:12px;color:#0E1726}
+.t-pre{color:#3E4A5C;border-color:#D5DBE3;background:#F8FAFB}
 @media (max-width:900px){.side{display:none}.mtop{display:flex}.main{padding:20px 16px 40px}.top{padding:12px 16px}}
 </style>
 </helmet>
@@ -153,6 +154,14 @@ h1,h2,h3,h4,p{margin:0}
 </div>
 </sc-if>
 
+<sc-if value="{{isArchived}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 10px; background: #FDF3F2; border: 1px solid #F1B8B4; color: #8A1A19; font-size: 13.5px; margin-bottom: -8px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="4" rx="1"></rect><path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8"></path><path d="M10 12h4"></path></svg>
+<span style="flex: 1">This facility is archived and hidden from active lists. Devices, deployments and documents stay linked.</span>
+<button class="btn sm" onClick="{{restore}}" style="background: transparent; border-color: #F1B8B4; color: #8A1A19">Restore facility</button>
+</div>
+</sc-if>
+
 <!-- Banner -->
 <section aria-label="Facility summary" style="display: flex; flex-direction: column">
 <div class="ph" style="height: 240px; border-radius: 14px; border: 1px solid #D5DEE6">
@@ -164,13 +173,13 @@ h1,h2,h3,h4,p{margin:0}
 <div style="display: flex; flex-direction: column; gap: 8px; min-width: 0; flex: 1 1 420px">
 <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
 <h1 style="font-size: 26px; font-weight: 600; letter-spacing: -.02em">Qatar Foundation</h1>
-<span class="b g-poc" style="height: 26px; font-size: 12.5px">POC · Day 5 of 61</span>
-<span class="t t-poc">POC</span>
+<span class="b {{hdr.cls}}" style="height: 26px; font-size: 12.5px">{{hdr.badge}}</span>
+<span class="t {{hdr.tcls}}">{{hdr.tag}}</span>
 </div>
 <div style="display: flex; gap: 8px 18px; flex-wrap: wrap; font-size: 13px; color: #3B4758">
 <span style="display: flex; align-items: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M5 21V7l7-4v18M12 21V10l7 3v8"></path></svg>Client: <strong style="font-weight: 500; color: #0E1726">Qatar Foundation</strong></span>
-<span style="display: flex; align-items: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>Education City, Doha, Qatar</span>
-<span style="display: flex; align-items: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10l8-6 8 6v10"></path><path d="M9 20v-6h6v6"></path></svg>Education campus · Research Complex B</span>
+<span style="display: flex; align-items: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>{{hdr.loc}}</span>
+<span style="display: flex; align-items: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10l8-6 8 6v10"></path><path d="M9 20v-6h6v6"></path></svg>{{hdr.type}} · Research Complex B</span>
 <span style="display: flex; align-items: center; gap: 6px"><span class="av" style="width: 20px; height: 20px; flex-basis: 20px; font-size: 9px; background: #E3E7EC">OH</span>Primary contact: <strong style="font-weight: 500; color: #0E1726">Omar H.</strong> · Facilities Manager</span>
 </div>
 </div>
@@ -205,7 +214,7 @@ h1,h2,h3,h4,p{margin:0}
 <!-- Lifecycle stepper -->
 <section class="card" aria-label="Project lifecycle" style="padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 16px">
 <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px">
-<div><h2 class="h2">Project lifecycle</h2><p class="muted" style="font-size: 13px; margin-top: 2px">Stage 3 of 7 · POC running 01 Oct – 30 Nov 2026 · 56 days remaining</p></div>
+<div><h2 class="h2">Project lifecycle</h2><p class="muted" style="font-size: 13px; margin-top: 2px">{{lifeSub}}</p></div>
 <button class="btn sm" onClick="{{goProject}}">Stage details</button>
 </div>
 <div class="tw">
@@ -255,12 +264,12 @@ h1,h2,h3,h4,p{margin:0}
 </div>
 <dl class="kv">
 <div><dt>Client</dt><dd>Qatar Foundation</dd></div>
-<div><dt>Facility type</dt><dd>Education campus</dd></div>
+<div><dt>Facility type</dt><dd>{{hdr.type}}</dd></div>
 <div><dt>Building</dt><dd>Research Complex B (sample)</dd></div>
-<div><dt>Address</dt><dd>Education City, Al Rayyan, Doha, Qatar</dd></div>
+<div><dt>Address</dt><dd>{{hdr.addr}}</dd></div>
 <div><dt>Facility ID</dt><dd class="mono">FAC-0006</dd></div>
-<div><dt>Project lead</dt><dd style="display: flex; align-items: center; gap: 6px"><span class="av" style="width: 22px; height: 22px; flex-basis: 22px; font-size: 9.5px; background: #E6DDFB">AI</span>Aisha · Operations</dd></div>
-<div><dt>Deployment type</dt><dd><span class="t t-poc">POC</span></dd></div>
+<div><dt>Project lead</dt><dd style="display: flex; align-items: center; gap: 6px"><span class="av" style="width: 22px; height: 22px; flex-basis: 22px; font-size: 9.5px; background: {{hdr.leadBg}}">{{hdr.leadIni}}</span>{{hdr.lead}}</dd></div>
+<div><dt>Deployment type</dt><dd><span class="t {{hdr.tcls}}">{{hdr.tag}}</span></dd></div>
 <div><dt>Created</dt><dd>02 Sep 2026 · Chetan</dd></div>
 </dl>
 <div style="display: flex; flex-direction: column; gap: 12px">
@@ -281,10 +290,15 @@ h1,h2,h3,h4,p{margin:0}
 <div style="display: flex; flex-wrap: wrap; gap: 16px">
 <div style="flex: 1 1 300px; display: flex; flex-direction: column; gap: 10px">
 <h3 class="h2">Notes</h3>
+<sc-for list="{{fnotes}}" as="n" hint-placeholder-count="1">
 <div style="padding: 14px; background: #F8FAFB; border: 1px solid #EEF1F4; border-radius: 10px; display: flex; flex-direction: column; gap: 8px">
-<p style="font-size: 13px; color: #1B2638">Plant room B1 access requires a QF escort; book 48 hours ahead through Omar. BMS network is on a separate VLAN — do not connect to the campus LAN.</p>
-<span class="muted" style="font-size: 12px">Aisha · 29 Sep 2026</span>
+<p style="font-size: 13px; color: #1B2638">{{n.text}}</p>
+<span class="muted" style="font-size: 12px">{{n.who}} · {{n.when}}</span>
 </div>
+</sc-for>
+<label class="sr" for="fdnote">Add a note</label>
+<textarea id="fdnote" class="in" placeholder="Add a note for the team…" value="{{noteDraft}}" onChange="{{onNoteDraft}}" style="height: auto; min-height: 60px; padding: 10px 12px"></textarea>
+<div style="display: flex; justify-content: flex-end"><button class="btn sm" onClick="{{addNote}}" disabled="{{noNote}}">Add note</button></div>
 </div>
 <div style="flex: 1 1 300px; display: flex; flex-direction: column; gap: 10px">
 <h3 class="h2">Equipment on site</h3>
@@ -425,8 +439,8 @@ h1,h2,h3,h4,p{margin:0}
 <sc-if value="{{tPoc}}" hint-placeholder-val="{{ false }}">
 <div class="pn" role="tabpanel" aria-label="POC">
 <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap">
-<div style="display: flex; flex-direction: column; gap: 4px"><div style="display: flex; align-items: center; gap: 10px"><h3 class="h2">Proof of concept</h3><span class="b g-poc">In progress</span></div><p class="muted" style="font-size: 13px">01 Oct – 30 Nov 2026 · 61 days · POC equipment is tracked separately from contract stock</p></div>
-<button class="btn" onClick="{{askStudy}}">Move to POC study</button>
+<div style="display: flex; flex-direction: column; gap: 4px"><div style="display: flex; align-items: center; gap: 10px"><h3 class="h2">Proof of concept</h3><span class="b {{pocBadgeCls}}">{{pocBadge}}</span></div><p class="muted" style="font-size: 13px">01 Oct – 30 Nov 2026 · 61 days · POC equipment is tracked separately from contract stock</p></div>
+<sc-if value="{{canStudy}}" hint-placeholder-val="{{ true }}"><button class="btn" onClick="{{askStudy}}">Move to POC study</button></sc-if>
 </div>
 <div style="padding: 16px 18px; border: 1px solid #D7C8FA; background: #FAF7FF; border-radius: 12px; display: flex; flex-direction: column; gap: 10px">
 <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px"><strong style="font-size: 20px; font-weight: 600; letter-spacing: -.02em; color: #5B32B4">Day 5 <span style="font-size: 14px; color: #3B4758; font-weight: 500">of 61</span></strong><span style="font-size: 12.5px; color: #3B4758">56 days remaining · study review Dec 2026</span></div>
@@ -436,7 +450,7 @@ h1,h2,h3,h4,p{margin:0}
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px">
 <div class="stat"><span class="muted" style="font-size: 12px">Devices installed</span><span class="n">{{devN}}</span><span class="muted" style="font-size: 12px">of 14 planned</span></div>
 <div class="stat"><span class="muted" style="font-size: 12px">Currently deployed</span><span class="n">{{devN}}</span><span class="muted" style="font-size: 12px">all online</span></div>
-<div class="stat"><span class="muted" style="font-size: 12px">Reserved</span><span class="n">2</span><span class="muted" style="font-size: 12px">EM500-CO2 · 08 Oct</span></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Reserved</span><span class="n">{{resN}}</span><span class="muted" style="font-size: 12px">{{resShort}}</span></div>
 </div>
 <div style="display: flex; flex-direction: column; gap: 10px">
 <span class="ov">Objectives</span>
@@ -461,8 +475,8 @@ h1,h2,h3,h4,p{margin:0}
 <sc-if value="{{tContract}}" hint-placeholder-val="{{ false }}">
 <div class="pn" role="tabpanel" aria-label="Contract" style="align-items: center; text-align: center; padding: 56px 24px">
 <span style="width: 56px; height: 56px; border-radius: 14px; background: #E1F4EC; color: #0A6648; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path><path d="M9 13h6M9 17h4"></path></svg></span>
-<div style="display: flex; flex-direction: column; gap: 6px; align-items: center"><h3 style="font-size: 17px; font-weight: 600">Contract not started</h3><p class="muted" style="font-size: 13.5px; max-width: 480px">The contract stage opens after the POC study. When it starts, the POC Teltonika router, SIM and IP can be retained and re-tagged as contract equipment, so nothing needs to be swapped on site. Additional inventory is then deployed against the contract.</p></div>
-<div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center"><a class="btn" href="ContractManagement.dc.html">How contracts work</a><button class="btn p" onClick="{{askContract}}">Start contract</button></div>
+<div style="display: flex; flex-direction: column; gap: 6px; align-items: center"><h3 style="font-size: 17px; font-weight: 600">{{conTitle}}</h3><p class="muted" style="font-size: 13.5px; max-width: 480px">The contract stage opens after the POC study. When it starts, the POC Teltonika router, SIM and IP can be retained and re-tagged as contract equipment, so nothing needs to be swapped on site. Additional inventory is then deployed against the contract.</p></div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center"><a class="btn" href="ContractManagement.dc.html">{{conLink}}</a><sc-if value="{{canStartContract}}" hint-placeholder-val="{{ true }}"><button class="btn p" onClick="{{askContract}}">Start contract</button></sc-if></div>
 <span class="muted" style="font-size: 12px">Only Admins and Operations can start a contract.</span>
 </div>
 </sc-if>
@@ -497,9 +511,11 @@ h1,h2,h3,h4,p{margin:0}
 </tbody>
 </table>
 </div>
+<sc-if value="{{hasRes}}" hint-placeholder-val="{{ true }}">
 <div style="display: flex; align-items: center; gap: 10px; padding: 12px 22px; border-top: 1px solid #EEF1F4; background: #FAF7FF; font-size: 12.5px; border-radius: 0 0 12px 12px; flex-wrap: wrap">
-<span class="b s-reserved">Reserved</span><span>2 × EM500-CO2 <span class="mono">6136D2470125</span>, <span class="mono">6136D2470126</span> · install 08 Oct · L4 zones</span><a href="Deployments.dc.html" style="margin-left: auto; font-weight: 500">View reservation →</a>
+<span class="b s-reserved">Reserved</span><span>{{resLine}}</span><a href="Deployments.dc.html" style="margin-left: auto; font-weight: 500">View reservation →</a>
 </div>
+</sc-if>
 </div>
 </sc-if>
 
@@ -608,12 +624,12 @@ h1,h2,h3,h4,p{margin:0}
 <label class="fld">Facility name<input class="in" type="text" value="Qatar Foundation"></label>
 <label class="fld">Client<input class="in" type="text" value="Qatar Foundation"></label>
 <label class="fld">Building<input class="in" type="text" value="Research Complex B"></label>
-<label class="fld">Location<input class="in" type="text" value="Education City, Doha, Qatar"></label>
-<label class="fld">Facility type<select class="in"><option>Education campus</option><option>Corporate HQ</option><option>Retail</option><option>Commercial office</option><option>Warehouse</option><option>Healthcare</option></select></label>
-<label class="fld">Project lead<select class="in"><option>Aisha · Operations</option><option>Nitin · Operations</option><option>Chetan · Admin</option></select></label>
+<label class="fld">Location<input class="in" type="text" value="{{ed.loc}}" onChange="{{onEdLoc}}"></label>
+<label class="fld">Facility type<select class="in" value="{{ed.type}}" onChange="{{onEdType}}"><option>Education campus</option><option>Corporate HQ</option><option>Retail</option><option>Commercial office</option><option>Warehouse</option><option>Healthcare</option></select></label>
+<label class="fld">Project lead<select class="in" value="{{ed.lead}}" onChange="{{onEdLead}}"><option value="Aisha">Aisha · Operations</option><option value="Nitin">Nitin · Operations</option><option value="Chetan">Chetan · Admin</option></select></label>
 <label class="fld">Primary contact<select class="in"><option>Omar H. · Facilities Manager</option><option>Lina S. · Sustainability Lead</option></select></label>
 </div>
-<div style="display: flex; justify-content: flex-end; gap: 8px; padding: 14px 22px; border-top: 1px solid #EEF1F4; background: #F8FAFB"><button class="btn" onClick="{{closeEdit}}">Cancel</button><button class="btn p" onClick="{{closeEdit}}">Save changes</button></div>
+<div style="display: flex; justify-content: flex-end; gap: 8px; padding: 14px 22px; border-top: 1px solid #EEF1F4; background: #F8FAFB"><button class="btn" onClick="{{closeEdit}}">Cancel</button><button class="btn p" onClick="{{saveEdit}}">Save changes</button></div>
 </div>
 </div>
 </sc-if>
@@ -648,21 +664,68 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
-    try { const keep = Object.assign({}, this.state); ["more", "confirm", "upload", "edit", "notice"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:FacilityDetail', JSON.stringify(keep)); } catch (e) {}
+    try { const keep = Object.assign({}, this.state); ["more", "confirm", "upload", "edit", "notice", "noteDraft", "ed"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:FacilityDetail', JSON.stringify(keep)); } catch (e) {}
   }
-  constructor(props) { super(props); this.state = { tab: 'overview', cat: 'all', more: false, confirm: null, upload: false, edit: false, notice: '' }; }
+  constructor(props) { super(props); this.state = { tab: 'overview', cat: 'all', more: false, confirm: null, upload: false, edit: false, notice: '', noteDraft: '', ed: null }; }
+  setFac(s, name, patch) {
+    s.facilities = s.facilities || {};
+    s.facilities[name] = Object.assign({}, s.facilities[name] || {}, patch);
+  }
+  todayLabel() { const M = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']; const d = new Date(); return String(d.getDate()).padStart(2, '0') + ' ' + M[d.getMonth()] + ' ' + d.getFullYear(); }
+  // Confirmed actions write the facility record in the shared store; the notice's Undo restores the previous record.
+  applyConfirm(kind) {
+    const FAC = 'Qatar Foundation';
+    this.writeStore(s => {
+      s.facilities = s.facilities || {};
+      const prev = JSON.parse(JSON.stringify(s.facilities[FAC] || {}));
+      this._undo = prev;
+      const prevStage = prev.stage || 'POC';
+      if (kind === 'archive') {
+        this.setFac(s, FAC, { archived: true });
+        this.logEvent(s, { action: 'Facility archived', item: FAC, itemHref: 'FacilityDetail.dc.html', from: prevStage, to: 'Archived', note: 'History preserved · devices not returned' });
+      } else {
+        const to = kind === 'study' ? 'POC study' : 'Contract pending';
+        const patch = { stage: to };
+        if (kind === 'study') patch.studyFrom = this.todayLabel();
+        this.setFac(s, FAC, patch);
+        this.logEvent(s, { action: 'Stage changed', item: FAC, itemHref: 'FacilityDetail.dc.html', from: prevStage, to, note: kind === 'study' ? 'POC ended early · evaluation started' : 'Contract stage started' });
+      }
+    });
+  }
+  undoConfirm() {
+    const FAC = 'Qatar Foundation';
+    const prev = this._undo;
+    this._undo = null;
+    if (!prev) return;
+    this.writeStore(s => {
+      s.facilities = s.facilities || {};
+      const cur = s.facilities[FAC] || {};
+      const back = Object.assign({}, prev);
+      if (cur.notes) back.notes = cur.notes;
+      if (Object.keys(back).length) s.facilities[FAC] = back; else delete s.facilities[FAC];
+      this.logEvent(s, { action: cur.archived && !back.archived ? 'Facility restored' : 'Stage changed', item: FAC, itemHref: 'FacilityDetail.dc.html', from: cur.archived && !back.archived ? 'Archived' : (cur.stage || 'POC'), to: back.stage || 'POC', note: 'Undone' });
+    });
+  }
   renderVals() {
     const s = this.state;
     const ST0 = this.readStore();
     const FAC = 'Qatar Foundation';
+    // Facility record from the shared store: stage drives the stepper, badges and stage list.
+    const FR = (ST0.facilities || {})[FAC] || {};
+    const stage = FR.stage || 'POC';
+    const SIDX = { 'Site inspection': 0, 'BMS scan': 1, 'POC': 2, 'POC study': 3, 'Contract pending': 4, 'Contract active': 4, 'Active operations': 6, 'Completed': 7, 'On hold': 2 };
+    const ci = SIDX[stage] !== undefined ? SIDX[stage] : 2;
+    const kOf = i => i < ci ? 'done' : i === ci ? 'cur' : 'up';
+    const GC = { 'Site inspection': 'g-insp', 'BMS scan': 'g-bms', 'POC': 'g-poc', 'POC study': 'g-study', 'Contract pending': 'g-cpend', 'Contract active': 'g-contract', 'Active operations': 'g-ops', 'Completed': 'g-done', 'On hold': 'g-hold' };
+    const studyFrom = FR.studyFrom || '';
     const sd = [
-      ['Site inspection', '08 Sep 2026', 'done', 'pre', 'Aisha, Rahul'],
-      ['BMS network scan', '22 Sep 2026', 'done', 'pre', 'Saif'],
-      ['POC', '01 Oct – 30 Nov', 'cur', 'poc', ''],
-      ['POC study', 'Dec 2026', 'up', 'poc', 'Scheduled'],
-      ['Contract', 'Not started', 'up', 'con', ''],
-      ['Deployment', '—', 'up', 'con', ''],
-      ['Active operations', '—', 'up', 'con', '']
+      ['Site inspection', '08 Sep 2026', kOf(0), 'pre', 'Aisha, Rahul'],
+      ['BMS network scan', '22 Sep 2026', kOf(1), 'pre', 'Saif'],
+      ['POC', ci > 2 && studyFrom ? '01 Oct – ' + studyFrom.slice(0, 6) : '01 Oct – 30 Nov', kOf(2), 'poc', ''],
+      ['POC study', studyFrom ? 'From ' + studyFrom.slice(0, 6) : 'Dec 2026', kOf(3), 'poc', ci < 3 ? 'Scheduled' : ''],
+      ['Contract', stage === 'Contract pending' ? 'Pending' : stage === 'Contract active' ? 'Active' : ci > 4 ? 'Signed' : 'Not started', kOf(4), 'con', ''],
+      ['Deployment', '—', kOf(5), 'con', ''],
+      ['Active operations', '—', kOf(6), 'con', '']
     ];
     const bands = { pre: 'transparent', poc: '#FAF7FF', con: '#F4FBF8' };
     const rads = ['0', '0', '10px 0 0 10px', '0 10px 10px 0', '10px 0 0 10px', '0', '0 10px 10px 0'];
@@ -670,7 +733,7 @@ class Component extends DCLogic {
       const done = st === 'done', cur = st === 'cur', accent = ph === 'poc' ? '#7A5AF8' : '#0B7A6B', tint = ph === 'poc' ? '#E9E1FD' : '#D5F0E6';
       const prevDone = i > 0 && sd[i - 1][2] === 'done';
       return {
-        n: i + 1, label, date, who, hasWho: !!who && !cur, done, nd: !done, cur, aria: cur ? 'step' : 'false',
+        n: i + 1, label: cur && stage === 'On hold' ? label + ' · on hold' : label, date, who, hasWho: !!who && !cur, done, nd: !done, cur, aria: cur ? 'step' : 'false',
         band: bands[ph], rad: rads[i],
         cbg: done ? '#0B7A6B' : '#fff', cbd: done ? '#0B7A6B' : cur ? accent : '#D5DBE3', cfg: done ? '#fff' : cur ? accent : '#5E6B7D',
         ring: cur ? '0 0 0 5px ' + tint : 'none',
@@ -695,17 +758,23 @@ class Component extends DCLogic {
     const P = { AI: ['Aisha', '#E6DDFB'], RA: ['Rahul', '#DCE6FB'], SA: ['Saif', '#FBE0DC'], CH: ['Chetan', '#CDEFE7'] };
     const tm = arr => arr.map(k => ({ ini: k, name: P[k][0], bg: P[k][1] }));
     const ps = [
-      ['Site inspection', 'Completed', 's-deployed', '08 Sep 2026', ['AI', 'RA'], 'Walkthrough of plant rooms B1–B2 and AHU risers. HVAC inventory recorded by the team.', 'Site inspection report.pdf', 'done'],
-      ['BMS network scan', 'Completed', 's-deployed', '22 Sep 2026', ['SA'], 'BACnet/IP network scanned: 18 controllers, 1,240 I/O points, 96 devices discovered.', 'QF-BMS-Scan-2026-09-22.pdf', 'done'],
-      ['POC', 'In progress', 'g-poc', '01 Oct – 30 Nov 2026', ['AI', 'RA'], 'Validate CO₂-based ventilation optimisation on 6 AHUs; compare baseline vs optimised energy.', 'POC plan · CO₂ ventilation.pdf', 'cur'],
-      ['POC study', 'Scheduled', 's-ready', 'Dec 2026', ['AI'], 'Evaluation of POC results with Exergio and the client; decision on contract.', '', 'up'],
-      ['Contract', 'Not started', 's-unconf', '—', [], '', '', 'up'],
-      ['Deployment', 'Not started', 's-unconf', '—', [], '', '', 'up'],
-      ['Active operations', 'Not started', 's-unconf', '—', [], '', '', 'up']
-    ];
+      ['Site inspection', '08 Sep 2026', ['AI', 'RA'], 'Walkthrough of plant rooms B1–B2 and AHU risers. HVAC inventory recorded by the team.', 'Site inspection report.pdf'],
+      ['BMS network scan', '22 Sep 2026', ['SA'], 'BACnet/IP network scanned: 18 controllers, 1,240 I/O points, 96 devices discovered.', 'QF-BMS-Scan-2026-09-22.pdf'],
+      ['POC', ci > 2 && studyFrom ? '01 Oct – ' + studyFrom + ' (ended early)' : '01 Oct – 30 Nov 2026', ['AI', 'RA'], 'Validate CO₂-based ventilation optimisation on 6 AHUs; compare baseline vs optimised energy.', 'POC plan · CO₂ ventilation.pdf'],
+      ['POC study', studyFrom ? 'From ' + studyFrom : 'Dec 2026', ['AI'], 'Evaluation of POC results with Exergio and the client; decision on contract.', ''],
+      ['Contract', ci === 4 ? (stage === 'Contract pending' ? 'Pending' : 'Active') : '—', ci >= 4 ? ['AI'] : [], ci >= 4 ? 'Contract stage started from the facility page.' : '', ''],
+      ['Deployment', '—', [], '', ''],
+      ['Active operations', '—', [], '', '']
+    ].map((r, i) => {
+      const k = kOf(i);
+      const hold = k === 'cur' && stage === 'On hold';
+      const st = k === 'done' ? 'Completed' : hold ? 'On hold' : k === 'cur' ? (i === 4 ? stage : 'In progress') : i === 3 ? 'Scheduled' : 'Not started';
+      const cls = k === 'done' ? 's-deployed' : hold ? 'g-hold' : k === 'cur' ? ['g-insp', 'g-bms', 'g-poc', 'g-study', GC[stage] || 'g-cpend', 'g-contract', 'g-ops'][i] : i === 3 ? 's-ready' : 's-unconf';
+      return [r[0], st, cls, r[1], r[2], r[3], r[4], k];
+    });
     const pstages = ps.map(([label, st, cls, date, team, note, doc, k], i) => ({
       n: i + 1, label, st, cls, date, team: tm(team), names: team.length ? team.map(x => P[x][0]).join(', ') : 'Unassigned',
-      note, hasNote: !!note, doc, hasDoc: !!doc, exp: k === 'cur',
+      note, hasNote: !!note, doc, hasDoc: !!doc, exp: k === 'cur' && i === 2 && stage === 'POC',
       cbg: k === 'done' ? '#0B7A6B' : '#fff', cbd: k === 'done' ? '#0B7A6B' : k === 'cur' ? '#7A5AF8' : '#D5DBE3', cfg: k === 'done' ? '#fff' : k === 'cur' ? '#5B32B4' : '#5E6B7D',
       line: i === ps.length - 1 ? 'transparent' : k === 'done' ? '#0B7A6B' : '#E3E7EC'
     }));
@@ -774,12 +843,26 @@ class Component extends DCLogic {
     (ST0.deployments || []).filter(dp => dp && dp.fac === FAC && dp.status !== 'Cancelled').forEach(dp => {
       if (dnum(dp.date) >= dnum(lastDep.date)) lastDep = { date: dp.date, ref: dp.ref, by: (dp.team && dp.team[0]) || dp.by || 'Chetan' };
     });
+    // Reserved for this facility: sample reservations still held, plus store units reserved here.
+    const sampleRes = [['6136D2470125', 'EM500-CO2'], ['6136D2470126', 'EM500-CO2']];
+    const RES = sampleRes.filter(([id]) => { const u = SU[id]; return !u || ((u.st === undefined || u.st === 'reserved') && (u.fac === undefined || u.fac === FAC)); }).map(([id, nm]) => ({ id, name: nm, sample: true }));
+    ids.forEach(id => {
+      if (sampleRes.some(r => r[0] === id)) return;
+      const u = unitOf(id);
+      if (u.st === 'reserved' && (u.fac === FAC || String(u.loc || '').indexOf(FAC) >= 0)) RES.push({ id, name: String(u.name || 'Device').replace(/^(Teltonika|Milesight|UniFi|Omantel) /, '') });
+    });
+    const resNames = {};
+    RES.forEach(r => { resNames[r.name] = (resNames[r.name] || 0) + 1; });
+    const resMix = Object.keys(resNames).map(k => (resNames[k] > 1 ? resNames[k] + ' × ' : '') + k).join(' · ');
+    const allSampleRes = RES.length === 2 && RES.every(r => r.sample);
+    const resShort = !RES.length ? 'nothing reserved' : allSampleRes ? 'EM500-CO2 · install 08 Oct' : resMix;
+    const resLine = allSampleRes ? '2 × EM500-CO2 6136D2470125, 6136D2470126 · install 08 Oct · L4 zones' : resMix + ' · ' + RES.map(r => r.id).join(', ');
     const kpis = [
       { label: 'Devices deployed', value: '' + D.length, sub: Object.keys(catN).length + ' categories · all online', dot: '#12A374' },
       { label: 'POC devices', value: '' + pocN, sub: 'tracked as POC equipment', dot: '#7A5AF8' },
       { label: 'Contract devices', value: '' + conN, sub: conN ? 'contract, additional or replacement' : 'contract not started', dot: '#8A96A8' },
       { label: 'Last deployment', value: String(lastDep.date).slice(0, 6), sub: lastDep.ref + ' · ' + lastDep.by, dot: '#3B4758' },
-      { label: 'Reserved', value: '2', sub: 'EM500-CO2 · install 08 Oct', dot: '#7C4DDB' }
+      { label: 'Reserved', value: '' + RES.length, sub: resShort, dot: '#7C4DDB' }
     ];
     tabs.forEach(t => { if (t.n === '__N__') t.n = D.length; });
     const C = [['all', 'All'], ['co2', 'CO₂ sensors'], ['router', 'Teltonika'], ['gw', 'Gateways'], ['sim', 'SIM'], ['net', 'Network']];
@@ -821,21 +904,78 @@ class Component extends DCLogic {
       { mon: 'Nov', day: '30', title: 'POC ends', sub: 'Study review in December' }
     ];
     const CF = {
-      archive: { title: 'Archive Qatar Foundation?', body: 'The facility will be hidden from active lists. Its 12 deployed devices, deployments and documents stay linked and fully traceable. Devices are not returned automatically. You can restore it from Settings at any time.', ok: 'Archive facility', btnCls: 'danger', ibg: '#FDEBEA', ifg: '#A3201F', notice: 'Qatar Foundation was archived. History is preserved.' },
-      study: { title: 'Move to POC study?', body: 'The POC is on day 5 of 61. Moving now ends the POC early and starts the evaluation stage. All 12 devices stay on site as POC equipment.', ok: 'Move to POC study', btnCls: 'p', ibg: '#FFF3DC', ifg: '#8A4B00', notice: 'Project moved to POC study.' },
+      archive: { title: 'Archive Qatar Foundation?', body: 'The facility will be hidden from active lists. Its ' + D.length + ' deployed devices, deployments and documents stay linked and fully traceable. Devices are not returned automatically. You can restore it from Settings at any time.', ok: 'Archive facility', btnCls: 'danger', ibg: '#FDEBEA', ifg: '#A3201F', notice: 'Qatar Foundation was archived. History is preserved.' },
+      study: { title: 'Move to POC study?', body: 'The POC is on day 5 of 61. Moving now ends the POC early and starts the evaluation stage. All ' + D.length + ' devices stay on site as POC equipment.', ok: 'Move to POC study', btnCls: 'p', ibg: '#FFF3DC', ifg: '#8A4B00', notice: 'Project moved to POC study.' },
       contract: { title: 'Start contract?', body: 'The contract normally starts after the POC study. Starting it lets you re-tag the RUT956, SIM and IP as contract equipment and plan additional deployments.', ok: 'Start contract', btnCls: 'p', ibg: '#E1F4EC', ifg: '#0A6648', notice: 'Contract stage started.' }
     };
     const cf = s.confirm ? CF[s.confirm] : CF.archive;
+    // Header, lifecycle summary, notes and edit form from the facility record.
+    const hdrBase = { loc: 'Education City, Doha, Qatar', type: 'Education campus', lead: 'Aisha' };
+    const hdrVals = { loc: FR.loc || hdrBase.loc, type: FR.type || hdrBase.type, lead: FR.lead || hdrBase.lead };
+    const LEADS = { Aisha: ['AI', '#E6DDFB', 'Aisha · Operations'], Nitin: ['NI', '#F6E3C4', 'Nitin · Operations'], Chetan: ['CH', '#CDEFE7', 'Chetan · Admin'] };
+    const L = LEADS[hdrVals.lead] || [String(hdrVals.lead).slice(0, 2).toUpperCase(), '#E3E7EC', hdrVals.lead];
+    const pocPh = stage === 'POC' || stage === 'POC study', conPh = ['Contract pending', 'Contract active', 'Active operations'].indexOf(stage) > -1;
+    const hdr = {
+      badge: (FR.archived ? 'Archived · ' : '') + (stage === 'POC' ? 'POC · Day 5 of 61' : stage), cls: FR.archived ? 'g-done' : (GC[stage] || 'g-poc'),
+      tag: pocPh ? 'POC' : conPh ? 'Contract' : stage === 'Completed' ? 'Closed' : stage === 'On hold' ? 'On hold' : 'Pre-POC', tcls: pocPh ? 't-poc' : conPh ? 't-con' : 't-pre',
+      loc: hdrVals.loc, addr: FR.loc ? FR.loc : 'Education City, Al Rayyan, Doha, Qatar', type: hdrVals.type, lead: L[2], leadIni: L[0], leadBg: L[1]
+    };
+    const LS = {
+      'POC': 'Stage 3 of 7 · POC running 01 Oct – 30 Nov 2026 · 56 days remaining',
+      'POC study': 'Stage 4 of 7 · POC study' + (studyFrom ? ' since ' + studyFrom : '') + ' · POC ended early on day 5',
+      'Contract pending': 'Stage 5 of 7 · Contract pending', 'Contract active': 'Stage 5 of 7 · Contract active',
+      'Active operations': 'Stage 7 of 7 · Active operations', 'Completed': 'Completed · all stages closed', 'On hold': 'On hold · paused at stage 3 of 7',
+      'Site inspection': 'Stage 1 of 7 · Site inspection', 'BMS scan': 'Stage 2 of 7 · BMS scan'
+    };
+    const lifeSub = LS[stage] || LS.POC;
+    const fnotes = (FR.notes || []).map(n => ({ who: n.who || 'Chetan', when: n.when || '', text: n.text || '' })).concat([{ who: 'Aisha', when: '29 Sep 2026', text: 'Plant room B1 access requires a QF escort; book 48 hours ahead through Omar. BMS network is on a separate VLAN — do not connect to the campus LAN.' }]);
+    const ed = Object.assign({}, hdrVals, s.ed || {});
+    const setEd = k => e => this.setState({ ed: Object.assign({}, ed, { [k]: e && e.target ? e.target.value : '' }) });
     return {
       kpis, steps, tabs, contacts, devN: D.length, onsite, docs, pstages, objectives, team, cats, devs, activity, trace, upcoming,
       tOverview: s.tab === 'overview', tProject: s.tab === 'project', tInspection: s.tab === 'inspection', tBms: s.tab === 'bms', tPoc: s.tab === 'poc', tContract: s.tab === 'contract', tInventory: s.tab === 'inventory', tActivity: s.tab === 'activity',
       goProject: () => this.setState({ tab: 'project' }), goPoc: () => this.setState({ tab: 'poc' }),
       moreOpen: s.more, moreExp: s.more ? 'true' : 'false', toggleMore: () => this.setState({ more: !s.more }),
       askArchive: () => this.setState({ confirm: 'archive', more: false }), askStudy: () => this.setState({ confirm: 'study' }), askContract: () => this.setState({ confirm: 'contract' }),
-      cfOpen: !!s.confirm, cf, cfCancel: () => this.setState({ confirm: null }), cfOk: () => this.setState({ confirm: null, notice: cf.notice }),
-      hasNotice: !!s.notice, notice: s.notice, clearNotice: () => this.setState({ notice: '' }),
+      cfOpen: !!s.confirm, cf, cfCancel: () => this.setState({ confirm: null }),
+      cfOk: () => { const kind = s.confirm; if (kind) this.applyConfirm(kind); this.setState({ confirm: null, notice: cf.notice }); },
+      hasNotice: !!s.notice, notice: s.notice, clearNotice: () => { this.undoConfirm(); this.setState({ notice: '' }); },
+      isArchived: !!FR.archived,
+      restore: () => this.writeStore(st => { const f = Object.assign({}, (st.facilities || {})[FAC] || {}); delete f.archived; st.facilities = st.facilities || {}; st.facilities[FAC] = f; this.logEvent(st, { action: 'Facility restored', item: FAC, itemHref: 'FacilityDetail.dc.html', from: 'Archived', to: stage, note: '' }); }),
+      hdr, lifeSub, fnotes, resN: RES.length, resShort, resLine, hasRes: RES.length > 0,
+      pocBadge: stage === 'POC' ? 'In progress' : stage === 'On hold' ? 'On hold' : ci < 2 ? 'Not started' : 'Completed', pocBadgeCls: stage === 'POC' ? 'g-poc' : stage === 'On hold' ? 'g-hold' : ci < 2 ? 's-unconf' : 's-deployed',
+      canStudy: stage === 'POC' && !FR.archived,
+      conTitle: stage === 'Contract pending' ? 'Contract pending' : stage === 'Contract active' || stage === 'Active operations' ? 'Contract active' : stage === 'Completed' ? 'Project closed' : 'Contract not started',
+      conLink: ci >= 4 ? 'Open in Contracts' : 'How contracts work',
+      canStartContract: (stage === 'POC' || stage === 'POC study') && !FR.archived,
+      noteDraft: s.noteDraft || '', noNote: !String(s.noteDraft || '').trim(),
+      onNoteDraft: e => this.setState({ noteDraft: e && e.target ? e.target.value : '' }),
+      addNote: () => {
+        const text = String(s.noteDraft || '').trim();
+        if (!text) return;
+        this.writeStore(st => {
+          const cur = ((st.facilities || {})[FAC] || {}).notes || [];
+          this.setFac(st, FAC, { notes: [{ who: 'Chetan', when: this.nowLabel(), text }].concat(cur) });
+          this.logEvent(st, { action: 'Note added', item: FAC, itemHref: 'FacilityDetail.dc.html', from: '', to: '', note: text });
+        });
+        this.setState({ noteDraft: '' });
+      },
+      ed, onEdLoc: setEd('loc'), onEdType: setEd('type'), onEdLead: setEd('lead'),
+      saveEdit: () => {
+        const e = ed;
+        this.writeStore(st => {
+          const cur = (st.facilities || {})[FAC] || {};
+          const changed = ['loc', 'type', 'lead'].filter(k => (cur[k] || hdrBase[k]) !== e[k]);
+          if (!changed.length) return;
+          const patch = {};
+          changed.forEach(k => { patch[k] = e[k]; });
+          this.setFac(st, FAC, patch);
+          this.logEvent(st, { action: 'Facility updated', item: FAC, itemHref: 'FacilityDetail.dc.html', from: '', to: '', note: changed.map(k => ({ loc: 'Location', type: 'Facility type', lead: 'Project lead' }[k] + ': ' + e[k])).join(' · ') });
+        });
+        this.setState({ edit: false, ed: null });
+      },
       uploadOpen: s.upload, openUpload: () => this.setState({ upload: true, more: false }), closeUpload: () => this.setState({ upload: false }),
-      editOpen: s.edit, openEdit: () => this.setState({ edit: true }), closeEdit: () => this.setState({ edit: false })
+      editOpen: s.edit, openEdit: () => this.setState({ edit: true, ed: Object.assign({}, hdrVals) }), closeEdit: () => this.setState({ edit: false, ed: null })
     };
   }
 }

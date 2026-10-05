@@ -335,10 +335,36 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
-    try { const keep = Object.assign({}, this.state); ["toast", "confirm", "inv"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:Users', JSON.stringify(keep)); } catch (e) {}
+    try { const keep = Object.assign({}, this.state); ["toast", "confirm", "inv"].concat(this.readStore().users ? ["roles", "status", "extra"] : []).forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:Users', JSON.stringify(keep)); } catch (e) {}
+  }
+  // Users bookkeeping (roles, status, invites) lives in the shared store under s.users.
+  // Until the first write it falls back to this screen's sample / legacy local state.
+  usersView(ST0) {
+    const S = this.state, U = ST0.users;
+    if (!U || typeof U !== 'object') return { roles: S.roles, status: S.status, extra: S.extra || [] };
+    const extra = (U.added || []).map(a => ({ key: a.key, name: a.name || 'Pending invite', email: a.email || '[invited email]', ini: '—', bg: '#F1F4F7', last: a.last || 'Invite sent · expires in 7 days', tf: null, scope: a.scope || 'All facilities' }));
+    const roles = Object.assign({}, this._seed.roles, U.roles || {});
+    const status = Object.assign({}, this._seed.status, U.status || {});
+    (U.added || []).forEach(a => { if (!roles[a.key]) roles[a.key] = a.role; if (!status[a.key]) status[a.key] = a.status || 'Invited'; });
+    return { roles, status, extra };
+  }
+  writeUsers(fn) {
+    const S = this.state;
+    this.writeStore(s => {
+      if (!s.users || typeof s.users !== 'object') {
+        // First write: seed from the sample (plus anything this screen held locally before the store existed).
+        s.users = { roles: Object.assign({}, S.roles), status: Object.assign({}, S.status), added: (S.extra || []).map(x => ({ key: x.key, name: x.name, email: x.email, role: S.roles[x.key], status: S.status[x.key] || 'Invited', last: x.last })) };
+      }
+      s.users.roles = s.users.roles || {}; s.users.status = s.users.status || {}; s.users.added = s.users.added || [];
+      fn(s, s.users);
+    });
   }
   constructor(props) {
     super(props);
+    this._seed = {
+      roles: { chetan: 'Admin', nitin: 'Operations', aisha: 'Operations', rahul: 'Technician', saif: 'Technician', exergio: 'Viewer', invite1: 'Technician' },
+      status: { chetan: 'Active', nitin: 'Active', aisha: 'Active', rahul: 'Active', saif: 'Active', exergio: 'Active', invite1: 'Invited' }
+    };
     this.state = {
       tab: 'users', q: '', rf: 'all', toast: '',
       roles: { chetan: 'Admin', nitin: 'Operations', aisha: 'Operations', rahul: 'Technician', saif: 'Technician', exergio: 'Viewer', invite1: 'Technician' },
@@ -347,7 +373,10 @@ class Component extends DCLogic {
     };
   }
   renderVals() {
-    const S = this.state;
+    const ST0 = this.readStore();
+    const UV = this.usersView(ST0);
+    const S = Object.assign({}, this.state, { roles: UV.roles, status: UV.status, extra: UV.extra });
+    const HREF = 'Users.dc.html';
     const ROLES = ['Admin', 'Operations', 'Technician', 'Viewer'];
     const MODS = [
       ['Dashboard', 'Overview & KPIs', [3, 1, 1, 1]],
@@ -396,7 +425,10 @@ class Component extends DCLogic {
         deact: () => this.setState({ confirm: { kind: 'deact', key: u.key, name: u.name } }),
         resend: () => this.setState({ toast: 'Invitation re-sent to ' + u.email + '. It expires in 7 days.' }),
         revoke: () => this.setState({ confirm: { kind: 'revoke', key: u.key, name: u.email } }),
-        reactivate: () => { const s = Object.assign({}, S.status); s[u.key] = 'Active'; this.setState({ status: s, toast: u.name + ' reactivated. Logged to the audit log.' }); }
+        reactivate: () => {
+          this.writeUsers((s, US) => { US.status[u.key] = 'Active'; this.logEvent(s, { action: 'User reactivated', item: u.name + ' · ' + u.email, itemHref: HREF, from: 'Deactivated', to: 'Active', note: '' }); });
+          this.setState({ toast: u.name + ' reactivated. Logged to the audit log.' });
+        }
       };
     });
     const all = base.map(u => ({ role: S.roles[u.key], st: S.status[u.key], tf: u.tf, u }));
@@ -423,12 +455,22 @@ class Component extends DCLogic {
       ['Session timeout', 'Signed out after inactivity on shared devices', '12 hours', 's-unconf'],
       ['External accounts', 'Partners limited to the Viewer role and their facilities', 'Viewer only', 's-ready']
     ].map(([name, desc, val, cls]) => ({ name, desc, val, cls }));
-    const changes = [
+    const AV = { CH: '#CDEFE7', NI: '#F6E3C4', AI: '#E6DDFB', RA: '#DCE6FB', SA: '#FBE0DC' };
+    const UACT = { 'Role changed': 1, 'User invited': 1, 'User deactivated': 1, 'User reactivated': 1 };
+    const storeChanges = (ST0.events || []).filter(e => UACT[e.action]).map(e => {
+      const who = String(e.item || '').split(' · ')[0];
+      const what = e.action === 'Role changed' ? 'changed ' + who + ' from ' + (e.from || '—') + ' to ' + (e.to || '—')
+        : e.action === 'User invited' ? 'invited ' + (e.to ? (/^[AEIOU]/.test(e.to) ? 'an ' : 'a ') + e.to.toLowerCase() + ' ' : '') + '(' + (String(e.item || '').split(' · ')[1] || who) + ')'
+        : e.action === 'User reactivated' ? 'reactivated ' + who
+        : (e.note === 'Invitation revoked' ? 'revoked the invitation for ' + (String(e.item || '').split(' · ')[1] || who) : 'deactivated ' + who);
+      return { ini: e.ini || '··', bg: AV[e.ini] || '#E3E7EC', who: e.who || '—', what, when: e.when || '' };
+    });
+    const changes = storeChanges.concat([
       { ini: 'CH', bg: '#CDEFE7', who: 'Chetan', what: 'invited a technician ([invited email])', when: 'Fri 2 Oct, 11:20' },
       { ini: 'CH', bg: '#CDEFE7', who: 'Chetan', what: 'changed Rahul from Viewer to Technician', when: 'Fri 25 Sep, 15:20' },
       { ini: 'CH', bg: '#CDEFE7', who: 'Chetan', what: 'limited Exergio Partner to Exergio facilities', when: 'Tue 15 Sep, 10:02' },
       { ini: 'CH', bg: '#CDEFE7', who: 'Chetan', what: 'required 2FA for Operations', when: 'Mon 7 Sep, 09:15' }
-    ];
+    ]).slice(0, Math.max(4, storeChanges.length + 2));
 
     // confirmation
     const c = S.confirm;
@@ -445,8 +487,16 @@ class Component extends DCLogic {
     }
     const cfConfirm = () => {
       if (!c) return;
-      if (c.kind === 'role') { const r = Object.assign({}, S.roles); r[c.key] = c.to; this.setState({ roles: r, confirm: null, toast: c.name + ' is now ' + c.to + '. Logged to the audit log.' }); }
-      else { const s = Object.assign({}, S.status); s[c.key] = 'Deactivated'; this.setState({ status: s, confirm: null, toast: c.kind === 'revoke' ? 'Invitation revoked.' : c.name + ' deactivated. Their history is kept.' }); }
+      const u = base.find(x => x.key === c.key) || { name: c.name, email: '' };
+      const item = u.name + ' · ' + u.email;
+      if (c.kind === 'role') {
+        this.writeUsers((s, US) => { US.roles[c.key] = c.to; this.logEvent(s, { action: 'Role changed', item, itemHref: HREF, from: c.from, to: c.to, note: '' }); });
+        this.setState({ confirm: null, toast: c.name + ' is now ' + c.to + '. Logged to the audit log.' });
+      } else {
+        const prev = S.status[c.key] || 'Active';
+        this.writeUsers((s, US) => { US.status[c.key] = 'Deactivated'; this.logEvent(s, { action: 'User deactivated', item, itemHref: HREF, from: prev, to: 'Deactivated', note: c.kind === 'revoke' ? 'Invitation revoked' : '' }); });
+        this.setState({ confirm: null, toast: c.kind === 'revoke' ? 'Invitation revoked.' : c.name + ' deactivated. Their history is kept.' });
+      }
     };
 
     const inv = S.inv;
@@ -458,10 +508,17 @@ class Component extends DCLogic {
         if (S.invRole !== S.roles[inv.key]) { this.setState({ inv: null, confirm: { kind: 'role', key: inv.key, name: inv.name, from: S.roles[inv.key], to: S.invRole } }); return; }
         this.setState({ inv: null, toast: inv.name + ' updated.' }); return;
       }
-      const n = S.extra.length + 2; const key = 'invite' + n;
       const email = (S.invEmail || '').trim() || '[invited email]';
-      const r = Object.assign({}, S.roles); r[key] = S.invRole; const s = Object.assign({}, S.status); s[key] = 'Invited';
-      this.setState({ inv: null, roles: r, status: s, extra: S.extra.concat([{ key, name: (S.invName || '').trim() || 'Pending invite', email, ini: '—', bg: '#F1F4F7', last: 'Invite sent Mon 5 Oct · expires 12 Oct', tf: null, scope: 'All facilities' }]), toast: 'Invitation sent to ' + email + ' as ' + S.invRole + '.' });
+      const name = (S.invName || '').trim() || 'Pending invite';
+      const role = S.invRole;
+      this.writeUsers((s, US) => {
+        let n = US.added.length + 2; while (US.roles['invite' + n] || US.added.some(a => a.key === 'invite' + n)) n++;
+        const key = 'invite' + n;
+        US.added.push({ key, name, email, role, status: 'Invited', last: 'Invite sent Mon 5 Oct · expires 12 Oct' });
+        US.roles[key] = role; US.status[key] = 'Invited';
+        this.logEvent(s, { action: 'User invited', item: name + ' · ' + email, itemHref: HREF, from: '', to: role, note: '' });
+      });
+      this.setState({ inv: null, toast: 'Invitation sent to ' + email + ' as ' + role + '.' });
     };
 
     return {

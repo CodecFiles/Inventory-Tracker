@@ -150,7 +150,7 @@ textarea.in{height:84px;padding:10px 12px;resize:vertical}
 <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap">
 <div style="display: flex; flex-direction: column; gap: 4px">
 <h1 style="font-size: 26px; font-weight: 600; letter-spacing: -.02em">Products</h1>
-<p class="muted" style="font-size: 14px">18 active products in 8 categories · how each is tracked, configured and restocked</p>
+<p class="muted" style="font-size: 14px">{{subtitle}}</p>
 </div>
 <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center">
 <span class="lock" title="Only Admins can add, edit or archive products"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Admin only · you are Admin</span>
@@ -247,11 +247,11 @@ textarea.in{height:84px;padding:10px 12px;resize:vertical}
 <button class="btn ic sm" aria-label="Close" onClick="{{closeDrawer}}" style="width: 32px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
 </div>
 <div style="flex: 1; overflow: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 18px">
-<div class="fld"><label for="ap-name">Product name <span style="color: #A3201F">*</span></label><input id="ap-name" class="in" placeholder="e.g. Teltonika RUT241" value="{{fName}}" onChange="{{onName}}"></div>
+<div class="fld"><label for="ap-name">Product name <span style="color: #A3201F">*</span></label><input id="ap-name" class="in" placeholder="e.g. Teltonika RUT241" value="{{fName}}" onChange="{{onName}}"><sc-if value="{{fHasErr}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12.5px; color: #A3201F">{{fErr}}</span></sc-if></div>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px">
-<div class="fld"><label for="ap-cat">Category <span style="color: #A3201F">*</span></label><select id="ap-cat" class="in"><option>Teltonika Devices</option><option>CO₂ Sensors</option><option>LoRaWAN Gateways</option><option>M2M SIM Cards</option><option>Network Equipment</option><option>VFDs</option><option>Controllers &amp; BMS</option><option>Cables &amp; Accessories</option></select></div>
-<div class="fld"><label for="ap-brand">Brand</label><input id="ap-brand" class="in" placeholder="e.g. Teltonika"></div>
-<div class="fld"><label for="ap-model">Model</label><input id="ap-model" class="in" placeholder="e.g. RUT241"></div>
+<div class="fld"><label for="ap-cat">Category <span style="color: #A3201F">*</span></label><select id="ap-cat" class="in" value="{{fCat}}" onChange="{{onCat}}"><option value="tel">Teltonika Devices</option><option value="co2">CO₂ Sensors</option><option value="gw">LoRaWAN Gateways</option><option value="sim">M2M SIM Cards</option><option value="net">Network Equipment</option><option value="vfd">VFDs</option><option value="ctrl">Controllers &amp; BMS</option><option value="cab">Cables &amp; Accessories</option></select></div>
+<div class="fld"><label for="ap-brand">Brand</label><select id="ap-brand" class="in" value="{{fBrand}}" onChange="{{onBrand}}"><sc-for list="{{brandOpts}}" as="o" hint-placeholder-count="8"><option value="{{o.v}}">{{o.v}}</option></sc-for></select></div>
+<div class="fld"><label for="ap-model">Model</label><input id="ap-model" class="in" placeholder="e.g. RUT241" value="{{fModel}}" onChange="{{onModel}}"></div>
 </div>
 <div class="fld"><span class="lb" id="tm-lbl">Tracking method <span style="color: #A3201F">*</span></span>
 <div role="radiogroup" aria-labelledby="tm-lbl" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px">
@@ -269,7 +269,7 @@ textarea.in{height:84px;padding:10px 12px;resize:vertical}
 <button class="{{cfgSw}}" role="switch" aria-checked="{{cfgAria}}" aria-labelledby="cfg-lbl" onClick="{{toggleCfg}}"></button>
 <span style="display: flex; flex-direction: column; gap: 2px"><span id="cfg-lbl" style="font-weight: 500; font-size: 13.5px">Requires configuration before deployment</span><span class="muted" style="font-size: 12.5px">Units start as Unconfigured and must pass the preparation checklist (firmware, SIM, IP, test) before they can be deployed.</span></span>
 </div>
-<div class="fld" style="max-width: 220px"><label for="ap-min">Minimum stock level</label><input id="ap-min" class="in" type="number" min="0" value="5"><span class="muted" style="font-size: 12px">Low-stock alert below this.</span></div>
+<div class="fld" style="max-width: 220px"><label for="ap-min">Minimum stock level</label><input id="ap-min" class="in" type="number" min="0" value="{{fMin}}" onChange="{{onMin}}"><span class="muted" style="font-size: 12px">Low-stock alert below this.</span></div>
 <div class="fld"><span class="lb">Custom fields</span><span class="muted" style="font-size: 12px; margin-top: -2px">Identity and configuration details recorded for each unit.</span>
 <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px">
 <div style="display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) 76px 32px; gap: 8px; font-size: 11.5px; color: #5E6B7D; padding: 0 2px"><span>Field name</span><span>Type</span><span>Required</span><span></span></div>
@@ -288,7 +288,7 @@ textarea.in{height:84px;padding:10px 12px;resize:vertical}
 </div>
 <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; padding: 14px 24px; border-top: 1px solid #EEF1F4">
 <span class="lock"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Admin only · logged in the audit trail</span>
-<span style="display: flex; gap: 10px"><button class="btn" onClick="{{closeDrawer}}">Cancel</button><button class="btn p" onClick="{{closeDrawer}}">Save product</button></span>
+<span style="display: flex; gap: 10px"><button class="btn" onClick="{{closeDrawer}}">Cancel</button><button class="btn p" onClick="{{saveProduct}}">Save product</button></span>
 </div>
 </div>
 </div>
@@ -347,15 +347,17 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
   componentDidUpdate() {
-    try { const keep = Object.assign({}, this.state); ["arId", "drawer"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:Products', JSON.stringify(keep)); } catch (e) {}
+    try { const keep = Object.assign({}, this.state); ["arId", "drawer", "archived", "fErr"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:Products', JSON.stringify(keep)); } catch (e) {}
   }
   constructor(props) {
     super(props);
-    this.state = { cat: 'all', track: 'all', q: '', showArch: false, archived: { p19: true }, arId: '', drawer: false, tm: 'ser', cfg: true, fName: '',
+    this.state = { cat: 'all', track: 'all', q: '', showArch: false, arId: '', drawer: false, tm: 'ser', cfg: true, fName: '', fCat: 'tel', fBrand: 'Teltonika', fModel: '', fMin: '5', fErr: '',
       fields: [{ name: 'Serial number', type: 'Text', req: true }, { name: 'IMEI', type: 'Text', req: true }, { name: 'MAC address', type: 'MAC address', req: true }, { name: 'SIM', type: 'Link to SIM', req: false }] };
   }
   renderVals() {
     const S = this.state;
+    const ST0 = this.readStore();
+    const PR = Object.assign({ added: [], archived: {}, restored: {}, min: {} }, ST0.products || {});
     const CATS = [['tel', 'Teltonika Devices', '#3B4758'], ['co2', 'CO₂ Sensors', '#12A374'], ['gw', 'LoRaWAN Gateways', '#1A8FAD'], ['sim', 'M2M SIM Cards', '#2F6FE4'], ['net', 'Network Equipment', '#5468E0'], ['vfd', 'VFDs', '#E08A00'], ['ctrl', 'Controllers & BMS', '#7C4DDB'], ['cab', 'Cables & Accessories', '#8A96A8']];
     const catName = {}; CATS.forEach(c => { catName[c[0]] = c[1]; });
     const P = [
@@ -379,27 +381,65 @@ class Component extends DCLogic {
       ['p18', 'RS-485 shielded cable', 'cab', 'Belden', '9841', 'qty', false, '240 m', '410 m', '100 m', '', 'InventoryItem.dc.html'],
       ['p19', 'Teltonika RUT950', 'tel', 'Teltonika', 'RUT950', 'ser', true, 0, 3, 0, '', 'ProductDetail.dc.html']
     ];
+    const SAMPLE_ARCH = { p19: true };
+    const TRK = { Serialised: 'ser', Quantity: 'qty', Hybrid: 'hyb' };
+    // Products added from this screen (shared store) join the sample list.
+    PR.added.forEach(a => { if (a && a.name && !P.some(p => p[1].toLowerCase() === a.name.toLowerCase())) P.push([a.id || ('sp-' + a.name), a.name, a.cat || 'cab', a.brand || '', a.model || '', TRK[a.track] || 'ser', !!a.cfg, (TRK[a.track] === 'qty') ? '0 pcs' : 0, (TRK[a.track] === 'qty') ? '0 pcs' : 0, Number(a.min) || 0, 'new', a.cat === 'cab' || TRK[a.track] === 'qty' ? 'InventoryItem.dc.html' : 'ProductDetail.dc.html']); });
+    // Unit counts: received units (store.added) and status changes (store.units) move units between on hand and deployed.
+    const sampleName = id => /^1108675(30\d|31\d)$/.test(id) || /^11074421\d\d$/.test(id) ? 'Teltonika RUT956' : (/^3AXD/.test(id) ? 'ABB ACS580 VFD' : (/^6247B18200/.test(id) ? 'Milesight UG65' : ''));
+    const isDep = st => st === 'deployed';
+    const isOn = st => !!st && st !== 'deployed' && st !== 'retired';
+    const adj = {}; const bump = (name, dOn, dDep) => { const a = adj[name] || (adj[name] = { on: 0, dep: 0 }); a.on += dOn; a.dep += dDep; };
+    const addedIdents = {};
+    (ST0.added || []).forEach(u => {
+      if (!u || !u.ident || addedIdents[u.ident]) return; addedIdents[u.ident] = true;
+      const p = ST0.units[u.ident] || {}; const st = p.st || u.st || 'unconf';
+      bump(u.name || '', isOn(st) ? 1 : 0, isDep(st) ? 1 : 0);
+    });
+    Object.keys(ST0.units || {}).forEach(id => {
+      const p = ST0.units[id]; if (!p || addedIdents[id] || id.indexOf('row:') === 0 || !p.st) return;
+      const name = p.name || sampleName(id); if (!name) return;
+      const st0 = p.st0 || 'stock';
+      bump(name, (isOn(p.st) ? 1 : 0) - (isOn(st0) ? 1 : 0), (isDep(p.st) ? 1 : 0) - (isDep(st0) ? 1 : 0));
+    });
+    // Cat6 1 m: quantity stock kept in store.stock (Inventory item screen) minus quantities issued in deployments.
+    const CAB = 'Cat6 patch cable 1 m';
+    const cabRec = (ST0.stock || {})[CAB];
+    let cabIssued = 0; (ST0.deployments || []).forEach(d => (d.items || []).forEach(it => { if (it && it.name === CAB && it.qty) cabIssued += Number(it.qty) || 0; }));
+    let cabRecv = 0; const cabMoves = (cabRec && cabRec.moves) || [];
+    (ST0.events || []).forEach(e => { const m = e && e.action === 'Received' && /^Batch (\S+) · (\d+) × (.+)$/.exec(e.item || ''); if (m && m[3] === CAB && !cabMoves.some(x => x.type === 'Received' && String(x.note || '').indexOf(m[1]) >= 0)) cabRecv += parseInt(m[2], 10); });
+    const cabOnHand = (cabRec ? Number(cabRec.onHand) : 18) - cabIssued + cabRecv;
     const TM = { ser: ['Serialised', 'tm-ser'], qty: ['Quantity', 'tm-qty'], hyb: ['Hybrid', 'tm-hyb'] };
     const q = S.q.trim().toLowerCase();
-    const isArch = id => !!S.archived[id];
-    const visible = P.filter(p => S.showArch || !isArch(p[0]));
+    const isArch = p => PR.archived[p[1]] ? true : (PR.restored[p[1]] ? false : !!SAMPLE_ARCH[p[0]]);
+    const visible = P.filter(p => S.showArch || !isArch(p));
     const rows = visible.filter(p => (S.cat === 'all' || p[2] === S.cat) && (S.track === 'all' || p[5] === S.track) && (!q || (p[1] + ' ' + p[3] + ' ' + p[4]).toLowerCase().indexOf(q) > -1)).map(p => {
-      const [id, name, cat, brand, model, tr, cfg, onHand, deployed, min, flag, href] = p;
-      const arch = isArch(id);
-      const low = flag === 'low' || (typeof onHand === 'number' && onHand > 0 && onHand < min);
-      return { name, brand, model, href, catLabel: catName[cat], track: TM[tr][0], tmCls: TM[tr][1], cfg, noCfg: !cfg,
+      const [id, name, cat, brand, model, tr, cfg, onHand0, deployed0, min0, flag, href] = p;
+      const arch = isArch(p);
+      let onHand = onHand0, deployed = deployed0, flagLow = flag === 'low';
+      const min = PR.min[name] !== undefined ? PR.min[name] : min0;
+      const a = adj[name];
+      if (a && typeof onHand0 === 'number') { onHand = Math.max(0, onHand0 + a.on); deployed = Math.max(0, deployed0 + a.dep); }
+      if (name === CAB) { onHand = cabOnHand + ' pcs'; deployed = (41 + cabIssued) + ' pcs'; flagLow = cabOnHand < Number(min); }
+      const low = flagLow || (typeof onHand === 'number' && onHand > 0 && onHand < Number(min));
+      return { name, brand, model, href, catLabel: catName[cat] || 'Other', track: TM[tr][0], tmCls: TM[tr][1], cfg, noCfg: !cfg,
         onHand: onHand === 0 ? '0' : String(onHand), deployed: String(deployed), min: String(min), low, isNew: flag === 'new',
         ohColor: low ? '#A3201F' : (onHand === 0 ? '#5E6B7D' : '#0E1726'),
         status: arch ? 'Archived' : 'Active', stCls: arch ? 's-retired' : 's-deployed', trCls: arch ? 'arch' : '',
-        canArchive: !arch, isArch: arch,
+        canArchive: !arch, isArch: arch, units: typeof onHand === 'number' ? onHand + deployed : 'its', onHandN: typeof onHand === 'number' ? onHand : 0,
         archive: () => this.setState({ arId: id }),
-        restore: () => { const a = Object.assign({}, this.state.archived); delete a[id]; this.setState({ archived: a }); } };
+        restore: () => this.writeStore(s => {
+          s.products = Object.assign({ added: [], archived: {}, restored: {}, min: {} }, s.products || {});
+          delete s.products.archived[name]; s.products.restored[name] = true;
+          this.logEvent(s, { action: 'Product restored', item: name, itemHref: href, from: 'Archived', to: 'Active', note: '' });
+        }) };
     });
-    const activeCount = k => P.filter(p => !isArch(p[0]) && (k === 'all' || p[2] === k)).length;
+    const activeCount = k => P.filter(p => !isArch(p) && (k === 'all' || p[2] === k)).length;
     const cats = [['all', 'All products', '#0B7A6B']].concat(CATS).map(([id, label, dot]) => ({ label, dot, n: activeCount(id), cls: 'cat' + (S.cat === id ? ' on' : ''), pressed: S.cat === id ? 'true' : 'false', pick: () => this.setState({ cat: id }) }));
     const tracks = [['all', 'All'], ['ser', 'Serialised'], ['hyb', 'Hybrid'], ['qty', 'Quantity']].map(([id, label]) => ({ label, cls: 'chip' + (S.track === id ? ' on' : ''), pressed: S.track === id ? 'true' : 'false', pick: () => this.setState({ track: id }) }));
-    const archCount = Object.keys(S.archived).length;
+    const archCount = P.filter(isArch).length;
     const ar = P.filter(p => p[0] === S.arId)[0];
+    const arRow = ar ? rows.filter(r => r.name === ar[1])[0] : null;
     const tmCards = [
       ['ser', 'Serialised', 'Every unit has its own identity and history.', 'Routers, gateways, SIMs, VFDs'],
       ['hyb', 'Hybrid', 'Received as a counted batch; units get serials later, e.g. during preparation.', 'CO₂ sensors'],
@@ -410,19 +450,54 @@ class Component extends DCLogic {
       onName: e => setField(i, { name: e.target.value }), onType: e => setField(i, { type: e.target.value }),
       toggle: () => setField(i, { req: !this.state.fields[i].req }),
       remove: () => { const a = this.state.fields.slice(); a.splice(i, 1); this.setState({ fields: a }); } }));
+    // Brands: sample brands plus any added in Settings (store.catalog.brands).
+    const brandNames = [];
+    P.map(p => p[3]).concat((ST0.catalog && ST0.catalog.brands) || []).forEach(b => { const n = b && (typeof b === 'string' ? b : b.name); if (n && brandNames.indexOf(n) < 0) brandNames.push(n); });
+    if (S.fBrand && brandNames.indexOf(S.fBrand) < 0) brandNames.push(S.fBrand);
+    const brandOpts = brandNames.map(v => ({ v }));
+    const saveProduct = () => {
+      const st = this.state; const name = (st.fName || '').trim();
+      if (!name) { this.setState({ fErr: 'Enter a product name.' }); return; }
+      if (P.some(p => p[1].toLowerCase() === name.toLowerCase())) { this.setState({ fErr: name + ' already exists.' }); return; }
+      const track = TM[st.tm][0];
+      const prod = { id: 'np' + Date.now(), name, cat: st.fCat, catLabel: catName[st.fCat] || 'Other', brand: st.fBrand || '', model: (st.fModel || '').trim(), track, cfg: !!st.cfg, min: Math.max(0, parseInt(st.fMin, 10) || 0) };
+      this.writeStore(s => {
+        s.products = Object.assign({ added: [], archived: {}, restored: {}, min: {} }, s.products || {});
+        if (s.products.added.some(x => x && x.name && x.name.toLowerCase() === name.toLowerCase())) return;
+        s.products.added.push(prod);
+        this.logEvent(s, { action: 'Product added', item: name, itemHref: 'Products.dc.html', from: '—', to: prod.catLabel, note: [prod.brand, prod.model].filter(Boolean).join(' ') + ' · ' + track + (prod.cfg ? ' · requires configuration' : '') + ' · min ' + prod.min });
+      });
+      this.setState({ drawer: false, fName: '', fModel: '', fMin: '5', fErr: '' });
+    };
+    const confirmArchive = () => {
+      const p = P.filter(x => x[0] === this.state.arId)[0];
+      if (p) this.writeStore(s => {
+        s.products = Object.assign({ added: [], archived: {}, restored: {}, min: {} }, s.products || {});
+        s.products.archived[p[1]] = true; delete s.products.restored[p[1]];
+        this.logEvent(s, { action: 'Product archived', item: p[1], itemHref: p[11], from: 'Active', to: 'Archived', note: 'Hidden from receiving, preparation and new deployments' });
+      });
+      this.setState({ arId: '' });
+    };
+    const nCats = CATS.filter(c => activeCount(c[0]) > 0).length;
     return {
       cats, tracks, rows, isEmpty: rows.length === 0,
+      subtitle: activeCount('all') + ' active products in ' + nCats + ' categories · how each is tracked, configured and restocked',
       q: S.q, onQ: e => this.setState({ q: e.target.value }),
       archSw: 'sw sm' + (S.showArch ? ' on' : ''), archAria: S.showArch ? 'true' : 'false', toggleArch: () => this.setState({ showArch: !this.state.showArch }), archCount,
       footer: rows.length + ' of ' + activeCount('all') + ' active products' + (S.showArch ? ' · archived shown' : ''),
-      openDrawer: () => this.setState({ drawer: true }), closeDrawer: () => this.setState({ drawer: false }), drawer: S.drawer,
-      fName: S.fName, onName: e => this.setState({ fName: e.target.value }),
+      openDrawer: () => this.setState({ drawer: true, fErr: '' }), closeDrawer: () => this.setState({ drawer: false, fErr: '' }), drawer: S.drawer,
+      fName: S.fName, onName: e => this.setState({ fName: e.target.value, fErr: '' }),
+      fCat: S.fCat, onCat: e => this.setState({ fCat: e.target.value }),
+      fBrand: S.fBrand, onBrand: e => this.setState({ fBrand: e.target.value }), brandOpts,
+      fModel: S.fModel, onModel: e => this.setState({ fModel: e.target.value }),
+      fMin: S.fMin, onMin: e => this.setState({ fMin: e.target.value }),
+      fErr: S.fErr || '', fHasErr: !!S.fErr, saveProduct,
       tmCards, cfgSw: 'sw' + (S.cfg ? ' on' : ''), cfgAria: S.cfg ? 'true' : 'false', toggleCfg: () => this.setState({ cfg: !this.state.cfg }),
       fields, addField: () => this.setState({ fields: this.state.fields.concat([{ name: '', type: 'Text', req: false }]) }),
-      showArchive: !!ar, arName: ar ? ar[1] : '', arUnits: ar ? (typeof ar[7] === 'number' ? ar[7] + ar[8] : 'its') : '',
-      arHasStock: !!ar && typeof ar[7] === 'number' && ar[7] > 0, arOnHand: ar ? ar[7] : 0,
+      showArchive: !!ar, arName: ar ? ar[1] : '', arUnits: arRow ? String(arRow.units) : (ar ? 'its' : ''),
+      arHasStock: !!arRow && arRow.onHandN > 0, arOnHand: arRow ? arRow.onHandN : 0,
       cancelArchive: () => this.setState({ arId: '' }),
-      confirmArchive: () => { const a = Object.assign({}, this.state.archived); a[this.state.arId] = true; this.setState({ archived: a, arId: '' }); }
+      confirmArchive
     };
   }
 }

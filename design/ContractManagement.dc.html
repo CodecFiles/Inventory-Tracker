@@ -178,7 +178,7 @@ textarea.inp{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
 <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start">
 <!-- Left: contract list -->
 <div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
-<span class="ov">2 contracts</span>
+<span class="ov">{{countLabel}}</span>
 <sc-for list="{{list}}" as="c" hint-placeholder-count="2">
 <button class="{{c.cls}}" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}">
 <span style="display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; width: 100%"><span style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-weight: 600; font-size: 14.5px">{{c.name}}</span><span class="mono muted">{{c.ref}}</span></span><span class="b {{c.bcls}}">{{c.status}}</span></span>
@@ -193,10 +193,11 @@ textarea.inp{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
 
 <div class="card" style="padding: 16px; display: flex; flex-direction: column; gap: 10px">
 <div style="display: flex; justify-content: space-between; align-items: center"><h2 style="font-size: 14px; font-weight: 600">Next in the pipeline</h2><a href="PocManagement.dc.html" style="font-size: 12.5px; font-weight: 500">POC projects →</a></div>
+<sc-for list="{{pipe}}" as="p" hint-placeholder-count="2">
 <a href="FacilityDetail.dc.html" style="display: flex; gap: 10px; align-items: center; color: #0E1726">
-<span style="flex: 1; min-width: 0"><span style="display: block; font-weight: 500; font-size: 13px">Qatar Foundation</span><span class="muted" style="font-size: 12px">POC ends 30 Nov 2026 · 12 devices</span></span><span class="b g-poc">POC</span></a>
-<a href="FacilityDetail.dc.html" style="display: flex; gap: 10px; align-items: center; color: #0E1726">
-<span style="flex: 1; min-width: 0"><span style="display: block; font-weight: 500; font-size: 13px">Al Khuwair Business Tower</span><span class="muted" style="font-size: 12px">POC kit 20 Oct · after BMS scan</span></span><span class="b g-bms">BMS scan</span></a>
+<span style="flex: 1; min-width: 0"><span style="display: block; font-weight: 500; font-size: 13px">{{p.name}}</span><span class="muted" style="font-size: 12px">{{p.sub}}</span></span><span class="b {{p.cls}}">{{p.stage}}</span></a>
+</sc-for>
+<sc-if value="{{pipeEmpty}}" hint-placeholder-val="{{ false }}"><span class="muted" style="font-size: 12.5px">Nothing in POC or pre-POC right now.</span></sc-if>
 </div>
 
 <div class="card" style="padding: 16px; display: flex; flex-direction: column; gap: 12px">
@@ -220,14 +221,14 @@ textarea.inp{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
 <div style="padding: 20px 22px; display: flex; flex-direction: column; gap: 16px; border-bottom: 1px solid #EEF1F4">
 <div style="display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: flex-start">
 <div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
-<span style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span class="b s-deployed">Active</span><span class="b g-ops">Active operations</span></span>
+<span style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span class="b {{bm.bcls}}">{{bm.status}}</span><span class="b {{bm.gcls}}">{{bm.stage}}</span></span>
 <h2 style="font-size: 20px; font-weight: 600; letter-spacing: -.01em"><a href="FacilityDetail.dc.html" style="color: #0E1726">Bank Muscat Head Office</a></h2>
 <span class="muted" style="font-size: 13px"><span class="mono" style="color: #0E1726">CN-EXG-BM-2026-01</span> · Airport Heights, Muscat · signed 24 Jun 2026</span>
 </div>
 <div style="display: flex; gap: 8px; flex-wrap: wrap">
 <button class="btn sm" onClick="{{openEdit}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg>Edit contract</button>
 <a class="btn sm p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add equipment</a>
-<button class="btn sm dg" onClick="{{openEnd}}">End contract</button>
+<sc-if value="{{bm.canEnd}}" hint-placeholder-val="{{ true }}"><button class="btn sm dg" onClick="{{openEnd}}">End contract</button></sc-if>
 </div>
 </div>
 <div style="display: flex; flex-direction: column; gap: 6px">
@@ -239,10 +240,10 @@ textarea.inp{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
 <div style="display: flex; justify-content: space-between; font-size: 12px" class="muted"><span>Today · 05 Oct 2026</span><span>Renewal review from 01 Jan 2029</span></div>
 </div>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px">
-<div class="stat"><span class="muted" style="font-size: 12px">Devices under contract</span><span class="v">35</span></div>
-<div class="stat"><span class="muted" style="font-size: 12px">Retained from POC</span><span class="v" style="color: #5B32B4">14</span></div>
-<div class="stat"><span class="muted" style="font-size: 12px">Added since</span><span class="v">21</span></div>
-<div class="stat"><span class="muted" style="font-size: 12px">Last deployment</span><span class="v" style="font-size: 16px; padding-top: 3px">28 Sep 2026</span></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Devices under contract</span><span class="v">{{bm.dev}}</span></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Retained from POC</span><span class="v" style="color: #5B32B4">{{bm.ret}}</span></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Added since</span><span class="v">{{bm.add}}</span></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Last deployment</span><span class="v" style="font-size: 16px; padding-top: 3px">{{bm.last}}</span></div>
 </div>
 </div>
 
@@ -290,7 +291,7 @@ textarea.inp{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
 
 <div style="border-top: 1px solid #EEF1F4">
 <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 22px 12px; gap: 8px; flex-wrap: wrap">
-<div><h3 style="font-size: 14px; font-weight: 600">Deployed equipment by category</h3><p class="muted" style="font-size: 12.5px">35 serialised devices · plus 462 quantity-tracked items (cables, accessories)</p></div>
+<div><h3 style="font-size: 14px; font-weight: 600">Deployed equipment by category</h3><p class="muted" style="font-size: 12.5px">{{bm.dev}} serialised devices · plus 462 quantity-tracked items (cables, accessories)</p></div>
 <a href="FacilityDetail.dc.html" style="font-size: 12.5px; font-weight: 500">View all at facility →</a>
 </div>
 <div class="tw">
@@ -300,7 +301,7 @@ textarea.inp{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
 <sc-for list="{{equip}}" as="q" hint-placeholder-count="6">
 <tr><td style="font-weight: 500">{{q.cat}}</td><td><a href="ProductDetail.dc.html" style="color: #0E1726">{{q.prod}}</a></td><td style="text-align: right; font-weight: 600">{{q.dep}}</td><td style="text-align: right"><span style="color: #5B32B4; font-weight: 500">{{q.ret}}</span></td><td style="text-align: right">{{q.add}}</td><td><span class="b {{q.scls}}">{{q.st}}</span></td></tr>
 </sc-for>
-<tr><td style="font-weight: 600">Total</td><td></td><td style="text-align: right; font-weight: 600">35</td><td style="text-align: right; font-weight: 600; color: #5B32B4">14</td><td style="text-align: right; font-weight: 600">21</td><td></td></tr>
+<tr><td style="font-weight: 600">Total</td><td></td><td style="text-align: right; font-weight: 600">{{bm.dev}}</td><td style="text-align: right; font-weight: 600; color: #5B32B4">{{bm.ret}}</td><td style="text-align: right; font-weight: 600">{{bm.add}}</td><td></td></tr>
 </tbody>
 </table>
 </div>
@@ -311,19 +312,19 @@ textarea.inp{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
 <div style="padding: 20px 22px; display: flex; flex-direction: column; gap: 16px; border-bottom: 1px solid #EEF1F4">
 <div style="display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: flex-start">
 <div style="display: flex; flex-direction: column; gap: 4px">
-<span style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span class="b g-cpend">Contract pending</span><span class="b g-study">POC study</span></span>
+<span style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span class="b {{lu.bcls}}">{{lu.status}}</span><span class="b {{lu.gcls}}">{{lu.stage}}</span></span>
 <h2 style="font-size: 20px; font-weight: 600; letter-spacing: -.01em"><a href="FacilityDetail.dc.html" style="color: #0E1726">Lulu Hypermarket</a></h2>
-<span class="muted" style="font-size: 13px"><span class="mono" style="color: #0E1726">CN-EXG-LU-2026-D1</span> · draft · Bausher, Muscat</span>
+<span class="muted" style="font-size: 13px"><span class="mono" style="color: #0E1726">CN-EXG-LU-2026-D1</span> · {{lu.kind}} · Bausher, Muscat</span>
 </div>
 <div style="display: flex; gap: 8px; flex-wrap: wrap">
 <button class="btn sm" onClick="{{openEdit}}">Edit draft terms</button>
 <a class="btn sm" href="PocManagement.dc.html">Open POC study</a>
-<span title="Available once the POC study decision is recorded"><button class="btn sm p" disabled="{{yes}}">Convert to contract</button></span>
+<sc-if value="{{lu.canConvert}}" hint-placeholder-val="{{ false }}"><button class="btn sm p" onClick="{{convert}}">Convert to contract</button></sc-if><sc-if value="{{lu.waiting}}" hint-placeholder-val="{{ true }}"><span title="Available once the POC study decision is recorded"><button class="btn sm p" disabled="{{yes}}">Convert to contract</button></span></sc-if><sc-if value="{{lu.canEnd}}" hint-placeholder-val="{{ false }}"><button class="btn sm dg" onClick="{{openEnd}}">End contract</button></sc-if>
 </div>
 </div>
 <div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; background: #F6F9FF; border: 1px solid #C8D8FA; color: #1D3F8F; font-size: 13px">
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>
-<span>Awaiting POC study decision on <strong>Wed 14 Oct 2026</strong>. The 8 POC devices stay recorded as POC until the contract is signed.</span>
+<span>{{lu.info}}</span>
 </div>
 </div>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr))">
@@ -332,7 +333,7 @@ textarea.inp{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
 <dl class="dl" style="margin: 0">
 <dt>Draft ref</dt><dd class="mono">CN-EXG-LU-2026-D1</dd>
 <dt>Proposed term</dt><dd>36 months from 01 Nov 2026</dd>
-<dt>POC</dt><dd>15 Jul – 15 Sep 2026 · study in progress</dd>
+<dt>POC</dt><dd>{{lu.poc}}</dd>
 <dt>Scope</dt><dd style="font-weight: 400; color: #5E6B7D; font-style: italic">[proposed scope as entered]</dd>
 <dt>Owner</dt><dd>Aisha · Operations</dd>
 </dl>
@@ -346,6 +347,35 @@ textarea.inp{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
 </div>
 </div>
 </sc-if>
+
+<sc-if value="{{isGen}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 20px 22px; display: flex; flex-direction: column; gap: 16px; border-bottom: 1px solid #EEF1F4">
+<div style="display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: flex-start">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span class="b {{gen.bcls}}">{{gen.status}}</span><span class="b {{gen.gcls}}">{{gen.stage}}</span></span>
+<h2 style="font-size: 20px; font-weight: 600; letter-spacing: -.01em"><a href="FacilityDetail.dc.html" style="color: #0E1726">{{gen.name}}</a></h2>
+<span class="muted" style="font-size: 13px"><span class="mono" style="color: #0E1726">{{gen.ref}}</span> · {{gen.loc}}</span>
+</div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<a class="btn sm" href="FacilityDetail.dc.html">Open facility</a>
+<sc-if value="{{gen.canConvert}}" hint-placeholder-val="{{ false }}"><button class="btn sm p" onClick="{{convert}}">Convert to contract</button></sc-if>
+<sc-if value="{{gen.canEnd}}" hint-placeholder-val="{{ false }}"><button class="btn sm dg" onClick="{{openEnd}}">End contract</button></sc-if>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px">
+<div class="stat"><span class="muted" style="font-size: 12px">Contract devices</span><span class="v">{{gen.dev}}</span></div>
+<div class="stat"><span class="muted" style="font-size: 12px">POC devices on site</span><span class="v" style="color: #5B32B4">{{gen.poc}}</span></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Term</span><span class="v" style="font-size: 14px; padding-top: 4px">{{gen.term}}</span></div>
+</div>
+</div>
+<div style="padding: 18px 22px; display: flex; flex-direction: column; gap: 10px">
+<h3 style="font-size: 14px; font-weight: 600">Equipment at this facility</h3>
+<sc-for list="{{gen.items}}" as="q" hint-placeholder-count="3">
+<div style="display: flex; justify-content: space-between; gap: 10px; font-size: 13px; padding: 6px 0; border-bottom: 1px solid #EEF1F4"><span>{{q.name}} <span class="mono muted">{{q.sn}}</span></span><span class="t {{q.tcls}}">{{q.type}}</span></div>
+</sc-for>
+<sc-if value="{{gen.empty}}" hint-placeholder-val="{{ false }}"><p class="muted" style="font-size: 12.5px">No equipment deployed here through the system yet.</p></sc-if>
+</div>
+</sc-if>
 </section>
 </div>
 
@@ -355,17 +385,17 @@ textarea.inp{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
 <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="endt">
 <div style="padding: 20px 22px 0; display: flex; gap: 14px; align-items: flex-start">
 <span style="width: 40px; height: 40px; border-radius: 50%; background: #FDEBEA; color: #A3201F; display: flex; align-items: center; justify-content: center; flex: 0 0 40px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9.5 17H2.5z"></path><path d="M12 10v4M12 17h.01"></path></svg></span>
-<div style="display: flex; flex-direction: column; gap: 4px"><h2 id="endt" style="font-size: 17px; font-weight: 600">End contract CN-EXG-BM-2026-01?</h2><p class="muted" style="font-size: 13px">Bank Muscat Head Office · 35 devices under contract</p></div>
+<div style="display: flex; flex-direction: column; gap: 4px"><h2 id="endt" style="font-size: 17px; font-weight: 600">End contract {{endRef}}?</h2><p class="muted" style="font-size: 13px">{{endFac}} · {{endN}} devices under contract</p></div>
 </div>
 <div style="padding: 16px 22px; display: flex; flex-direction: column; gap: 14px">
-<div style="padding: 11px 14px; border-radius: 10px; background: #FFF8EB; border: 1px solid #F3D9A6; color: #6B3D00; font-size: 13px">Equipment stays recorded. Nothing is deleted: every device keeps its history and the audit log records this change. Choose what happens to the 35 devices.</div>
+<div style="padding: 11px 14px; border-radius: 10px; background: #FFF8EB; border: 1px solid #F3D9A6; color: #6B3D00; font-size: 13px">Equipment stays recorded. Nothing is deleted: every device keeps its history and the audit log records this change. Choose what happens to the {{endN}} devices.</div>
 <div role="radiogroup" aria-label="Equipment after contract ends" style="display: flex; flex-direction: column; gap: 8px">
-<label class="{{optRetain}}"><input type="radio" name="endc" checked="{{isRetain}}" onChange="{{pickRetain}}"><span><strong style="display: block; font-size: 13.5px; font-weight: 600">Retain at facility</strong><span class="muted" style="font-size: 12.5px">Devices stay at Bank Muscat, marked out of contract. No return trip needed.</span></span></label>
+<label class="{{optRetain}}"><input type="radio" name="endc" checked="{{isRetain}}" onChange="{{pickRetain}}"><span><strong style="display: block; font-size: 13.5px; font-weight: 600">Retain at facility</strong><span class="muted" style="font-size: 12.5px">Devices stay at {{endFac}}, marked out of contract. No return trip needed.</span></span></label>
 <label class="{{optReturn}}"><input type="radio" name="endc" checked="{{isReturn}}" onChange="{{pickReturn}}"><span><strong style="display: block; font-size: 13.5px; font-weight: 600">Return to MRD Office</strong><span class="muted" style="font-size: 12.5px">Creates a return record for each device. Status becomes Returned when they arrive.</span></span></label>
 </div>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px">
 <div style="display: flex; flex-direction: column; gap: 6px"><label class="lbl" for="endd">Effective date</label><input id="endd" class="inp" type="date" value="{{endDate}}" onChange="{{onEndDate}}"></div>
-<div style="display: flex; flex-direction: column; gap: 6px"><label class="lbl" for="endr">Reason</label><select id="endr" class="inp"><option>Term completed</option><option>Terminated by client</option><option>Replaced by new contract</option><option>Other</option></select></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><label class="lbl" for="endr">Reason</label><select id="endr" class="inp" value="{{endReason}}" onChange="{{onEndReason}}"><option>Term completed</option><option>Terminated by client</option><option>Replaced by new contract</option><option>Other</option></select></div>
 </div>
 <p class="muted" style="font-size: 12px">Only Admins can end a contract. This action will be signed as Chetan (Admin).</p>
 </div>
@@ -417,7 +447,19 @@ class Component extends DCLogic {
     this._init = JSON.parse(JSON.stringify(this.state));
     this._onStore = e => { if (!e || !e.key || e.key === 'mrd-proto:store') this.forceUpdate(); };
     try { window.addEventListener('storage', this._onStore); } catch (e) {}
-    try { const raw = window.localStorage.getItem('mrd-proto:v1:ContractManagement'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
+    try { const raw = window.localStorage.getItem('mrd-proto:v1:ContractManagement'); const saved = this.migrateLocal(raw ? JSON.parse(raw) : null); if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
+    // A Bank Muscat contract end recorded before the shared store existed is applied once, then forgotten locally.
+    try {
+      const legacy = this._legacyEnded; this._legacyEnded = false;
+      const bmC = ((this.readStore().facilities || {})['Bank Muscat Head Office'] || {}).contract || {};
+      if (legacy && bmC.status !== 'Ended') {
+        const prevSel = this.state.sel;
+        this.state = Object.assign({}, this.state, { sel: 'bm' });
+        const v = this.renderVals();
+        this.state = Object.assign({}, this.state, { sel: prevSel });
+        if (v.isBM && v.bm.canEnd) v.doEnd();
+      }
+    } catch (e) {}
   }
   // Shared prototype store: one record in browser storage that every screen reads and writes (key mrd-proto:store).
   readStore() {
@@ -444,64 +486,290 @@ class Component extends DCLogic {
   }
   constructor(props) {
     super(props);
-    this.state = { sel: 'bm', endOpen: false, endChoice: 'retain', endDate: '2029-06-30', ended: false, editOpen: false, toast: '', draft: '', extraNotes: [] };
+    this.state = { sel: 'bm', endOpen: false, endChoice: 'retain', endDate: '2029-06-30', endReason: 'Term completed', editOpen: false, toast: '', draft: '' };
+  }
+  // Older saves kept "ended" and extra notes locally; the shared store owns them now.
+  migrateLocal(saved) {
+    if (!saved || typeof saved !== 'object') return saved;
+    const extra = saved.extraNotes;
+    this._legacyEnded = !!saved.ended;
+    delete saved.ended; delete saved.extraNotes;
+    if (Array.isArray(extra) && extra.length) {
+      const nameOf = { bm: 'Bank Muscat Head Office', lulu: 'Lulu Hypermarket' };
+      this.writeStore(s => {
+        extra.slice().reverse().forEach(n => {
+          const f = nameOf[n.sel]; if (!f) return;
+          const cur = ((s.facilities || {})[f] || {}).notes || [];
+          if (cur.some(x => x.text === n.text && x.who === n.who)) return;
+          this.setFac(s, f, { notes: [{ who: n.who || 'Chetan', when: n.when || 'Earlier', text: n.text }].concat(cur) });
+        });
+      });
+    }
+    return saved;
+  }
+  setFac(s, name, patch) {
+    s.facilities = s.facilities || {};
+    s.facilities[name] = Object.assign({}, s.facilities[name] || {}, patch);
+  }
+  // Sample devices this screen can identify by serial / ICCID: [ident, name, type].
+  sampleIds() {
+    const co2 = sn => [sn, 'Milesight EM500-CO2', 'POC'];
+    return {
+      'Bank Muscat Head Office': [['1108675302', 'Teltonika RUT956', 'Additional']],
+      'Lulu Hypermarket': [['1107442106', 'Teltonika RUT956', 'POC'], ['6247B1820045', 'Milesight UG65', 'POC'], ['8996802026071500822', 'Omantel M2M SIM', 'POC']].concat(['6136D2460041', '6136D2460042', '6136D2460043', '6136D2460044', '6136D2460045'].map(co2)),
+      'Qatar Foundation': [['1108675311', 'Teltonika RUT956', 'POC'], ['8996802026093001435', 'Omantel M2M SIM', 'POC'], ['6247B1820041', 'Milesight UG65', 'POC'], ['F4E2C6A10B37', 'UniFi Switch Lite 8 PoE', 'POC']].concat(['6136D2470112', '6136D2470113', '6136D2470114', '6136D2470115', '6136D2470121', '6136D2470122', '6136D2470123', '6136D2470124'].map(co2))
+    };
+  }
+  endContract(e) {
+    const st = this.state;
+    const name = e.name;
+    this.writeStore(s => {
+      s.facilities = s.facilities || {};
+      const prev = JSON.parse(JSON.stringify(s.facilities[name] || {}));
+      delete prev._undoEnd;
+      const undo = { fac: prev, units: {} };
+      const prevStage = prev.stage || e.stage;
+      const ret = st.endChoice === 'return';
+      const ids = ret ? e.ids : [];
+      ids.forEach(id => {
+        undo.units[id] = s.units[id] ? JSON.parse(JSON.stringify(s.units[id])) : null;
+        this.patchUnit(s, id, { st: 'returned', loc: 'MRD Office', loc2: 'Returns bay', fac: '', type: '' }, 'deployed');
+        this.logEvent(s, { action: 'Status changed', item: id, itemHref: 'DeviceDetail.dc.html', from: 'Deployed · ' + name, to: 'Returned · MRD Office', note: 'Contract ' + e.contract.ref + ' ended' });
+      });
+      const contract = Object.assign({}, e.contract, prev.contract || {}, { status: 'Ended', endChoice: st.endChoice, endDate: st.endDate, reason: st.endReason, returned: ids.length });
+      this.setFac(s, name, { stage: 'Completed', contract, _undoEnd: undo });
+      this.logEvent(s, { action: 'Contract ended', item: name, itemHref: 'ContractManagement.dc.html', from: contract.ref, to: ret ? 'Equipment returned' : 'Equipment retained', note: contract.ref + ' · effective ' + st.endDate + ' · ' + st.endReason + (ret ? ' · ' + ids.length + ' devices returned' : '') });
+      if (prevStage !== 'Completed') this.logEvent(s, { action: 'Stage changed', item: name, itemHref: 'FacilityDetail.dc.html', from: prevStage, to: 'Completed', note: 'Contract ended' });
+    });
+  }
+  undoEnd(e) {
+    const name = e.name;
+    this.writeStore(s => {
+      s.facilities = s.facilities || {};
+      const cur = s.facilities[name];
+      if (!cur) return;
+      const notes = cur.notes;
+      const u = cur._undoEnd || { fac: Object.assign({}, cur, { stage: e.baseStage, contract: Object.assign({}, cur.contract || {}, { status: 'Active' }) }), units: {} };
+      Object.keys(u.units || {}).forEach(id => { if (u.units[id]) s.units[id] = u.units[id]; else delete s.units[id]; });
+      const back = Object.assign({}, u.fac);
+      delete back._undoEnd;
+      if (notes) back.notes = notes;
+      if (Object.keys(back).length) s.facilities[name] = back; else delete s.facilities[name];
+      this.logEvent(s, { action: 'Stage changed', item: name, itemHref: 'FacilityDetail.dc.html', from: 'Completed', to: back.stage || e.baseStage, note: 'Contract end undone · ' + e.contract.ref });
+    });
+  }
+  convert(e) {
+    const name = e.name;
+    let retained = 0;
+    this.writeStore(s => {
+      const prev = (s.facilities || {})[name] || {};
+      const prevStage = prev.stage || e.stage;
+      const retain = prev.retain || {};
+      (e.pocIds || []).forEach(x => {
+        const keep = Object.prototype.hasOwnProperty.call(retain, x.id) ? !!retain[x.id] : x.def;
+        if (!keep) return;
+        retained++;
+        this.patchUnit(s, x.id, { st: 'deployed', fac: name, type: 'Contract' }, 'deployed');
+      });
+      this.setFac(s, name, { stage: 'Contract active', contract: Object.assign({}, e.contract, prev.contract || {}, { status: 'Active', start: (prev.contract && prev.contract.start) || e.contract.start || '01 Nov 2026' }) });
+      this.logEvent(s, { action: 'Stage changed', item: name, itemHref: 'ContractManagement.dc.html', from: prevStage, to: 'Contract active', note: 'Contract ' + e.contract.ref + ' signed' + (retained ? ' · ' + retained + ' POC devices retained as contract equipment' : '') });
+    });
+    this.setState({ toast: name + ' is now under contract' + (retained ? ' · ' + retained + ' POC devices re-tagged as contract' : '') });
   }
   renderVals() {
     const st = this.state;
+    const S = this.readStore();
+    const FS = S.facilities || {};
+    const BM = 'Bank Muscat Head Office', LU = 'Lulu Hypermarket';
+    const GC = { 'Site inspection': 'g-insp', 'BMS scan': 'g-bms', 'POC': 'g-poc', 'POC study': 'g-study', 'Contract pending': 'g-cpend', 'Contract active': 'g-contract', 'Active operations': 'g-ops', 'Completed': 'g-done', 'On hold': 'g-hold' };
+    const BASE = { 'Qatar Foundation': { stage: 'POC', loc: 'Education City, Doha' }, [BM]: { stage: 'Active operations', loc: 'Airport Heights, Muscat' }, [LU]: { stage: 'POC study', loc: 'Bausher, Muscat' }, 'Al Khuwair Business Tower': { stage: 'BMS scan', loc: 'Al Khuwair, Muscat' }, 'Sohar Logistics Hub': { stage: 'Site inspection', loc: 'Sohar' }, 'Ruwi Medical Centre': { stage: 'On hold', loc: 'Ruwi, Muscat' } };
+    const facOf = n => Object.assign({}, BASE[n] || {}, FS[n] || {});
+    const names = Object.keys(BASE).concat(Object.keys(FS).filter(n => !BASE[n] && FS[n] && FS[n].added));
+    // Devices at a facility: identifiable sample devices still there, plus units deployed there through the store.
+    const SU = S.units || {};
+    const addedBy = {};
+    (S.added || []).forEach(a => { if (a && a.ident) addedBy[a.ident] = a; });
+    const unitOf = id => Object.assign({}, addedBy[id] || {}, SU[id] || {});
+    const left = (id, fac) => { const u = SU[id]; if (!u) return false; return (u.st !== undefined && u.st !== '' && u.st !== 'deployed') || (u.fac !== undefined && u.fac !== fac); };
+    const SAMPLE = this.sampleIds();
+    const sampleSn = {};
+    Object.keys(SAMPLE).forEach(f => SAMPLE[f].forEach(x => { sampleSn[x[0]] = true; }));
+    const storeIds = Object.keys(Object.assign({}, addedBy, SU));
+    const devicesAt = fac => {
+      const out = [];
+      (SAMPLE[fac] || []).forEach(([id, name, ty]) => { if (!left(id, fac)) out.push({ id, name, cat: SU[id] && SU[id].cat || '', type: (SU[id] && SU[id].type) || ty, sample: true }); });
+      storeIds.forEach(id => {
+        if (sampleSn[id]) return;
+        const u = unitOf(id);
+        if (u.fac !== fac) return;
+        if (u.cat === 'sim') { const h = unitOf(u.device || ''); if (h.st !== 'deployed' || h.fac !== fac || (u.st && u.st !== 'deployed')) return; out.push({ id, name: u.name || 'M2M SIM', cat: 'sim', type: u.type || h.type || 'POC' }); return; }
+        if (u.st !== 'deployed') return;
+        out.push({ id, name: u.name || 'Device', cat: u.cat || '', type: u.type || 'POC' });
+      });
+      return out;
+    };
+    const CON = ['Contract', 'Additional', 'Replacement'];
+    const isCon = d => CON.indexOf(d.type) > -1;
+    const TC = { POC: 't-poc', Contract: 't-con', Replacement: 't-rep', Additional: 't-add' };
+    const entries = [];
+    // Bank Muscat (sample contract): 34 sample devices are not individually identified here, plus RUT956 1108675302.
+    const fb = facOf(BM);
+    const bmDevs = devicesAt(BM);
+    const bmStoreCon = bmDevs.filter(d => !d.sample && isCon(d)).length;
+    const bmSampleLeft = SAMPLE[BM].filter(x => left(x[0], BM)).length;
+    const bmC = Object.assign({ ref: 'CN-EXG-BM-2026-01', start: '01 Jul 2026', end: '30 Jun 2029', status: 'Active' }, fb.contract || {});
+    const ended = c => c.status === 'Ended';
+    const endLine = c => 'Ended ' + (c.endDate || '') + ' · equipment ' + (c.endChoice === 'return' ? 'returned to MRD Office' : 'retained on site');
+    if (!fb.archived) entries.push({ id: 'bm', name: BM, stage: fb.stage, baseStage: 'Active operations', contract: bmC, ref: bmC.ref,
+      status: ended(bmC) ? 'Ended' : 'Active', bcls: ended(bmC) ? 's-retired' : 's-deployed',
+      line: ended(bmC) ? endLine(bmC) : 'Active operations · converted from POC on 01 Jul 2026', pct: ended(bmC) ? '100%' : '8.8%', barc: ended(bmC) ? '#8A96A8' : '#0E8A78', from: '01 Jul 2026', to: ended(bmC) ? (bmC.endDate || '30 Jun 2029') : '30 Jun 2029',
+      dev: 34 + bmDevs.filter(isCon).length, add: 21 - bmSampleLeft + bmStoreCon, ret: 14,
+      meta: '14 retained · ' + (21 - bmSampleLeft + bmStoreCon) + ' added', ids: bmDevs.map(d => d.id), active: !ended(bmC) });
+    // Lulu Hypermarket (sample draft) follows the POC decision recorded on the POC screen.
+    const fl = facOf(LU), luSt = fl.stage || 'POC study', luDec = fl.decision || '';
+    const luC = Object.assign({ ref: 'CN-EXG-LU-2026-D1', start: '01 Nov 2026', end: '31 Oct 2029', status: 'Pending' }, fl.contract || {});
+    const luDevs = devicesAt(LU);
+    const luActive = luC.status === 'Active';
+    if (!fl.archived && luDec !== 'remove') entries.push({ id: 'lulu', name: LU, stage: luSt, baseStage: 'Contract active', contract: luC, ref: luC.ref,
+      status: luActive ? 'Active' : ended(luC) ? 'Ended' : 'Contract pending', bcls: luActive ? 's-deployed' : ended(luC) ? 's-retired' : 'g-cpend',
+      line: ended(luC) ? endLine(luC) : luActive ? 'Contract active · converted from POC' : luDec === 'proceed' ? 'POC decision: proceed · ready to convert' : luDec === 'extend' ? 'POC extended to ' + (fl.pocEnd || '') + ' · decision deferred' : 'Awaiting POC study decision · 14 Oct 2026',
+      pct: luActive ? '1%' : ended(luC) ? '100%' : '0%', barc: luActive ? '#0E8A78' : '#2F6FE4', from: luActive ? luC.start : 'Proposed ' + luC.start, to: luActive ? luC.end : '36 months',
+      dev: luActive || ended(luC) ? luDevs.filter(isCon).length : luDevs.length, meta: luActive ? luDevs.filter(d => d.type === 'Contract').length + ' retained from POC' : 'POC devices · proposed +27',
+      ids: luDevs.map(d => d.id), pocIds: luDevs.filter(d => d.type === 'POC').map(d => ({ id: d.id, def: !/EM500/.test(d.name) && d.cat !== 'co2' })),
+      active: luActive, pending: !luActive && !ended(luC), ready: luDec === 'proceed' && luSt === 'Contract pending' });
+    // Any other facility the store moved into a contract stage.
+    const CSTAGES = ['Contract pending', 'Contract active', 'Active operations'];
+    names.filter(n => n !== BM && n !== LU).forEach(n => {
+      const f = facOf(n);
+      if (f.archived || !(f.contract || CSTAGES.indexOf(f.stage) > -1)) return;
+      const ini = n.split(/\s+/).map(w => w[0]).join('').slice(0, 3).toUpperCase();
+      const c = Object.assign({ ref: 'CN-EXG-' + ini + '-2026-D1', start: 'TBC', end: 'TBC', status: f.stage === 'Contract pending' ? 'Pending' : 'Active' }, f.contract || {});
+      const ds = devicesAt(n);
+      const act = c.status === 'Active';
+      entries.push({ id: 'g:' + n, name: n, stage: f.stage, baseStage: 'Contract active', contract: c, ref: c.ref, loc: f.loc || '',
+        status: act ? 'Active' : ended(c) ? 'Ended' : 'Contract pending', bcls: act ? 's-deployed' : ended(c) ? 's-retired' : 'g-cpend',
+        line: ended(c) ? endLine(c) : act ? 'Contract active' : 'Contract pending · draft terms', pct: act ? '1%' : ended(c) ? '100%' : '0%', barc: act ? '#0E8A78' : '#2F6FE4',
+        from: c.start, to: c.end, dev: ds.filter(isCon).length, poc: ds.filter(d => d.type === 'POC').length, meta: ds.filter(d => d.type === 'POC').length + ' POC devices on site',
+        ids: ds.map(d => d.id), pocIds: ds.filter(d => d.type === 'POC').map(d => ({ id: d.id, def: d.cat !== 'co2' && !/EM500/.test(d.name) })), items: ds,
+        active: act, pending: !act && !ended(c), ready: !act && !ended(c) });
+    });
+    const cur = entries.filter(e => e.id === st.sel)[0] || entries[0] || null;
+    const sel = cur ? cur.id : '';
+    const list = entries.map(c => Object.assign({}, c, { cls: 'cc' + (sel === c.id ? ' on' : ''), pressed: sel === c.id ? 'true' : 'false', pick: () => this.setState({ sel: c.id }) }));
+    const act = entries.filter(e => e.status === 'Active'), pend = entries.filter(e => e.status === 'Contract pending');
+    const short = n => n.replace(' Head Office', '');
+    const actDev = act.reduce((a, e) => a + e.dev, 0);
     const kpis = [
-      { label: 'Active contracts', value: '1', sub: 'Bank Muscat Head Office', dot: '#12A374' },
-      { label: 'Pending', value: '1', sub: 'Lulu Hypermarket · draft terms', dot: '#2F6FE4' },
-      { label: 'Contract devices', value: '35', sub: '14 retained from POC · 21 added', dot: '#0E8A78' },
+      { label: 'Active contracts', value: '' + act.length, sub: act.length ? act.map(e => e.name).join(' · ') : 'None', dot: '#12A374' },
+      { label: 'Pending', value: '' + pend.length, sub: pend.length ? pend.map(e => short(e.name) + (e.ready ? ' · ready to convert' : ' · draft terms')).join(' · ') : 'None', dot: '#2F6FE4' },
+      { label: 'Contract devices', value: '' + actDev, sub: act.length ? act.map(e => short(e.name) + ' ' + e.dev).join(' · ') : 'No active contracts', dot: '#0E8A78' },
       { label: 'Renewals in next 12 months', value: '0', sub: 'Next term end 30 Jun 2029', dot: '#8A96A8' }
     ];
-    const C = [
-      { id: 'bm', name: 'Bank Muscat Head Office', ref: 'CN-EXG-BM-2026-01', status: 'Active', bcls: 's-deployed', line: 'Active operations · converted from POC on 01 Jul 2026', pct: '8.8%', barc: '#0E8A78', from: '01 Jul 2026', to: '30 Jun 2029', dev: 35, meta: '14 retained · 21 added · last 28 Sep' },
-      { id: 'lulu', name: 'Lulu Hypermarket', ref: 'CN-EXG-LU-2026-D1', status: 'Contract pending', bcls: 'g-cpend', line: 'Awaiting POC study decision · 14 Oct 2026', pct: '0%', barc: '#2F6FE4', from: 'Proposed 01 Nov 2026', to: '36 months', dev: 8, meta: 'POC devices · proposed +27' }
-    ];
-    const list = C.map(c => Object.assign({}, c, { cls: 'cc' + (st.sel === c.id ? ' on' : ''), pressed: st.sel === c.id ? 'true' : 'false', pick: () => this.setState({ sel: c.id }) }));
-    const timeline = [
+    // Bank Muscat detail
+    const bmE = entries.filter(e => e.id === 'bm')[0];
+    const MO = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const dnum = x => { const p = String(x || '').split(' '); return (+p[2] || 2026) * 10000 + (MO.indexOf(p[1]) + 1) * 100 + (+p[0] || 0); };
+    const bmDeps = (S.deployments || []).filter(d => d && d.fac === BM && d.status !== 'Cancelled');
+    let bmLast = '28 Sep 2026';
+    bmDeps.forEach(d => { if (dnum(d.date) >= dnum(bmLast)) bmLast = d.date; });
+    const bm = bmE ? { status: bmE.status, bcls: bmE.bcls, stage: fb.stage, gcls: GC[fb.stage] || 'g-ops', canEnd: bmE.active, dev: bmE.dev, ret: bmE.ret, add: bmE.add, last: bmLast }
+      : { status: 'Archived', bcls: 's-retired', stage: fb.stage, gcls: 'g-done', canEnd: false, dev: 0, ret: 0, add: 0, last: bmLast };
+    const tl = [
       ['01 Apr', 'POC kit installed', 'DEP-0120', '14 devices · Chetan', 'POC', 't-poc', '#7A5AF8', '#E6DDFB'],
       ['24 Jun', 'Contract signed', 'CN-EXG-BM-2026-01', 'signed PDF attached', 'Contract', 't-con', '#0E8A78', '#CDEFE7'],
       ['01 Jul', 'POC → contract conversion', 'DEP-0139', '14 devices retained · Aisha', 'Contract', 't-con', '#0E8A78', '#CDEFE7'],
       ['02 Sep', 'ABB ACS580 VFD × 2', 'DEP-0142', 'AHU-1, AHU-2 · Saif', 'Contract', 't-con', '#0E8A78', '#CDEFE7'],
       ['24 Sep', 'Milesight EM500-CO2 × 6', 'DEP-0145', 'Floors 3–5 · Rahul', 'Contract', 't-con', '#0E8A78', '#CDEFE7'],
-      ['28 Sep', 'Teltonika RUT956 · 1108675302', 'DEP-0146', 'Plant room B1 · Saif', 'Additional', 't-add', '#2F6FE4', '#DCE6FB'],
-      ['27 Oct', 'Replacement scheduled', 'DEP-0151', 'ABB ACS580 × 2 for Danfoss units in maintenance', 'Replacement', 't-rep', '#fff', '#E08A00']
-    ].map(([date, title, ref, sub, tag, tcls, dot, ring]) => ({ date, title, ref, sub, tag, tcls, dot, ring }));
-    const equip = [
+      ['28 Sep', 'Teltonika RUT956 · 1108675302', 'DEP-0146', 'Plant room B1 · Saif', 'Additional', 't-add', '#2F6FE4', '#DCE6FB']
+    ];
+    const RING = { POC: ['#7A5AF8', '#E6DDFB'], Contract: ['#0E8A78', '#CDEFE7'], Additional: ['#2F6FE4', '#DCE6FB'], Replacement: ['#E08A00', '#FFF3DC'] };
+    bmDeps.forEach(d => {
+      const its = d.items || [];
+      const r = RING[d.type] || RING.Additional;
+      tl.push([String(d.date || '').slice(0, 6), its.length === 1 ? (its[0].name || 'Equipment') + ' · ' + its[0].ident : its.length + ' items deployed', d.ref, (d.area || '') + ' · ' + ((d.team && d.team[0]) || d.by || 'Chetan'), d.type || 'Additional', TC[d.type] || 't-add', r[0], r[1]]);
+    });
+    if (bmC.status === 'Ended') tl.push([String(bmC.endDate || ''), 'Contract ended', bmC.ref, bmC.endChoice === 'return' ? 'equipment returned' : 'equipment retained on site', 'Contract', 't-con', '#8A96A8', '#EFF0F2']);
+    else tl.push(['27 Oct', 'Replacement scheduled', 'DEP-0151', 'ABB ACS580 × 2 for Danfoss units in maintenance', 'Replacement', 't-rep', '#fff', '#E08A00']);
+    const timeline = tl.map(([date, title, ref, sub, tag, tcls, dot, ring]) => ({ date, title, ref, sub, tag, tcls, dot, ring }));
+    const eq = [
       ['Teltonika routers', 'Teltonika RUT956', 8, 2, 6, 'Online 8/8', 's-deployed'],
       ['CO₂ sensors', 'Milesight EM500-CO2', 12, 6, 6, 'Reporting 12/12', 's-deployed'],
       ['LoRaWAN gateways', 'Milesight UG65', 2, 2, 0, 'Online 2/2', 's-deployed'],
       ['SIM cards', 'Omantel M2M SIM', 8, 2, 6, 'Active 8/8', 's-deployed'],
       ['Network switches', 'UniFi Switch Lite 8 PoE', 3, 2, 1, 'Deployed', 's-deployed'],
       ['VFDs', 'ABB ACS580 VFD', 2, 0, 2, '2 replacements 27 Oct', 's-reserved']
-    ].map(([cat, prod, dep, ret, add, stt, scls]) => ({ cat, prod, dep, ret, add, st: stt, scls }));
+    ];
+    const ROW = { tel: 0, co2: 1, gw: 2, sim: 3, net: 4, vfd: 5 };
+    if (bmSampleLeft) { eq[0][2] -= bmSampleLeft; eq[0][4] -= bmSampleLeft; }
+    bmDevs.filter(d => !d.sample && isCon(d)).forEach(d => { const i = ROW[d.cat]; if (i === undefined) return; eq[i][2]++; eq[i][4]++; });
+    const equip = eq.map(([cat, prod, dep, ret, add, stt, scls]) => ({ cat, prod, dep, ret, add, st: stt, scls }));
+    // Lulu detail
+    const luE = entries.filter(e => e.id === 'lulu')[0];
+    const lu = luE ? {
+      status: luE.status, bcls: luE.bcls, stage: luSt, gcls: GC[luSt] || 'g-study', kind: luActive ? 'signed' : ended(luC) ? 'ended' : 'draft',
+      canConvert: luE.ready, waiting: luE.pending && !luE.ready, canEnd: luActive,
+      info: ended(luC) ? endLine(luC) + '.' : luActive ? 'Contract active. ' + luDevs.filter(d => d.type === 'Contract').length + ' POC devices were retained and re-tagged as contract equipment.' : luE.ready ? 'POC decision recorded: proceed to contract. Convert when the contract is signed; devices marked "remains at contract" are re-tagged as contract equipment.' : luDec === 'extend' ? 'POC extended to ' + (fl.pocEnd || '') + '. The ' + luDevs.length + ' POC devices stay recorded as POC until the contract is signed.' : 'Awaiting POC study decision on Wed 14 Oct 2026. The ' + luDevs.length + ' POC devices stay recorded as POC until the contract is signed.',
+      poc: luDec === 'proceed' ? '15 Jul – 15 Sep 2026 · study complete' : luDec === 'extend' ? '15 Jul 2026 – ' + (fl.pocEnd || '') + ' · extended' : '15 Jul – 15 Sep 2026 · study in progress'
+    } : { status: '', bcls: '', stage: '', gcls: '', kind: '', canConvert: false, waiting: false, canEnd: false, info: '', poc: '' };
+    // Generic detail
+    const gE = cur && cur.id.indexOf('g:') === 0 ? cur : null;
+    const gen = gE ? { name: gE.name, ref: gE.ref, loc: gE.loc || '', status: gE.status, bcls: gE.bcls, stage: gE.stage, gcls: GC[gE.stage] || 'g-cpend', canConvert: gE.ready, canEnd: gE.active,
+      dev: gE.dev, poc: gE.poc, term: gE.contract.start + ' – ' + gE.contract.end, items: gE.items.map(d => ({ name: d.name, sn: d.id, type: d.type, tcls: TC[d.type] || 't-poc' })), empty: gE.items.length === 0 }
+      : { name: '', ref: '', loc: '', status: '', bcls: '', stage: '', gcls: '', canConvert: false, canEnd: false, dev: 0, poc: 0, term: '', items: [], empty: true };
     const proposed = [['Teltonika RUT956', 1, 1], ['Milesight EM500-CO2', 5, 24], ['Milesight UG65', 1, 2], ['Omantel M2M SIM', 1, 1], ['Cat6 patch cable 3 m', 0, 40]].map(([item, ret, add]) => ({ item, ret, add }));
-    const baseNotes = st.sel === 'bm' ? [
+    // Notes: store notes for the selected facility, then the sample notes.
+    const curName = cur ? cur.name : BM;
+    const baseNotes = curName === BM ? [
       { ini: 'AI', bg: '#E6DDFB', who: 'Aisha', when: '29 Sep', text: 'Client asked for CO₂ coverage on floors 6–7 next quarter. Will raise as additional deployment.' },
       { ini: 'SA', bg: '#FBE0DC', who: 'Saif', when: '22 Sep', text: 'Two Danfoss VFDs on AHU-3/4 under maintenance. ABB replacements reserved.' }
-    ] : [
+    ] : curName === LU ? [
       { ini: 'AI', bg: '#E6DDFB', who: 'Aisha', when: '29 Sep', text: 'Moved to POC study. Exergio presenting energy savings on 14 Oct.' }
-    ];
-    const notes = st.extraNotes.filter(n => n.sel === st.sel).concat(baseNotes);
-    const isBM = st.sel === 'bm';
+    ] : [];
+    const PB = { Chetan: '#CDEFE7', Aisha: '#E6DDFB', Saif: '#FBE0DC', Rahul: '#DCE6FB', Nitin: '#F6E3C4' };
+    const notes = ((FS[curName] || {}).notes || []).map(n => ({ ini: String(n.who || 'CH').slice(0, 2).toUpperCase(), bg: PB[n.who] || '#CDEFE7', who: n.who || 'Chetan', when: n.when || '', text: n.text || '' })).concat(baseNotes);
+    // Pipeline: facilities still before contract.
+    const PSUB = { 'Qatar Foundation': 'POC ends 30 Nov 2026 · 12 devices', 'Al Khuwair Business Tower': 'POC kit 20 Oct · after BMS scan' };
+    const inList = {};
+    entries.forEach(e => { inList[e.name] = true; });
+    const pipe = names.filter(n => !inList[n] && !facOf(n).archived && ['POC', 'POC study', 'BMS scan'].indexOf(facOf(n).stage) > -1).map(n => {
+      const f = facOf(n);
+      const sub = (BASE[n] || {}).stage === f.stage && PSUB[n] ? PSUB[n] : f.stage === 'POC study' ? 'In POC study · decision pending' : f.stage === 'POC' ? 'POC' + (f.pocEnd ? ' to ' + f.pocEnd : ' running') + ' · ' + devicesAt(n).length + ' devices' : (f.loc || f.stage);
+      return { name: n, stage: f.stage, cls: GC[f.stage], sub };
+    });
+    const isBM = !!cur && cur.id === 'bm';
+    const endE = cur || { name: BM, ref: '', dev: 0, contract: {} };
+    const endedNow = !!cur && cur.contract && cur.contract.status === 'Ended';
+    const ec = endedNow ? cur.contract : {};
     return {
-      yes: true, kpis, list, timeline, equip, proposed, notes,
-      isBM, isLulu: st.sel === 'lulu', selShort: isBM ? 'Bank Muscat' : 'Lulu Hypermarket',
-      draft: st.draft, noDraft: !st.draft.trim(),
+      yes: true, kpis, list, timeline, equip, proposed, notes, bm, lu, gen, pipe, pipeEmpty: pipe.length === 0,
+      countLabel: entries.length + (entries.length === 1 ? ' contract' : ' contracts'),
+      isBM, isLulu: !!cur && cur.id === 'lulu', isGen: !!gE, selShort: short(curName),
+      draft: st.draft, noDraft: !String(st.draft || '').trim(),
       onDraft: (e) => this.setState({ draft: e && e.target ? e.target.value : '' }),
-      addNote: () => { if (st.draft.trim()) this.setState({ extraNotes: [{ sel: st.sel, ini: 'CH', bg: '#CDEFE7', who: 'Chetan', when: 'Just now', text: st.draft.trim() }].concat(st.extraNotes), draft: '' }); },
-      endOpen: st.endOpen, openEnd: () => this.setState({ endOpen: true }), closeEnd: () => this.setState({ endOpen: false }),
+      addNote: () => {
+        const text = String(st.draft || '').trim();
+        if (!text) return;
+        this.writeStore(s => {
+          const cn = ((s.facilities || {})[curName] || {}).notes || [];
+          this.setFac(s, curName, { notes: [{ who: 'Chetan', when: this.nowLabel(), text }].concat(cn) });
+          this.logEvent(s, { action: 'Note added', item: curName, itemHref: 'ContractManagement.dc.html', from: '', to: '', note: text });
+        });
+        this.setState({ draft: '' });
+      },
+      endOpen: st.endOpen && !!cur && cur.active, openEnd: () => this.setState({ endOpen: true }), closeEnd: () => this.setState({ endOpen: false }),
+      endRef: endE.ref, endFac: endE.name, endN: endE.dev,
       isRetain: st.endChoice === 'retain', isReturn: st.endChoice === 'return',
       optRetain: 'opt' + (st.endChoice === 'retain' ? ' on' : ''), optReturn: 'opt' + (st.endChoice === 'return' ? ' on' : ''),
       pickRetain: () => this.setState({ endChoice: 'retain' }), pickReturn: () => this.setState({ endChoice: 'return' }),
       endDate: st.endDate, onEndDate: (e) => this.setState({ endDate: e && e.target ? e.target.value : st.endDate }),
-      doEnd: () => this.setState({ endOpen: false, ended: true }),
-      ended: st.ended,
-      endMsg: 'Contract CN-EXG-BM-2026-01 set to end on ' + st.endDate + '. Equipment will be ' + (st.endChoice === 'retain' ? 'retained at the facility (out of contract).' : 'returned to the MRD Office with 35 return records.'),
-      undoEnd: () => this.setState({ ended: false }),
+      endReason: st.endReason || 'Term completed', onEndReason: (e) => this.setState({ endReason: e && e.target ? e.target.value : st.endReason }),
+      doEnd: () => { if (!cur || !cur.active) return; this.endContract(cur); this.setState({ endOpen: false }); },
+      ended: endedNow,
+      endMsg: endedNow ? 'Contract ' + cur.ref + ' ended effective ' + (ec.endDate || '') + '. Equipment ' + (ec.endChoice === 'return' ? 'returned to the MRD Office (' + (ec.returned || 0) + ' identified devices marked Returned).' : 'retained at the facility (out of contract).') + ' ' + cur.name + ' moved to Completed.' : '',
+      undoEnd: () => { if (cur) this.undoEnd(cur); },
+      convert: () => { if (cur && cur.ready) this.convert(cur); },
       editOpen: st.editOpen, openEdit: () => this.setState({ editOpen: true }), closeEdit: () => this.setState({ editOpen: false }),
-      editRef: isBM ? 'CN-EXG-BM-2026-01' : 'CN-EXG-LU-2026-D1', editStart: isBM ? '2026-07-01' : '2026-11-01', editEnd: isBM ? '2029-06-30' : '2029-10-31',
+      editRef: cur ? cur.ref : '', editStart: isBM ? '2026-07-01' : '2026-11-01', editEnd: isBM ? '2029-06-30' : '2029-10-31',
       saveEdit: () => this.setState({ editOpen: false, toast: 'Contract saved · previous version kept in audit log' }),
       hasToast: !!st.toast, toast: st.toast, closeToast: () => this.setState({ toast: '' })
     };

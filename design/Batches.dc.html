@@ -164,12 +164,7 @@ h1,h2,h3,h4,p{margin:0}
 <label class="fl">Supplier
 <select class="sel" value="{{sup}}" onChange="{{onSup}}">
 <option value="all">All suppliers</option>
-<option value="Al Noor Technologies LLC">Al Noor Technologies LLC</option>
-<option value="SensorTech Trading">SensorTech Trading</option>
-<option value="Gulf Network Supplies">Gulf Network Supplies</option>
-<option value="Gulf Electro-Mechanical Supplies">Gulf Electro-Mechanical Supplies</option>
-<option value="Omantel Business">Omantel Business</option>
-<option value="Ooredoo Business">Ooredoo Business</option>
+<sc-for list="{{supOpts}}" as="o" hint-placeholder-count="6"><option value="{{o.v}}">{{o.v}}</option></sc-for>
 </select>
 </label>
 <label class="fl">Received
@@ -187,7 +182,7 @@ h1,h2,h3,h4,p{margin:0}
 </div>
 
 <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 18px; border-top: 1px solid #EEF1F4; font-size: 12.5px; color: #3B4758">
-<span class="muted">Showing <strong style="color: #0E1726">{{shown}}</strong> of 10 batches</span>
+<span class="muted">Showing <strong style="color: #0E1726">{{shown}}</strong> of {{totalBatches}} batches</span>
 <span style="display: flex; gap: 16px; flex-wrap: wrap">
 <span class="lg"><i style="background: #8A96A8"></i>Unconfigured / in stock</span>
 <span class="lg"><i style="background: #2F6FE4"></i>Ready / reserved</span>
@@ -272,7 +267,8 @@ class Component extends DCLogic {
   constructor(props) { super(props); this.state = { cat: 'all', sup: 'all', range: 'all', q: '' }; }
   renderVals() {
     const S = this.state;
-    const who = { Nitin: ['NI', '#F6E3C4'], Aisha: ['AI', '#E6DDFB'] };
+    const ST0 = this.readStore();
+    const who = { Nitin: ['NI', '#F6E3C4'], Aisha: ['AI', '#E6DDFB'], Chetan: ['CH', '#CDEFE7'], Rahul: ['RA', '#DCE6FB'], Saif: ['SA', '#FBE0DC'] };
     const C = ['#8A96A8', '#2F6FE4', '#12A374', '#E08A00'];
     const raw = [
       ['CAB-2026-007', 'Cat6 patch cable 3 m', 'Cables & Accessories', 'cab', 'Quantity', 'Gulf Network Supplies', '01 Oct 2026', 1001, 'Aisha', 200, ' pcs', [168, 0, 32, 0], ['In stock', 'Reserved', 'Issued to sites', 'Other'], 'PO-MRD-2026-0431', 'INV-GNS-5520'],
@@ -285,33 +281,102 @@ class Component extends DCLogic {
       ['GW-2026-001', 'Milesight UG65', 'LoRaWAN Gateways', 'gw', 'Serialised', 'SensorTech Trading', '15 Jul 2026', 715, 'Aisha', 6, '', [2, 0, 4, 0], ['Unconfigured', 'Ready', 'Deployed · QF 1, Bank Muscat 2, Lulu 1', 'Other'], 'PO-MRD-2026-0322', 'ST-2026-0644'],
       ['CO2-2026-001', 'Milesight EM500-CO2', 'CO₂ Sensors', 'co2', 'Hybrid', 'SensorTech Trading', '10 Jun 2026', 610, 'Nitin', 20, '', [1, 0, 17, 2], ['In stock', 'Reserved', 'Deployed · Bank Muscat 12, Lulu 5', 'Under maintenance'], 'PO-MRD-2026-0290', 'ST-2026-0511'],
       ['SIM-2026-002', 'Ooredoo M2M SIM', 'M2M SIM Cards', 'sim', 'Serialised', 'Ooredoo Business', '20 May 2026', 520, 'Nitin', 30, '', [27, 0, 1, 2], ['Available', 'Assigned', 'Deployed, active', 'Deactivated'], 'PO-MRD-2026-0264', '']
-    ];
+    ].map(r => ({ r, extra: 0, avail: null, changed: false }));
+    // Unit state buckets: 0 unconfigured / in stock, 1 ready / reserved, 2 deployed / issued, 3 other.
+    const bucket = st => ({ unconf: 0, stock: 0, transit: 0, returned: 0, ready: 1, reserved: 1, deployed: 2 })[st] !== undefined ? ({ unconf: 0, stock: 0, transit: 0, returned: 0, ready: 1, reserved: 1, deployed: 2 })[st] : 3;
+    const unusable = st => st === 'maint' || st === 'damaged' || st === 'retired';
+    // Sample serials of the two RUT956 batches (same states as the product page), overlaid with store.units patches.
+    const sampleUnits = { 'TEL-2026-004': [], 'TEL-2026-003': [] };
+    const r4 = { 2: 'deployed', 4: 'ready', 6: 'ready', 9: 'ready', 11: 'deployed', 13: 'ready' };
+    for (let i = 0; i < 20; i++) sampleUnits['TEL-2026-004'].push([String(1108675300 + i), r4[i] || 'unconf']);
+    for (let i = 0; i < 10; i++) sampleUnits['TEL-2026-003'].push([String(1107442100 + i), i === 9 ? 'prep' : (i === 3 ? 'maint' : 'deployed')]);
+    const effSt = (id, st) => { const p = (ST0.units || {})[id]; return p && p.st ? p.st : st; };
+    // Units received on other screens, grouped by batch.
+    const MON = { Jan: 1, Feb: 2, Mar: 3, Apr: 4, May: 5, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Oct: 10, Nov: 11, Dec: 12 };
+    const MN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const dnum = d => { const m = /(\d{1,2}) (\w{3})/.exec(d || ''); return m && MON[m[2]] ? MON[m[2]] * 100 + parseInt(m[1], 10) : 1005; };
+    const CATL = { tel: 'Teltonika Devices', co2: 'CO₂ Sensors', gw: 'LoRaWAN Gateways', sim: 'M2M SIM Cards', net: 'Network Equipment', vfd: 'VFDs', cab: 'Cables & Accessories', ctrl: 'Controllers & BMS', bms: 'Controllers & BMS' };
+    const recvEv = {};
+    (ST0.events || []).forEach(e => { const m = e && e.action === 'Received' && /^Batch (\S+) · (\d+) × (.+)$/.exec(e.item || ''); if (m && !recvEv[m[1]]) recvEv[m[1]] = { e, qty: parseInt(m[2], 10), name: m[3] }; });
+    const groups = {}; const gOrder = []; const seenId = {};
+    (ST0.added || []).forEach(u => {
+      if (!u || !u.ident || seenId[u.ident]) return; seenId[u.ident] = true;
+      const b = u.batch || 'Unassigned';
+      if (!groups[b]) { groups[b] = []; gOrder.push(b); }
+      groups[b].push(Object.assign({}, u, { st: effSt(u.ident, u.st || 'unconf') }));
+    });
+    raw.forEach(x => {
+      const id = x.r[0]; const add = groups[id] || [];
+      if (sampleUnits[id]) {
+        const list = sampleUnits[id].map(([sn, st]) => effSt(sn, st)).concat(add.map(u => u.st));
+        const v = [0, 0, 0, 0]; list.forEach(st => { v[bucket(st)]++; });
+        x.changed = list.length !== x.r[9] || v.some((n, i) => n !== x.r[11][i]);
+        x.v = v; x.total = list.length; x.avail = list.filter(st => st !== 'deployed' && !unusable(st)).length;
+      } else {
+        const v = x.r[11].slice(); add.forEach(u => { v[bucket(u.st)]++; });
+        x.v = v; x.total = x.r[9] + add.length; x.changed = add.length > 0;
+        x.avail = null; x.addAvail = add.filter(u => u.st !== 'deployed' && !unusable(u.st)).length;
+      }
+      delete groups[id];
+    });
+    // New batches from the shared store (serialised receipts) and quantity receipts recorded only as 'Received' events.
+    const fresh = [];
+    gOrder.filter(b => groups[b]).forEach(b => {
+      const list = groups[b]; const u0 = list[0]; const ev = recvEv[b]; const nt = ev ? String(ev.e.note || '').split(' · ') : [];
+      const v = [0, 0, 0, 0]; list.forEach(u => { v[bucket(u.st)]++; });
+      const date = u0.recv || '05 Oct 2026'; const by = (ev && ev.e.who) || 'Chetan';
+      fresh.push({ r: [b, u0.name || 'Unit', CATL[u0.cat] || 'Other', u0.cat || 'tel', u0.cat === 'co2' ? 'Hybrid' : 'Serialised', u0.sup || (ev && ev.e.from) || '—', date, dnum(date), by, list.length, '', v, ['Unconfigured / in stock', 'Ready / reserved', 'Deployed', 'Other'], nt[1] && nt[1] !== 'no PO' ? nt[1] : '—', nt[2] || ''], v, total: list.length, avail: list.filter(u => u.st !== 'deployed' && !unusable(u.st)).length, store: true, ser: true });
+    });
+    Object.keys(recvEv).forEach(b => {
+      if (raw.some(x => x.r[0] === b) || fresh.some(x => x.r[0] === b)) return;
+      const ev = recvEv[b]; const e = ev.e; const nt = String(e.note || '').split(' · ');
+      const d = e.at ? new Date(e.at) : null; const date = d ? String(d.getDate()).padStart(2, '0') + ' ' + MN[d.getMonth()] + ' ' + d.getFullYear() : '05 Oct 2026';
+      const isQty = /cable|psu|pcs/i.test(ev.name) || /^Counted/.test(e.note || '');
+      const prefix = (b.split('-')[0] || '').toLowerCase();
+      const cat = { tel: 'tel', co2: 'co2', gw: 'gw', sim: 'sim', net: 'net', vfd: 'vfd', cab: 'cab' }[prefix] || (isQty ? 'cab' : 'tel');
+      fresh.push({ r: [b, ev.name, CATL[cat], cat, isQty ? 'Quantity' : 'Serialised', e.from || '—', date, dnum(date), e.who || 'Chetan', ev.qty, isQty ? ' pcs' : '', [ev.qty, 0, 0, 0], [isQty ? 'In stock' : 'Unconfigured / in stock', 'Reserved', 'Issued to sites', 'Other'], nt[1] && nt[1] !== 'no PO' ? nt[1] : '—', nt[2] || ''], v: [ev.qty, 0, 0, 0], total: ev.qty, avail: ev.qty, store: true, ser: !isQty });
+    });
+    const everything = fresh.reverse().concat(raw);
     const cut = { all: 0, q: 1001, '30': 905, '90': 707 }[S.range];
     const q = S.q.trim().toLowerCase();
-    const base = raw.filter(r => (S.sup === 'all' || r[5] === S.sup) && r[7] >= cut && (!q || (r[0] + ' ' + r[1] + ' ' + r[5] + ' ' + r[13] + ' ' + r[14]).toLowerCase().indexOf(q) >= 0));
+    const base = everything.filter(x => { const r = x.r; return (S.sup === 'all' || r[5] === S.sup) && r[7] >= cut && (!q || (r[0] + ' ' + r[1] + ' ' + r[5] + ' ' + r[13] + ' ' + r[14]).toLowerCase().indexOf(q) >= 0); });
     const catDefs = [['all', 'All categories'], ['tel', 'Teltonika Devices'], ['co2', 'CO₂ Sensors'], ['gw', 'LoRaWAN Gateways'], ['sim', 'M2M SIM Cards'], ['net', 'Network Equipment'], ['vfd', 'VFDs'], ['cab', 'Cables & Accessories']];
-    const cats = catDefs.map(([id, label]) => ({ label, n: id === 'all' ? base.length : base.filter(r => r[3] === id).length, cls: 'chip' + (S.cat === id ? ' on' : ''), pressed: S.cat === id ? 'true' : 'false', pick: () => this.setState({ cat: id }) }));
-    const list = base.filter(r => S.cat === 'all' || r[3] === S.cat);
-    const rows = list.map(r => {
-      const total = r[9], v = r[11], L = r[12];
-      const parts = v.map((n, i) => ({ n, c: C[i], w: (n / total * 100).toFixed(1) + '%', t: L[i] + ' · ' + n + r[10] })).filter(p => p.n > 0);
-      const avail = r[0] === 'SIM-2026-005' ? 41 : r[0] === 'CO2-2026-002' ? 32 : r[0] === 'TEL-2026-003' ? 1 : r[0] === 'TEL-2026-004' ? 18 : r[0] === 'VFD-2026-001' ? 4 : v[0];
-      const pct = Math.round(v[2] / total * 100);
+    const cats = catDefs.map(([id, label]) => ({ label, n: id === 'all' ? base.length : base.filter(x => x.r[3] === id).length, cls: 'chip' + (S.cat === id ? ' on' : ''), pressed: S.cat === id ? 'true' : 'false', pick: () => this.setState({ cat: id }) }));
+    const list = base.filter(x => S.cat === 'all' || x.r[3] === S.cat);
+    const GEN = ['Unconfigured / in stock', 'Ready / reserved', 'Deployed', 'Other: prep, maintenance'];
+    const rows = list.map(x => {
+      const r = x.r; const total = x.total, v = x.v, L = x.changed ? GEN : r[12];
+      const parts = v.map((n, i) => ({ n, c: C[i], w: (total ? n / total * 100 : 0).toFixed(1) + '%', t: L[i] + ' · ' + n + r[10] })).filter(p => p.n > 0);
+      let avail = x.avail;
+      if (avail === null || avail === undefined) avail = (r[0] === 'SIM-2026-005' ? 41 : r[0] === 'CO2-2026-002' ? 32 : r[0] === 'VFD-2026-001' ? 4 : r[11][0]) + (x.addAvail || 0);
+      const pct = total ? Math.round(v[2] / total * 100) : 0;
+      const w = who[r[8]] || [String(r[8]).slice(0, 2).toUpperCase(), '#E3E7EC'];
       return {
-        id: r[0], product: r[1], cat: r[2], track: r[4], sup: r[5], date: r[6], by: r[8], ini: who[r[8]][0], bg: who[r[8]][1],
-        qty: total + r[10], parts, aria: parts.map(p => p.t).join(', '), note: pct + '% deployed',
+        id: r[0], product: r[1], cat: r[2], track: r[4], sup: r[5], date: r[6], by: r[8], ini: w[0], bg: w[1],
+        qty: total + r[10], parts, aria: parts.map(p => p.t).join(', '), note: x.store && !v[2] ? 'Received ' + r[6] + (x.ser ? ' · awaiting preparation' : '') : pct + '% deployed',
         avail: avail + r[10], dep: v[2] + r[10], po: r[13], inv: r[14] || 'Invoice pending', invCls: r[14] ? 'mono muted' : 'pend'
       };
     });
+    // KPI strip: sample totals plus store batches / units; RUT956 batch deployment recomputed from unit states.
+    const storeB = everything.filter(x => x.store);
+    const qCount = everything.filter(x => x.r[7] >= 1001).length;
+    const sumSer = 188 + storeB.filter(x => x.ser).reduce((a, x) => a + x.total, 0) + raw.reduce((a, x) => a + (x.total - x.r[9]), 0);
+    const sumPcs = 200 + storeB.filter(x => !x.ser).reduce((a, x) => a + x.total, 0);
+    const depSer = 55 + raw.filter(x => x.r[10] === '').reduce((a, x) => a + (x.v[2] - x.r[11][2]), 0) + storeB.filter(x => x.ser).reduce((a, x) => a + x.v[2], 0);
+    const pendInv = everything.filter(x => !x.r[14]).length;
     const kpis = [
-      { label: 'Batches this quarter', value: '1', sub: 'Q4 to date · 7 received in Q3', dot: '#3B4758' },
-      { label: 'Units received', value: '388', sub: '188 serialised · 200 pcs · 10 batches in 2026', dot: '#1A8FAD' },
-      { label: 'Deployed from batches', value: '29%', sub: '55 of 188 serialised units', dot: '#12A374' },
-      { label: 'Open items', value: '3', sub: '1 invoice pending · 3 faulty units in 2 batches', dot: '#E86A1C' }
+      { label: 'Batches this quarter', value: String(qCount), sub: 'Q4 to date · 7 received in Q3', dot: '#3B4758' },
+      { label: 'Units received', value: (sumSer + sumPcs).toLocaleString('en-US'), sub: sumSer + ' serialised · ' + sumPcs + ' pcs · ' + everything.length + ' batches in 2026', dot: '#1A8FAD' },
+      { label: 'Deployed from batches', value: Math.round(depSer / Math.max(1, sumSer) * 100) + '%', sub: depSer + ' of ' + sumSer + ' serialised units', dot: '#12A374' },
+      { label: 'Open items', value: String(pendInv + 2), sub: pendInv + ' invoice' + (pendInv === 1 ? '' : 's') + ' pending · 3 faulty units in 2 batches', dot: '#E86A1C' }
     ];
+    const supNames = ['Al Noor Technologies LLC', 'SensorTech Trading', 'Gulf Network Supplies', 'Gulf Electro-Mechanical Supplies', 'Omantel Business', 'Ooredoo Business'];
+    ((ST0.catalog && ST0.catalog.suppliers) || []).forEach(x => { const n = x && (typeof x === 'string' ? x : x.name); if (n && supNames.indexOf(n) < 0) supNames.push(n); });
+    everything.forEach(x => { if (x.r[5] && x.r[5] !== '—' && supNames.indexOf(x.r[5]) < 0) supNames.push(x.r[5]); });
     const filtered = S.cat !== 'all' || S.sup !== 'all' || S.range !== 'all' || q !== '';
     return {
-      kpis, cats, rows, shown: rows.length, empty: rows.length === 0, filtered,
+      kpis, cats, rows, shown: rows.length, empty: rows.length === 0, filtered, totalBatches: everything.length,
+      supOpts: supNames.map(v => ({ v })),
       q: S.q, sup: S.sup, range: S.range,
       onQ: e => this.setState({ q: e.target.value }),
       onSup: e => this.setState({ sup: e.target.value }),
