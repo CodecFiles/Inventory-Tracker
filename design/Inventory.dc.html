@@ -86,6 +86,26 @@ h1,h2,h3,h4,p{margin:0}
 .pg.on{border-color:#D5DBE3;background:#fff;color:#0E1726;font-weight:600}
 .sel-s{height:32px;border:1px solid #D5DBE3;border-radius:8px;padding:0 8px;font:inherit;font-size:13px;background:#fff;color:#0E1726}
 .low{display:inline-flex;align-items:center;height:18px;padding:0 6px;border-radius:5px;background:#FDEBEA;color:#A3201F;font-size:11px;font-weight:600;margin-left:6px}
+.dd .dv,.dv{color:#0B7A6B}
+.dd.act{border-color:#0B7A6B;background:#E6F4F1;color:#075C51}
+.scrim{position:fixed;inset:0;z-index:20;background:transparent;border:0;padding:0;cursor:default}
+.menu{position:absolute;top:calc(100% + 6px);z-index:31;width:264px;max-width:calc(100vw - 32px);max-height:360px;overflow:auto;background:#fff;border:1px solid #DCE1E8;border-radius:12px;box-shadow:0 12px 32px rgba(14,23,38,.16);padding:6px;display:flex;flex-direction:column}
+.mh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:8px 10px 6px;font-size:12px;font-weight:600;color:#3B4758;text-transform:uppercase;letter-spacing:.05em}
+.mh span{font-weight:400;text-transform:none;letter-spacing:0;color:#5E6B7D}
+.mi{display:flex;align-items:center;gap:10px;width:100%;min-height:36px;padding:0 10px;border:0;border-radius:8px;background:none;font:inherit;font-size:13.5px;color:#0E1726;text-align:left;cursor:pointer}
+.mi:hover{background:#F4F6F8}
+.mi.dim{color:#5E6B7D}
+.mi .ml{flex:1}
+.mi .mc{font-size:12px;color:#5E6B7D;font-variant-numeric:tabular-nums}
+.bx,.rd{width:16px;height:16px;flex:0 0 16px;border:1.5px solid #B9C2CE;display:flex;align-items:center;justify-content:center;color:transparent;box-sizing:border-box}
+.bx{border-radius:4px}.bx svg{width:12px;height:12px}
+.bx.on{background:#0B7A6B;border-color:#0B7A6B;color:#fff}
+.rd{border-radius:50%}.rd svg{display:none}
+.rd.on{border:5px solid #0B7A6B}
+.mf{display:flex;justify-content:space-between;gap:8px;padding:8px 4px 2px;border-top:1px solid #EEF1F4;margin-top:6px}
+.pill{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 4px 0 10px;border-radius:999px;background:#E6F4F1;color:#075C51;font-size:12.5px;font-weight:500}
+.pill button{width:22px;height:22px;border:0;border-radius:50%;background:transparent;color:#075C51;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.pill button:hover{background:#CDEFE7}
 @media (max-width:900px){.side{display:none}.mtop{display:flex}.main{padding:20px 16px 40px}.top{padding:12px 16px}}
 </style>
 </helmet>
@@ -183,12 +203,35 @@ h1,h2,h3,h4,p{margin:0}
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="2" stroke-linecap="round" style="position: absolute; left: 12px; top: 12px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
 <input id="inv-q" class="inp" type="search" placeholder="Filter by product, serial, batch, facility…" value="{{q}}" onChange="{{onQ}}">
 </div>
+<sc-if value="{{anyOpen}}" hint-placeholder-val="{{ false }}"><button class="scrim" aria-label="Close menu" onClick="{{closeMenu}}"></button></sc-if>
 <sc-for list="{{dropdowns}}" as="d" hint-placeholder-count="6">
-<button class="btn sm dd" aria-haspopup="listbox">{{d.label}}<span style="color: #0B7A6B">{{d.val}}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+<div style="position: relative; z-index: {{d.z}}">
+<button class="{{d.btnCls}}" aria-haspopup="menu" aria-expanded="{{d.exp}}" onClick="{{d.toggle}}">{{d.label}}<span class="dv">{{d.val}}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+<sc-if value="{{d.open}}" hint-placeholder-val="{{ false }}">
+<div class="menu" role="menu" aria-label="{{d.label}}" style="left: 0">
+<div class="mh">{{d.label}}<span>{{d.hint}}</span></div>
+<sc-for list="{{d.opts}}" as="o" hint-placeholder-count="5">
+<button class="{{o.cls}}" role="{{o.role}}" aria-checked="{{o.aria}}" onClick="{{o.pick}}"><span class="{{o.box}}" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span><span class="ml">{{o.label}}</span><span class="mc">{{o.n}}</span></button>
+</sc-for>
+<div class="mf"><button class="btn sm" onClick="{{d.clear}}">Clear</button><button class="btn sm p" onClick="{{d.close}}">Done</button></div>
+</div>
+</sc-if>
+</div>
 </sc-for>
 <span style="flex: 1"></span>
 <button class="btn sm" onClick="{{flipSort}}" aria-label="Toggle sort order"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v16M3 16l4 4 4-4"></path><path d="M14 6h7M14 11h5M14 16h3"></path></svg>Last updated · {{sortLabel}}</button>
-<button class="btn sm" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M9 4v16M15 4v16"></path></svg>Columns</button>
+<div style="position: relative; z-index: {{colZ}}">
+<button class="{{colBtn}}" aria-haspopup="menu" aria-expanded="{{colExp}}" onClick="{{toggleCols}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M9 4v16M15 4v16"></path></svg>Columns<span class="dv">{{colVal}}</span></button>
+<sc-if value="{{colOpen}}" hint-placeholder-val="{{ false }}">
+<div class="menu" role="menu" aria-label="Visible columns" style="right: 0">
+<div class="mh">Columns<span>Product is always shown</span></div>
+<sc-for list="{{colOpts}}" as="o" hint-placeholder-count="9">
+<button class="mi" role="menuitemcheckbox" aria-checked="{{o.aria}}" onClick="{{o.pick}}"><span class="{{o.box}}" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span><span class="ml">{{o.label}}</span></button>
+</sc-for>
+<div class="mf"><button class="btn sm" onClick="{{resetCols}}">Show all</button><button class="btn sm p" onClick="{{closeMenu}}">Done</button></div>
+</div>
+</sc-if>
+</div>
 <div role="group" aria-label="View" style="display: flex; gap: 2px; padding: 3px; background: #E9EDF1; border-radius: 9px">
 <button class="{{tableBtn}}" aria-label="Table view" aria-pressed="{{tablePressed}}" onClick="{{toTable}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
 <button class="{{gridBtn}}" aria-label="Grid view" aria-pressed="{{gridPressed}}" onClick="{{toGrid}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="1.5"></rect><rect x="13" y="4" width="7" height="7" rx="1.5"></rect><rect x="4" y="13" width="7" height="7" rx="1.5"></rect><rect x="13" y="13" width="7" height="7" rx="1.5"></rect></svg></button>
@@ -197,8 +240,11 @@ h1,h2,h3,h4,p{margin:0}
 
 <sc-if value="{{hasFilter}}" hint-placeholder-val="{{ false }}">
 <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 0 18px 12px; font-size: 12.5px">
-<span class="muted">{{filterText}}</span>
-<button class="btn sm" onClick="{{clearFilters}}" style="height: 26px">Clear filters</button>
+<sc-for list="{{pills}}" as="p" hint-placeholder-count="2">
+<span class="pill">{{p.label}}<button aria-label="Remove filter {{p.label}}" onClick="{{p.remove}}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></span>
+</sc-for>
+<span class="muted" style="margin-left: 4px">{{filterText}}</span>
+<button class="btn sm" onClick="{{clearFilters}}" style="height: 28px">Clear all</button>
 </div>
 </sc-if>
 
@@ -219,23 +265,23 @@ h1,h2,h3,h4,p{margin:0}
 <table class="tbl">
 <thead><tr>
 <th style="width: 44px"><button class="{{allCb}}" role="checkbox" aria-checked="{{allAria}}" aria-label="Select all rows" onClick="{{toggleAll}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></button></th>
-<th>Product</th><th>Brand / model</th><th>Batch</th><th>Serial / qty</th><th>Status</th><th>Location</th><th>Facility</th><th>Type</th><th>Received</th>
-<th><button onClick="{{flipSort}}" style="border: 0; background: none; padding: 0; font: inherit; color: #0E1726; cursor: pointer; display: inline-flex; align-items: center; gap: 4px">Last updated <span aria-hidden="true">{{sortArrow}}</span></button></th>
+<th>Product</th><sc-if value="{{cols.brand}}" hint-placeholder-val="{{ true }}"><th>Brand / model</th></sc-if><sc-if value="{{cols.batch}}" hint-placeholder-val="{{ true }}"><th>Batch</th></sc-if><sc-if value="{{cols.ident}}" hint-placeholder-val="{{ true }}"><th>Serial / qty</th></sc-if><sc-if value="{{cols.status}}" hint-placeholder-val="{{ true }}"><th>Status</th></sc-if><sc-if value="{{cols.loc}}" hint-placeholder-val="{{ true }}"><th>Location</th></sc-if><sc-if value="{{cols.fac}}" hint-placeholder-val="{{ true }}"><th>Facility</th></sc-if><sc-if value="{{cols.type}}" hint-placeholder-val="{{ true }}"><th>Type</th></sc-if><sc-if value="{{cols.recv}}" hint-placeholder-val="{{ true }}"><th>Received</th></sc-if>
+<sc-if value="{{cols.upd}}" hint-placeholder-val="{{ true }}"><th><button onClick="{{flipSort}}" style="border: 0; background: none; padding: 0; font: inherit; color: #0E1726; cursor: pointer; display: inline-flex; align-items: center; gap: 4px">Last updated <span aria-hidden="true">{{sortArrow}}</span></button></th></sc-if>
 </tr></thead>
 <tbody>
 <sc-for list="{{rows}}" as="r" hint-placeholder-count="14">
 <tr class="{{r.trCls}}">
 <td><button class="{{r.cbCls}}" role="checkbox" aria-checked="{{r.aria}}" aria-label="Select {{r.name}} {{r.ident}}" onClick="{{r.toggle}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></button></td>
 <td><a href="ProductDetail.dc.html" style="color: #0E1726; font-weight: 500">{{r.name}}</a><div class="muted" style="font-size: 12px">{{r.catLabel}} · {{r.track}}</div></td>
-<td><span>{{r.brand}}</span><div class="muted" style="font-size: 12px">{{r.model}}</div></td>
-<td><a class="mono" href="BatchDetail.dc.html">{{r.batch}}</a></td>
-<td><a class="mono" href="{{r.href}}" style="color: #0E1726; font-weight: 500">{{r.ident}}</a><sc-if value="{{r.low}}" hint-placeholder-val="{{ false }}"><span class="low">Low</span></sc-if><div class="muted mono" style="font-size: 11.5px">{{r.sub}}</div></td>
-<td><span class="b {{r.stc}}">{{r.stl}}</span></td>
-<td><span>{{r.loc}}</span><div class="muted" style="font-size: 12px">{{r.loc2}}</div></td>
-<td><sc-if value="{{r.hasFac}}" hint-placeholder-val="{{ true }}"><a href="FacilityDetail.dc.html" style="color: #0E1726">{{r.fac}}</a></sc-if><sc-if value="{{r.noFac}}" hint-placeholder-val="{{ false }}"><span class="muted">—</span></sc-if></td>
-<td><sc-if value="{{r.hasType}}" hint-placeholder-val="{{ true }}"><span class="t {{r.tcls}}">{{r.type}}</span></sc-if><sc-if value="{{r.noType}}" hint-placeholder-val="{{ false }}"><span class="muted">—</span></sc-if></td>
-<td class="muted">{{r.recv}}</td>
-<td class="muted">{{r.upd}}</td>
+<sc-if value="{{r.c.brand}}" hint-placeholder-val="{{ true }}"><td><span>{{r.brand}}</span><div class="muted" style="font-size: 12px">{{r.model}}</div></td></sc-if>
+<sc-if value="{{r.c.batch}}" hint-placeholder-val="{{ true }}"><td><a class="mono" href="BatchDetail.dc.html">{{r.batch}}</a></td></sc-if>
+<sc-if value="{{r.c.ident}}" hint-placeholder-val="{{ true }}"><td><a class="mono" href="{{r.href}}" style="color: #0E1726; font-weight: 500">{{r.ident}}</a><sc-if value="{{r.low}}" hint-placeholder-val="{{ false }}"><span class="low">Low</span></sc-if><div class="muted mono" style="font-size: 11.5px">{{r.sub}}</div></td></sc-if>
+<sc-if value="{{r.c.status}}" hint-placeholder-val="{{ true }}"><td><span class="b {{r.stc}}">{{r.stl}}</span></td></sc-if>
+<sc-if value="{{r.c.loc}}" hint-placeholder-val="{{ true }}"><td><span>{{r.loc}}</span><div class="muted" style="font-size: 12px">{{r.loc2}}</div></td></sc-if>
+<sc-if value="{{r.c.fac}}" hint-placeholder-val="{{ true }}"><td><sc-if value="{{r.hasFac}}" hint-placeholder-val="{{ true }}"><a href="FacilityDetail.dc.html" style="color: #0E1726">{{r.fac}}</a></sc-if><sc-if value="{{r.noFac}}" hint-placeholder-val="{{ false }}"><span class="muted">—</span></sc-if></td></sc-if>
+<sc-if value="{{r.c.type}}" hint-placeholder-val="{{ true }}"><td><sc-if value="{{r.hasType}}" hint-placeholder-val="{{ true }}"><span class="t {{r.tcls}}">{{r.type}}</span></sc-if><sc-if value="{{r.noType}}" hint-placeholder-val="{{ false }}"><span class="muted">—</span></sc-if></td></sc-if>
+<sc-if value="{{r.c.recv}}" hint-placeholder-val="{{ true }}"><td class="muted">{{r.recv}}</td></sc-if>
+<sc-if value="{{r.c.upd}}" hint-placeholder-val="{{ true }}"><td class="muted">{{r.upd}}</td></sc-if>
 </tr>
 </sc-for>
 </tbody>
@@ -292,7 +338,7 @@ h1,h2,h3,h4,p{margin:0}
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1560}}'>
 class Component extends DCLogic {
-  constructor(props) { super(props); this.state = { q: '', status: 'all', cat: 'all', view: 'table', sel: { r1: true, r6: true }, desc: true, size: '25' }; }
+  constructor(props) { super(props); this.state = { q: '', status: 'all', cat: 'all', view: 'table', sel: { r1: true, r6: true }, desc: true, size: '25', open: '', f: { brand: [], loc: [], fac: [], batch: [] }, date: 'any', cols: { brand: true, batch: true, ident: true, status: true, loc: true, fac: true, type: true, recv: true, upd: true } }; }
   renderVals() {
     const S = this.state;
     const ST = { unconf: ['Unconfigured', 's-unconf', '#8A96A8'], prep: ['In preparation', 's-prep', '#E08A00'], ready: ['Ready for deployment', 's-ready', '#2F6FE4'], reserved: ['Reserved', 's-reserved', '#7C4DDB'], stock: ['In stock', 's-stock', '#1A8FAD'], deployed: ['Deployed', 's-deployed', '#12A374'], maint: ['Under maintenance', 's-maint', '#E86A1C'], transit: ['In transit', 's-transit', '#5468E0'] };
@@ -313,15 +359,31 @@ class Component extends DCLogic {
       { id: 'r13', name: 'Milesight UG65', cat: 'gw', catLabel: 'LoRaWAN Gateways', track: 'Serialised', brand: 'Milesight', model: 'UG65', batch: 'GW-2026-001', ident: '6247B1820045', identLabel: 'S/N', sub: 'EUI 24E124FFFEF51A07', st: 'deployed', loc: 'Roof plant', loc2: 'Mast 2', fac: 'Lulu Hypermarket', type: 'POC', recv: '15 Jul 2026', upd: '16 Sep 2026', href: 'DeviceDetail.dc.html' },
       { id: 'r14', name: 'Teltonika RUT956', cat: 'tel', catLabel: 'Teltonika Devices', track: 'Serialised', brand: 'Teltonika', model: 'RUT956', batch: 'TEL-2026-003', ident: '1107442103', identLabel: 'S/N', sub: 'LTE modem fault', st: 'maint', loc: 'MRD Office', loc2: 'Repair bench', fac: '', type: '', recv: '12 Aug 2026', upd: '14 Sep 2026', href: 'DeviceDetail.dc.html' }
     ];
+    const MON = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
+    data.forEach(r => {
+      const p = r.recv.split(' ');
+      r.rd = new Date(+p[2], MON[p[1]], +p[0]);
+      r.locKey = r.st === 'deployed' ? 'At a facility' : ((r.loc2.match(/Shelf [A-Z][0-9]|Prep bench|Repair bench/) || [])[0] || r.loc);
+      r.facKey = r.fac || 'No facility';
+    });
+    const DATES = [['any', 'Any time', null], ['d7', 'Last 7 days', new Date(2026, 8, 28)], ['d30', 'Last 30 days', new Date(2026, 8, 5)], ['d90', 'Last 90 days', new Date(2026, 6, 7)], ['ytd', 'This year', new Date(2026, 0, 1)]];
+    const dateRow = DATES.filter(d => d[0] === S.date)[0] || DATES[0];
+    const F = S.f;
+    const FIELD = { brand: 'brand', loc: 'locKey', fac: 'facKey', batch: 'batch' };
     const q = S.q.trim().toLowerCase();
-    let list = data.filter(r => (S.cat === 'all' || r.cat === S.cat) && (S.status === 'all' || r.st === S.status) && (!q || [r.name, r.ident, r.sub, r.batch, r.fac, r.loc, r.loc2, r.brand, r.model].join(' ').toLowerCase().indexOf(q) > -1));
+    const pass = (r, skip) => (S.cat === 'all' || r.cat === S.cat)
+      && (skip === 'status' || S.status === 'all' || r.st === S.status)
+      && (!q || [r.name, r.ident, r.sub, r.batch, r.fac, r.loc, r.loc2, r.brand, r.model].join(' ').toLowerCase().indexOf(q) > -1)
+      && Object.keys(FIELD).every(k => skip === k || !F[k].length || F[k].indexOf(r[FIELD[k]]) > -1)
+      && (skip === 'date' || !dateRow[2] || r.rd >= dateRow[2]);
+    let list = data.filter(r => pass(r, ''));
     if (!S.desc) list = list.slice().reverse();
     const sel = S.sel;
     const rows = list.map(r => {
       const on = !!sel[r.id]; const s = ST[r.st];
       return Object.assign({}, r, {
         stl: s[0], stc: s[1], tcls: TT[r.type] || '', hasType: !!r.type, noType: !r.type, hasFac: !!r.fac, noFac: !r.fac, facText: r.fac || '—', low: !!r.low,
-        cbCls: on ? 'cb on' : 'cb', aria: on ? 'true' : 'false', trCls: on ? 'sel' : '', gSel: on ? 'sel' : '',
+        c: S.cols, cbCls: on ? 'cb on' : 'cb', aria: on ? 'true' : 'false', trCls: on ? 'sel' : '', gSel: on ? 'sel' : '',
         toggle: () => { const n = Object.assign({}, this.state.sel); if (n[r.id]) delete n[r.id]; else n[r.id] = true; this.setState({ sel: n }); }
       });
     });
@@ -330,16 +392,68 @@ class Component extends DCLogic {
     const counts = [['all', 'All items', '#3B4758', '1,284'], ['unconf', 'Unconfigured', '', '31'], ['prep', 'In preparation', '', '9'], ['ready', 'Ready', '', '46'], ['reserved', 'Reserved', '', '8'], ['stock', 'In stock', '', '624'], ['deployed', 'Deployed', '', '538'], ['maint', 'Under maintenance', '', '7'], ['transit', 'In transit', '', '12']];
     const statusChips = counts.map(([id, label, dot, n]) => ({ label, n, dot: dot || ST[id][2], cls: 'fchip' + (S.status === id ? ' on' : ''), pressed: S.status === id ? 'true' : 'false', pick: () => this.setState({ status: id }) }));
     const catTabs = [['all', 'All', '1,284'], ['tel', 'Teltonika', '30'], ['co2', 'CO₂ sensors', '60'], ['gw', 'Gateways', '6'], ['sim', 'SIM cards', '80'], ['net', 'Network', '16'], ['vfd', 'VFDs', '12'], ['cab', 'Cables', '1,040']].map(([id, label, n]) => ({ label, n, cls: 'ctab' + (S.cat === id ? ' on' : ''), pressed: S.cat === id ? 'true' : 'false', pick: () => this.setState({ cat: id }) }));
-    const stName = S.status === 'all' ? '' : ': ' + ST[S.status][0];
-    const dropdowns = [['Brand', ''], ['Status', stName], ['Location', ''], ['Facility', ''], ['Batch', ''], ['Date received', '']].map(([label, val]) => ({ label, val }));
-    const hasFilter = S.status !== 'all' || S.cat !== 'all' || !!q;
+    const setF = (key, arr) => { const nf = Object.assign({}, this.state.f); nf[key] = arr; this.setState({ f: nf }); };
+    const menu = (key, label, val, opts, multi, clear, active) => ({
+      label, val, opts: opts.map(o => Object.assign({ role: multi ? 'menuitemcheckbox' : 'menuitemradio' }, o)), role: multi ? 'menuitemcheckbox' : 'menuitemradio', hint: multi ? 'Select any' : 'Choose one',
+      open: S.open === key, exp: S.open === key ? 'true' : 'false', z: S.open === key ? '30' : 'auto',
+      btnCls: 'btn sm dd' + (active ? ' act' : ''),
+      toggle: () => this.setState({ open: this.state.open === key ? '' : key }),
+      close: () => this.setState({ open: '' }), clear
+    });
+    const multi = (key, label) => {
+      const field = FIELD[key], cur = F[key], base = data.filter(r => pass(r, key)), vals = [];
+      data.forEach(r => { if (vals.indexOf(r[field]) < 0) vals.push(r[field]); });
+      vals.sort();
+      const opts = vals.map(v => {
+        const on = cur.indexOf(v) > -1, n = base.filter(r => r[field] === v).length;
+        return { label: v, n, aria: on ? 'true' : 'false', box: on ? 'bx on' : 'bx', cls: (n === 0 && !on) ? 'mi dim' : 'mi',
+          pick: () => { const a = this.state.f[key].slice(), i = a.indexOf(v); if (i > -1) a.splice(i, 1); else a.push(v); setF(key, a); } };
+      });
+      return menu(key, label, cur.length === 1 ? ': ' + cur[0] : (cur.length ? ' · ' + cur.length : ''), opts, true, () => setF(key, []), cur.length > 0);
+    };
+    const stBase = data.filter(r => pass(r, 'status'));
+    const stOpts = [['all', 'All statuses']].concat(Object.keys(ST).map(k => [k, ST[k][0]])).map(([id, label]) => {
+      const on = S.status === id;
+      return { label, n: id === 'all' ? stBase.length : stBase.filter(r => r.st === id).length, aria: on ? 'true' : 'false', box: on ? 'rd on' : 'rd', cls: 'mi', pick: () => this.setState({ status: id }) };
+    });
+    const dBase = data.filter(r => pass(r, 'date'));
+    const dOpts = DATES.map(([id, label, from]) => {
+      const on = S.date === id;
+      return { label, n: dBase.filter(r => !from || r.rd >= from).length, aria: on ? 'true' : 'false', box: on ? 'rd on' : 'rd', cls: 'mi', pick: () => this.setState({ date: id }) };
+    });
+    const dropdowns = [
+      multi('brand', 'Brand'),
+      menu('status', 'Status', S.status === 'all' ? '' : ': ' + ST[S.status][0], stOpts, false, () => this.setState({ status: 'all' }), S.status !== 'all'),
+      multi('loc', 'Location'),
+      multi('fac', 'Facility'),
+      multi('batch', 'Batch'),
+      menu('date', 'Date received', S.date === 'any' ? '' : ': ' + dateRow[1], dOpts, false, () => this.setState({ date: 'any' }), S.date !== 'any')
+    ];
+    const COLS = [['brand', 'Brand / model'], ['batch', 'Batch'], ['ident', 'Serial / qty'], ['status', 'Status'], ['loc', 'Location'], ['fac', 'Facility'], ['type', 'Deployment type'], ['recv', 'Received'], ['upd', 'Last updated']];
+    const colOpts = COLS.map(([id, label]) => {
+      const on = !!S.cols[id];
+      return { label, aria: on ? 'true' : 'false', box: on ? 'bx on' : 'bx', pick: () => { const c = Object.assign({}, this.state.cols); c[id] = !c[id]; this.setState({ cols: c }); } };
+    });
+    const hidden = COLS.filter(([id]) => !S.cols[id]).length;
+    const pills = [];
+    if (S.cat !== 'all') pills.push({ label: 'Category: ' + catTabs.filter(t => t.cls.indexOf(' on') > -1).map(t => t.label)[0], remove: () => this.setState({ cat: 'all' }) });
+    if (S.status !== 'all') pills.push({ label: 'Status: ' + ST[S.status][0], remove: () => this.setState({ status: 'all' }) });
+    [['brand', 'Brand'], ['loc', 'Location'], ['fac', 'Facility'], ['batch', 'Batch']].forEach(([k, l]) => F[k].forEach(v => pills.push({ label: l + ': ' + v, remove: () => setF(k, this.state.f[k].filter(x => x !== v)) })));
+    if (S.date !== 'any') pills.push({ label: 'Received: ' + dateRow[1], remove: () => this.setState({ date: 'any' }) });
+    if (q) pills.push({ label: 'Search: “' + S.q.trim() + '”', remove: () => this.setState({ q: '' }) });
+    const hasFilter = pills.length > 0;
     const selCount = Object.keys(sel).length;
     const view = S.view;
     return {
       q: S.q, onQ: e => this.setState({ q: e.target.value }),
       statusChips, catTabs, dropdowns, rows,
-      hasFilter, filterText: rows.length + (rows.length === 1 ? ' item matches' : ' items match') + ' on this page',
-      clearFilters: () => this.setState({ q: '', status: 'all', cat: 'all' }),
+      hasFilter, pills, filterText: rows.length + (rows.length === 1 ? ' item matches' : ' items match') + ' on this page',
+      clearFilters: () => this.setState({ q: '', status: 'all', cat: 'all', date: 'any', open: '', f: { brand: [], loc: [], fac: [], batch: [] } }),
+      anyOpen: !!S.open, closeMenu: () => this.setState({ open: '' }),
+      cols: S.cols, colOpts, colOpen: S.open === 'cols', colExp: S.open === 'cols' ? 'true' : 'false', colZ: S.open === 'cols' ? '30' : 'auto',
+      colBtn: 'btn sm dd' + (hidden ? ' act' : ''), colVal: hidden ? ' · ' + hidden + ' hidden' : '',
+      toggleCols: () => this.setState({ open: this.state.open === 'cols' ? '' : 'cols' }),
+      resetCols: () => { const c = {}; COLS.forEach(([id]) => { c[id] = true; }); this.setState({ cols: c }); },
       hasSel: selCount > 0, selCount, clearSel: () => this.setState({ sel: {} }),
       allCb: allOn ? 'cb on' : 'cb', allAria: allOn ? 'true' : 'false', toggleAll,
       flipSort: () => this.setState({ desc: !this.state.desc }), sortArrow: S.desc ? '↓' : '↑', sortLabel: S.desc ? 'newest first' : 'oldest first',
