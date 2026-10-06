@@ -1,0 +1,936 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Teltonika RUT956 · MRD Inventory</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F6F8;color:#0E1726;font-family:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#0B7A6B;text-decoration:none}a:hover{color:#075C51}
+h1,h2,h3,h4,p{margin:0}
+.mono{font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;letter-spacing:-.01em}
+.muted{color:#5E6B7D}
+.side{flex:0 0 248px;background:#0C1424;padding:18px 12px 16px;display:flex;flex-direction:column;gap:1px}
+.nav{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:8px;color:#B3BDCB;font-size:13.5px}
+.nav:hover{background:#152036;color:#fff}
+.nav.on{background:#1C2A42;color:#fff;box-shadow:inset 2px 0 0 #2BC4A8}
+.nav svg{flex:0 0 16px;width:16px;height:16px}
+.nav .ct{margin-left:auto;font-size:11px;font-weight:600;background:#2BC4A8;color:#04211C;border-radius:999px;padding:1px 7px}
+.sec{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#7F8CA0;padding:16px 10px 6px;font-weight:500}
+.mtop{display:none}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 32px;background:#fff;border-bottom:1px solid #E3E7EC}
+.srch{flex:1 1 320px;max-width:560px;display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border:1px solid #DCE1E8;border-radius:10px;background:#F8FAFB;color:#5E6B7D;font-size:13.5px}
+.srch:hover{border-color:#B9C2CE;color:#3B4758}
+.kbd{margin-left:auto;font-family:'Geist Mono',monospace;font-size:11px;border:1px solid #DCE1E8;border-radius:5px;padding:1px 6px;background:#fff;color:#5E6B7D}
+.main{padding:28px 32px 48px;max-width:1400px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+.card{background:#fff;border:1px solid #E3E7EC;border-radius:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 14px;border-radius:9px;border:1px solid #D5DBE3;background:#fff;color:#1B2638;font:inherit;font-size:13.5px;font-weight:500;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#F4F6F8;color:#0E1726}
+.btn.p{background:#0B7A6B;border-color:#0B7A6B;color:#fff}.btn.p:hover{background:#08695C;color:#fff}
+.btn.sm{height:32px;padding:0 10px;font-size:12.5px;border-radius:8px}
+.btn.ic{width:40px;padding:0}
+.btn svg{width:16px;height:16px}
+.b{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;background:#EEF1F5;color:#3E4A5C}
+.b::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.s-unconf{background:#EEF1F5;color:#3E4A5C}.s-prep{background:#FFF3DC;color:#8A4B00}.s-ready{background:#E6EEFF;color:#1D4FB8}.s-reserved{background:#F0EAFE;color:#5B32B4}.s-deployed{background:#E1F4EC;color:#0A6648}.s-stock{background:#E3F2F6;color:#0E5E73}.s-maint{background:#FFEDE3;color:#9A3D0B}.s-damaged{background:#FDEBEA;color:#A3201F}.s-transit{background:#E9EDFC;color:#3346A8}.s-returned{background:#F1EEE8;color:#5E554A}.s-retired{background:#EFF0F2;color:#646C79}
+.g-insp{background:#EEF1F5;color:#3E4A5C}.g-bms{background:#E3F2F6;color:#0E5E73}.g-poc{background:#F0EAFE;color:#5B32B4}.g-study{background:#FFF3DC;color:#8A4B00}.g-cpend{background:#E6EEFF;color:#1D4FB8}.g-contract{background:#E1F4EC;color:#0A6648}.g-ops{background:#0B7A6B;color:#fff}.g-done{background:#EFF0F2;color:#646C79}.g-hold{background:#FDEBEA;color:#A3201F}
+.t{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:6px;font-size:11.5px;font-weight:600;letter-spacing:.02em;border:1px solid}
+.t-poc{color:#5B32B4;border-color:#D7C8FA;background:#FAF7FF}.t-con{color:#0A6648;border-color:#BFE3D3;background:#F4FBF8}.t-rep{color:#8A4B00;border-color:#F3D9A6;background:#FFFBF2}.t-add{color:#1D4FB8;border-color:#C8D8FA;background:#F6F9FF}
+.tw{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-weight:500;color:#5E6B7D;font-size:12px;padding:10px 14px;border-bottom:1px solid #E3E7EC;background:#F8FAFB;white-space:nowrap}
+.tbl td{padding:11px 14px;border-bottom:1px solid #EEF1F4;white-space:nowrap;vertical-align:middle}
+.tbl tr:hover td{background:#F8FAFB}
+.tbl tr:last-child td{border-bottom:0}
+.ov{font-size:12px;font-weight:500;color:#5E6B7D;text-transform:uppercase;letter-spacing:.06em}
+.kpi{padding:16px 18px;display:flex;flex-direction:column;gap:6px;color:#0E1726}
+.kpi:hover{border-color:#B9C2CE;color:#0E1726}
+.kpi .n{font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
+.seg{display:flex;gap:2px;height:8px;border-radius:4px;overflow:hidden}
+.seg span{display:block;height:100%}
+.row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-top:1px solid #EEF1F4;color:#0E1726}
+.row:hover{background:#F8FAFB;color:#0E1726}
+.chip{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;border:0;background:transparent;font:inherit;font-size:13px;color:#3B4758;cursor:pointer}
+.chip.on{background:#fff;color:#0E1726;box-shadow:0 1px 2px rgba(14,23,38,.12)}
+.pill{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 9px;border-radius:6px;font-size:12px;font-weight:500;background:#F1F4F7;color:#3B4758;border:1px solid #E3E7EC}
+.pill svg{width:13px;height:13px}
+.pill.ser{color:#1D4FB8;border-color:#C8D8FA;background:#F6F9FF}.pill.cfg{color:#8A4B00;border-color:#F3D9A6;background:#FFFBF2}
+.tab{display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 2px;border:0;border-bottom:2px solid transparent;background:none;font:inherit;font-size:14px;color:#5E6B7D;cursor:pointer;white-space:nowrap}
+.tab:hover{color:#0E1726}
+.tab.on{color:#0E1726;border-bottom-color:#0B7A6B;font-weight:500}
+.tab .n{font-size:11.5px;background:#EEF1F5;color:#3E4A5C;border-radius:999px;padding:0 7px;line-height:18px}
+.ch{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:16px 18px 12px}
+.ch h2{font-size:15px;font-weight:600}
+.stat{display:flex;flex-direction:column;gap:2px;padding:0 20px;border-left:1px solid #EEF1F4}
+.stat:first-child{padding-left:0;border-left:0}
+.stat strong{font-size:20px;font-weight:600;letter-spacing:-.01em}
+.fchip{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 12px;border-radius:999px;border:1px solid #DCE1E8;background:#fff;font:inherit;font-size:12.5px;color:#3B4758;cursor:pointer;white-space:nowrap}
+.fchip.on{border-color:#0B7A6B;background:#ECF7F4;color:#075C51;box-shadow:inset 0 0 0 1px #0B7A6B}
+.fchip strong{font-weight:600;color:#0E1726}
+.lg{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;border:0;background:none;font:inherit;font-size:13px;color:#3B4758;cursor:pointer;text-align:left}
+.lg:hover{background:#F4F6F8}
+.lg strong{margin-left:auto;color:#0E1726;font-weight:600}
+.bar{height:8px;background:#F1F4F7;border-radius:4px;overflow:hidden}
+.bar span{display:block;height:100%;background:#0E8A78;border-radius:4px}
+.pg{display:inline-flex;align-items:center;justify-content:center;min-width:32px;height:32px;padding:0 8px;border-radius:8px;border:1px solid transparent;background:none;font:inherit;font-size:13px;color:#3B4758;cursor:pointer}
+.pg.on{border-color:#D5DBE3;background:#fff;color:#0E1726;font-weight:600}
+.lock{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#5E6B7D}
+.sw{position:relative;width:40px;height:24px;flex:0 0 40px;border-radius:999px;border:0;background:#C9D1DB;cursor:pointer;padding:0}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(14,23,38,.2)}
+.sw.on{background:#0B7A6B}.sw.on::after{left:19px}
+.rc{display:flex;flex-direction:column;gap:4px;padding:12px;border-radius:10px;border:1px solid #D5DBE3;background:#fff;font-size:12.5px}
+.rc.on{border-color:#0B7A6B;box-shadow:inset 0 0 0 1px #0B7A6B;background:#F4FBF8}
+.in{height:40px;border:1px solid #D5DBE3;border-radius:9px;padding:0 12px;font:inherit;font-size:13.5px;background:#fff;color:#0E1726}
+.in:focus{outline:2px solid rgba(11,122,107,.25);border-color:#0B7A6B}
+.step{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border:1px solid #E3E7EC;border-radius:10px;background:#fff}
+.num{width:24px;height:24px;flex:0 0 24px;border-radius:50%;background:#ECF7F4;color:#075C51;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.ovl{position:fixed;inset:0;background:rgba(14,23,38,.45);z-index:50;display:flex;align-items:center;justify-content:center;padding:16px}
+.dlg{background:#fff;border-radius:14px;width:100%;max-width:460px;box-shadow:0 24px 60px rgba(14,23,38,.25)}
+@media (max-width:900px){.side{display:none}.mtop{display:flex}.main{padding:20px 16px 40px}.top{padding:12px 16px}.stat{padding:0 12px}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh; background: #F4F6F8">
+<nav class="side" aria-label="Primary">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 2px 8px 14px; color: #fff">
+<span style="width: 32px; height: 32px; border-radius: 9px; background: #0B7A6B; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4a8 8 0 1 0 4 11.5A6.5 6.5 0 0 1 16 4z"></path><path d="M6 18l2.5-2.5"></path></svg></span>
+<span style="display: flex; flex-direction: column; line-height: 1.15"><span style="font-weight: 600; font-size: 14px">Moonrock R&amp;D</span><span style="font-size: 11.5px; color: #8D99AC">Inventory × Exergio</span></span>
+</a>
+<a class="nav" href="Main.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>Dashboard</a>
+<div class="sec">Inventory</div>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"></path><path d="M3 8v8l9 5 9-5V8"></path><path d="M12 13v8"></path></svg>All inventory</a>
+<a class="nav on" href="Products.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg>Products</a>
+<a class="nav" href="Batches.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l10 5-10 5L2 7l10-5z"></path><path d="M2 12l10 5 10-5"></path><path d="M2 17l10 5 10-5"></path></svg>Batches</a>
+<a class="nav" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive stock</a>
+<div class="sec">Devices</div>
+<a class="nav" href="DevicePrep.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg>Device preparation<span class="ct">15</span></a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="18" height="7" rx="2"></rect><path d="M7 16.5h.01M11 16.5h.01"></path><path d="M17 13V5"></path><path d="M14 7.5a4 4 0 0 1 6 0"></path></svg>Teltonika</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h11a3 3 0 1 0-3-3"></path><path d="M3 12h16a3 3 0 1 1-3 3"></path><path d="M3 16h7"></path></svg>CO₂ sensors</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"></circle><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7M5.6 5.6a9 9 0 0 0 0 12.8M18.4 5.6a9 9 0 0 1 0 12.8"></path></svg>LoRaWAN gateways</a>
+<a class="nav" href="SimInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"></path><rect x="8.5" y="11" width="7" height="6" rx="1"></rect></svg>SIM cards</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"></rect><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"></path></svg>Other equipment</a>
+<div class="sec">Facilities &amp; projects</div>
+<a class="nav" href="Facilities.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"></rect><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1"></path></svg>Facilities</a>
+<a class="nav" href="PocManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6L4.5 18.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3"></path><path d="M7 15h10"></path></svg>POC projects</a>
+<a class="nav" href="ContractManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path><path d="M9 13h6M9 17h4"></path></svg>Contracts</a>
+<div class="sec">Deployments</div>
+<a class="nav" href="Deployments.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3z"></path><path d="M14 10h4l3 3v3h-7"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>Deployments</a>
+<a class="nav" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>New deployment</a>
+<div class="sec">Insights &amp; admin</div>
+<a class="nav" href="Reports.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M10 20V5M16 20v-6M21 20H3"></path></svg>Reports</a>
+<a class="nav" href="AuditLog.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l3 2"></path></svg>Audit log</a>
+<a class="nav" href="Users.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20a6.5 6.5 0 0 1 13 0"></path><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"></path></svg>Users &amp; roles</a>
+<a class="nav" href="Settings.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Settings</a>
+<div style="margin-top: auto; padding: 16px 8px 0; display: flex; align-items: center; gap: 10px; border-top: 1px solid #1C2A42">
+<span style="width: 32px; height: 32px; border-radius: 50%; background: #2BC4A8; color: #04211C; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600">CH</span>
+<span style="display: flex; flex-direction: column; line-height: 1.2"><span style="color: #fff; font-size: 13px; font-weight: 500">Chetan</span><span style="color: #8D99AC; font-size: 11.5px">Admin · MRD Office</span></span>
+</div>
+</nav>
+
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+<div class="mtop" style="align-items: center; justify-content: space-between; padding: 12px 16px; background: #0C1424; color: #fff">
+<span style="font-weight: 600">Moonrock R&amp;D</span>
+<button class="btn sm" aria-label="Open menu" aria-expanded="{{shell.menuExp}}" onClick="{{shell.toggleMenu}}" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
+</div>
+<header class="top">
+<a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
+<span style="flex: 1"></span>
+<span class="b s-prep" title="All records shown are sample data">Sample data</span>
+<span class="b {{shell.syncCls}}" title="{{shell.syncTip}}">{{shell.syncLabel}}</span>
+<a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
+<a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
+<div style="position: relative; z-index: {{shell.bellZ}}">
+<button class="btn ic" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="{{shell.bellExp}}" onClick="{{shell.toggleBell}}" style="position: relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg><sc-if value="{{shell.hasUnread}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #DC3B3A; color: #fff; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #fff">{{shell.unread}}</span></sc-if></button>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="Notifications" style="position: absolute; right: 0; top: calc(100% + 8px); z-index: 41; width: 360px; max-width: calc(100vw - 32px); background: #fff; border: 1px solid #DCE1E8; border-radius: 12px; box-shadow: 0 16px 40px rgba(14,23,38,.18); overflow: hidden; text-align: left">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #EEF1F4"><span style="font-weight: 600; font-size: 14px; color: #0E1726">Notifications</span><button onClick="{{shell.markRead}}" style="border: 0; background: none; padding: 4px; font: inherit; font-size: 12.5px; color: #0B7A6B; cursor: pointer">Mark all as read</button></div>
+<div style="max-height: 380px; overflow-y: auto">
+<sc-for list="{{shell.notes}}" as="n" hint-placeholder-count="4">
+<a href="{{n.href}}" style="display: flex; gap: 10px; padding: 11px 14px; border-bottom: 1px solid #F1F4F7; color: #0E1726; background: {{n.bg}}">
+<span style="width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: 0 0 8px; background: {{n.dot}}"></span>
+<span style="flex: 1; min-width: 0; font-size: 13px; line-height: 1.4"><span style="display: block">{{n.text}}</span><span style="display: block; font-size: 12px; color: #5E6B7D">{{n.when}}</span></span>
+</a>
+</sc-for>
+</div>
+<a href="AuditLog.dc.html" style="display: block; padding: 10px 14px; font-size: 13px; font-weight: 500; text-align: center; border-top: 1px solid #EEF1F4">Open audit log</a>
+</div>
+</sc-if>
+</div>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}"><button aria-label="Close notifications" onClick="{{shell.closeAll}}" style="position: fixed; inset: 0; z-index: 30; background: transparent; border: 0; padding: 0; cursor: default"></button></sc-if>
+</header>
+
+<main class="main">
+<div style="display: flex; flex-direction: column; gap: 14px">
+<nav aria-label="Breadcrumb" class="muted" style="font-size: 13px; display: flex; gap: 6px; flex-wrap: wrap"><a href="Main.dc.html">Dashboard</a><span aria-hidden="true">/</span><a href="Products.dc.html">Products</a><span aria-hidden="true">/</span><a href="Products.dc.html">Teltonika Devices</a><span aria-hidden="true">/</span><span style="color: #0E1726">Teltonika RUT956</span></nav>
+
+<section class="card" style="padding: 20px; display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start">
+<label title="{{photoTitle}}" style="position: relative; cursor: pointer; width: 132px; height: 132px; flex: 0 0 132px; border-radius: 12px; background: #E9EEF2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: #3B4758; text-align: center; padding: 6px"><input type="file" accept="image/*" style="position: absolute; width: 1px; height: 1px; opacity: 0" onChange="{{onPhoto}}">
+<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="18" height="7" rx="2"></rect><path d="M7 16.5h.01M11 16.5h.01"></path><path d="M17 13V5"></path><path d="M14 7.5a4 4 0 0 1 6 0"></path></svg>
+<span style="font-size: 11.5px; color: #5E6B7D; word-break: break-all">{{photoLabel}}</span>
+</label>
+<div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="font-size: 26px; font-weight: 600; letter-spacing: -.02em">Teltonika RUT956</h1>
+<p class="muted" style="font-size: 14px">{{hBrand}} · <span class="mono">{{hModel}}</span> · {{hDesc}}</p>
+</div>
+<div style="display: flex; gap: 10px; flex-wrap: wrap">
+<button class="btn" onClick="{{openEdit}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg>Edit</button>
+<sc-if value="{{notArch}}" hint-placeholder-val="{{ true }}"><button class="btn" onClick="{{openArchive}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1"></rect><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"></path><path d="M10 13h4"></path></svg>Archive</button></sc-if><sc-if value="{{isArch}}" hint-placeholder-val="{{ false }}"><button class="btn" onClick="{{restore}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path></svg>Restore</button></sc-if>
+<a class="btn p" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive stock</a>
+</div>
+</div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center">
+<span class="pill">{{catLabel}}</span>
+<span class="pill ser"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5h2M18 5h2v2M20 17v2h-2M6 19H4v-2"></path><path d="M8 9v6M11 9v6M14 9v6M17 9v6"></path></svg>Serialised</span>
+<sc-if value="{{cfgOn}}" hint-placeholder-val="{{ true }}"><span class="pill cfg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg>Requires configuration</span></sc-if><sc-if value="{{cfgOff}}" hint-placeholder-val="{{ false }}"><span class="pill">No configuration needed</span></sc-if>
+<span class="b {{stCls}}">{{stLabel}}</span>
+<span class="lock" style="margin-left: 4px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Edit &amp; archive: Admin only</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 12px 0; padding-top: 4px">
+<div class="stat"><span class="muted" style="font-size: 12px">Total units</span><strong>{{total}}</strong></div>
+<div class="stat"><span class="muted" style="font-size: 12px">In MRD Office</span><strong>{{inOffice}}</strong></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Deployed</span><strong>{{deployed}}</strong></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Ready / min</span><strong style="color: {{readyColor}}">{{nReady}} <span style="font-size: 14px; color: #5E6B7D; font-weight: 500">/ {{minVal}}</span></strong></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Batches</span><strong>{{nBatches}}</strong></div>
+<div class="stat"><span class="muted" style="font-size: 12px">Last received</span><strong style="font-size: 15px; padding-top: 4px">{{lastRecv}}</strong></div>
+</div>
+</div>
+</section>
+</div>
+
+<div role="tablist" aria-label="Product sections" style="display: flex; gap: 26px; border-bottom: 1px solid #E3E7EC; margin-top: -8px; overflow-x: auto">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="4"><button class="{{t.cls}}" role="tab" aria-selected="{{t.sel}}" onClick="{{t.pick}}">{{t.label}}<span class="n">{{t.n}}</span></button></sc-for>
+</div>
+
+<!-- OVERVIEW -->
+<sc-if value="{{isOverview}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<section class="card" style="padding: 18px 20px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px">
+<div><h2 style="font-size: 15px; font-weight: 600">Status of all {{total}} units</h2><p class="muted" style="font-size: 12.5px">Click a status to see those units</p></div>
+<a href="DevicePrep.dc.html" style="font-size: 13px; font-weight: 500">Preparation queue →</a>
+</div>
+<div class="seg" style="height: 14px; border-radius: 7px" role="img" aria-label="{{distAria}}">
+<sc-for list="{{dist}}" as="d" hint-placeholder-count="5"><span style="width: {{d.w}}; background: {{d.c}}" title="{{d.label}} · {{d.v}} units"></span></sc-for>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 4px">
+<sc-for list="{{dist}}" as="d" hint-placeholder-count="5"><button class="lg" onClick="{{d.pick}}"><span style="width: 10px; height: 10px; border-radius: 3px; background: {{d.c}}"></span>{{d.label}}<strong>{{d.v}}</strong></button></sc-for>
+</div>
+<sc-if value="{{readyLow}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-radius: 10px; background: #FFF8EB; border: 1px solid #F3D9A6; color: #6B3D00; font-size: 13px">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9.5 17H2.5z"></path><path d="M12 10v4M12 17h.01"></path></svg>
+<span style="flex: 1 1 300px"><strong style="font-weight: 600">{{lowTitle}}</strong> {{lowText}}</span>
+<a class="btn sm" href="DevicePrep.dc.html" style="background: transparent; border-color: #F3D9A6; color: #6B3D00">Prepare units</a>
+</div>
+</sc-if>
+</section>
+
+<section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px">
+<div class="card">
+<div class="ch"><h2>Stock by location</h2><span class="muted" style="font-size: 12.5px">{{inOffice}} in office</span></div>
+<div style="padding: 0 18px 18px; display: flex; flex-direction: column; gap: 14px">
+<sc-for list="{{locs}}" as="l" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; gap: 6px" title="{{l.label}}: {{l.v}} units">
+<div style="display: flex; justify-content: space-between; font-size: 13px"><span>{{l.label}}<span class="muted" style="font-size: 12px"> · {{l.sub}}</span></span><strong style="font-weight: 600">{{l.v}}</strong></div>
+<div class="bar"><span style="width: {{l.w}}"></span></div>
+</div>
+</sc-for>
+</div>
+</div>
+
+<div class="card">
+<div class="ch"><h2>Units by facility</h2><span class="muted" style="font-size: 12.5px">{{deployed}} deployed</span></div>
+<sc-for list="{{facs}}" as="f" hint-placeholder-count="3">
+<a class="row" href="FacilityDetail.dc.html">
+<span style="width: 34px; height: 34px; flex: 0 0 34px; border-radius: 8px; background: #F1F4F7; display: flex; align-items: center; justify-content: center; color: #3B4758"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"></rect><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1"></path></svg></span>
+<span style="flex: 1; min-width: 0"><span style="display: block; font-weight: 500; font-size: 13.5px">{{f.name}}</span><span class="muted" style="font-size: 12px">{{f.sub}}</span></span>
+<span class="t {{f.tcls}}">{{f.type}}</span>
+<strong style="width: 24px; text-align: right">{{f.v}}</strong>
+</a>
+</sc-for>
+<div style="padding: 12px 18px; border-top: 1px solid #EEF1F4; font-size: 12.5px" class="muted">Bank Muscat: 7 contract + 1 additional (28 Sep)</div>
+</div>
+
+<div class="card" style="display: flex; flex-direction: column">
+<div class="ch"><h2>Specifications</h2></div>
+<dl style="margin: 0; padding: 0 18px 14px; display: grid; grid-template-columns: 110px 1fr; gap: 8px 12px; font-size: 13px">
+<sc-for list="{{specs}}" as="sp" hint-placeholder-count="3"><dt class="muted">{{sp.k}}</dt><dd style="margin: 0">{{sp.v}}</dd></sc-for>
+</dl>
+<div style="border-top: 1px solid #EEF1F4; padding: 14px 18px 18px; display: flex; flex-direction: column; gap: 10px">
+<span class="ov">Tracked identity fields</span>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{idFields}}" as="f" hint-placeholder-count="7"><span class="pill" title="{{f.hint}}">{{f.name}}<span class="muted" style="font-size: 11px">{{f.when}}</span></span></sc-for>
+</div>
+</div>
+</div>
+</section>
+
+<section style="display: flex; flex-wrap: wrap; gap: 16px">
+<div class="card" style="flex: 3 1 560px; min-width: 0">
+<div class="ch"><div><h2>Ready for deployment</h2><p class="muted" style="font-size: 12.5px">Configured, tested and labelled · MRD Office, Shelf A2</p></div><a class="btn sm p" href="CreateDeployment.dc.html">Deploy</a></div>
+<div class="tw">
+<table class="tbl">
+<thead><tr><th>S/N</th><th>Device ID</th><th>SIM (ICCID)</th><th>IP</th><th>Configured</th></tr></thead>
+<tbody>
+<sc-for list="{{readyUnits}}" as="u" hint-placeholder-count="4">
+<tr><td><a class="mono" href="DeviceDetail.dc.html" style="font-weight: 500">{{u.sn}}</a></td><td class="mono">{{u.dev}}</td><td class="mono">{{u.iccid}}</td><td class="mono">{{u.ip}}</td><td class="muted">{{u.when}}</td></tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+</div>
+<div class="card" style="flex: 2 1 340px; min-width: 0">
+<div class="ch"><h2>Recent activity</h2><a href="AuditLog.dc.html" style="font-size: 13px; font-weight: 500">Audit log →</a></div>
+<div style="padding: 0 18px 14px; display: flex; flex-direction: column">
+<sc-for list="{{activity}}" as="a" hint-placeholder-count="5">
+<div style="display: flex; gap: 12px; padding: 8px 0">
+<span style="width: 28px; height: 28px; border-radius: 50%; background: {{a.bg}}; color: #0E1726; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex: 0 0 28px">{{a.ini}}</span>
+<span style="font-size: 13px; line-height: 1.4"><strong style="font-weight: 600">{{a.who}}</strong> {{a.what}} <span class="mono" style="color: #0B7A6B">{{a.obj}}</span><span class="muted" style="display: block; font-size: 12px">{{a.when}}</span></span>
+</div>
+</sc-for>
+</div>
+</div>
+</section>
+</div>
+</sc-if>
+
+<!-- UNITS -->
+<sc-if value="{{isUnits}}" hint-placeholder-val="{{ false }}">
+<section class="card" style="min-width: 0">
+<div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 14px 18px">
+<sc-for list="{{unitChips}}" as="c" hint-placeholder-count="6"><button class="{{c.cls}}" aria-pressed="{{c.pressed}}" onClick="{{c.pick}}">{{c.label}}<strong>{{c.n}}</strong></button></sc-for>
+<span style="flex: 1"></span>
+<button class="btn sm" onClick="{{openExport}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"></path></svg>Export units</button>
+</div>
+<div class="tw" style="border-top: 1px solid #E3E7EC">
+<table class="tbl">
+<thead><tr><th>S/N</th><th>IMEI</th><th>Device ID</th><th>SIM (ICCID)</th><th>IP</th><th>Status</th><th>Location / facility</th><th>Batch</th></tr></thead>
+<tbody>
+<sc-for list="{{units}}" as="u" hint-placeholder-count="10">
+<tr>
+<td><a class="mono" href="DeviceDetail.dc.html" style="font-weight: 500">{{u.sn}}</a></td>
+<td class="mono">{{u.imei}}</td>
+<td class="mono">{{u.dev}}</td>
+<td class="mono"><span style="color: {{u.simColor}}">{{u.iccid}}</span></td>
+<td class="mono"><span style="color: {{u.simColor}}">{{u.ip}}</span></td>
+<td><span class="b {{u.cls}}">{{u.status}}</span></td>
+<td><sc-if value="{{u.atFac}}" hint-placeholder-val="{{ false }}"><a href="FacilityDetail.dc.html" style="color: #0E1726">{{u.where}}</a> <span class="t {{u.tcls}}" style="margin-left: 4px">{{u.type}}</span></sc-if><sc-if value="{{u.inOffice}}" hint-placeholder-val="{{ true }}"><span>{{u.where}}</span></sc-if></td>
+<td><a class="mono" href="BatchDetail.dc.html">{{u.batch}}</a></td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 12px 18px; border-top: 1px solid #E3E7EC; font-size: 13px">
+<span class="muted">{{unitFooter}}</span>
+<div style="display: flex; gap: 4px; align-items: center">
+<button class="pg" aria-label="Previous page" onClick="{{prevPage}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg></button>
+<sc-for list="{{pages}}" as="p" hint-placeholder-count="3"><button class="{{p.cls}}" onClick="{{p.pick}}">{{p.label}}</button></sc-for>
+<button class="pg" aria-label="Next page" onClick="{{nextPage}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></button>
+</div>
+</div>
+</section>
+</sc-if>
+
+<!-- BATCHES -->
+<sc-if value="{{isBatches}}" hint-placeholder-val="{{ false }}">
+<section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 16px">
+<sc-for list="{{batches}}" as="b" hint-placeholder-count="2">
+<article class="card" style="padding: 18px 20px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px">
+<div><a class="mono" href="BatchDetail.dc.html" style="font-size: 15px; font-weight: 600">{{b.id}}</a><p class="muted" style="font-size: 12.5px; margin-top: 2px">Received {{b.date}} by {{b.by}}</p></div>
+<div style="text-align: right"><div style="font-size: 22px; font-weight: 600; line-height: 1">{{b.qty}}</div><div class="muted" style="font-size: 11.5px">units</div></div>
+</div>
+<div class="seg" style="height: 10px; border-radius: 5px">
+<sc-for list="{{b.parts}}" as="p" hint-placeholder-count="3"><span style="width: {{p.w}}; background: {{p.c}}" title="{{p.label}} · {{p.v}}"></span></sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: #3B4758">
+<sc-for list="{{b.parts}}" as="p" hint-placeholder-count="3"><span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 2px; background: {{p.c}}"></span>{{p.label}} <strong style="color: #0E1726">{{p.v}}</strong></span></sc-for>
+</div>
+<dl style="margin: 0; display: grid; grid-template-columns: 110px 1fr; gap: 6px 12px; font-size: 13px; padding-top: 12px; border-top: 1px solid #EEF1F4">
+<dt class="muted">Supplier</dt><dd style="margin: 0">{{b.supplier}}</dd>
+<dt class="muted">Purchase order</dt><dd style="margin: 0" class="mono">{{b.po}}</dd>
+<dt class="muted">Invoice</dt><dd style="margin: 0" class="mono">{{b.inv}}</dd>
+<dt class="muted">Serial range</dt><dd style="margin: 0" class="mono">{{b.range}}</dd>
+<dt class="muted">Damaged</dt><dd style="margin: 0">{{b.damaged}}</dd>
+</dl>
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap">
+<span class="muted" style="font-size: 12.5px">{{b.note}}</span>
+<a class="btn sm" href="BatchDetail.dc.html">Open batch</a>
+</div>
+</article>
+</sc-for>
+</section>
+</sc-if>
+
+<!-- SETTINGS -->
+<sc-if value="{{isSettings}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; background: #fff; border: 1px solid #E3E7EC; font-size: 13px">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>
+<span style="flex: 1">Product settings can be changed by <strong style="font-weight: 600">Admins only</strong>. Operations and Technician roles see this tab read-only. Changes apply to future units and are logged.</span>
+</div>
+<section style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+<div style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+<div class="card" style="padding: 18px 20px; display: flex; flex-direction: column; gap: 12px">
+<h2 style="font-size: 15px; font-weight: 600">Tracking method</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px">
+<div class="rc on"><strong style="font-size: 13px">Serialised</strong><span class="muted">Each unit has its own S/N</span></div>
+<div class="rc" style="opacity: .6"><strong style="font-size: 13px">Hybrid</strong><span class="muted">Batch first, serials later</span></div>
+<div class="rc" style="opacity: .6"><strong style="font-size: 13px">Quantity</strong><span class="muted">Counted only</span></div>
+</div>
+<span class="muted" style="font-size: 12px">Locked: {{total}} serialised units exist. Archive and create a new product to change it.</span>
+</div>
+<div class="card" style="padding: 18px 20px; display: flex; gap: 12px; align-items: flex-start">
+<button class="{{cfgSw}}" role="switch" aria-checked="{{cfgAria}}" aria-labelledby="cfg-l" onClick="{{toggleCfg}}"></button>
+<span style="display: flex; flex-direction: column; gap: 2px"><span id="cfg-l" style="font-weight: 500">Requires configuration before deployment</span><span class="muted" style="font-size: 12.5px">New units start as Unconfigured and must finish the checklist before they can be marked Ready.</span></span>
+</div>
+<div class="card" style="padding: 18px 20px; display: flex; flex-direction: column; gap: 12px">
+<h2 style="font-size: 15px; font-weight: 600">Minimum stock</h2>
+<div style="display: flex; gap: 14px; flex-wrap: wrap">
+<div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px"><label for="min-ready" style="font-weight: 500">Ready for deployment</label><input id="min-ready" class="in" type="number" min="0" value="{{minReady}}" onChange="{{onMin}}" style="width: 140px"></div>
+<div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px"><label for="min-total" style="font-weight: 500">Total in office</label><input id="min-total" class="in" type="number" min="0" value="{{minTotal}}" onChange="{{onMinTotal}}" style="width: 140px"></div>
+</div>
+<span class="muted" style="font-size: 12px">Alerts go to Admins and Operations when stock drops below either level.</span>
+</div>
+</div>
+
+<div style="flex: 1.4 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+<div class="card">
+<div class="ch"><div><h2>Required fields per unit</h2><p class="muted" style="font-size: 12.5px">Captured at receiving or during preparation</p></div><button class="btn sm" onClick="{{afStart}}">Add field</button></div>
+<sc-if value="{{afOpen}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; padding: 0 18px 14px">
+<div style="display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; flex: 1 1 160px"><label for="af-name" style="font-weight: 500">Field name</label><input id="af-name" class="in" value="{{afName}}" onChange="{{onAfName}}" placeholder="e.g. Asset tag" style="height: 36px"></div>
+<div style="display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; flex: 0 1 150px"><label for="af-type" style="font-weight: 500">Type</label><select id="af-type" class="in" value="{{afType}}" onChange="{{onAfType}}" style="height: 36px"><option value="Text">Text</option><option value="Number">Number</option><option value="MAC address">MAC address</option><option value="IP address">IP address</option><option value="Date">Date</option><option value="Select">Select</option></select></div>
+<div style="display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; flex: 0 1 140px"><label for="af-when" style="font-weight: 500">Captured at</label><select id="af-when" class="in" value="{{afWhen}}" onChange="{{onAfWhen}}" style="height: 36px"><option value="Receiving">Receiving</option><option value="Preparation">Preparation</option><option value="Labelling">Labelling</option><option value="Deployment">Deployment</option></select></div>
+<button class="{{afReqCls}}" onClick="{{toggleAfReq}}" role="checkbox" aria-checked="{{afReqAria}}" style="height: 36px">Required</button>
+<button class="btn sm" onClick="{{afCancel}}" style="height: 36px">Cancel</button><button class="btn sm p" onClick="{{afSave}}" style="height: 36px">Add</button>
+<sc-if value="{{afHasErr}}" hint-placeholder-val="{{ false }}"><span style="flex: 1 1 100%; font-size: 12.5px; color: #A3201F">{{afErr}}</span></sc-if>
+</div>
+</sc-if>
+
+<div class="tw">
+<table class="tbl">
+<thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Unique</th><th>Captured at</th></tr></thead>
+<tbody>
+<sc-for list="{{reqFields}}" as="f" hint-placeholder-count="7">
+<tr><td style="font-weight: 500">{{f.name}}</td><td class="muted">{{f.type}}</td><td>{{f.req}}</td><td>{{f.uniq}}</td><td class="muted">{{f.when}}</td></tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+</div>
+<div class="card" style="padding: 18px 20px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap"><div><h2 style="font-size: 15px; font-weight: 600">Preparation checklist template</h2><p class="muted" style="font-size: 12.5px">Every RUT956 goes through these steps on the prep bench</p></div><button class="btn sm" onClick="{{asStart}}">Add step</button></div>
+<sc-if value="{{asOpen}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; padding: 10px 12px; border: 1px dashed #B9C2CE; border-radius: 10px">
+<div style="display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; flex: 1 1 160px"><label for="as-title" style="font-weight: 500">Step</label><input id="as-title" class="in" value="{{asTitle}}" onChange="{{onAsTitle}}" placeholder="e.g. Photograph serial label" style="height: 36px"></div>
+<div style="display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; flex: 2 1 220px"><label for="as-desc" style="font-weight: 500">Instructions</label><input id="as-desc" class="in" value="{{asDesc}}" onChange="{{onAsDesc}}" style="height: 36px"></div>
+<button class="btn sm" onClick="{{asCancel}}" style="height: 36px">Cancel</button><button class="btn sm p" onClick="{{asSave}}" style="height: 36px">Add step</button>
+<sc-if value="{{asHasErr}}" hint-placeholder-val="{{ false }}"><span style="flex: 1 1 100%; font-size: 12.5px; color: #A3201F">{{asErr}}</span></sc-if>
+</div>
+</sc-if>
+
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="6">
+<div class="step">
+<span class="num">{{s.n}}</span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 500; font-size: 13.5px">{{s.title}}</span><span class="muted" style="font-size: 12.5px">{{s.desc}}</span></span>
+<span class="pill" style="height: 22px; font-size: 11.5px">{{s.tag}}</span>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; flex-wrap: wrap"><span class="muted" style="font-size: 12px; flex: 1 1 200px">Configuration and minimum levels are saved with Save settings. Fields and steps are added immediately.</span><button class="btn" onClick="{{goOverview}}">Cancel</button><button class="btn p" onClick="{{saveSettings}}">Save settings</button></div>
+</div>
+</section>
+</div>
+</sc-if>
+</main>
+</div>
+</div>
+
+<!-- Edit product -->
+<sc-if value="{{edOpen}}" hint-placeholder-val="{{ false }}">
+<div class="ovl">
+<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="ed-t" style="max-width: 560px; max-height: calc(100vh - 32px); overflow-y: auto">
+<div style="padding: 20px 22px 6px"><h2 id="ed-t" style="font-size: 17px; font-weight: 600">Edit Teltonika RUT956</h2><p class="muted" style="font-size: 13px; margin-top: 4px">Catalogue details shown on this page and in Products. The name links units and history, so it can't be renamed here.</p></div>
+<div style="padding: 12px 22px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px"><label for="ed-brand" style="font-weight: 500">Brand</label><input id="ed-brand" class="in" value="{{ed.brand}}" onChange="{{onEdBrand}}"></div>
+<div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px"><label for="ed-model" style="font-weight: 500">Model</label><input id="ed-model" class="in" value="{{ed.model}}" onChange="{{onEdModel}}"></div>
+<div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px"><label for="ed-cat" style="font-weight: 500">Category</label><select id="ed-cat" class="in" value="{{ed.cat}}" onChange="{{onEdCat}}"><sc-for list="{{catOpts}}" as="o" hint-placeholder-count="8"><option value="{{o.v}}">{{o.l}}</option></sc-for></select></div>
+</div>
+<div style="padding: 0 22px 12px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px"><label for="ed-desc" style="font-weight: 500">Description</label><input id="ed-desc" class="in" value="{{ed.desc}}" onChange="{{onEdDesc}}"></div>
+<div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px"><label for="ed-specs" style="font-weight: 500">Specifications <span class="muted" style="font-weight: 400">· one per line, “Label: value”</span></label><textarea id="ed-specs" class="in" value="{{ed.specs}}" onChange="{{onEdSpecs}}" style="height: 110px; padding: 10px 12px; resize: vertical"></textarea></div>
+<sc-if value="{{edHasErr}}" hint-placeholder-val="{{ false }}"><p role="alert" style="font-size: 12.5px; color: #A3201F; background: #FDEBEA; padding: 8px 10px; border-radius: 8px">{{edErr}}</p></sc-if>
+</div>
+<div style="display: flex; justify-content: flex-end; gap: 10px; padding: 14px 22px 20px; border-top: 1px solid #EEF1F4"><button class="btn" onClick="{{edClose}}">Cancel</button><button class="btn p" onClick="{{edSave}}">Save changes</button></div>
+</div>
+</div>
+</sc-if>
+<!-- Export CSV -->
+<sc-if value="{{exOpen}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{exClose}}" style="position: fixed; inset: 0; background: rgba(14,23,38,.45); z-index: 50"></div>
+<div role="dialog" aria-modal="true" aria-label="{{exTitle}}" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(640px, calc(100% - 32px)); max-height: calc(100vh - 32px); overflow-y: auto; background: #fff; border-radius: 14px; z-index: 51; box-shadow: 0 20px 48px rgba(14,23,38,.25); display: flex; flex-direction: column">
+<div style="padding: 20px 22px 6px; display: flex; justify-content: space-between; gap: 12px; align-items: flex-start">
+<div><h2 style="font-size: 17px; font-weight: 600">{{exTitle}}</h2><p style="font-size: 13px; margin-top: 4px; color: #5E6B7D">{{exDesc}}</p></div>
+<button onClick="{{exClose}}" aria-label="Close export" style="width: 32px; height: 32px; border: 1px solid #D5DBE3; border-radius: 8px; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #1B2638; flex: 0 0 32px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<div style="padding: 10px 22px; display: flex; flex-direction: column; gap: 8px">
+<label for="ex-csv" style="display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: 12.5px; font-weight: 500; color: #3B4758"><span>Preview · <span style="font-family: 'Geist Mono', ui-monospace, monospace">{{exFile}}</span></span><span style="font-weight: 400; color: #5E6B7D">{{exMeta}}</span></label>
+<textarea id="ex-csv" readonly="readonly" value="{{exCsv}}" style="width: 100%; min-height: 200px; border: 1px solid #D5DBE3; border-radius: 8px; padding: 9px 11px; font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12px; color: #0E1726; background: #F8FAFB; resize: vertical"></textarea>
+<sc-if value="{{exHasErr}}" hint-placeholder-val="{{ false }}"><p role="alert" style="font-size: 12.5px; color: #8A4B00; background: #FFF3DC; padding: 8px 10px; border-radius: 8px">{{exErr}}</p></sc-if>
+</div>
+<div style="padding: 14px 22px; border-top: 1px solid #E3E7EC; display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap">
+<button class="btn" onClick="{{exClose}}">Close</button>
+<button class="btn p" onClick="{{exSave}}">Download CSV</button>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{hasMsg}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 60; display: flex; align-items: center; gap: 12px; padding: 12px 14px 12px 16px; border-radius: 12px; background: #0E1726; color: #fff; font-size: 13.5px; box-shadow: 0 12px 32px rgba(14,23,38,.3); max-width: calc(100% - 32px)">
+<span>{{msg}}</span>
+<button onClick="{{dismissMsg}}" aria-label="Dismiss" style="border: 0; background: transparent; color: #B3BDCB; cursor: pointer; padding: 4px; display: flex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-if>
+<sc-if value="{{showArchive}}" hint-placeholder-val="{{ false }}">
+<div class="ovl">
+<div class="dlg" role="alertdialog" aria-modal="true" aria-labelledby="ar-t">
+<div style="padding: 22px 22px 8px; display: flex; flex-direction: column; gap: 12px">
+<span style="width: 40px; height: 40px; border-radius: 10px; background: #F1F4F7; display: flex; align-items: center; justify-content: center; color: #3B4758"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1"></rect><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"></path><path d="M10 13h4"></path></svg></span>
+<h2 id="ar-t" style="font-size: 17px; font-weight: 600">Archive Teltonika RUT956?</h2>
+<p style="font-size: 13.5px; color: #3B4758">Archiving hides this product from receiving, preparation and new deployments. Nothing is deleted: all {{total}} units, {{nBatches}} batches and the deployment history at {{nFacs}} facilities stay searchable.</p>
+<p style="font-size: 12.5px; color: #8A4B00; background: #FFF8EB; border: 1px solid #F3D9A6; border-radius: 8px; padding: 8px 10px">{{inOffice}} units are still in the MRD Office and {{deployed}} are deployed. Deployed routers keep working and stay linked to their facilities.</p>
+</div>
+<div style="display: flex; justify-content: flex-end; gap: 10px; padding: 14px 22px 20px">
+<button class="btn" onClick="{{closeArchive}}">Cancel</button>
+<button class="btn p" onClick="{{confirmArchive}}">Archive product</button>
+</div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{shell.menuOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 70; display: flex">
+<nav aria-label="Mobile navigation" style="width: min(300px, 85vw); height: 100%; overflow-y: auto; background: #0C1424; padding: 16px 12px; display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 8px 14px; color: #fff"><span style="font-weight: 600">Moonrock R&amp;D</span><button onClick="{{shell.closeAll}}" aria-label="Close menu" style="width: 40px; height: 40px; border: 0; border-radius: 8px; background: #1C2A42; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<a href="Main.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Dashboard</a>
+<a href="Search.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Search</a>
+<a href="Inventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">All inventory</a>
+<a href="Products.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Products</a>
+<a href="Batches.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Batches</a>
+<a href="ReceiveInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Receive stock</a>
+<a href="DevicePrep.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Device preparation</a>
+<a href="SimInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">SIM cards</a>
+<a href="Facilities.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Facilities</a>
+<a href="PocManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">POC projects</a>
+<a href="ContractManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Contracts</a>
+<a href="Deployments.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Deployments</a>
+<a href="CreateDeployment.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">New deployment</a>
+<a href="Reports.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Reports</a>
+<a href="AuditLog.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Audit log</a>
+<a href="Users.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Users &amp; roles</a>
+<a href="Settings.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Settings</a>
+</nav>
+<button aria-label="Close menu" onClick="{{shell.closeAll}}" style="flex: 1; border: 0; padding: 0; background: rgba(14,23,38,.5); cursor: default"></button>
+</div>
+</sc-if>
+<sc-if value="{{shell.blocked}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 80; display: flex; align-items: center; gap: 12px; max-width: min(560px, calc(100vw - 32px)); padding: 12px 12px 12px 16px; border-radius: 12px; background: #7A1F1E; color: #fff; font-size: 13.5px; box-shadow: 0 12px 32px rgba(14,23,38,.3)">
+<span style="flex: 1">You have view access to this canvas, so that change wasn't saved. Ask the owner for edit access to change shared data.</span>
+<button onClick="{{shell.unblock}}" style="height: 32px; padding: 0 12px; border: 1px solid rgba(255,255,255,.4); border-radius: 8px; background: transparent; color: #fff; font: inherit; font-size: 12.5px; cursor: pointer">OK</button>
+</div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1560}}'>
+class Component extends DCLogic {
+  // Prototype persistence: this screen's data survives reloads and is shared by every screen in this browser.
+  componentDidMount() {
+    this._init = JSON.parse(JSON.stringify(this.state));
+    this._onStore = e => { if (!e || !e.key || e.key === 'mrd-proto:store') this.forceUpdate(); };
+    try { window.addEventListener('storage', this._onStore); } catch (e) {}
+    this._sharedInit();
+    try { const raw = window.localStorage.getItem('mrd-proto:v1:ProductDetail'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
+  }
+  // Shared prototype store: one record in browser storage that every screen reads and writes (key mrd-proto:store).
+  readStore() {
+    const empty = { v: 1, units: {}, added: [], deployments: [], events: [], catalog: {} };
+    try { const s = JSON.parse(window.localStorage.getItem('mrd-proto:store') || 'null'); return Object.assign(empty, s || {}); } catch (e) { return empty; }
+  }
+  writeStore(mutate) {
+    const s = this.readStore();
+    if (this._shared && this._shared.mode === 'live' && !this._shared.canEdit) { const t = JSON.parse(JSON.stringify(s)); mutate(t); const strip = o => { const c = Object.assign({}, o); delete c.ui; return JSON.stringify(c); }; if (strip(t) !== strip(s)) this.setState({ _blocked: true }); s.ui = t.ui || s.ui; try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {} this.forceUpdate(); return s; }
+    mutate(s); s.events = s.events.slice(0, 200);
+    try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {}
+    this._pushShared(s);
+    this.forceUpdate(); return s;
+  }
+  // Shared across viewers: the store is mirrored to one document in this artifact's database (mrd_prototype/store).
+  // Browser storage stays as the local cache; everyone who opens the canvas sees the same data, editors can change it.
+  _host() {
+    let w = window;
+    for (let i = 0; i < 8; i++) {
+      try { if (w.claude && typeof w.claude.use === 'function') return w.claude; } catch (e) { return null; }
+      let p = null; try { p = w.parent; } catch (e) { return null; }
+      if (!p || p === w) return null; w = p;
+    }
+    return null;
+  }
+  async _sharedInit() {
+    const host = this._host();
+    if (!host) { this._shared = { mode: 'local' }; this.forceUpdate(); return; }
+    let db = null; try { db = await host.use('db'); } catch (e) { db = null; }
+    if (!db) { this._shared = { mode: 'local' }; this.forceUpdate(); return; }
+    let canEdit = false; try { const u = await host.use('user'); canEdit = u ? !!(await u.canEdit()) : false; } catch (e) { canEdit = false; }
+    this._shared = { mode: 'live', canEdit, db };
+    try {
+      this._unsubShared = db.doc('mrd_prototype/store').onSnapshot(snap => {
+        const local = this.readStore();
+        let next = null;
+        if (snap && snap.exists) { const d = snap.data() || {}; if (typeof d.json === 'string') { try { next = JSON.parse(d.json); } catch (e) { next = null; } } }
+        if (!next) {
+          if (snap && !snap.exists) {
+            let seen = false; try { seen = !!window.localStorage.getItem('mrd-proto:shared-seen'); } catch (e) {}
+            const hasLocal = local.events.length || Object.keys(local.units).length || local.added.length;
+            if (!seen && canEdit && hasLocal) this._pushShared(local);
+            else if (seen || !canEdit) { try { window.localStorage.setItem('mrd-proto:store', JSON.stringify({ v: 1, units: {}, added: [], deployments: [], events: [], catalog: {}, ui: local.ui || {} })); } catch (e) {} this.forceUpdate(); }
+          }
+          return;
+        }
+        next.ui = local.ui || {};
+        try { window.localStorage.setItem('mrd-proto:shared-seen', '1'); } catch (e) {}
+        try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(next)); } catch (e) {}
+        this.forceUpdate();
+      }, err => { this._shared = { mode: 'local', err: err && err.code }; this.forceUpdate(); });
+    } catch (e) { this._shared = { mode: 'local' }; }
+    this.forceUpdate();
+  }
+  _pushShared(s) {
+    const sh = this._shared;
+    if (!sh || sh.mode !== 'live' || !sh.canEdit) return;
+    const out = Object.assign({}, s); delete out.ui;
+    let json = JSON.stringify(out);
+    if (json.length > 240000) { out.events = (out.events || []).slice(0, 40); json = JSON.stringify(out); }
+    sh.db.doc('mrd_prototype/store').set({ json, savedAt: Date.now() }).catch(err => { this._shared = Object.assign({}, sh, { lastErr: (err && err.code) || 'unavailable' }); this.forceUpdate(); });
+  }
+  _clearShared() {
+    const sh = this._shared;
+    if (sh && sh.mode === 'live' && sh.canEdit) { try { sh.db.doc('mrd_prototype/store').delete().catch(() => {}); } catch (e) {} }
+  }
+  syncInfo() {
+    const sh = this._shared;
+    if (!sh) return { label: 'Connecting…', cls: 's-unconf', tip: 'Connecting to the shared store', readOnly: false };
+    if (sh.mode === 'live' && sh.lastErr) return { label: 'Not saved', cls: 's-damaged', tip: 'The last change could not be saved to the shared store (' + sh.lastErr + ')', readOnly: false };
+    if (sh.mode === 'live' && sh.canEdit) return { label: 'Shared · live', cls: 's-deployed', tip: 'Changes are saved for everyone who opens this canvas', readOnly: false };
+    if (sh.mode === 'live') return { label: 'View only', cls: 's-ready', tip: 'You can see shared changes live; only people with edit access can change data', readOnly: true };
+    return { label: 'This browser only', cls: 's-prep', tip: 'The shared store is not available here, so changes stay in this browser', readOnly: false };
+  }
+  nowLabel() { const d = new Date(); return 'Today, ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  patchUnit(s, ident, patch, prevSt) {
+    const cur = s.units[ident] || {};
+    s.units[ident] = Object.assign({}, cur, patch, { st0: cur.st0 !== undefined ? cur.st0 : (prevSt || ''), upd: this.nowLabel() });
+  }
+  logEvent(s, ev) {
+    const d = new Date();
+    s.events.unshift(Object.assign({ id: 'e' + d.getTime() + Math.random().toString(36).slice(2, 6), at: d.getTime(), when: this.nowLabel(), who: 'Chetan', ini: 'CH', role: 'Admin', source: 'Web' }, ev));
+  }
+  componentWillUnmount() { try { if (this._unsubShared) this._unsubShared(); } catch (e) {} try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
+  componentDidUpdate() {
+    try { const keep = Object.assign({}, this.state); delete keep._shell; delete keep._blocked; ["arch", "minReady", "ex", "msg", "ed", "af", "as", "cfgDraft", "minTotalDraft"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:ProductDetail', JSON.stringify(keep)); } catch (e) {}
+  }
+  constructor(props) { super(props); this.state = { tab: 'overview', uf: 'all', page: 0, arch: false, cfgDraft: null, minDraft: null, minTotalDraft: null }; }
+  // Shared shell: notifications bell (fed by the shared store) and the mobile navigation drawer.
+  shellVals() {
+    const S = this.state, st = this.readStore();
+    const seen = (st.ui && st.ui.seenAt) || 0;
+    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Stage changed': 'moved the stage of', 'POC decision': 'recorded a POC decision for', 'Contract ended': 'ended the contract for', 'Issue reported': 'reported an issue on', 'Reserved': 'reserved', 'Labels printed': 'printed labels for', 'File attached': 'attached a file to', 'File removed': 'removed a file from', 'User updated': 'updated user', 'Product edited': 'edited', 'Invite resent': 'resent the invite to', 'Document uploaded': 'uploaded a document to', 'Document removed': 'removed a document from', 'Contact added': 'added a contact to', 'Contact removed': 'removed a contact from', 'Contract updated': 'updated the contract for', 'Batch updated': 'updated batch', 'Batch archived': 'archived batch', 'Batch restored': 'restored batch', 'Facility updated': 'updated facility', 'Facility restored': 'restored facility', 'Report exported': 'exported', 'Record corrected': 'corrected', 'Note added': 'added a note to', 'Settings changed': 'updated settings ·', 'User invited': 'invited', 'Role changed': 'changed the role of', 'Verified on site': 'verified on site', 'Deployment cancelled': 'cancelled', 'Deployment updated': 'updated deployment' };
+    const fromStore = st.events.slice(0, 8).map(e => ({ text: (e.who || 'Chetan') + ' ' + (VERB[e.action] || String(e.action || '').toLowerCase()) + ' ' + e.item + (e.to && e.to !== '—' && e.action !== 'Imported' ? ' → ' + e.to : ''), when: e.when, href: e.itemHref || 'AuditLog.dc.html', unread: (e.at || 0) > seen }));
+    const alerts = [
+      { text: '14 Teltonika RUT956 units are waiting for preparation', when: 'Batch TEL-2026-004', href: 'DevicePrep.dc.html', alert: true },
+      { text: 'Cat6 patch cable 1 m is below its minimum level', when: 'Low stock · 18 of 25', href: 'InventoryItem.dc.html', alert: true },
+      { text: 'Qatar Foundation: 2 CO₂ sensors scheduled to install on 08 Oct', when: 'Upcoming deployment', href: 'Deployments.dc.html', alert: true }
+    ].map(a => Object.assign(a, { unread: !seen }));
+    const all = fromStore.concat(alerts);
+    const unread = all.filter(n => n.unread).length;
+    const SY = this.syncInfo();
+    return {
+      syncLabel: SY.label, syncCls: SY.cls, syncTip: SY.tip, blocked: !!S._blocked, unblock: () => this.setState({ _blocked: false }),
+      bellOpen: S._shell === 'bell', bellExp: S._shell === 'bell' ? 'true' : 'false', bellZ: S._shell === 'bell' ? '40' : 'auto',
+      menuOpen: S._shell === 'menu', menuExp: S._shell === 'menu' ? 'true' : 'false',
+      unread: unread > 9 ? '9+' : String(unread), hasUnread: unread > 0,
+      notes: all.map(n => ({ text: n.text, when: n.when, href: n.href, bg: n.unread ? '#F4FBF8' : '#fff', dot: n.alert ? '#E08A00' : (n.unread ? '#0B7A6B' : '#D5DBE3') })),
+      toggleBell: () => this.setState({ _shell: this.state._shell === 'bell' ? '' : 'bell' }),
+      toggleMenu: () => this.setState({ _shell: this.state._shell === 'menu' ? '' : 'menu' }),
+      closeAll: () => this.setState({ _shell: '' }),
+      markRead: () => { const st = this.readStore(); st.ui = Object.assign({}, st.ui || {}, { seenAt: Date.now() }); try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(st)); } catch (e) {} this.forceUpdate(); }
+    };
+  }
+  // CSV export through the host's downloads capability, with an inline fallback (preview to copy) when it is unavailable.
+  exportVals(spec) {
+    const st = this.state, ex = st.ex || null;
+    const q2 = v => { const t = String(v == null ? '' : v); return /[",\n\r]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
+    const csv = [spec.cols.map(c => q2(c[0])).join(',')].concat(spec.rows.map(r => spec.cols.map(c => q2(c[1](r))).join(','))).join('\n');
+    const meta = spec.rows.length + (spec.rows.length === 1 ? ' row' : ' rows') + ' · ' + spec.cols.length + ' columns';
+    const save = async () => {
+      let dl = null;
+      try { dl = (window.claude && window.claude.use) ? await window.claude.use('downloads') : null; } catch (e) { dl = null; }
+      if (!dl) { this.setState({ ex: Object.assign({}, this.state.ex, { err: 'Downloads aren’t available in this preview. Select the CSV above and copy it into a .csv file instead.' }) }); return; }
+      try {
+        await dl.save({ filename: spec.file, data: csv });
+        this.writeStore(s => { this.logEvent(s, { action: 'Report exported', item: spec.item, itemHref: spec.href, from: '—', to: spec.file, note: meta }); });
+        this.setState(Object.assign({ ex: null }, spec.doneState ? spec.doneState(spec.file + ' saved · ' + meta) : {}));
+      } catch (e) {
+        this.setState({ ex: Object.assign({}, this.state.ex, { err: e && e.code === 'declined' ? 'Download cancelled.' : 'The download didn’t start (' + ((e && e.code) || 'unavailable') + '). Copy the CSV above instead.' }) });
+      }
+    };
+    return {
+      exOpen: !!ex, exTitle: spec.title, exDesc: spec.desc, exFile: spec.file, exMeta: meta, exCsv: csv,
+      exErr: (ex && ex.err) || '', exHasErr: !!(ex && ex.err),
+      openExport: () => this.setState({ ex: { err: '' } }), exClose: () => this.setState({ ex: null }), exSave: save
+    };
+  }
+  renderVals() { return Object.assign(this._screenVals(), { shell: this.shellVals() }); }
+  _screenVals() {
+    const S = this.state;
+    const NAME = 'Teltonika RUT956';
+    const ST0 = this.readStore();
+    const PR = Object.assign({ added: [], archived: {}, restored: {}, min: {}, edits: {} }, ST0.products || {});
+    const ED = (PR.edits || {})[NAME] || {};
+    const CATS = [['tel', 'Teltonika Devices'], ['co2', 'CO₂ Sensors'], ['gw', 'LoRaWAN Gateways'], ['sim', 'M2M SIM Cards'], ['net', 'Network Equipment'], ['vfd', 'VFDs'], ['ctrl', 'Controllers & BMS'], ['cab', 'Cables & Accessories']];
+    const catLabelOf = k => (CATS.filter(c => c[0] === k)[0] || CATS[0])[1];
+    const DEF = { brand: 'Teltonika', model: 'RUT956', cat: 'tel', desc: 'industrial 4G LTE router, the BMS gateway for every Exergio site', specs: ['Cellular: LTE Cat 4', 'SIM: Dual SIM', 'Positioning: GNSS'] };
+    const CUR = { brand: ED.brand !== undefined ? ED.brand : DEF.brand, model: ED.model !== undefined ? ED.model : DEF.model, cat: ED.cat || DEF.cat, desc: ED.desc !== undefined ? ED.desc : DEF.desc, specs: ED.specs || DEF.specs };
+    const cfgSaved = ED.cfg !== undefined ? !!ED.cfg : true;
+    const minTotalSaved = ED.minTotal !== undefined ? Number(ED.minTotal) : 10;
+    const ST = { unconf: ['Unconfigured', 's-unconf', '#8A96A8'], prep: ['In preparation', 's-prep', '#E08A00'], ready: ['Ready for deployment', 's-ready', '#2F6FE4'], reserved: ['Reserved', 's-reserved', '#7C4DDB'], stock: ['In stock', 's-stock', '#1A8FAD'], deployed: ['Deployed', 's-deployed', '#12A374'], maint: ['Under maintenance', 's-maint', '#E86A1C'], transit: ['In transit', 's-transit', '#5468E0'], returned: ['Returned', 's-returned', '#9C8F7E'], damaged: ['Damaged', 's-damaged', '#DC3B3A'], retired: ['Retired', 's-retired', '#A2A9B4'] };
+    const TCLS = { POC: 't-poc', Contract: 't-con', Replacement: 't-rep', Additional: 't-add' };
+    const pad = (n, l) => { let s = String(n); while (s.length < l) s = '0' + s; return s; };
+    const all = [];
+    const r4 = { 4: ['3001424', '10.64.12.34', '05 Oct, 08:20'], 6: ['3001425', '10.64.12.35', '02 Oct, 15:10'], 9: ['3001427', '10.64.12.37', '05 Oct, 09:40'], 13: ['3001429', '10.64.12.39', '30 Sep, 11:45'] };
+    let unconfSeen = 0;
+    for (let i = 0; i < 20; i++) {
+      let st = 'unconf', iccid = '—', ip = '—', where = '', fac = '', type = '', tcls = '';
+      const imei = i === 9 ? '860548043912877' : (i === 11 ? '860548043912901' : '8605480439128' + pad(10 + i * 4, 2));
+      if (r4[i]) { st = 'ready'; iccid = '8996802026093' + r4[i][0].slice(1); ip = r4[i][1]; where = 'MRD Office · Shelf A2'; }
+      else if (i === 11) { st = 'deployed'; iccid = '8996802026093001435'; ip = '10.64.12.41'; where = 'Qatar Foundation'; type = 'POC'; tcls = 't-poc'; }
+      else if (i === 2) { st = 'deployed'; iccid = '8996802026093001419'; ip = '10.64.12.33'; where = 'Bank Muscat Head Office'; type = 'Additional'; tcls = 't-add'; }
+      else { unconfSeen++; where = 'MRD Office · ' + (unconfSeen <= 10 ? 'Shelf A1' : 'Shelf A2'); }
+      all.push({ sn: String(1108675300 + i), imei, dev: 'MRD-TEL-0' + (408 + i), iccid, ip, st, where, type, tcls, batch: 'TEL-2026-004', when: r4[i] ? r4[i][2] + ' · Chetan' : '' });
+    }
+    for (let i = 0; i < 10; i++) {
+      let st = 'deployed', iccid = '8996802026093001' + (380 + i), ip = '10.64.12.' + (20 + i), where = 'Bank Muscat Head Office', type = 'Contract', tcls = 't-con';
+      if (i === 9) { st = 'prep'; iccid = 'Awaiting SIM'; ip = '—'; where = 'MRD Office · Prep bench'; type = ''; tcls = ''; }
+      if (i === 3) { st = 'maint'; iccid = 'Removed'; ip = '—'; where = 'MRD Office · Repair bench'; type = ''; tcls = ''; }
+      if (i === 7) { iccid = '8996803026052000118'; ip = '10.72.4.18'; where = 'Lulu Hypermarket'; type = 'POC'; tcls = 't-poc'; }
+      all.push({ sn: String(1107442100 + i), imei: '8605480439129' + pad(20 + i * 3, 2), dev: 'MRD-TEL-0' + (398 + i), iccid, ip, st, where, type, tcls, batch: 'TEL-2026-003', when: '' });
+    }
+    // Shared store: RUT956 units received on other screens, then status / SIM / IP / location patches by serial.
+    const seen = {}; all.forEach(u => { seen[u.sn] = true; });
+    const addedBatch = {};
+    (ST0.added || []).forEach(a => {
+      if (!a || a.name !== NAME || !a.ident || seen[a.ident]) return; seen[a.ident] = true;
+      all.push({ sn: a.ident, imei: a.imei || '—', dev: a.devId || '—', iccid: '—', ip: '—', st: a.st || 'unconf', where: (a.loc || 'MRD Office') + (a.loc2 ? ' · ' + a.loc2 : ''), type: '', tcls: '', batch: a.batch || '—', when: '', recv: a.recv || '', sup: a.sup || '' });
+      if (a.batch) addedBatch[a.batch] = true;
+    });
+    Object.keys(ST0.units || {}).forEach(id => { const p = ST0.units[id]; if (p && p.name === NAME && !seen[id]) { seen[id] = true; all.push({ sn: id, imei: p.imei || '—', dev: '—', iccid: '—', ip: '—', st: p.st || 'unconf', where: 'MRD Office', type: '', tcls: '', batch: p.batch || '—', when: '' }); } });
+    for (let k = 0; k < all.length; k++) {
+      const p = ST0.units[all[k].sn]; if (!p) continue;
+      const u = Object.assign({}, all[k]);
+      if (p.st && ST[p.st]) u.st = p.st;
+      if (p.sim !== undefined) u.iccid = p.sim || '—';
+      if (p.ip !== undefined) u.ip = p.ip || '—';
+      if (p.type !== undefined) { u.type = p.type || ''; u.tcls = TCLS[p.type] || ''; }
+      if (u.st === 'deployed') { if (p.fac || p.loc) u.where = p.fac || p.loc; }
+      else if (p.loc || p.loc2) { u.where = (p.loc || 'MRD Office') + (p.loc2 ? ' · ' + p.loc2 : ''); u.type = ''; u.tcls = ''; }
+      if (p.st === 'ready' && p.upd) u.when = p.upd + ' · Chetan';
+      all[k] = u;
+    }
+    const total = all.length;
+    const order = { ready: 0, reserved: 1, prep: 2, maint: 3, unconf: 4, stock: 5, transit: 6, returned: 7, damaged: 8, deployed: 9, retired: 10 };
+    const filtered = all.filter(u => S.uf === 'all' || u.st === S.uf).sort((a, b) => order[a.st] - order[b.st]);
+    const per = 10, pageCount = Math.max(1, Math.ceil(filtered.length / per));
+    const page = Math.min(S.page, pageCount - 1);
+    const units = filtered.slice(page * per, page * per + per).map(u => Object.assign({}, u, {
+      status: ST[u.st][0], cls: ST[u.st][1], atFac: u.st === 'deployed', inOffice: u.st !== 'deployed',
+      simColor: (u.iccid === '—' || u.iccid === 'Awaiting SIM' || u.iccid === 'Removed') ? '#5E6B7D' : '#0E1726'
+    }));
+    const cnt = k => all.filter(u => u.st === k).length;
+    const goUnits = k => () => this.setState({ tab: 'units', uf: k, page: 0 });
+    const stKeys = ['unconf', 'prep', 'ready', 'deployed', 'maint'].concat(['reserved', 'stock', 'transit', 'returned', 'damaged', 'retired'].filter(k => cnt(k) > 0));
+    const dist = stKeys.map(k => ({ label: ST[k][0], c: ST[k][2], v: cnt(k), w: (total ? cnt(k) / total * 100 : 0).toFixed(1) + '%', pick: goUnits(k) }));
+    const distAria = dist.map(d => d.v + ' ' + d.label.toLowerCase()).join(', ');
+    const unitChips = [['all', 'All', all.length]].concat(stKeys.map(k => [k, ST[k][0], cnt(k)])).map(([id, label, n]) => ({ label, n, cls: 'fchip' + (S.uf === id ? ' on' : ''), pressed: S.uf === id ? 'true' : 'false', pick: () => this.setState({ uf: id, page: 0 }) }));
+    const pages = [];
+    for (let p = 0; p < pageCount; p++) pages.push({ label: String(p + 1), cls: 'pg' + (p === page ? ' on' : ''), pick: (n => () => this.setState({ page: n }))(p) });
+    const deployedN = cnt('deployed');
+    const inOfficeN = all.filter(u => u.st !== 'deployed' && u.st !== 'retired').length;
+    // Stock by location: office units grouped by sub-location.
+    const LOCSUB = { 'Shelf A1': 'MRD Office', 'Prep bench': 'awaiting SIM', 'Repair bench': 'LTE modem fault' };
+    const locMap = {}; const locOrder = [];
+    all.filter(u => u.st !== 'deployed' && u.st !== 'retired').forEach(u => { const k = u.where.replace(/^MRD Office · /, '') || 'MRD Office'; if (!locMap[k]) { locMap[k] = {}; locOrder.push(k); } locMap[k][u.st] = (locMap[k][u.st] || 0) + 1; });
+    const locMax = Math.max(1, ...locOrder.map(k => Object.keys(locMap[k]).reduce((a, s) => a + locMap[k][s], 0)));
+    const locs = locOrder.map(label => { const m = locMap[label]; const v = Object.keys(m).reduce((a, s) => a + m[s], 0); const sub = Object.keys(m).length === 1 && LOCSUB[label] && label !== 'Shelf A1' ? LOCSUB[label] : Object.keys(m).sort((a, b) => order[a] - order[b]).map(s => m[s] + ' ' + (s === 'ready' ? 'ready' : ST[s][0].toLowerCase())).join(' · '); return { label, v, sub, w: (v / locMax * 100).toFixed(1) + '%' }; });
+    // Units by facility: deployed units grouped by facility.
+    const FSUB = { 'Bank Muscat Head Office': 'Airport Heights, Muscat · Active operations', 'Qatar Foundation': 'Plant room B1 · since 01 Oct 2026', 'Lulu Hypermarket': 'Bausher, Muscat · POC study' };
+    const facMap = {}; const facOrder = [];
+    all.filter(u => u.st === 'deployed').forEach(u => { if (!facMap[u.where]) { facMap[u.where] = { v: 0, types: {} }; facOrder.push(u.where); } facMap[u.where].v++; if (u.type) facMap[u.where].types[u.type] = (facMap[u.where].types[u.type] || 0) + 1; });
+    const facs = facOrder.map(name => { const f = facMap[name]; const type = Object.keys(f.types).sort((a, b) => f.types[b] - f.types[a])[0] || 'POC'; return { name, sub: FSUB[name] || 'Deployed from MRD Office', type, tcls: TCLS[type] || 't-poc', v: f.v }; }).sort((a, b) => b.v - a.v);
+    const idFields = [['S/N', 'receiving'], ['IMEI', 'receiving'], ['MAC', 'receiving'], ['Device ID', 'labelling'], ['Firmware', 'prep'], ['SIM', 'prep'], ['IP', 'prep']].concat((ED.extraFields || []).map(f => [f.name, String(f.when || '').toLowerCase()])).map(([name, when]) => ({ name, when: '· ' + when, hint: name + ' is captured at ' + when }));
+    const readyUnits = all.filter(u => u.st === 'ready').map(u => ({ sn: u.sn, dev: u.dev, iccid: u.iccid, ip: u.ip, when: u.when || '—' }));
+    const AV = { CH: '#CDEFE7', NI: '#F6E3C4', AI: '#E6DDFB', RA: '#DCE6FB', SA: '#FBE0DC' };
+    const storeActs = (ST0.events || []).filter(e => e && (seen[String(e.item || '').split(' ').pop()] || String(e.item || '').indexOf(NAME) >= 0 || String(e.note || '').indexOf(NAME) >= 0)).slice(0, 5).map(e => ({ ini: e.ini || 'CH', bg: AV[e.ini] || '#E3E7EC', who: e.who || 'Chetan', what: String(e.action || '').toLowerCase() + (e.to && e.to !== '—' ? ' → ' + e.to : ''), obj: String(e.item || '').replace(NAME, 'RUT956'), when: e.when || '' }));
+    const activity = storeActs.concat([
+      { ini: 'CH', bg: '#CDEFE7', who: 'Chetan', what: 'marked Ready', obj: '1108675309', when: 'Today, 09:42' },
+      { ini: 'CH', bg: '#CDEFE7', who: 'Chetan', what: 'assigned IP 10.64.12.37 to', obj: '1108675309', when: 'Today, 09:39' },
+      { ini: 'CH', bg: '#CDEFE7', who: 'Chetan', what: 'deployed to Qatar Foundation', obj: '1108675311', when: 'Thu 1 Oct, 13:20' },
+      { ini: 'SA', bg: '#FBE0DC', who: 'Saif', what: 'deployed to Bank Muscat HO', obj: '1108675302', when: 'Mon 28 Sep, 10:05' },
+      { ini: 'NI', bg: '#F6E3C4', who: 'Nitin', what: 'received 20 units in', obj: 'TEL-2026-004', when: 'Tue 22 Sep, 11:30' }
+    ]).slice(0, 5);
+    // Batches: sample batches plus batches of RUT956 units received on other screens; progress from current unit states.
+    const BUCKET = { unconf: ['Unconfigured', '#8A96A8'], stock: ['Unconfigured', '#8A96A8'], ready: ['Ready', '#2F6FE4'], reserved: ['Ready', '#2F6FE4'], deployed: ['Deployed', '#12A374'], prep: ['In preparation', '#E08A00'], maint: ['Under maintenance', '#E86A1C'], transit: ['In transit', '#5468E0'], returned: ['Returned', '#9C8F7E'], damaged: ['Damaged', '#DC3B3A'], retired: ['Retired', '#A2A9B4'] };
+    const partsOf = list => { const m = {}; const ord = []; list.forEach(u => { const b = BUCKET[u.st]; if (!m[b[0]]) { m[b[0]] = { label: b[0], c: b[1], v: 0 }; ord.push(b[0]); } m[b[0]].v++; }); return ord.map(k => m[k]).sort((a, b) => b.v - a.v).map(p => Object.assign(p, { w: (p.v / list.length * 100) + '%' })); };
+    const noteOf = list => { const d = list.filter(u => u.st === 'deployed').length, r = list.filter(u => u.st !== 'unconf' && u.st !== 'stock' && u.st !== 'transit').length; return d * 2 >= list.length ? d + ' of ' + list.length + ' deployed (' + Math.round(d / list.length * 100) + '%)' : r + ' of ' + list.length + ' prepared (' + Math.round(r / list.length * 100) + '%)'; };
+    const bMeta = [
+      { id: 'TEL-2026-004', date: '22 Sep 2026', by: 'Nitin', supplier: 'Al Noor Technologies LLC', po: 'PO-MRD-2026-0412', inv: 'INV-AN-88213' },
+      { id: 'TEL-2026-003', date: '12 Aug 2026', by: 'Nitin', supplier: 'Al Noor Technologies LLC', po: 'PO-MRD-2026-0288', inv: 'INV-AN-87540' }
+    ];
+    Object.keys(addedBatch).forEach(id => { if (bMeta.some(b => b.id === id)) return; const u = all.filter(x => x.batch === id)[0]; const ev = (ST0.events || []).filter(e => e && e.action === 'Received' && String(e.item || '').indexOf('Batch ' + id + ' ') === 0)[0]; const nt = ev ? String(ev.note || '').split(' · ') : []; bMeta.unshift({ id, date: u.recv || '05 Oct 2026', by: ev ? ev.who || 'Chetan' : 'Chetan', supplier: u.sup || (ev && ev.from) || '—', po: nt[1] && nt[1] !== 'no PO' ? nt[1] : '—', inv: nt[2] || '—' }); });
+    const batches = bMeta.map(b => { const list = all.filter(u => u.batch === b.id); const sns = list.map(u => u.sn).sort(); return Object.assign({}, b, { qty: list.length, range: sns.length ? sns[0] + ' – ' + sns[sns.length - 1] : '—', note: list.length ? noteOf(list) : '', parts: list.length ? partsOf(list) : [], damaged: list.filter(u => u.st === 'damaged').length }); }).filter(b => b.qty > 0);
+    const lastRecv = bMeta[0].date;
+    const reqFields = [['Serial number (S/N)', 'Text', 'Required', 'Unique', 'Receiving'], ['IMEI', 'Text · 15 digits', 'Required', 'Unique', 'Receiving'], ['MAC address', 'MAC address', 'Required', 'Unique', 'Receiving'], ['Device ID', 'Auto · MRD-TEL-####', 'Required', 'Unique', 'Labelling'], ['Firmware', 'Text', 'Required', '—', 'Preparation'], ['SIM', 'Link to SIM', 'Required', 'Unique', 'Preparation'], ['IP address', 'IP address', 'Required', 'Unique', 'Preparation']].concat((ED.extraFields || []).map(f => [f.name, f.type, f.req ? 'Required' : 'Optional', '—', f.when])).map(([name, type, req, uniq, when]) => ({ name, type, req, uniq, when }));
+    const steps = [
+      ['Firmware update', 'Flash the approved release, currently RUT9M_R_00.07.08.3', 'Firmware'],
+      ['Apply config profile', 'Load "Exergio BMS gateway v2.3" (VPN, Modbus, firewall)', 'Profile'],
+      ['Insert SIM', 'Pick an available Omantel or Ooredoo M2M SIM and scan its ICCID', 'SIM'],
+      ['Assign IP', 'Reserve a static IP from the SIM operator range (10.64.12.x / 10.72.4.x)', 'IP'],
+      ['Connectivity test', 'Ping the Exergio cloud and check RSSI; attach the result', 'Test'],
+      ['Label', 'Print and stick the Device ID / S/N label, store on Shelf A2', 'Label']
+    ].concat((ED.extraSteps || []).map(x => [x.title, x.desc || '', 'Custom'])).map(([title, desc, tag], i) => ({ n: i + 1, title, desc, tag }));
+    const tabs = [['overview', 'Overview', ''], ['units', 'Units', String(total)], ['batches', 'Batches', String(batches.length)], ['settings', 'Settings', '']].map(([id, label, n]) => ({ label, n, cls: 'tab' + (S.tab === id ? ' on' : ''), sel: S.tab === id ? 'true' : 'false', pick: () => this.setState({ tab: id }) }));
+    // Archived flag and minimum ready level live in the shared store (store.products).
+    const isArch = !!PR.archived[NAME];
+    const minStore = PR.min[NAME] !== undefined ? Number(PR.min[NAME]) : 5;
+    const nReady = cnt('ready');
+    const nUnconf = cnt('unconf');
+    const ensure = s => { s.products = Object.assign({ added: [], archived: {}, restored: {}, min: {}, edits: {} }, s.products || {}); s.products.edits = s.products.edits || {}; return s.products; };
+    const saveSettings = () => {
+      const st = this.state; const v = st.minDraft === null || st.minDraft === undefined ? null : parseInt(st.minDraft, 10);
+      const vt = st.minTotalDraft === null || st.minTotalDraft === undefined ? null : parseInt(st.minTotalDraft, 10);
+      const cfgNext = st.cfgDraft === null || st.cfgDraft === undefined ? cfgSaved : !!st.cfgDraft;
+      if ((v !== null && (isNaN(v) || v < 0)) || (vt !== null && (isNaN(vt) || vt < 0))) { this.setState({ msg: 'Minimum levels must be whole numbers of 0 or more.' }); return; }
+      const ch = [];
+      if (v !== null && v !== minStore) ch.push(['Min ready', minStore, v]);
+      if (vt !== null && vt !== minTotalSaved) ch.push(['Min in office', minTotalSaved, vt]);
+      if (cfgNext !== cfgSaved) ch.push(['Requires configuration', cfgSaved ? 'Yes' : 'No', cfgNext ? 'Yes' : 'No']);
+      if (ch.length) this.writeStore(s => {
+        const pr = ensure(s);
+        if (v !== null && v !== minStore) pr.min[NAME] = v;
+        const e = Object.assign({}, pr.edits[NAME] || {});
+        if (vt !== null && vt !== minTotalSaved) e.minTotal = vt;
+        if (cfgNext !== cfgSaved) e.cfg = cfgNext;
+        pr.edits[NAME] = e;
+        this.logEvent(s, { action: 'Settings changed', item: NAME, itemHref: 'ProductDetail.dc.html', from: ch.map(c => c[0] + ' ' + c[1]).join(' · '), to: ch.map(c => c[0] + ' ' + c[2]).join(' · '), note: 'Product settings' });
+      });
+      this.setState({ tab: 'overview', minDraft: null, minTotalDraft: null, cfgDraft: null, msg: ch.length ? 'Settings saved · ' + ch.map(c => c[0].toLowerCase()).join(', ') : 'No changes to save' });
+    };
+    const t = S.tab;
+    const cfgNow = S.cfgDraft === null || S.cfgDraft === undefined ? cfgSaved : !!S.cfgDraft;
+    const pushEdit = (patch, ev) => this.writeStore(s => { const pr = ensure(s); pr.edits[NAME] = Object.assign({}, pr.edits[NAME] || {}, patch); this.logEvent(s, Object.assign({ item: NAME, itemHref: 'ProductDetail.dc.html' }, ev)); });
+    // Edit modal
+    const ed = S.ed || null;
+    const specRows = CUR.specs.map(l => { const i = l.indexOf(':'); return i > 0 ? { k: l.slice(0, i).trim(), v: l.slice(i + 1).trim() } : { k: '·', v: l }; });
+    // Add field / step forms
+    const af = S.af || null, as = S.as || null;
+    const exV = this.exportVals({
+      title: 'Export RUT956 units', desc: 'A CSV of all ' + filtered.length + ' units in the current filter (' + (S.uf === 'all' ? 'all statuses' : ST[S.uf][0]) + '), not just this page.',
+      file: 'mrd-rut956-units-' + new Date().toISOString().slice(0, 10) + '.csv', item: NAME + ' units (' + filtered.length + ' rows)', href: 'ProductDetail.dc.html',
+      cols: [['S/N', u => u.sn], ['IMEI', u => u.imei], ['Device ID', u => u.dev], ['SIM (ICCID)', u => u.iccid], ['IP', u => u.ip], ['Status', u => ST[u.st][0]], ['Location / facility', u => u.where], ['Deployment type', u => u.type || ''], ['Batch', u => u.batch]],
+      rows: filtered, doneState: msg => ({ msg })
+    });
+    return Object.assign(exV, {
+      hasMsg: !!S.msg, msg: S.msg || '', dismissMsg: () => this.setState({ msg: '' }),
+      hBrand: CUR.brand || '—', hModel: CUR.model || '—', hDesc: CUR.desc || '', catLabel: catLabelOf(CUR.cat), specs: specRows,
+      photoLabel: ED.photo ? ED.photo.name : 'Product photo · Upload', photoTitle: ED.photo ? ED.photo.name + ' · ' + ED.photo.by + ' · ' + ED.photo.when + ' (file name only — contents not stored)' : 'Upload a product photo',
+      onPhoto: e => {
+        const fl = e && e.target && e.target.files && e.target.files[0]; if (!fl) return;
+        const meta = { name: fl.name, size: fl.size || 0, type: fl.type || '', by: 'Chetan', when: this.nowLabel() };
+        pushEdit({ photo: meta }, { action: 'Product edited', from: ED.photo ? ED.photo.name : 'No photo', to: meta.name, note: 'Product photo (metadata only)' });
+        try { e.target.value = ''; } catch (err) {}
+        this.setState({ msg: 'Photo ' + meta.name + ' recorded · only its name, size and type are stored in this prototype' });
+      },
+      openEdit: () => this.setState({ ed: { brand: CUR.brand, model: CUR.model, cat: CUR.cat, desc: CUR.desc, specs: CUR.specs.join('\n'), err: '' } }),
+      edOpen: !!ed, ed: ed || { brand: '', model: '', cat: 'tel', desc: '', specs: '', err: '' }, edErr: (ed && ed.err) || '', edHasErr: !!(ed && ed.err),
+      catOpts: CATS.map(([v, l]) => ({ v, l })),
+      onEdBrand: e => this.setState({ ed: Object.assign({}, this.state.ed, { brand: e.target.value, err: '' }) }),
+      onEdModel: e => this.setState({ ed: Object.assign({}, this.state.ed, { model: e.target.value, err: '' }) }),
+      onEdCat: e => this.setState({ ed: Object.assign({}, this.state.ed, { cat: e.target.value }) }),
+      onEdDesc: e => this.setState({ ed: Object.assign({}, this.state.ed, { desc: e.target.value }) }),
+      onEdSpecs: e => this.setState({ ed: Object.assign({}, this.state.ed, { specs: e.target.value }) }),
+      edClose: () => this.setState({ ed: null }),
+      edSave: () => {
+        const d = this.state.ed || {};
+        const next = { brand: String(d.brand || '').trim(), model: String(d.model || '').trim(), cat: d.cat || 'tel', desc: String(d.desc || '').trim(), specs: String(d.specs || '').split(/\r?\n/).map(x => x.trim()).filter(Boolean) };
+        if (!next.brand || !next.model) { this.setState({ ed: Object.assign({}, d, { err: 'Brand and model are required.' }) }); return; }
+        const LB = { brand: 'Brand', model: 'Model', cat: 'Category', desc: 'Description', specs: 'Specifications' };
+        const diffs = Object.keys(next).filter(k => JSON.stringify(next[k]) !== JSON.stringify(CUR[k]));
+        if (!diffs.length) { this.setState({ ed: null, msg: 'No changes to save' }); return; }
+        const show = (k, v) => k === 'cat' ? catLabelOf(v) : k === 'specs' ? v.length + ' lines' : v;
+        const patch = {}; diffs.forEach(k => { patch[k] = next[k]; });
+        pushEdit(patch, { action: 'Product edited', from: diffs.map(k => LB[k] + ': ' + show(k, CUR[k])).join(' · '), to: diffs.map(k => LB[k] + ': ' + show(k, next[k])).join(' · '), note: diffs.map(k => LB[k]).join(', ') });
+        this.setState({ ed: null, msg: 'Product updated · ' + diffs.map(k => LB[k].toLowerCase()).join(', ') });
+      },
+      afOpen: !!af, afName: af ? af.name : '', afType: af ? af.type : 'Text', afWhen: af ? af.when : 'Receiving',
+      afReqCls: 'btn sm' + (af && af.req ? ' p' : ''), afReqAria: af && af.req ? 'true' : 'false', afErr: (af && af.err) || '', afHasErr: !!(af && af.err),
+      afStart: () => this.setState({ af: { name: '', type: 'Text', when: 'Receiving', req: false, err: '' } }), afCancel: () => this.setState({ af: null }),
+      onAfName: e => this.setState({ af: Object.assign({}, this.state.af, { name: e.target.value, err: '' }) }),
+      onAfType: e => this.setState({ af: Object.assign({}, this.state.af, { type: e.target.value }) }),
+      onAfWhen: e => this.setState({ af: Object.assign({}, this.state.af, { when: e.target.value }) }),
+      toggleAfReq: () => this.setState({ af: Object.assign({}, this.state.af, { req: !this.state.af.req }) }),
+      afSave: () => {
+        const f = this.state.af || {}; const name = String(f.name || '').trim();
+        if (!name) { this.setState({ af: Object.assign({}, f, { err: 'Give the field a name.' }) }); return; }
+        if (reqFields.some(r => r.name.toLowerCase() === name.toLowerCase())) { this.setState({ af: Object.assign({}, f, { err: name + ' is already tracked.' }) }); return; }
+        const nf = { name, type: f.type || 'Text', req: !!f.req, when: f.when || 'Receiving' };
+        pushEdit({ extraFields: (ED.extraFields || []).concat([nf]) }, { action: 'Product edited', from: '—', to: 'Field: ' + name, note: nf.type + ' · ' + (nf.req ? 'required' : 'optional') + ' · captured at ' + nf.when.toLowerCase() });
+        this.setState({ af: null, msg: 'Field ' + name + ' added for future units' });
+      },
+      asOpen: !!as, asTitle: as ? as.title : '', asDesc: as ? as.desc : '', asErr: (as && as.err) || '', asHasErr: !!(as && as.err),
+      asStart: () => this.setState({ as: { title: '', desc: '', err: '' } }), asCancel: () => this.setState({ as: null }),
+      onAsTitle: e => this.setState({ as: Object.assign({}, this.state.as, { title: e.target.value, err: '' }) }),
+      onAsDesc: e => this.setState({ as: Object.assign({}, this.state.as, { desc: e.target.value }) }),
+      asSave: () => {
+        const x = this.state.as || {}; const title = String(x.title || '').trim();
+        if (!title) { this.setState({ as: Object.assign({}, x, { err: 'Name the step.' }) }); return; }
+        pushEdit({ extraSteps: (ED.extraSteps || []).concat([{ title, desc: String(x.desc || '').trim() }]) }, { action: 'Product edited', from: '—', to: 'Checklist step: ' + title, note: 'Preparation checklist template' });
+        this.setState({ as: null, msg: 'Step ' + title + ' added to the checklist template' });
+      }
+    }, {
+      tabs, isOverview: t === 'overview', isUnits: t === 'units', isBatches: t === 'batches', isSettings: t === 'settings',
+      dist, distAria, locs, facs, idFields, readyUnits, activity, batches, reqFields, steps,
+      units, unitChips, pages,
+      total, inOffice: inOfficeN, deployed: deployedN, nReady, minVal: minStore, readyColor: nReady < minStore ? '#A3201F' : '#0E1726',
+      nBatches: batches.length, lastRecv, nFacs: facs.length,
+      readyLow: nReady < minStore, lowTitle: nReady + ' ready, minimum is ' + minStore + '.',
+      lowText: 'Prepare ' + (minStore - nReady) + ' more router' + (minStore - nReady === 1 ? '' : 's') + ' to reach the minimum; ' + nUnconf + ' unconfigured unit' + (nUnconf === 1 ? ' is' : 's are') + ' in the MRD Office.',
+      isArch, notArch: !isArch, stLabel: isArch ? 'Archived' : 'Active', stCls: isArch ? 's-retired' : 's-deployed',
+      unitFooter: filtered.length ? ('Showing ' + (page * per + 1) + '–' + Math.min(filtered.length, page * per + per) + ' of ' + filtered.length + ' units') : 'No units',
+      prevPage: () => this.setState({ page: Math.max(0, page - 1) }), nextPage: () => this.setState({ page: Math.min(pageCount - 1, page + 1) }),
+      goSettings: () => this.setState({ tab: 'settings' }), goOverview: () => this.setState({ tab: 'overview', minDraft: null, minTotalDraft: null, cfgDraft: null }),
+      openArchive: () => this.setState({ arch: true }), closeArchive: () => this.setState({ arch: false }), showArchive: S.arch && !isArch,
+      confirmArchive: () => { this.writeStore(s => { const pr = ensure(s); pr.archived[NAME] = true; delete pr.restored[NAME]; this.logEvent(s, { action: 'Product archived', item: NAME, itemHref: 'ProductDetail.dc.html', from: 'Active', to: 'Archived', note: inOfficeN + ' in office · ' + deployedN + ' deployed' }); }); this.setState({ arch: false }); },
+      restore: () => this.writeStore(s => { const pr = ensure(s); delete pr.archived[NAME]; pr.restored[NAME] = true; this.logEvent(s, { action: 'Product restored', item: NAME, itemHref: 'ProductDetail.dc.html', from: 'Archived', to: 'Active', note: '' }); }),
+      cfgSw: 'sw' + (cfgNow ? ' on' : ''), cfgAria: cfgNow ? 'true' : 'false', toggleCfg: () => this.setState({ cfgDraft: !cfgNow }),
+      cfgOn: cfgSaved, cfgOff: !cfgSaved,
+      minTotal: S.minTotalDraft === null || S.minTotalDraft === undefined ? String(minTotalSaved) : S.minTotalDraft, onMinTotal: e => this.setState({ minTotalDraft: e.target.value }),
+      minReady: S.minDraft === null || S.minDraft === undefined ? String(minStore) : S.minDraft, onMin: e => this.setState({ minDraft: e.target.value }), saveSettings
+    });
+  }
+}
+</script>
+</body>
+</html>

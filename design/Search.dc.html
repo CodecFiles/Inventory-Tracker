@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Search · MRD Inventory</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F6F8;color:#0E1726;font-family:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#0B7A6B;text-decoration:none}a:hover{color:#075C51}
+h1,h2,h3,h4,p{margin:0}
+.mono{font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;letter-spacing:-.01em}
+.muted{color:#5E6B7D}
+.side{flex:0 0 248px;background:#0C1424;padding:18px 12px 16px;display:flex;flex-direction:column;gap:1px}
+.nav{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:8px;color:#B3BDCB;font-size:13.5px}
+.nav:hover{background:#152036;color:#fff}
+.nav.on{background:#1C2A42;color:#fff;box-shadow:inset 2px 0 0 #2BC4A8}
+.nav svg{flex:0 0 16px;width:16px;height:16px}
+.nav .ct{margin-left:auto;font-size:11px;font-weight:600;background:#2BC4A8;color:#04211C;border-radius:999px;padding:1px 7px}
+.sec{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#7F8CA0;padding:16px 10px 6px;font-weight:500}
+.mtop{display:none}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 32px;background:#fff;border-bottom:1px solid #E3E7EC}
+.srch{flex:1 1 320px;max-width:560px;display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border:1px solid #DCE1E8;border-radius:10px;background:#F8FAFB;color:#5E6B7D;font-size:13.5px}
+.srch:hover{border-color:#B9C2CE;color:#3B4758}
+.kbd{margin-left:auto;font-family:'Geist Mono',monospace;font-size:11px;border:1px solid #DCE1E8;border-radius:5px;padding:1px 6px;background:#fff;color:#5E6B7D}
+.main{padding:28px 32px 48px;max-width:1400px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+.card{background:#fff;border:1px solid #E3E7EC;border-radius:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 14px;border-radius:9px;border:1px solid #D5DBE3;background:#fff;color:#1B2638;font:inherit;font-size:13.5px;font-weight:500;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#F4F6F8;color:#0E1726}
+.btn.p{background:#0B7A6B;border-color:#0B7A6B;color:#fff}.btn.p:hover{background:#08695C;color:#fff}
+.btn.sm{height:32px;padding:0 10px;font-size:12.5px;border-radius:8px}
+.btn.ic{width:40px;padding:0}
+.btn svg{width:16px;height:16px}
+.b{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;background:#EEF1F5;color:#3E4A5C}
+.b::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.s-unconf{background:#EEF1F5;color:#3E4A5C}.s-prep{background:#FFF3DC;color:#8A4B00}.s-ready{background:#E6EEFF;color:#1D4FB8}.s-reserved{background:#F0EAFE;color:#5B32B4}.s-deployed{background:#E1F4EC;color:#0A6648}.s-stock{background:#E3F2F6;color:#0E5E73}.s-maint{background:#FFEDE3;color:#9A3D0B}.s-damaged{background:#FDEBEA;color:#A3201F}.s-transit{background:#E9EDFC;color:#3346A8}.s-returned{background:#F1EEE8;color:#5E554A}.s-retired{background:#EFF0F2;color:#646C79}
+.g-insp{background:#EEF1F5;color:#3E4A5C}.g-bms{background:#E3F2F6;color:#0E5E73}.g-poc{background:#F0EAFE;color:#5B32B4}.g-study{background:#FFF3DC;color:#8A4B00}.g-cpend{background:#E6EEFF;color:#1D4FB8}.g-contract{background:#E1F4EC;color:#0A6648}.g-ops{background:#0B7A6B;color:#fff}.g-done{background:#EFF0F2;color:#646C79}.g-hold{background:#FDEBEA;color:#A3201F}
+.t{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:6px;font-size:11.5px;font-weight:600;letter-spacing:.02em;border:1px solid}
+.t-poc{color:#5B32B4;border-color:#D7C8FA;background:#FAF7FF}.t-con{color:#0A6648;border-color:#BFE3D3;background:#F4FBF8}.t-rep{color:#8A4B00;border-color:#F3D9A6;background:#FFFBF2}.t-add{color:#1D4FB8;border-color:#C8D8FA;background:#F6F9FF}
+.tw{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-weight:500;color:#5E6B7D;font-size:12px;padding:10px 14px;border-bottom:1px solid #E3E7EC;background:#F8FAFB;white-space:nowrap}
+.tbl td{padding:11px 14px;border-bottom:1px solid #EEF1F4;white-space:nowrap;vertical-align:middle}
+.tbl tr:hover td{background:#F8FAFB}
+.tbl tr:last-child td{border-bottom:0}
+.ov{font-size:12px;font-weight:500;color:#5E6B7D;text-transform:uppercase;letter-spacing:.06em}
+.kpi{padding:16px 18px;display:flex;flex-direction:column;gap:6px;color:#0E1726}
+.kpi:hover{border-color:#B9C2CE;color:#0E1726}
+.kpi .n{font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
+.seg{display:flex;gap:2px;height:8px;border-radius:4px;overflow:hidden}
+.seg span{display:block;height:100%}
+.row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-top:1px solid #EEF1F4;color:#0E1726}
+.row:hover{background:#F8FAFB;color:#0E1726}
+.chip{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;border:0;background:transparent;font:inherit;font-size:13px;color:#3B4758;cursor:pointer}
+.chip.on{background:#fff;color:#0E1726;box-shadow:0 1px 2px rgba(14,23,38,.12)}
+mark{background:#C9EFE6;color:#04211C;border-radius:3px;padding:0 1px;font-weight:600}
+.tok{display:inline-flex;align-items:center;height:26px;padding:0 9px;border:1px solid #DCE1E8;border-radius:7px;background:#fff;font-family:'Geist Mono',ui-monospace,monospace;font-size:12px;color:#1B2638;cursor:pointer}
+.tok:hover{border-color:#0B7A6B;color:#0B7A6B}
+.ftab{display:inline-flex;align-items:center;gap:6px;height:42px;padding:0 4px;margin-right:18px;border:0;border-bottom:2px solid transparent;background:transparent;font:inherit;font-size:13.5px;color:#5E6B7D;cursor:pointer}
+.ftab .n{font-size:11.5px;font-weight:600;background:#EEF1F4;color:#3B4758;border-radius:999px;padding:0 7px;line-height:18px}
+.ftab.on{color:#0E1726;font-weight:500;border-bottom-color:#0B7A6B}
+.ftab.on .n{background:#E1F4EC;color:#0A6648}
+.grp{display:flex;align-items:center;gap:8px;padding:14px 0 8px;font-size:12px;font-weight:500;color:#5E6B7D;text-transform:uppercase;letter-spacing:.06em}
+.hit{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;color:#0E1726}
+.hit:hover{background:#F4F6F8;color:#0E1726}
+.empty{padding:8px 12px;font-size:13px;color:#5E6B7D}
+.pk{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid #E9EDF1;font-size:12.5px}
+.pk span:first-child{color:#5E6B7D}
+.fieldc{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #E3E7EC;border-radius:10px;background:#fff;text-align:left;font:inherit;cursor:pointer;color:#0E1726}
+.fieldc:hover{border-color:#0B7A6B}
+@media (max-width:900px){.side{display:none}.mtop{display:flex}.main{padding:20px 16px 40px}.top{padding:12px 16px}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh; background: #F4F6F8">
+<nav class="side" aria-label="Primary">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 2px 8px 14px; color: #fff">
+<span style="width: 32px; height: 32px; border-radius: 9px; background: #0B7A6B; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4a8 8 0 1 0 4 11.5A6.5 6.5 0 0 1 16 4z"></path><path d="M6 18l2.5-2.5"></path></svg></span>
+<span style="display: flex; flex-direction: column; line-height: 1.15"><span style="font-weight: 600; font-size: 14px">Moonrock R&amp;D</span><span style="font-size: 11.5px; color: #8D99AC">Inventory × Exergio</span></span>
+</a>
+<a class="nav" href="Main.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>Dashboard</a>
+<div class="sec">Inventory</div>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"></path><path d="M3 8v8l9 5 9-5V8"></path><path d="M12 13v8"></path></svg>All inventory</a>
+<a class="nav" href="Products.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg>Products</a>
+<a class="nav" href="Batches.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l10 5-10 5L2 7l10-5z"></path><path d="M2 12l10 5 10-5"></path><path d="M2 17l10 5 10-5"></path></svg>Batches</a>
+<a class="nav" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive stock</a>
+<div class="sec">Devices</div>
+<a class="nav" href="DevicePrep.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg>Device preparation<span class="ct">15</span></a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="18" height="7" rx="2"></rect><path d="M7 16.5h.01M11 16.5h.01"></path><path d="M17 13V5"></path><path d="M14 7.5a4 4 0 0 1 6 0"></path></svg>Teltonika</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h11a3 3 0 1 0-3-3"></path><path d="M3 12h16a3 3 0 1 1-3 3"></path><path d="M3 16h7"></path></svg>CO₂ sensors</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"></circle><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7M5.6 5.6a9 9 0 0 0 0 12.8M18.4 5.6a9 9 0 0 1 0 12.8"></path></svg>LoRaWAN gateways</a>
+<a class="nav" href="SimInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"></path><rect x="8.5" y="11" width="7" height="6" rx="1"></rect></svg>SIM cards</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"></rect><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"></path></svg>Other equipment</a>
+<div class="sec">Facilities &amp; projects</div>
+<a class="nav" href="Facilities.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"></rect><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1"></path></svg>Facilities</a>
+<a class="nav" href="PocManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6L4.5 18.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3"></path><path d="M7 15h10"></path></svg>POC projects</a>
+<a class="nav" href="ContractManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path><path d="M9 13h6M9 17h4"></path></svg>Contracts</a>
+<div class="sec">Deployments</div>
+<a class="nav" href="Deployments.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3z"></path><path d="M14 10h4l3 3v3h-7"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>Deployments</a>
+<a class="nav" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>New deployment</a>
+<div class="sec">Insights &amp; admin</div>
+<a class="nav" href="Reports.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M10 20V5M16 20v-6M21 20H3"></path></svg>Reports</a>
+<a class="nav" href="AuditLog.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l3 2"></path></svg>Audit log</a>
+<a class="nav" href="Users.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20a6.5 6.5 0 0 1 13 0"></path><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"></path></svg>Users &amp; roles</a>
+<a class="nav" href="Settings.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Settings</a>
+<div style="margin-top: auto; padding: 16px 8px 0; display: flex; align-items: center; gap: 10px; border-top: 1px solid #1C2A42">
+<span style="width: 32px; height: 32px; border-radius: 50%; background: #2BC4A8; color: #04211C; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600">CH</span>
+<span style="display: flex; flex-direction: column; line-height: 1.2"><span style="color: #fff; font-size: 13px; font-weight: 500">Chetan</span><span style="color: #8D99AC; font-size: 11.5px">Admin · MRD Office</span></span>
+</div>
+</nav>
+
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+<div class="mtop" style="align-items: center; justify-content: space-between; padding: 12px 16px; background: #0C1424; color: #fff">
+<span style="font-weight: 600">Moonrock R&amp;D</span>
+<button class="btn sm" aria-label="Open menu" aria-expanded="{{shell.menuExp}}" onClick="{{shell.toggleMenu}}" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
+</div>
+<header class="top">
+<a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
+<span style="flex: 1"></span>
+<span class="b s-prep" title="All records shown are sample data">Sample data</span>
+<span class="b {{shell.syncCls}}" title="{{shell.syncTip}}">{{shell.syncLabel}}</span>
+<a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
+<a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
+<div style="position: relative; z-index: {{shell.bellZ}}">
+<button class="btn ic" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="{{shell.bellExp}}" onClick="{{shell.toggleBell}}" style="position: relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg><sc-if value="{{shell.hasUnread}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #DC3B3A; color: #fff; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #fff">{{shell.unread}}</span></sc-if></button>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="Notifications" style="position: absolute; right: 0; top: calc(100% + 8px); z-index: 41; width: 360px; max-width: calc(100vw - 32px); background: #fff; border: 1px solid #DCE1E8; border-radius: 12px; box-shadow: 0 16px 40px rgba(14,23,38,.18); overflow: hidden; text-align: left">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #EEF1F4"><span style="font-weight: 600; font-size: 14px; color: #0E1726">Notifications</span><button onClick="{{shell.markRead}}" style="border: 0; background: none; padding: 4px; font: inherit; font-size: 12.5px; color: #0B7A6B; cursor: pointer">Mark all as read</button></div>
+<div style="max-height: 380px; overflow-y: auto">
+<sc-for list="{{shell.notes}}" as="n" hint-placeholder-count="4">
+<a href="{{n.href}}" style="display: flex; gap: 10px; padding: 11px 14px; border-bottom: 1px solid #F1F4F7; color: #0E1726; background: {{n.bg}}">
+<span style="width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: 0 0 8px; background: {{n.dot}}"></span>
+<span style="flex: 1; min-width: 0; font-size: 13px; line-height: 1.4"><span style="display: block">{{n.text}}</span><span style="display: block; font-size: 12px; color: #5E6B7D">{{n.when}}</span></span>
+</a>
+</sc-for>
+</div>
+<a href="AuditLog.dc.html" style="display: block; padding: 10px 14px; font-size: 13px; font-weight: 500; text-align: center; border-top: 1px solid #EEF1F4">Open audit log</a>
+</div>
+</sc-if>
+</div>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}"><button aria-label="Close notifications" onClick="{{shell.closeAll}}" style="position: fixed; inset: 0; z-index: 30; background: transparent; border: 0; padding: 0; cursor: default"></button></sc-if>
+</header>
+
+<main class="main" aria-hidden="true">
+<div style="display: flex; flex-direction: column; gap: 4px"><span class="muted" style="font-size: 13px">Monday, 5 October 2026 · MRD Office, Muscat</span><h1 style="font-size: 26px; font-weight: 600; letter-spacing: -.02em">Good morning, Chetan</h1></div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px">
+<div class="card kpi"><span class="muted" style="font-size: 13px">Total items</span><span class="n">1,284</span></div>
+<div class="card kpi"><span class="muted" style="font-size: 13px">Ready for deployment</span><span class="n">46</span></div>
+<div class="card kpi"><span class="muted" style="font-size: 13px">Deployed</span><span class="n">538</span></div>
+<div class="card kpi"><span class="muted" style="font-size: 13px">Under maintenance</span><span class="n">7</span></div>
+</div>
+<div class="card" style="height: 420px"></div>
+</main>
+</div>
+</div>
+
+<!-- Command palette -->
+<div style="position: fixed; inset: 0; background: rgba(14,23,38,.45); z-index: 40"></div>
+<div role="dialog" aria-modal="true" aria-label="Global search" style="position: fixed; top: 48px; left: 50%; transform: translateX(-50%); width: min(1060px, calc(100% - 32px)); max-height: calc(100vh - 96px); z-index: 41; background: #fff; border-radius: 16px; box-shadow: 0 24px 64px rgba(14,23,38,.32); display: flex; flex-direction: column; overflow: hidden">
+
+<div style="display: flex; align-items: center; gap: 12px; padding: 0 18px; height: 64px; border-bottom: 1px solid #EEF1F4">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0B7A6B" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<label for="gq" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search inventory</label>
+<input id="gq" value="{{q}}" onChange="{{onQ}}" placeholder="Search serial, IMEI, MAC, device ID, ICCID, IP, batch, facility…" autocomplete="off" style="flex: 1; min-width: 0; height: 44px; border: 0; outline: 0; font: inherit; font-size: 19px; color: #0E1726; background: transparent">
+<sc-if value="{{hasQ}}" hint-placeholder-val="{{ true }}"><button class="btn sm" onClick="{{clear}}" aria-label="Clear search">Clear</button></sc-if>
+<a href="Main.dc.html" class="kbd" style="margin-left: 0" aria-label="Close search">Esc</a>
+</div>
+
+<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 10px 18px; border-bottom: 1px solid #EEF1F4; background: #FBFCFD">
+<span class="muted" style="font-size: 12px; margin-right: 4px">Search by field</span>
+<sc-for list="{{tokens}}" as="t" hint-placeholder-count="8"><button class="tok" onClick="{{t.pick}}" title="{{t.title}}">{{t.label}}</button></sc-for>
+</div>
+
+<sc-if value="{{hasQ}}" hint-placeholder-val="{{ true }}">
+<div role="tablist" aria-label="Result type" style="display: flex; flex-wrap: wrap; padding: 0 18px; border-bottom: 1px solid #EEF1F4">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="6"><button role="tab" aria-selected="{{t.sel}}" class="{{t.cls}}" onClick="{{t.pick}}">{{t.label}}<span class="n">{{t.n}}</span></button></sc-for>
+</div>
+</sc-if>
+
+<div style="flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-wrap: wrap">
+
+<sc-if value="{{showResults}}" hint-placeholder-val="{{ true }}">
+<div style="flex: 1.6 1 480px; min-width: 0; padding: 4px 18px 18px">
+
+<sc-if value="{{secDevices}}" hint-placeholder-val="{{ true }}">
+<div class="grp">Devices <span class="ftab" style="height: auto; margin: 0; padding: 0; border: 0"><span class="n">{{nDevices}}</span></span></div>
+<sc-if value="{{hasBest}}" hint-placeholder-val="{{ true }}">
+<div style="border: 1px solid #BFE3D3; background: #F4FBF8; border-radius: 12px; padding: 14px; display: flex; gap: 14px; flex-wrap: wrap; box-shadow: inset 3px 0 0 #0B7A6B">
+<div style="width: 64px; height: 64px; border-radius: 10px; background: #E9EEF2; color: #5E6B7D; display: flex; align-items: center; justify-content: center; flex: 0 0 64px"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="13" width="18" height="7" rx="2"></rect><path d="M7 16.5h.01M11 16.5h.01"></path><path d="M17 13V5"></path><path d="M14 7.5a4 4 0 0 1 6 0"></path></svg></div>
+<div style="flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap"><span class="ov" style="color: #0A6648">Best match</span><span class="b {{best.cls}}">{{best.status}}</span></div>
+<div style="display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap"><span style="font-size: 16px; font-weight: 600">{{best.product}}</span><span class="mono" style="font-size: 15px">{{best.sn}}</span></div>
+<span style="font-size: 13px; color: #3B4758">Matched on {{best.field}}: <span class="mono" style="font-size: 13px">{{best.pre}}<mark>{{best.mid}}</mark>{{best.post}}</span></span>
+<span class="muted" style="font-size: 12.5px">{{best.loc}} · batch <span class="mono" style="font-size: 12px">{{best.batch}}</span> · <span class="mono" style="font-size: 12px">{{best.devId}}</span></span>
+</div>
+<div style="display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap">
+<a class="btn sm p" href="DeviceDetail.dc.html" onClick="{{best.go}}">Open<span class="kbd" style="background: transparent; color: #fff; border-color: rgba(255,255,255,.5); margin-left: 2px">Enter</span></a>
+<sc-if value="{{best.canDeploy}}" hint-placeholder-val="{{ true }}"><a class="btn sm" href="CreateDeployment.dc.html" onClick="{{best.go}}">Deploy</a></sc-if>
+</div>
+</div>
+</sc-if>
+<sc-for list="{{otherDevices}}" as="d" hint-placeholder-count="0">
+<a class="hit" href="DeviceDetail.dc.html" onClick="{{d.go}}">
+<span style="flex: 1; min-width: 0"><span style="display: block; font-size: 13.5px"><span style="font-weight: 500">{{d.product}}</span> · <span class="mono">{{d.sn}}</span></span><span class="muted" style="font-size: 12px">{{d.field}}: <span class="mono" style="font-size: 12px">{{d.pre}}<mark>{{d.mid}}</mark>{{d.post}}</span></span></span>
+<span class="b {{d.cls}}">{{d.status}}</span>
+</a>
+</sc-for>
+<sc-if value="{{noOtherDevices}}" hint-placeholder-val="{{ true }}"><p class="empty">No other devices match. IMEI, MAC, device ID and IP were also checked.</p></sc-if>
+<sc-if value="{{noDevices}}" hint-placeholder-val="{{ false }}"><p class="empty">No devices match “{{term}}”.</p></sc-if>
+</sc-if>
+
+<sc-if value="{{secSims}}" hint-placeholder-val="{{ true }}">
+<div class="grp">SIM cards <span class="ftab" style="height: auto; margin: 0; padding: 0; border: 0"><span class="n">{{nSims}}</span></span></div>
+<sc-for list="{{sims}}" as="s" hint-placeholder-count="0">
+<a class="hit" href="SimInventory.dc.html" onClick="{{s.go}}"><span style="flex: 1; min-width: 0"><span class="mono" style="display: block; font-size: 13px">{{s.pre}}<mark>{{s.mid}}</mark>{{s.post}}</span><span class="muted" style="font-size: 12px">{{s.sub}}</span></span><span class="b {{s.cls}}">{{s.status}}</span></a>
+</sc-for>
+<sc-if value="{{noSims}}" hint-placeholder-val="{{ true }}"><p class="empty">No SIM cards match. Try <button class="tok" onClick="{{tokIccid}}" style="height: 22px">iccid:</button> with more digits.</p></sc-if>
+</sc-if>
+
+<sc-if value="{{secBatches}}" hint-placeholder-val="{{ true }}">
+<div class="grp">Batches <span class="ftab" style="height: auto; margin: 0; padding: 0; border: 0"><span class="n">{{nBatches}}</span></span></div>
+<sc-for list="{{batches}}" as="b" hint-placeholder-count="1">
+<a class="hit" href="BatchDetail.dc.html" onClick="{{b.go}}">
+<span style="width: 34px; height: 34px; border-radius: 9px; background: #F1F4F7; color: #3B4758; display: flex; align-items: center; justify-content: center; flex: 0 0 34px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l10 5-10 5L2 7l10-5z"></path><path d="M2 12l10 5 10-5"></path><path d="M2 17l10 5 10-5"></path></svg></span>
+<span style="flex: 1; min-width: 0"><span style="display: block; font-size: 13.5px"><span class="mono" style="font-weight: 500">{{b.id}}</span> · {{b.product}}</span><span class="muted" style="font-size: 12px">{{b.sub}}</span></span>
+<span class="muted" style="font-size: 12px">{{b.date}}</span>
+</a>
+</sc-for>
+<sc-if value="{{noBatches}}" hint-placeholder-val="{{ false }}"><p class="empty">No batches match.</p></sc-if>
+</sc-if>
+
+<sc-if value="{{secCat}}" hint-placeholder-val="{{ true }}">
+<div class="grp">Products &amp; suppliers <span class="ftab" style="height: auto; margin: 0; padding: 0; border: 0"><span class="n">{{nCat}}</span></span></div>
+<sc-for list="{{catHits}}" as="p" hint-placeholder-count="1">
+<a class="hit" href="{{p.href}}" onClick="{{p.go}}">
+<span style="width: 34px; height: 34px; border-radius: 9px; background: #F1F4F7; color: #3B4758; display: flex; align-items: center; justify-content: center; flex: 0 0 34px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg></span>
+<span style="flex: 1; min-width: 0"><span style="display: block; font-size: 13.5px"><span style="font-weight: 500">{{p.pre}}<mark>{{p.mid}}</mark>{{p.post}}</span> <span class="muted" style="font-size: 12px">· {{p.kind}}</span></span><span class="muted" style="font-size: 12px">{{p.sub}}</span></span>
+<span class="b {{p.cls}}">{{p.status}}</span>
+</a>
+</sc-for>
+<sc-if value="{{noCat}}" hint-placeholder-val="{{ false }}"><p class="empty">No products or suppliers match.</p></sc-if>
+</sc-if>
+
+<sc-if value="{{secFac}}" hint-placeholder-val="{{ true }}">
+<div class="grp">Facilities <span class="ftab" style="height: auto; margin: 0; padding: 0; border: 0"><span class="n">{{nFac}}</span></span></div>
+<sc-for list="{{facs}}" as="f" hint-placeholder-count="0">
+<a class="hit" href="FacilityDetail.dc.html" onClick="{{f.go}}"><span style="flex: 1"><span style="display: block; font-size: 13.5px; font-weight: 500">{{f.pre}}<mark>{{f.mid}}</mark>{{f.post}}</span><span class="muted" style="font-size: 12px">{{f.sub}}</span></span><span class="b {{f.cls}}">{{f.stage}}</span></a>
+</sc-for>
+<sc-if value="{{noFac}}" hint-placeholder-val="{{ true }}"><p class="empty">No facilities or clients match.</p></sc-if>
+</sc-if>
+
+<sc-if value="{{secAct}}" hint-placeholder-val="{{ true }}">
+<div class="grp">Audit entries <span class="ftab" style="height: auto; margin: 0; padding: 0; border: 0"><span class="n">{{nAct}}</span></span></div>
+<sc-for list="{{acts}}" as="a" hint-placeholder-count="3">
+<a class="hit" href="AuditLog.dc.html" onClick="{{a.go}}">
+<span style="width: 28px; height: 28px; border-radius: 50%; background: {{a.bg}}; color: #0E1726; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex: 0 0 28px">{{a.ini}}</span>
+<span style="flex: 1; min-width: 0; font-size: 13px"><strong style="font-weight: 600">{{a.who}}</strong> {{a.what}} <span class="mono" style="font-size: 12.5px">{{a.pre}}<mark>{{a.mid}}</mark>{{a.post}}</span></span>
+<span class="muted" style="font-size: 12px; white-space: nowrap">{{a.when}}</span>
+</a>
+</sc-for>
+<sc-if value="{{noAct}}" hint-placeholder-val="{{ false }}"><p class="empty">No audit entries mention this.</p></sc-if>
+</sc-if>
+</div>
+
+<sc-if value="{{hasBest}}" hint-placeholder-val="{{ true }}">
+<aside aria-label="Preview" style="flex: 1 1 300px; min-width: 0; background: #F8FAFB; border-left: 1px solid #EEF1F4; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+<span class="ov">Preview</span>
+<div style="height: 120px; border-radius: 10px; background: #E9EEF2; color: #5E6B7D; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="13" width="18" height="7" rx="2"></rect><path d="M7 16.5h.01M11 16.5h.01"></path><path d="M17 13V5"></path><path d="M14 7.5a4 4 0 0 1 6 0"></path></svg><span style="font-size: 11.5px">{{best.product}}</span></div>
+<div><div style="font-weight: 600">{{best.product}}</div><div class="mono" style="font-size: 14px">{{best.sn}}</div></div>
+<div>
+<sc-for list="{{preview}}" as="p" hint-placeholder-count="8"><div class="pk"><span>{{p.k}}</span><span class="{{p.cls}}" style="text-align: right">{{p.v}}</span></div></sc-for>
+</div>
+<a href="DeviceDetail.dc.html" onClick="{{best.go}}" style="font-size: 13px; font-weight: 500">Open full record →</a>
+</aside>
+</sc-if>
+</sc-if>
+
+<sc-if value="{{showNone}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1; padding: 48px 24px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px">
+<span style="width: 48px; height: 48px; border-radius: 14px; background: #F1F4F7; color: #5E6B7D; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5M8 11h6"></path></svg></span>
+<span style="font-weight: 600">No results for “{{term}}”</span>
+<span class="muted" style="font-size: 13px; max-width: 420px">Check the digits, or scope the search with a field token. Partial serials, IMEIs and ICCIDs work from 4 characters.</span>
+</div>
+</sc-if>
+
+<sc-if value="{{showEmpty}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1.5 1 460px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+<span class="ov">You can search by</span>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px">
+<sc-for list="{{fields}}" as="f" hint-placeholder-count="11"><button class="fieldc" onClick="{{f.pick}}"><span style="font-size: 13px; font-weight: 500">{{f.label}}</span><span class="mono muted" style="font-size: 11.5px">{{f.ex}}</span></button></sc-for>
+</div>
+</div>
+<div style="flex: 1 1 300px; padding: 18px; background: #F8FAFB; border-left: 1px solid #EEF1F4; display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; justify-content: space-between; align-items: center"><span class="ov">Recent searches</span><sc-if value="{{hasOwnRecent}}" hint-placeholder-val="{{ false }}"><button class="btn sm" onClick="{{clearRecent}}" style="height: 26px; background: transparent">Clear</button></sc-if></span>
+<sc-for list="{{recent}}" as="r" hint-placeholder-count="5">
+<button class="hit" onClick="{{r.pick}}" style="border: 0; background: transparent; font: inherit; cursor: pointer; text-align: left; width: 100%">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l3 2"></path></svg>
+<span style="flex: 1"><span class="mono" style="display: block; font-size: 13px">{{r.q}}</span><span class="muted" style="font-size: 12px">{{r.sub}}</span></span>
+</button>
+</sc-for>
+</div>
+</sc-if>
+</div>
+
+<div style="display: flex; align-items: center; gap: 18px; flex-wrap: wrap; padding: 10px 18px; border-top: 1px solid #EEF1F4; background: #FBFCFD; font-size: 12px; color: #5E6B7D">
+<span><span class="kbd" style="margin: 0 4px 0 0">↑</span><span class="kbd" style="margin: 0 6px 0 0">↓</span>navigate</span>
+<span><span class="kbd" style="margin: 0 6px 0 0">Enter</span>open</span>
+<span><span class="kbd" style="margin: 0 6px 0 0">Tab</span>switch filter</span>
+<span><span class="kbd" style="margin: 0 6px 0 0">Esc</span>close</span>
+<span style="margin-left: auto">{{summary}}</span>
+</div>
+</div>
+<sc-if value="{{shell.menuOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 70; display: flex">
+<nav aria-label="Mobile navigation" style="width: min(300px, 85vw); height: 100%; overflow-y: auto; background: #0C1424; padding: 16px 12px; display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 8px 14px; color: #fff"><span style="font-weight: 600">Moonrock R&amp;D</span><button onClick="{{shell.closeAll}}" aria-label="Close menu" style="width: 40px; height: 40px; border: 0; border-radius: 8px; background: #1C2A42; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<a href="Main.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Dashboard</a>
+<a href="Search.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Search</a>
+<a href="Inventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">All inventory</a>
+<a href="Products.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Products</a>
+<a href="Batches.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Batches</a>
+<a href="ReceiveInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Receive stock</a>
+<a href="DevicePrep.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Device preparation</a>
+<a href="SimInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">SIM cards</a>
+<a href="Facilities.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Facilities</a>
+<a href="PocManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">POC projects</a>
+<a href="ContractManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Contracts</a>
+<a href="Deployments.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Deployments</a>
+<a href="CreateDeployment.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">New deployment</a>
+<a href="Reports.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Reports</a>
+<a href="AuditLog.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Audit log</a>
+<a href="Users.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Users &amp; roles</a>
+<a href="Settings.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Settings</a>
+</nav>
+<button aria-label="Close menu" onClick="{{shell.closeAll}}" style="flex: 1; border: 0; padding: 0; background: rgba(14,23,38,.5); cursor: default"></button>
+</div>
+</sc-if>
+<sc-if value="{{shell.blocked}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 80; display: flex; align-items: center; gap: 12px; max-width: min(560px, calc(100vw - 32px)); padding: 12px 12px 12px 16px; border-radius: 12px; background: #7A1F1E; color: #fff; font-size: 13.5px; box-shadow: 0 12px 32px rgba(14,23,38,.3)">
+<span style="flex: 1">You have view access to this canvas, so that change wasn't saved. Ask the owner for edit access to change shared data.</span>
+<button onClick="{{shell.unblock}}" style="height: 32px; padding: 0 12px; border: 1px solid rgba(255,255,255,.4); border-radius: 8px; background: transparent; color: #fff; font: inherit; font-size: 12.5px; cursor: pointer">OK</button>
+</div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  // Prototype persistence: this screen's data survives reloads and is shared by every screen in this browser.
+  componentDidMount() {
+    this._init = JSON.parse(JSON.stringify(this.state));
+    this._onStore = e => { if (!e || !e.key || e.key === 'mrd-proto:store') this.forceUpdate(); };
+    try { window.addEventListener('storage', this._onStore); } catch (e) {}
+    this._sharedInit();
+    try { const raw = window.localStorage.getItem('mrd-proto:v1:Search'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
+  }
+  // Shared prototype store: one record in browser storage that every screen reads and writes (key mrd-proto:store).
+  readStore() {
+    const empty = { v: 1, units: {}, added: [], deployments: [], events: [], catalog: {} };
+    try { const s = JSON.parse(window.localStorage.getItem('mrd-proto:store') || 'null'); return Object.assign(empty, s || {}); } catch (e) { return empty; }
+  }
+  writeStore(mutate) {
+    const s = this.readStore();
+    if (this._shared && this._shared.mode === 'live' && !this._shared.canEdit) { const t = JSON.parse(JSON.stringify(s)); mutate(t); const strip = o => { const c = Object.assign({}, o); delete c.ui; return JSON.stringify(c); }; if (strip(t) !== strip(s)) this.setState({ _blocked: true }); s.ui = t.ui || s.ui; try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {} this.forceUpdate(); return s; }
+    mutate(s); s.events = s.events.slice(0, 200);
+    try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {}
+    this._pushShared(s);
+    this.forceUpdate(); return s;
+  }
+  // Shared across viewers: the store is mirrored to one document in this artifact's database (mrd_prototype/store).
+  // Browser storage stays as the local cache; everyone who opens the canvas sees the same data, editors can change it.
+  _host() {
+    let w = window;
+    for (let i = 0; i < 8; i++) {
+      try { if (w.claude && typeof w.claude.use === 'function') return w.claude; } catch (e) { return null; }
+      let p = null; try { p = w.parent; } catch (e) { return null; }
+      if (!p || p === w) return null; w = p;
+    }
+    return null;
+  }
+  async _sharedInit() {
+    const host = this._host();
+    if (!host) { this._shared = { mode: 'local' }; this.forceUpdate(); return; }
+    let db = null; try { db = await host.use('db'); } catch (e) { db = null; }
+    if (!db) { this._shared = { mode: 'local' }; this.forceUpdate(); return; }
+    let canEdit = false; try { const u = await host.use('user'); canEdit = u ? !!(await u.canEdit()) : false; } catch (e) { canEdit = false; }
+    this._shared = { mode: 'live', canEdit, db };
+    try {
+      this._unsubShared = db.doc('mrd_prototype/store').onSnapshot(snap => {
+        const local = this.readStore();
+        let next = null;
+        if (snap && snap.exists) { const d = snap.data() || {}; if (typeof d.json === 'string') { try { next = JSON.parse(d.json); } catch (e) { next = null; } } }
+        if (!next) {
+          if (snap && !snap.exists) {
+            let seen = false; try { seen = !!window.localStorage.getItem('mrd-proto:shared-seen'); } catch (e) {}
+            const hasLocal = local.events.length || Object.keys(local.units).length || local.added.length;
+            if (!seen && canEdit && hasLocal) this._pushShared(local);
+            else if (seen || !canEdit) { try { window.localStorage.setItem('mrd-proto:store', JSON.stringify({ v: 1, units: {}, added: [], deployments: [], events: [], catalog: {}, ui: local.ui || {} })); } catch (e) {} this.forceUpdate(); }
+          }
+          return;
+        }
+        next.ui = local.ui || {};
+        try { window.localStorage.setItem('mrd-proto:shared-seen', '1'); } catch (e) {}
+        try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(next)); } catch (e) {}
+        this.forceUpdate();
+      }, err => { this._shared = { mode: 'local', err: err && err.code }; this.forceUpdate(); });
+    } catch (e) { this._shared = { mode: 'local' }; }
+    this.forceUpdate();
+  }
+  _pushShared(s) {
+    const sh = this._shared;
+    if (!sh || sh.mode !== 'live' || !sh.canEdit) return;
+    const out = Object.assign({}, s); delete out.ui;
+    let json = JSON.stringify(out);
+    if (json.length > 240000) { out.events = (out.events || []).slice(0, 40); json = JSON.stringify(out); }
+    sh.db.doc('mrd_prototype/store').set({ json, savedAt: Date.now() }).catch(err => { this._shared = Object.assign({}, sh, { lastErr: (err && err.code) || 'unavailable' }); this.forceUpdate(); });
+  }
+  _clearShared() {
+    const sh = this._shared;
+    if (sh && sh.mode === 'live' && sh.canEdit) { try { sh.db.doc('mrd_prototype/store').delete().catch(() => {}); } catch (e) {} }
+  }
+  syncInfo() {
+    const sh = this._shared;
+    if (!sh) return { label: 'Connecting…', cls: 's-unconf', tip: 'Connecting to the shared store', readOnly: false };
+    if (sh.mode === 'live' && sh.lastErr) return { label: 'Not saved', cls: 's-damaged', tip: 'The last change could not be saved to the shared store (' + sh.lastErr + ')', readOnly: false };
+    if (sh.mode === 'live' && sh.canEdit) return { label: 'Shared · live', cls: 's-deployed', tip: 'Changes are saved for everyone who opens this canvas', readOnly: false };
+    if (sh.mode === 'live') return { label: 'View only', cls: 's-ready', tip: 'You can see shared changes live; only people with edit access can change data', readOnly: true };
+    return { label: 'This browser only', cls: 's-prep', tip: 'The shared store is not available here, so changes stay in this browser', readOnly: false };
+  }
+  nowLabel() { const d = new Date(); return 'Today, ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  patchUnit(s, ident, patch, prevSt) {
+    const cur = s.units[ident] || {};
+    s.units[ident] = Object.assign({}, cur, patch, { st0: cur.st0 !== undefined ? cur.st0 : (prevSt || ''), upd: this.nowLabel() });
+  }
+  logEvent(s, ev) {
+    const d = new Date();
+    s.events.unshift(Object.assign({ id: 'e' + d.getTime() + Math.random().toString(36).slice(2, 6), at: d.getTime(), when: this.nowLabel(), who: 'Chetan', ini: 'CH', role: 'Admin', source: 'Web' }, ev));
+  }
+  componentWillUnmount() { try { if (this._unsubShared) this._unsubShared(); } catch (e) {} try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
+  componentDidUpdate() {
+    try { const keep = Object.assign({}, this.state); delete keep._shell; delete keep._blocked; [].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:Search', JSON.stringify(keep)); } catch (e) {}
+  }
+  constructor(props) { super(props); this.state = { q: '8675309', tab: 'all', recentQ: [] }; }
+  // Recent searches: the query is remembered (per viewer, this browser) when a result is opened.
+  remember(q, sub) {
+    q = String(q || '').trim(); if (!q) return;
+    const cur = (this.state.recentQ || []).filter(r => r.q.toLowerCase() !== q.toLowerCase());
+    this.setState({ recentQ: [{ q, sub: sub || 'Search' }].concat(cur).slice(0, 6) });
+  }
+  // Shared shell: notifications bell (fed by the shared store) and the mobile navigation drawer.
+  shellVals() {
+    const S = this.state, st = this.readStore();
+    const seen = (st.ui && st.ui.seenAt) || 0;
+    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Stage changed': 'moved the stage of', 'POC decision': 'recorded a POC decision for', 'Contract ended': 'ended the contract for', 'Issue reported': 'reported an issue on', 'Reserved': 'reserved', 'Labels printed': 'printed labels for', 'File attached': 'attached a file to', 'File removed': 'removed a file from', 'User updated': 'updated user', 'Product edited': 'edited', 'Invite resent': 'resent the invite to', 'Document uploaded': 'uploaded a document to', 'Document removed': 'removed a document from', 'Contact added': 'added a contact to', 'Contact removed': 'removed a contact from', 'Contract updated': 'updated the contract for', 'Batch updated': 'updated batch', 'Batch archived': 'archived batch', 'Batch restored': 'restored batch', 'Facility updated': 'updated facility', 'Facility restored': 'restored facility', 'Report exported': 'exported', 'Record corrected': 'corrected', 'Note added': 'added a note to', 'Settings changed': 'updated settings ·', 'User invited': 'invited', 'Role changed': 'changed the role of', 'Verified on site': 'verified on site', 'Deployment cancelled': 'cancelled', 'Deployment updated': 'updated deployment' };
+    const fromStore = st.events.slice(0, 8).map(e => ({ text: (e.who || 'Chetan') + ' ' + (VERB[e.action] || String(e.action || '').toLowerCase()) + ' ' + e.item + (e.to && e.to !== '—' && e.action !== 'Imported' ? ' → ' + e.to : ''), when: e.when, href: e.itemHref || 'AuditLog.dc.html', unread: (e.at || 0) > seen }));
+    const alerts = [
+      { text: '14 Teltonika RUT956 units are waiting for preparation', when: 'Batch TEL-2026-004', href: 'DevicePrep.dc.html', alert: true },
+      { text: 'Cat6 patch cable 1 m is below its minimum level', when: 'Low stock · 18 of 25', href: 'InventoryItem.dc.html', alert: true },
+      { text: 'Qatar Foundation: 2 CO₂ sensors scheduled to install on 08 Oct', when: 'Upcoming deployment', href: 'Deployments.dc.html', alert: true }
+    ].map(a => Object.assign(a, { unread: !seen }));
+    const all = fromStore.concat(alerts);
+    const unread = all.filter(n => n.unread).length;
+    const SY = this.syncInfo();
+    return {
+      syncLabel: SY.label, syncCls: SY.cls, syncTip: SY.tip, blocked: !!S._blocked, unblock: () => this.setState({ _blocked: false }),
+      bellOpen: S._shell === 'bell', bellExp: S._shell === 'bell' ? 'true' : 'false', bellZ: S._shell === 'bell' ? '40' : 'auto',
+      menuOpen: S._shell === 'menu', menuExp: S._shell === 'menu' ? 'true' : 'false',
+      unread: unread > 9 ? '9+' : String(unread), hasUnread: unread > 0,
+      notes: all.map(n => ({ text: n.text, when: n.when, href: n.href, bg: n.unread ? '#F4FBF8' : '#fff', dot: n.alert ? '#E08A00' : (n.unread ? '#0B7A6B' : '#D5DBE3') })),
+      toggleBell: () => this.setState({ _shell: this.state._shell === 'bell' ? '' : 'bell' }),
+      toggleMenu: () => this.setState({ _shell: this.state._shell === 'menu' ? '' : 'menu' }),
+      closeAll: () => this.setState({ _shell: '' }),
+      markRead: () => { const st = this.readStore(); st.ui = Object.assign({}, st.ui || {}, { seenAt: Date.now() }); try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(st)); } catch (e) {} this.forceUpdate(); }
+    };
+  }
+  renderVals() { return Object.assign(this._screenVals(), { shell: this.shellVals() }); }
+  _screenVals() {
+    const ST0 = this.readStore();
+    const st = this.state;
+    const LBL = { unconf: 'Unconfigured', prep: 'In preparation', ready: 'Ready for deployment', reserved: 'Reserved', stock: 'In stock', deployed: 'Deployed', maint: 'Under maintenance', transit: 'In transit', returned: 'Returned', damaged: 'Damaged', retired: 'Retired' };
+    const isSimUnit = (id, u) => !!u && (u.cat === 'sim' || u.device !== undefined || u.assigned !== undefined || /^89\d{16,18}$/.test(String(id)));
+    const raw = st.q.trim();
+    const m = raw.match(/^([a-z]+):\s*(.*)$/i);
+    const scope = m ? m[1].toLowerCase() : '';
+    const term = (m ? m[2] : raw).trim();
+    const t = term.toLowerCase();
+    const split = (val) => { const i = val.toLowerCase().indexOf(t); return i < 0 ? null : { pre: val.slice(0, i), mid: val.slice(i, i + t.length), post: val.slice(i + t.length) }; };
+    const devs = [
+      { sn: '1108675309', product: 'Teltonika RUT956', status: 'Ready for deployment', cls: 's-ready', imei: '860548043912877', mac: '00:1E:42:3A:7C:19', devId: 'MRD-TEL-0417', ip: '10.64.12.37', iccid: '8996802026093001427', loc: 'MRD Office · Shelf A2', batch: 'TEL-2026-004', canDeploy: true, fw: 'RUT9M_R_00.07.08.3' },
+      { sn: '1108675311', product: 'Teltonika RUT956', status: 'Deployed', cls: 's-deployed', imei: '860548043912901', mac: '00:1E:42:3A:7C:1B', devId: 'MRD-TEL-0419', ip: '10.64.12.41', iccid: '8996802026093001435', loc: 'Qatar Foundation · Plant room B1', batch: 'TEL-2026-004', canDeploy: false, fw: 'RUT9M_R_00.07.08.3' },
+      { sn: '1108675302', product: 'Teltonika RUT956', status: 'Deployed', cls: 's-deployed', imei: '860548043912870', mac: '00:1E:42:3A:7C:12', devId: 'MRD-TEL-0410', ip: '10.64.12.30', iccid: '8996802026093001418', loc: 'Bank Muscat Head Office', batch: 'TEL-2026-004', canDeploy: false, fw: 'RUT9M_R_00.07.08.3' },
+      { sn: '1108675304', product: 'Teltonika RUT956', status: 'Ready for deployment', cls: 's-ready', imei: '860548043912872', mac: '00:1E:42:3A:7C:14', devId: 'MRD-TEL-0413', ip: '10.64.12.33', iccid: '8996802026093001421', loc: 'MRD Office · Shelf A2', batch: 'TEL-2026-004', canDeploy: true, fw: 'RUT9M_R_00.07.08.3' },
+      { sn: '1107442109', product: 'Teltonika RUT956', status: 'In preparation', cls: 's-prep', imei: '860548043912955', mac: '00:1E:42:3A:7B:E5', devId: 'MRD-TEL-0405', ip: '', iccid: '', loc: 'MRD Office · Prep bench', batch: 'TEL-2026-003', canDeploy: false, fw: 'RUT9M_R_00.07.08.3' },
+      { sn: '1107442103', product: 'Teltonika RUT956', status: 'Under maintenance', cls: 's-maint', imei: '860548043912949', mac: '00:1E:42:3A:7B:DF', devId: 'MRD-TEL-0399', ip: '10.64.12.22', iccid: '8996802026093001402', loc: 'MRD Office · Repair bench', batch: 'TEL-2026-003', canDeploy: false, fw: 'RUT9M_R_00.07.06' },
+      { sn: '6247B1820051', product: 'Milesight UG65', status: 'Unconfigured', cls: 's-unconf', imei: '', mac: '24:E1:24:F5:1A:07', devId: 'GW EUI 24E124FFFEF51A07', ip: '', iccid: '', loc: 'MRD Office · Shelf B3', batch: 'GW-2026-001', canDeploy: false, fw: '60.0.0.42' }
+    ];
+    // The rest of the sample RUT956 batches (TEL-2026-004: 1108675300–19, TEL-2026-003: 1107442100–09), so a batch search lists every unit.
+    const have0 = {}; devs.forEach(d => { have0[d.sn] = true; });
+    const pad2 = n => (n < 10 ? '0' : '') + n;
+    const R4 = { 2: 'deployed', 4: 'ready', 6: 'ready', 9: 'ready', 11: 'deployed', 13: 'ready' };
+    let unc = 0;
+    for (let i = 0; i < 20; i++) {
+      const sn = String(1108675300 + i); const k = R4[i] || 'unconf'; if (k === 'unconf') unc++;
+      if (have0[sn]) continue;
+      devs.push({ sn, product: 'Teltonika RUT956', status: LBL[k], cls: 's-' + k, imei: '8605480439128' + pad2(10 + i * 4), mac: '', devId: 'MRD-TEL-0' + (408 + i), ip: '', iccid: '', loc: k === 'ready' ? 'MRD Office · Shelf A2' : 'MRD Office · ' + (unc <= 10 ? 'Shelf A1' : 'Shelf A2'), batch: 'TEL-2026-004', canDeploy: k === 'ready', fw: k === 'ready' ? 'RUT9M_R_00.07.08.3' : '—' });
+    }
+    for (let i = 0; i < 10; i++) {
+      const sn = String(1107442100 + i); if (have0[sn]) continue;
+      devs.push({ sn, product: 'Teltonika RUT956', status: LBL.deployed, cls: 's-deployed', imei: '8605480439129' + pad2(20 + i * 3), mac: '', devId: 'MRD-TEL-0' + (398 + i), ip: '', iccid: '', loc: i === 7 ? 'Lulu Hypermarket' : 'Bank Muscat Head Office', batch: 'TEL-2026-003', canDeploy: false, fw: 'RUT9M_R_00.07.08.3' });
+    }
+    // Overlay the shared store on the sample devices, then add store units this screen has no sample row for.
+    const locOf = u => u.fac && (u.st === 'deployed' || !u.loc || u.loc === u.fac) ? u.fac : (u.loc || 'MRD Office') + (u.loc2 ? ' · ' + u.loc2 : '');
+    const overlay = (d, u) => {
+      if (!u) return d;
+      const m = Object.assign({}, d);
+      if (u.st && LBL[u.st]) { m.status = LBL[u.st]; m.cls = 's-' + u.st; m.canDeploy = u.st === 'ready'; }
+      ['imei', 'mac', 'devId', 'fw', 'batch'].forEach(k => { if (u[k]) m[k] = u[k]; });
+      if (u.name) m.product = u.name.replace(/ gateway$/, '');
+      if (u.ip !== undefined) m.ip = u.ip || '';
+      if (u.sim !== undefined) m.iccid = u.sim || '';
+      if (u.loc || u.fac) m.loc = locOf(u);
+      return m;
+    };
+    const seen = {}; devs.forEach(d => { seen[d.sn] = true; });
+    const fromStore = u => ({ sn: u.ident, product: u.name || 'Device', status: LBL[u.st] || LBL.stock, cls: 's-' + (LBL[u.st] ? u.st : 'stock'), imei: u.imei || '', mac: u.mac || '', devId: u.devId || '', ip: u.ip || '', iccid: u.sim || '', loc: locOf(u), batch: u.batch || '—', canDeploy: u.st === 'ready', fw: u.fw || '—', fromStore: true });
+    (ST0.added || []).forEach(u => { if (u && u.ident && !seen[u.ident] && !isSimUnit(u.ident, u)) { seen[u.ident] = true; devs.push(fromStore(u)); } });
+    Object.keys(ST0.units).forEach(id => { const u = ST0.units[id]; if (!seen[id] && !isSimUnit(id, u)) { seen[id] = true; devs.push(fromStore(Object.assign({ ident: id }, u))); } });
+    for (let i = 0; i < devs.length; i++) devs[i] = overlay(devs[i], ST0.units[devs[i].sn]);
+    const fieldDefs = [['sn', 'Serial number', 'serial'], ['imei', 'IMEI', 'imei'], ['mac', 'MAC address', 'mac'], ['devId', 'Device ID', 'id'], ['ip', 'IP address', 'ip'], ['iccid', 'SIM ICCID', 'iccid'], ['batch', 'Batch', 'batch']];
+    const devHits = [];
+    if (t.length >= 2 && (!scope || ['serial', 'imei', 'mac', 'id', 'ip', 'iccid', 'batch'].indexOf(scope) >= 0)) {
+      devs.forEach(d => {
+        for (const [k, label, sc] of fieldDefs) {
+          if (scope && scope !== sc) continue;
+          const s = d[k] ? split(d[k]) : null;
+          if (s) { devHits.push(Object.assign({}, d, s, { field: label, key: k })); break; }
+        }
+        // Units created or changed on other screens also match on name.
+        if (d.fromStore && !scope && !devHits.some(h => h.sn === d.sn)) {
+          const s = d.product ? split(d.product) : null; if (s) devHits.push(Object.assign({}, d, s, { field: 'Name', key: 'product' }));
+        }
+      });
+    }
+    const simsData = [
+      { iccid: '8996802026093001427', msisdn: '+968 7912 3045', sub: 'Omantel M2M · assigned to RUT956 1108675309', status: 'Assigned', cls: 's-ready' },
+      { iccid: '8996802026093001435', msisdn: '+968 7912 3051', sub: 'Omantel M2M · Qatar Foundation', status: 'Active', cls: 's-deployed' },
+      { iccid: '8996802026093001436', msisdn: '+968 7912 3052', sub: 'Omantel M2M · SIM-2026-005', status: 'Available', cls: 's-stock' }
+    ];
+    // SIMs: overlay store patches (assignment) and add SIMs created elsewhere.
+    const simSeen = {}; simsData.forEach(x => { simSeen[x.iccid] = true; });
+    (ST0.added || []).forEach(u => { if (u && u.ident && !simSeen[u.ident] && isSimUnit(u.ident, u)) { simSeen[u.ident] = true; simsData.push({ iccid: u.ident, msisdn: u.msisdn || '', sub: (u.name || 'SIM') + (u.batch ? ' · ' + u.batch : ''), status: 'Available', cls: 's-stock' }); } });
+    Object.keys(ST0.units).forEach(id => { const u = ST0.units[id]; if (!simSeen[id] && isSimUnit(id, u) && u.device) { simSeen[id] = true; simsData.push({ iccid: id, msisdn: u.msisdn || '', sub: '', status: 'Assigned', cls: 's-ready' }); } });
+    for (let i = 0; i < simsData.length; i++) {
+      const u = ST0.units[simsData[i].iccid]; if (!u) continue;
+      const x = Object.assign({}, simsData[i]);
+      if (u.msisdn) x.msisdn = u.msisdn;
+      if (u.device) { const dv = devs.find(d => d.sn === u.device); x.status = 'Assigned'; x.cls = 's-ready'; x.sub = 'Omantel M2M · assigned to ' + (dv ? dv.product.replace('Teltonika ', '') + ' ' : '') + u.device + (u.ip ? ' · ' + u.ip : ''); }
+      else if (u.assigned === false) { x.status = 'Available'; x.cls = 's-stock'; x.sub = 'Omantel M2M · released ' + (u.upd || ''); }
+      if (u.st && LBL[u.st] && u.st !== 'stock') { x.status = LBL[u.st]; x.cls = 's-' + u.st; }
+      simsData[i] = x;
+    }
+    const sims = (t.length >= 2 && (!scope || scope === 'iccid' || scope === 'sim')) ? simsData.map(s => { const h = split(s.iccid) || split(s.msisdn); return h ? Object.assign({}, s, h) : null; }).filter(Boolean) : [];
+    const batchData = [
+      { id: 'TEL-2026-004', product: 'Teltonika RUT956', date: '22 Sep 2026', range: ['1108675300', '1108675319'], meta: 'Al Noor Technologies LLC · 20 units' },
+      { id: 'TEL-2026-003', product: 'Teltonika RUT956', date: '12 Aug 2026', range: ['1107442100', '1107442109'], meta: '10 units' },
+      { id: 'SIM-2026-005', product: 'Omantel M2M SIM', date: '30 Sep 2026', range: null, meta: '50 SIMs' },
+      { id: 'CO2-2026-002', product: 'Milesight EM500-CO2', date: '03 Sep 2026', range: null, meta: '40 units' },
+      { id: 'GW-2026-001', product: 'Milesight UG65', date: '15 Jul 2026', range: null, meta: '6 gateways' }
+    ];
+    // Batches received on other screens: grouped from store.added, plus quantity receipts recorded as 'Received' events.
+    const bIdx = {}; batchData.forEach(b => { bIdx[b.id] = b; });
+    (ST0.added || []).forEach(u => {
+      if (!u || !u.batch) return;
+      const b = bIdx[u.batch] || (bIdx[u.batch] = batchData[batchData.push({ id: u.batch, product: u.name || 'Unit', date: u.recv || '05 Oct 2026', range: null, meta: '', n: 0, sup: u.sup || '', store: true }) - 1]);
+      if (b.store) { b.n++; b.meta = (b.sup ? b.sup + ' · ' : '') + b.n + (b.n === 1 ? ' unit' : ' units'); }
+    });
+    (ST0.events || []).forEach(e => { const m = e && e.action === 'Received' && /^Batch (\S+) · (\d+) × (.+)$/.exec(e.item || ''); if (m && !bIdx[m[1]]) { bIdx[m[1]] = { id: m[1], product: m[3], date: e.when || '05 Oct 2026', range: null, meta: (e.from ? e.from + ' · ' : '') + m[2] + ' received' }; batchData.push(bIdx[m[1]]); } });
+    const batches = (t.length >= 2 && (!scope || scope === 'batch' || scope === 'serial')) ? batchData.map(b => {
+      const own = devHits.find(h => h.batch === b.id && h.key === 'sn');
+      if (own && b.range && scope !== 'batch') return { id: b.id, product: b.product, date: b.date, sub: 'Contains ' + own.sn + ' · serials ' + b.range[0] + '–' + b.range[1] + ' · ' + b.meta };
+      if (scope !== 'serial' && b.id.toLowerCase().indexOf(t) >= 0) return { id: b.id, product: b.product, date: b.date, sub: b.meta };
+      return null;
+    }).filter(Boolean) : [];
+    // Products (sample catalogue + products added on the Products screen) and suppliers (sample + Settings catalogue).
+    const PR = ST0.products || {};
+    const prodData = [['Teltonika RUT956', 'Teltonika', 'RUT956', 'Teltonika Devices'], ['Teltonika RUT241', 'Teltonika', 'RUT241', 'Teltonika Devices'], ['Teltonika RUT950', 'Teltonika', 'RUT950', 'Teltonika Devices'], ['Milesight EM500-CO2', 'Milesight', 'EM500-CO2', 'CO₂ Sensors'], ['Milesight AM319', 'Milesight', 'AM319', 'CO₂ Sensors'], ['Milesight UG65', 'Milesight', 'UG65-868M', 'LoRaWAN Gateways'], ['Omantel M2M SIM', 'Omantel', 'M2M Pooled 5 GB', 'M2M SIM Cards'], ['Ooredoo M2M SIM', 'Ooredoo', 'M2M IoT 2 GB', 'M2M SIM Cards'], ['UniFi Switch Lite 8 PoE', 'Ubiquiti', 'USW-Lite-8-PoE', 'Network Equipment'], ['UniFi Switch Flex Mini', 'Ubiquiti', 'USW-Flex-Mini', 'Network Equipment'], ['ABB ACS580 VFD', 'ABB', 'ACS580-01', 'VFDs'], ['Danfoss VLT FC 102', 'Danfoss', 'FC-102P7K5', 'VFDs'], ['Siemens PXC4.E16', 'Siemens', 'PXC4.E16', 'Controllers & BMS'], ['Loytec BACnet router', 'Loytec', 'LIP-ME201C', 'Controllers & BMS'], ['Belimo damper actuator', 'Belimo', 'LRB24-3', 'Controllers & BMS'], ['Cat6 patch cable 3 m', 'Generic', 'Cat6 U/UTP 3 m', 'Cables & Accessories'], ['Cat6 patch cable 1 m', 'Generic', 'Cat6 U/UTP 1 m', 'Cables & Accessories'], ['24 V DIN-rail PSU', 'Mean Well', 'HDR-30-24', 'Cables & Accessories'], ['RS-485 shielded cable', 'Belden', '9841', 'Cables & Accessories']]
+      .map(([name, brand, model, cat]) => ({ name, brand, model, cat, track: '', isNew: false }));
+    (PR.added || []).forEach(a => { if (a && a.name && !prodData.some(p => p.name.toLowerCase() === a.name.toLowerCase())) prodData.push({ name: a.name, brand: a.brand || '', model: a.model || '', cat: a.catLabel || '', track: a.track || '', isNew: true }); });
+    const prodArch = name => (PR.archived || {})[name] ? true : ((PR.restored || {})[name] ? false : name === 'Teltonika RUT950');
+    const supData = [['Al Noor Technologies LLC', 'Teltonika Devices'], ['SensorTech Trading', 'CO₂ Sensors · LoRaWAN Gateways'], ['Gulf Network Supplies', 'Network Equipment · Cables'], ['Gulf Electro-Mechanical Supplies', 'VFDs'], ['Omantel Business', 'M2M SIM Cards'], ['Ooredoo Business', 'M2M SIM Cards']].map(([name, cats]) => ({ name, cats, contact: '' }));
+    ((ST0.catalog && ST0.catalog.suppliers) || []).forEach(x => { const nm = x && (typeof x === 'string' ? x : x.name); if (!nm) return; const ex = supData.filter(y => y.name === nm)[0]; const cats = x.cats ? (Array.isArray(x.cats) ? x.cats.join(' · ') : String(x.cats)) : ''; if (ex) { if (cats) ex.cats = cats; if (x.contact) ex.contact = x.contact; } else supData.push({ name: nm, cats, contact: x.contact || '' }); });
+    const catHits = [];
+    if (t.length >= 2 && (!scope || scope === 'product' || scope === 'supplier')) {
+      if (scope !== 'supplier') prodData.forEach(p => { const h = split(p.name) || (split(p.brand + ' ' + p.model) ? Object.assign({ pre: p.name, mid: '', post: '' }) : null); if (h) { const ar = prodArch(p.name); catHits.push(Object.assign({ kind: 'Product', sub: [p.brand, p.model, p.cat, p.track].filter(Boolean).join(' · '), status: ar ? 'Archived' : (p.isNew ? 'New' : 'Active'), cls: ar ? 's-retired' : (p.isNew ? 's-ready' : 's-deployed'), href: /cable|PSU/i.test(p.name) ? 'InventoryItem.dc.html' : (/SIM$/.test(p.name) ? 'SimInventory.dc.html' : 'ProductDetail.dc.html') }, h)); } });
+      if (scope !== 'product') supData.forEach(x => { const h = split(x.name); if (h) catHits.push(Object.assign({ kind: 'Supplier', sub: [x.cats, x.contact].filter(Boolean).join(' · ') || 'Supplier', status: 'Supplier', cls: 's-stock', href: 'Settings.dc.html' }, h)); });
+    }
+    const facData = [
+      ['Qatar Foundation', 'Education City, Doha · 12 devices', 'POC', 'g-poc'],
+      ['Bank Muscat Head Office', 'Airport Heights, Muscat · 35 devices', 'Active operations', 'g-contract'],
+      ['Lulu Hypermarket', 'Bausher, Muscat · 8 devices', 'POC study', 'g-study'],
+      ['Al Khuwair Business Tower', 'Al Khuwair, Muscat', 'BMS scan', 'g-bms'],
+      ['Sohar Logistics Hub', 'Sohar', 'Site inspection', 'g-insp'],
+      ['Ruwi Medical Centre', 'Ruwi, Muscat', 'On hold', 'g-hold']
+    ];
+    const facs = (t.length >= 2 && (!scope || scope === 'facility' || scope === 'client')) ? facData.map(([name, sub, stage, cls]) => { const h = split(name); return h ? Object.assign({ sub, stage, cls }, h) : null; }).filter(Boolean) : [];
+    const actData = [
+      ['CH', '#CDEFE7', 'Chetan', 'marked Ready for deployment', 'RUT956 · 1108675309', 'Today, 09:42'],
+      ['CH', '#CDEFE7', 'Chetan', 'assigned IP 10.64.12.37 to', 'RUT956 · 1108675309', 'Today, 09:39'],
+      ['CH', '#CDEFE7', 'Chetan', 'assigned SIM …1427 to', 'RUT956 · 1108675309', 'Today, 09:38'],
+      ['CH', '#CDEFE7', 'Chetan', 'deployed to Qatar Foundation', 'RUT956 · 1108675311', '01 Oct, 11:30'],
+      ['NI', '#F6E3C4', 'Nitin', 'received batch', 'TEL-2026-004', '22 Sep, 10:15']
+    ];
+    // Activity recorded in the shared store (newest first) ahead of the sample entries.
+    const AV = { CH: '#CDEFE7', NI: '#F6E3C4', AI: '#E6DDFB', RA: '#DCE6FB', SA: '#FBE0DC' };
+    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Record corrected': 'corrected', 'Note added': 'added a note to' };
+    const storeActs = (t.length >= 2 && !scope) ? ST0.events.map(e => {
+      const obj = [e.item || '', e.to ? '→ ' + e.to : '', e.note || ''].filter(Boolean).join(' · ');
+      const h = split(obj); return h ? Object.assign({ ini: e.ini || '··', bg: AV[e.ini] || '#E3E7EC', who: e.who || '—', what: VERB[e.action] || String(e.action || '').toLowerCase(), when: e.when || '' }, h) : null;
+    }).filter(Boolean).slice(0, 20) : [];
+    const acts = storeActs.concat((t.length >= 2 && !scope) ? actData.map(([ini, bg, who, what, obj, when]) => { const h = split(obj); return h ? Object.assign({ ini, bg, who, what, when }, h) : null; }).filter(Boolean) : []);
+    const best = devHits[0] || null;
+    const others = devHits.slice(1);
+    const total = devHits.length + sims.length + batches.length + catHits.length + facs.length + acts.length;
+    const hasQ = raw.length > 0;
+    const tab = st.tab;
+    const tabs = [['all', 'All', total], ['devices', 'Devices', devHits.length], ['sims', 'SIMs', sims.length], ['batches', 'Batches', batches.length], ['catalog', 'Products & suppliers', catHits.length], ['facilities', 'Facilities', facs.length], ['activity', 'Activity', acts.length]].map(([id, label, n]) => ({
+      label, n, cls: 'ftab' + (tab === id ? ' on' : ''), sel: tab === id ? 'true' : 'false', pick: () => this.setState({ tab: id })
+    }));
+    const on = id => tab === 'all' || tab === id;
+    const setQ = v => () => this.setState({ q: v, tab: 'all' });
+    const tokens = [['serial:', 'Serial number'], ['imei:', 'IMEI'], ['mac:', 'MAC address'], ['id:', 'Device ID'], ['iccid:', 'SIM ICCID or phone'], ['ip:', 'IP address'], ['batch:', 'Batch ID'], ['product:', 'Product, brand or model'], ['supplier:', 'Supplier'], ['facility:', 'Facility or client']].map(([label, title]) => ({ label, title, pick: () => this.setState({ q: label + (term || ''), tab: 'all' }) }));
+    const fields = [
+      ['Serial number', '1108675309'], ['IMEI', '860548043912877'], ['MAC address', '00:1E:42:3A:7C:19'], ['Device ID', 'MRD-TEL-0417'],
+      ['SIM / ICCID', '8996802026093001427'], ['IP address', '10.64.12.37'], ['Product', 'RUT956'], ['Model', 'EM500-CO2'],
+      ['Batch', 'TEL-2026-004'], ['Facility', 'Qatar Foundation'], ['Client', 'Bank Muscat']
+    ].map(([label, ex]) => ({ label, ex, pick: setQ(ex) }));
+    const ownRecent = (st.recentQ || []).filter(r => r && r.q);
+    const recent = (ownRecent.length ? ownRecent.map(r => [r.q, r.sub]) : [['1108675311', 'Device · RUT956 at Qatar Foundation'], ['ip:10.64.12.41', 'IP · Qatar Foundation router'], ['batch:TEL-2026-004', 'Batch · 20 RUT956'], ['iccid:8996802026093001427', 'SIM · Omantel M2M'], ['Lulu', 'Facility · Lulu Hypermarket']]).map(([q, sub]) => ({ q, sub, pick: setQ(q) }));
+    const go = sub => () => this.remember(raw, sub);
+    const goFac = name => () => { this.remember(raw, 'Facility · ' + name); this.writeStore(s => { s.ui = Object.assign({}, s.ui || {}, { facility: name }); }); };
+    const preview = best ? [
+      ['Status', best.status, ''], ['Location', best.loc, ''], ['IMEI', best.imei || '—', 'mono'], ['MAC', best.mac, 'mono'],
+      ['Device ID', best.devId, 'mono'], ['SIM', best.iccid ? '…' + best.iccid.slice(-4) : '—', 'mono'], ['IP', best.ip || '—', 'mono'], ['Firmware', best.fw, 'mono']
+    ].map(([k, v, cls]) => ({ k, v, cls })) : [];
+    return {
+      q: st.q, onQ: e => this.setState({ q: e.target.value }), clear: () => this.setState({ q: '', tab: 'all' }),
+      hasQ, term, tokens, tabs, fields, recent, hasOwnRecent: ownRecent.length > 0, clearRecent: () => this.setState({ recentQ: [] }),
+      tokIccid: () => this.setState({ q: 'iccid:' + term }),
+      showResults: hasQ && total > 0, showNone: hasQ && total === 0, showEmpty: !hasQ,
+      secDevices: on('devices'), secSims: on('sims'), secBatches: on('batches'), secCat: on('catalog'), secFac: on('facilities'), secAct: on('activity'),
+      nDevices: devHits.length, nSims: sims.length, nBatches: batches.length, nCat: catHits.length, nFac: facs.length, nAct: acts.length,
+      hasBest: !!best && on('devices'), best: Object.assign({}, best || {}, { go: go(best ? 'Device · ' + best.product + ' ' + best.sn : 'Device') }), otherDevices: others.map(d => Object.assign({}, d, { go: go('Device · ' + d.product + ' ' + d.sn) })),
+      noOtherDevices: !!best && others.length === 0, noDevices: !best,
+      sims: sims.map(x => Object.assign({}, x, { go: go('SIM · ' + x.iccid) })), noSims: sims.length === 0, batches: batches.map(b => Object.assign({}, b, { go: go('Batch · ' + b.id) })), noBatches: batches.length === 0,
+      catHits: catHits.map(x => Object.assign({}, x, { go: go(x.kind + ' · ' + x.pre + x.mid + x.post) })), noCat: catHits.length === 0,
+      facs: facs.map(f => Object.assign({}, f, { go: goFac(f.pre + f.mid + f.post) })), noFac: facs.length === 0, acts: acts.map(a => Object.assign({}, a, { go: go('Audit · ' + a.who + ' ' + a.what) })), noAct: acts.length === 0,
+      preview,
+      summary: hasQ ? total + ' results across 1,284 items · sample data' : 'Searching 1,284 items, 80 SIMs, 6 facilities'
+    };
+  }
+}
+</script>
+</body>
+</html>

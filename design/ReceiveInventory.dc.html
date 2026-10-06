@@ -1,0 +1,901 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Receive Stock · MRD Inventory</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F6F8;color:#0E1726;font-family:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#0B7A6B;text-decoration:none}a:hover{color:#075C51}
+h1,h2,h3,h4,p{margin:0}
+.mono{font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;letter-spacing:-.01em}
+.muted{color:#5E6B7D}
+.side{flex:0 0 248px;background:#0C1424;padding:18px 12px 16px;display:flex;flex-direction:column;gap:1px}
+.nav{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:8px;color:#B3BDCB;font-size:13.5px}
+.nav:hover{background:#152036;color:#fff}
+.nav.on{background:#1C2A42;color:#fff;box-shadow:inset 2px 0 0 #2BC4A8}
+.nav svg{flex:0 0 16px;width:16px;height:16px}
+.nav .ct{margin-left:auto;font-size:11px;font-weight:600;background:#2BC4A8;color:#04211C;border-radius:999px;padding:1px 7px}
+.sec{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#7F8CA0;padding:16px 10px 6px;font-weight:500}
+.mtop{display:none}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 32px;background:#fff;border-bottom:1px solid #E3E7EC}
+.srch{flex:1 1 320px;max-width:560px;display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border:1px solid #DCE1E8;border-radius:10px;background:#F8FAFB;color:#5E6B7D;font-size:13.5px}
+.srch:hover{border-color:#B9C2CE;color:#3B4758}
+.kbd{margin-left:auto;font-family:'Geist Mono',monospace;font-size:11px;border:1px solid #DCE1E8;border-radius:5px;padding:1px 6px;background:#fff;color:#5E6B7D}
+.main{padding:28px 32px 48px;max-width:1400px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+.card{background:#fff;border:1px solid #E3E7EC;border-radius:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 14px;border-radius:9px;border:1px solid #D5DBE3;background:#fff;color:#1B2638;font:inherit;font-size:13.5px;font-weight:500;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#F4F6F8;color:#0E1726}
+.btn.p{background:#0B7A6B;border-color:#0B7A6B;color:#fff}.btn.p:hover{background:#08695C;color:#fff}
+.btn.sm{height:32px;padding:0 10px;font-size:12.5px;border-radius:8px}
+.btn.ic{width:40px;padding:0}
+.btn svg{width:16px;height:16px}
+.b{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;background:#EEF1F5;color:#3E4A5C}
+.b::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.s-unconf{background:#EEF1F5;color:#3E4A5C}.s-prep{background:#FFF3DC;color:#8A4B00}.s-ready{background:#E6EEFF;color:#1D4FB8}.s-reserved{background:#F0EAFE;color:#5B32B4}.s-deployed{background:#E1F4EC;color:#0A6648}.s-stock{background:#E3F2F6;color:#0E5E73}.s-maint{background:#FFEDE3;color:#9A3D0B}.s-damaged{background:#FDEBEA;color:#A3201F}.s-transit{background:#E9EDFC;color:#3346A8}.s-returned{background:#F1EEE8;color:#5E554A}.s-retired{background:#EFF0F2;color:#646C79}
+.g-insp{background:#EEF1F5;color:#3E4A5C}.g-bms{background:#E3F2F6;color:#0E5E73}.g-poc{background:#F0EAFE;color:#5B32B4}.g-study{background:#FFF3DC;color:#8A4B00}.g-cpend{background:#E6EEFF;color:#1D4FB8}.g-contract{background:#E1F4EC;color:#0A6648}.g-ops{background:#0B7A6B;color:#fff}.g-done{background:#EFF0F2;color:#646C79}.g-hold{background:#FDEBEA;color:#A3201F}
+.t{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:6px;font-size:11.5px;font-weight:600;letter-spacing:.02em;border:1px solid}
+.t-poc{color:#5B32B4;border-color:#D7C8FA;background:#FAF7FF}.t-con{color:#0A6648;border-color:#BFE3D3;background:#F4FBF8}.t-rep{color:#8A4B00;border-color:#F3D9A6;background:#FFFBF2}.t-add{color:#1D4FB8;border-color:#C8D8FA;background:#F6F9FF}
+.tw{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-weight:500;color:#5E6B7D;font-size:12px;padding:10px 14px;border-bottom:1px solid #E3E7EC;background:#F8FAFB;white-space:nowrap}
+.tbl td{padding:11px 14px;border-bottom:1px solid #EEF1F4;white-space:nowrap;vertical-align:middle}
+.tbl tr:hover td{background:#F8FAFB}
+.tbl tr:last-child td{border-bottom:0}
+.ov{font-size:12px;font-weight:500;color:#5E6B7D;text-transform:uppercase;letter-spacing:.06em}
+.kpi{padding:16px 18px;display:flex;flex-direction:column;gap:6px;color:#0E1726}
+.kpi:hover{border-color:#B9C2CE;color:#0E1726}
+.kpi .n{font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
+.seg{display:flex;gap:2px;height:8px;border-radius:4px;overflow:hidden}
+.seg span{display:block;height:100%}
+.row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-top:1px solid #EEF1F4;color:#0E1726}
+.row:hover{background:#F8FAFB;color:#0E1726}
+.chip{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;border:0;background:transparent;font:inherit;font-size:13px;color:#3B4758;cursor:pointer}
+.chip.on{background:#fff;color:#0E1726;box-shadow:0 1px 2px rgba(14,23,38,.12)}
+.cg{display:flex;flex-wrap:wrap;gap:2px;padding:3px;background:#E9EDF1;border-radius:10px}
+.fl{display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:#3B4758;font-weight:500;min-width:0}
+.fl .h{font-size:12px;color:#5E6B7D;font-weight:400}
+.inp{height:40px;border:1px solid #D5DBE3;border-radius:9px;padding:0 12px;font:inherit;font-size:13.5px;background:#fff;color:#0E1726;width:100%}
+.inp:focus{outline:2px solid #2BC4A8;outline-offset:0;border-color:#0B7A6B}
+.inp.err{border-color:#D92D20;background:#FFF8F7}
+.ta{height:auto;padding:10px 12px;resize:vertical;line-height:1.5}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.stp{display:flex;align-items:center;gap:10px;flex:1 1 180px;padding:12px 14px;border:0;background:transparent;font:inherit;text-align:left;cursor:pointer;border-radius:10px;color:#3B4758}
+.stp:hover{background:#F4F6F8}
+.stp.on{background:#F0F8F6;color:#0E1726}
+.stp .dot{width:28px;height:28px;border-radius:50%;border:1.5px solid #C5CCD6;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:600;flex:0 0 28px;background:#fff}
+.stp.on .dot{border-color:#0B7A6B;background:#0B7A6B;color:#fff}
+.stp.dn .dot{border-color:#0B7A6B;color:#0B7A6B;background:#E1F4EC}
+.drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:22px 16px;border:1.5px dashed #C5CCD6;border-radius:12px;background:#F8FAFB;text-align:center}
+.note{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:10px;font-size:13px;line-height:1.5}
+.note svg{flex:0 0 16px;margin-top:2px}
+.n-info{background:#F0F6FF;border:1px solid #C8D8FA;color:#1D3F80}
+.n-warn{background:#FFF8EB;border:1px solid #F3D9A6;color:#6B3D00}
+.n-ok{background:#F0FAF5;border:1px solid #BFE3D3;color:#0A5239}
+.n-err{background:#FFF5F4;border:1px solid #F6C9C5;color:#912018}
+.ut td{padding:6px 8px}
+.ut .inp{height:34px;font-size:12.5px;font-family:'Geist Mono',ui-monospace,monospace}
+.sum{display:grid;grid-template-columns:auto 1fr;gap:9px 14px;font-size:13px;margin:0}
+.sum dt{color:#5E6B7D}.sum dd{margin:0;text-align:right;color:#0E1726;font-weight:500;min-width:0}
+.ck{display:flex;align-items:center;gap:10px;font-size:13px;padding:6px 0}
+.ck i{width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex:0 0 18px;font-style:normal}
+.wh{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid #EEF1F4;font-size:13.5px}
+.wh .ic2{width:30px;height:30px;border-radius:8px;background:#E1F4EC;color:#0A6648;display:flex;align-items:center;justify-content:center;flex:0 0 30px}
+@media (max-width:900px){.side{display:none}.mtop{display:flex}.main{padding:20px 16px 40px}.top{padding:12px 16px}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh; background: #F4F6F8">
+<nav class="side" aria-label="Primary">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 2px 8px 14px; color: #fff">
+<span style="width: 32px; height: 32px; border-radius: 9px; background: #0B7A6B; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4a8 8 0 1 0 4 11.5A6.5 6.5 0 0 1 16 4z"></path><path d="M6 18l2.5-2.5"></path></svg></span>
+<span style="display: flex; flex-direction: column; line-height: 1.15"><span style="font-weight: 600; font-size: 14px">Moonrock R&amp;D</span><span style="font-size: 11.5px; color: #8D99AC">Inventory × Exergio</span></span>
+</a>
+<a class="nav" href="Main.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>Dashboard</a>
+<div class="sec">Inventory</div>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"></path><path d="M3 8v8l9 5 9-5V8"></path><path d="M12 13v8"></path></svg>All inventory</a>
+<a class="nav" href="Products.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg>Products</a>
+<a class="nav" href="Batches.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l10 5-10 5L2 7l10-5z"></path><path d="M2 12l10 5 10-5"></path><path d="M2 17l10 5 10-5"></path></svg>Batches</a>
+<a class="nav on" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive stock</a>
+<div class="sec">Devices</div>
+<a class="nav" href="DevicePrep.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg>Device preparation<span class="ct">15</span></a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="18" height="7" rx="2"></rect><path d="M7 16.5h.01M11 16.5h.01"></path><path d="M17 13V5"></path><path d="M14 7.5a4 4 0 0 1 6 0"></path></svg>Teltonika</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h11a3 3 0 1 0-3-3"></path><path d="M3 12h16a3 3 0 1 1-3 3"></path><path d="M3 16h7"></path></svg>CO₂ sensors</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"></circle><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7M5.6 5.6a9 9 0 0 0 0 12.8M18.4 5.6a9 9 0 0 1 0 12.8"></path></svg>LoRaWAN gateways</a>
+<a class="nav" href="SimInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"></path><rect x="8.5" y="11" width="7" height="6" rx="1"></rect></svg>SIM cards</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"></rect><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"></path></svg>Other equipment</a>
+<div class="sec">Facilities &amp; projects</div>
+<a class="nav" href="Facilities.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"></rect><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1"></path></svg>Facilities</a>
+<a class="nav" href="PocManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6L4.5 18.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3"></path><path d="M7 15h10"></path></svg>POC projects</a>
+<a class="nav" href="ContractManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path><path d="M9 13h6M9 17h4"></path></svg>Contracts</a>
+<div class="sec">Deployments</div>
+<a class="nav" href="Deployments.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3z"></path><path d="M14 10h4l3 3v3h-7"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>Deployments</a>
+<a class="nav" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>New deployment</a>
+<div class="sec">Insights &amp; admin</div>
+<a class="nav" href="Reports.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M10 20V5M16 20v-6M21 20H3"></path></svg>Reports</a>
+<a class="nav" href="AuditLog.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l3 2"></path></svg>Audit log</a>
+<a class="nav" href="Users.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20a6.5 6.5 0 0 1 13 0"></path><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"></path></svg>Users &amp; roles</a>
+<a class="nav" href="Settings.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Settings</a>
+<div style="margin-top: auto; padding: 16px 8px 0; display: flex; align-items: center; gap: 10px; border-top: 1px solid #1C2A42">
+<span style="width: 32px; height: 32px; border-radius: 50%; background: #2BC4A8; color: #04211C; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600">CH</span>
+<span style="display: flex; flex-direction: column; line-height: 1.2"><span style="color: #fff; font-size: 13px; font-weight: 500">Chetan</span><span style="color: #8D99AC; font-size: 11.5px">Admin · MRD Office</span></span>
+</div>
+</nav>
+
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+<div class="mtop" style="align-items: center; justify-content: space-between; padding: 12px 16px; background: #0C1424; color: #fff">
+<span style="font-weight: 600">Moonrock R&amp;D</span>
+<button class="btn sm" aria-label="Open menu" aria-expanded="{{shell.menuExp}}" onClick="{{shell.toggleMenu}}" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
+</div>
+<header class="top">
+<a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
+<span style="flex: 1"></span>
+<span class="b s-prep" title="All records shown are sample data">Sample data</span>
+<span class="b {{shell.syncCls}}" title="{{shell.syncTip}}">{{shell.syncLabel}}</span>
+<a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
+<a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
+<div style="position: relative; z-index: {{shell.bellZ}}">
+<button class="btn ic" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="{{shell.bellExp}}" onClick="{{shell.toggleBell}}" style="position: relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg><sc-if value="{{shell.hasUnread}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #DC3B3A; color: #fff; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #fff">{{shell.unread}}</span></sc-if></button>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="Notifications" style="position: absolute; right: 0; top: calc(100% + 8px); z-index: 41; width: 360px; max-width: calc(100vw - 32px); background: #fff; border: 1px solid #DCE1E8; border-radius: 12px; box-shadow: 0 16px 40px rgba(14,23,38,.18); overflow: hidden; text-align: left">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #EEF1F4"><span style="font-weight: 600; font-size: 14px; color: #0E1726">Notifications</span><button onClick="{{shell.markRead}}" style="border: 0; background: none; padding: 4px; font: inherit; font-size: 12.5px; color: #0B7A6B; cursor: pointer">Mark all as read</button></div>
+<div style="max-height: 380px; overflow-y: auto">
+<sc-for list="{{shell.notes}}" as="n" hint-placeholder-count="4">
+<a href="{{n.href}}" style="display: flex; gap: 10px; padding: 11px 14px; border-bottom: 1px solid #F1F4F7; color: #0E1726; background: {{n.bg}}">
+<span style="width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: 0 0 8px; background: {{n.dot}}"></span>
+<span style="flex: 1; min-width: 0; font-size: 13px; line-height: 1.4"><span style="display: block">{{n.text}}</span><span style="display: block; font-size: 12px; color: #5E6B7D">{{n.when}}</span></span>
+</a>
+</sc-for>
+</div>
+<a href="AuditLog.dc.html" style="display: block; padding: 10px 14px; font-size: 13px; font-weight: 500; text-align: center; border-top: 1px solid #EEF1F4">Open audit log</a>
+</div>
+</sc-if>
+</div>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}"><button aria-label="Close notifications" onClick="{{shell.closeAll}}" style="position: fixed; inset: 0; z-index: 30; background: transparent; border: 0; padding: 0; cursor: default"></button></sc-if>
+</header>
+
+<main class="main">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<nav aria-label="Breadcrumb" style="font-size: 13px; color: #5E6B7D"><a href="Main.dc.html">Dashboard</a> / <a href="Batches.dc.html">Batches</a> / <span style="color: #0E1726">Receive inventory</span></nav>
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="font-size: 26px; font-weight: 600; letter-spacing: -.02em">Receive inventory</h1>
+<p class="muted" style="font-size: 14px">Log a supplier shipment as a batch, capture unit identities and put it into stock.</p>
+</div>
+<div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+<span class="muted" style="font-size: 12.5px">Draft autosaved 10:12</span>
+<a class="btn" href="Batches.dc.html">Cancel</a>
+</div>
+</div>
+</div>
+
+<nav class="card" aria-label="Steps" style="padding: 6px; display: flex; gap: 4px; flex-wrap: wrap">
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="3">
+<button class="{{s.cls}}" onClick="{{s.go}}" aria-current="{{s.cur}}">
+<span class="dot">{{s.mark}}</span>
+<span style="display: flex; flex-direction: column; line-height: 1.25"><span style="font-weight: 600; font-size: 13.5px">{{s.label}}</span><span class="muted" style="font-size: 12px">{{s.sub}}</span></span>
+</button>
+</sc-for>
+</nav>
+
+<section style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+<div style="flex: 2 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+
+<sc-if value="{{done}}" hint-placeholder-val="{{ false }}">
+<div class="card" style="padding: 40px 28px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 14px">
+<span style="width: 56px; height: 56px; border-radius: 50%; background: #E1F4EC; color: #0A6648; display: flex; align-items: center; justify-content: center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg></span>
+<h2 style="font-size: 20px; font-weight: 600">Batch <span class="mono" style="font-size: 18px">{{batch}}</span> received</h2>
+<p class="muted" style="font-size: 14px; max-width: 520px">{{qty}} × {{pName}} added to {{loc}} as <strong style="color: #0E1726">{{initStatus}}</strong>. {{auditLine}}</p>
+<div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 6px">
+<a class="btn" href="BatchDetail.dc.html">View batch</a>
+<sc-if value="{{cfg}}" hint-placeholder-val="{{ true }}"><a class="btn p" href="DevicePrep.dc.html">Prepare devices</a></sc-if>
+<button class="btn" onClick="{{again}}">Receive another shipment</button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{s1}}" hint-placeholder-val="{{ true }}">
+<div class="card">
+<div style="padding: 18px 20px 4px"><h2 style="font-size: 16px; font-weight: 600">Shipment details</h2><p class="muted" style="font-size: 13px">What arrived, from whom, and where it goes.</p></div>
+<div style="padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 16px">
+<div class="fg">
+<label class="fl">Supplier
+<select class="inp" value="{{sup}}" onChange="{{onSup}}">
+<sc-for list="{{suppliers}}" as="o" hint-placeholder-count="6"><option value="{{o.v}}">{{o.v}}</option></sc-for>
+</select>
+</label>
+<label class="fl">Product
+<select class="inp" value="{{prod}}" onChange="{{onProd}}">
+<option value="rut956">Teltonika RUT956 · Teltonika Devices</option>
+<option value="em500">Milesight EM500-CO2 · CO₂ Sensors</option>
+<option value="ug65">Milesight UG65 · LoRaWAN Gateways</option>
+<option value="sim">Omantel M2M SIM · M2M SIM Cards</option>
+<option value="cab1">Cat6 patch cable 1 m · Cables &amp; Accessories</option>
+</select>
+</label>
+</div>
+<div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 14px; border-radius: 10px; background: #F8FAFB; border: 1px solid #EEF1F4">
+<span class="b s-stock">{{track}}</span>
+<sc-if value="{{cfg}}" hint-placeholder-val="{{ true }}"><span class="b s-prep">Requires configuration</span></sc-if>
+<span style="font-size: 13px; color: #3B4758; flex: 1 1 260px">{{trackNote}}</span>
+<span class="muted" style="font-size: 12px">Captures: {{fields}}</span>
+</div>
+<div class="fg">
+<label class="fl">Batch number
+<input class="inp mono" value="{{batch}}" onChange="{{onBatch}}">
+<span class="h">Auto-suggested from category prefix · editable</span>
+</label>
+<label class="fl">Quantity received
+<input class="inp" type="number" min="1" value="{{qty}}" onChange="{{onQty}}">
+<span class="h">{{qtyHint}}</span>
+</label>
+</div>
+<div class="fg">
+<label class="fl">Received date
+<input class="inp" type="date" value="{{date}}" onChange="{{onDate}}">
+</label>
+<label class="fl">Receive into location
+<select class="inp" value="{{loc}}" onChange="{{onLoc}}">
+<option value="MRD Office · Shelf A1">MRD Office · Shelf A1</option>
+<option value="MRD Office · Shelf A2">MRD Office · Shelf A2</option>
+<option value="MRD Office · Shelf A3">MRD Office · Shelf A3</option>
+<option value="MRD Office · Shelf B1">MRD Office · Shelf B1</option>
+<option value="MRD Office · Shelf C2">MRD Office · Shelf C2</option>
+<option value="MRD Office · Prep bench">MRD Office · Prep bench</option>
+<option value="In Transit">In Transit</option>
+</select>
+</label>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 12.5px; color: #3B4758; font-weight: 500">Initial status</span>
+<div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 12px; border: 1px solid #E3E7EC; border-radius: 9px; background: #F8FAFB">
+<span class="b {{initCls}}">{{initStatus}}</span>
+<span style="font-size: 12.5px; color: #3B4758; display: flex; align-items: center; gap: 6px; flex: 1 1 260px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>{{initWhy}}</span>
+</div>
+</div>
+<div class="fg">
+<label class="fl">Purchase order <span class="h" style="display: inline">(optional)</span>
+<input class="inp mono" placeholder="PO-MRD-2026-…" value="{{po}}" onChange="{{onPo}}">
+</label>
+<label class="fl">Supplier invoice <span class="h" style="display: inline">(optional)</span>
+<input class="inp mono" placeholder="e.g. INV-AN-88341" value="{{inv}}" onChange="{{onInv}}">
+</label>
+</div>
+<label class="fl">Notes
+<textarea class="inp ta" rows="3" placeholder="Condition on arrival, carton count, anything the prep team should know" value="{{notes}}" onChange="{{onNotes}}"></textarea>
+</label>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 12.5px; color: #3B4758; font-weight: 500">Documents</span>
+<div class="drop">
+<span style="width: 40px; height: 40px; border-radius: 10px; background: #fff; border: 1px solid #E3E7EC; display: flex; align-items: center; justify-content: center; color: #3B4758"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"></path><path d="M7 9l5-5 5 5"></path><path d="M4 16v4h16v-4"></path></svg></span>
+<span style="font-size: 13.5px; font-weight: 500">Drop invoice, packing list or delivery note</span>
+<span class="muted" style="font-size: 12px">PDF, JPG or PNG · up to 20 MB each · saved on batch {{batch}} when you confirm</span>
+<label class="btn sm" style="position: relative"><input type="file" multiple="multiple" accept=".pdf,.jpg,.jpeg,.png" style="position: absolute; width: 1px; height: 1px; opacity: 0" onChange="{{onDocFile}}">Browse files</label>
+</div>
+<sc-for list="{{docs}}" as="d" hint-placeholder-count="0">
+<div style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid #E3E7EC; border-radius: 10px">
+<span style="width: 30px; height: 30px; border-radius: 7px; background: #FDEBEA; color: #A3201F; font-size: 9.5px; font-weight: 700; display: flex; align-items: center; justify-content: center">{{d.ext}}</span>
+<span style="flex: 1; min-width: 0"><span class="mono" style="display: block; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{d.name}}</span><span class="muted" style="font-size: 12px">{{d.meta}}</span></span>
+<button class="btn sm ic" aria-label="Remove {{d.name}}" onClick="{{d.remove}}" style="width: 32px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="display: flex; justify-content: space-between; gap: 10px; padding: 14px 20px; border-top: 1px solid #EEF1F4; flex-wrap: wrap">
+<a class="btn" href="Batches.dc.html">Cancel</a>
+<button class="btn p" onClick="{{toStep2}}">{{next1}}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+</div>
+</div>
+
+<div class="card">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 18px 12px"><h2 style="font-size: 15px; font-weight: 600">Recently received</h2><a href="Batches.dc.html" style="font-size: 13px; font-weight: 500">All batches →</a></div>
+<sc-for list="{{recent}}" as="r" hint-placeholder-count="4">
+<a class="row" href="BatchDetail.dc.html">
+<span class="mono" style="font-weight: 500; flex: 0 0 120px">{{r.id}}</span>
+<span style="flex: 1; min-width: 0"><span style="display: block; font-size: 13.5px">{{r.product}}</span><span class="muted" style="font-size: 12px">{{r.sup}}</span></span>
+<span style="text-align: right"><span style="display: block; font-weight: 600">{{r.qty}}</span><span class="muted" style="font-size: 11.5px">{{r.date}} · {{r.by}}</span></span>
+</a>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{s2}}" hint-placeholder-val="{{ false }}">
+<div class="card">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; padding: 18px 20px 4px">
+<div><h2 style="font-size: 16px; font-weight: 600">Unit identities</h2><p class="muted" style="font-size: 13px">{{qty}} × {{pName}} · {{fields}}</p></div>
+<sc-if value="{{needUnits}}" hint-placeholder-val="{{ true }}">
+<div class="cg" role="tablist" aria-label="Entry method">
+<sc-for list="{{modes}}" as="m" hint-placeholder-count="3"><button class="{{m.cls}}" role="tab" aria-selected="{{m.sel}}" onClick="{{m.pick}}">{{m.label}}</button></sc-for>
+</div>
+</sc-if>
+</div>
+<div style="padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 14px">
+
+<sc-if value="{{isQty}}" hint-placeholder-val="{{ false }}">
+<div class="note n-info"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg><span><strong>No unit identities needed.</strong> {{pName}} is quantity-tracked, so {{qty}} pcs are counted into {{loc}}. Continue to review.</span></div>
+</sc-if>
+<sc-if value="{{isHybrid}}" hint-placeholder-val="{{ false }}">
+<div class="note n-info"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg><span><strong>Optional for hybrid products.</strong> Capture serials now, or receive as a counted batch and serialise each unit during preparation.</span></div>
+</sc-if>
+
+<sc-if value="{{showManual}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+<span style="font-size: 13.5px"><strong>{{entered}} of {{qty}}</strong> entered</span>
+<span style="flex: 1 1 160px; height: 6px; background: #EEF1F4; border-radius: 3px; min-width: 120px"><span style="display: block; height: 6px; border-radius: 3px; background: #0E8A78; width: {{pctW}}"></span></span>
+<sc-if value="{{hasDup}}" hint-placeholder-val="{{ true }}"><span class="b s-damaged">{{dupCount}} duplicate</span></sc-if>
+<span class="muted" style="font-size: 12px">Tip: a USB barcode scanner types into the focused cell and jumps to the next row.</span>
+</div>
+<div class="tw" style="border: 1px solid #E3E7EC; border-radius: 10px">
+<table class="tbl ut">
+<thead><tr><th style="width: 44px">#</th><th>{{c1}}</th><th>{{c2}}</th><th>{{c3}}</th><th style="width: 170px">Check</th></tr></thead>
+<tbody>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="14">
+<tr>
+<td class="muted" style="font-size: 12px; padding-left: 14px">{{r.n}}</td>
+<td><input class="{{r.snCls}}" aria-label="{{c1}} row {{r.n}}" value="{{r.sn}}" onChange="{{r.onSn}}" placeholder="—"></td>
+<td><input class="inp" aria-label="{{c2}} row {{r.n}}" value="{{r.imei}}" onChange="{{r.onImei}}" placeholder="—"></td>
+<td><input class="inp" aria-label="{{c3}} row {{r.n}}" value="{{r.mac}}" onChange="{{r.onMac}}" placeholder="—"></td>
+<td style="font-size: 12px">
+<sc-if value="{{r.dup}}" hint-placeholder-val="{{ false }}"><span style="color: #B42318; font-weight: 500; display: inline-flex; align-items: center; gap: 5px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9.5 17H2.5z"></path><path d="M12 10v4M12 17h.01"></path></svg>{{r.dupMsg}}</span></sc-if>
+<sc-if value="{{r.ok}}" hint-placeholder-val="{{ true }}"><span style="color: #0A6648; display: inline-flex; align-items: center; gap: 5px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>Valid</span></sc-if>
+<sc-if value="{{r.blank}}" hint-placeholder-val="{{ false }}"><span class="muted">Not entered</span></sc-if>
+</td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+<sc-if value="{{moreRows}}" hint-placeholder-val="{{ true }}"><button class="btn sm" style="align-self: flex-start" onClick="{{showAllRows}}">Show remaining {{hiddenRows}} rows</button></sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{showBulk}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<label class="fl">Paste serials, one unit per line <span class="h">Optional extra columns separated by tab or comma: {{fields}}</span>
+<textarea class="inp ta mono" rows="10" style="font-size: 12.5px" value="{{bulk}}" onChange="{{onBulk}}"></textarea>
+</label>
+<div class="{{bulkNoteCls}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg><span style="flex: 1">{{bulkMsg}}</span><button class="btn sm" onClick="{{applyBulk}}">Load into table</button></div>
+</div>
+</sc-if>
+
+<sc-if value="{{showCsv}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<sc-if value="{{csvEmpty}}" hint-placeholder-val="{{ false }}">
+<div class="drop">
+<span style="width: 40px; height: 40px; border-radius: 10px; background: #fff; border: 1px solid #E3E7EC; display: flex; align-items: center; justify-content: center; color: #3B4758"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path><path d="M9 13h6M9 17h6"></path></svg></span>
+<span style="font-size: 13.5px; font-weight: 500">Drop the supplier's CSV or XLSX</span>
+<span class="muted" style="font-size: 12px">First row should be column headers · up to 5,000 rows</span>
+<label class="btn sm" style="position: relative"><input type="file" accept=".csv,.txt,text/csv" style="position: absolute; width: 1px; height: 1px; opacity: 0" onChange="{{onCsvFile}}">Choose file</label>
+<button class="btn sm" onClick="{{loadCsv}}" style="background: transparent; border-color: transparent; color: #0B7A6B">Use the sample supplier file</button>
+<sc-if value="{{hasCsvErr}}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size: 12.5px; color: #A3201F">{{csvErr}}</span></sc-if>
+</div>
+</sc-if>
+<sc-if value="{{csvLoaded}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid #BFE3D3; background: #F4FBF8; border-radius: 10px">
+<span style="width: 30px; height: 30px; border-radius: 7px; background: #E1F4EC; color: #0A6648; font-size: 9.5px; font-weight: 700; display: flex; align-items: center; justify-content: center">CSV</span>
+<span style="flex: 1; min-width: 0"><span class="mono" style="display: block; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{csvName}}</span><span class="muted" style="font-size: 12px">{{csvInfo}}</span></span>
+<button class="btn sm" onClick="{{clearCsv}}">Remove</button>
+</div>
+<div class="tw" style="border: 1px solid #E3E7EC; border-radius: 10px">
+<table class="tbl">
+<thead><tr><th>CSV column</th><th>Sample value</th><th>Maps to field</th></tr></thead>
+<tbody>
+<sc-for list="{{maps}}" as="m" hint-placeholder-count="4">
+<tr><td class="mono">{{m.col}}</td><td class="mono muted">{{m.sample}}</td><td style="padding: 6px 14px"><select class="inp" style="height: 34px; max-width: 220px" aria-label="Field for {{m.col}}" value="{{m.val}}" onChange="{{m.on}}"><option value="sn">{{c1}}</option><option value="imei">{{c2}}</option><option value="mac">{{c3}}</option><option value="ignore">Ignore column</option></select></td></tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+<div class="{{csvNoteCls}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg><span>{{csvMsg}}</span></div>
+</sc-if>
+</div>
+</sc-if>
+</div>
+<div style="display: flex; justify-content: space-between; gap: 10px; padding: 14px 20px; border-top: 1px solid #EEF1F4; flex-wrap: wrap">
+<button class="btn" onClick="{{toStep1}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg>Back</button>
+<button class="btn p" onClick="{{toStep3}}">Next: Review<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{s3}}" hint-placeholder-val="{{ false }}">
+<div class="card">
+<div style="padding: 18px 20px 4px"><h2 style="font-size: 16px; font-weight: 600">Review and confirm</h2><p class="muted" style="font-size: 13px">Nothing is saved until you confirm.</p></div>
+<div style="padding: 16px 20px 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px">
+<div style="border: 1px solid #E3E7EC; border-radius: 10px; padding: 16px">
+<span class="ov">Shipment</span>
+<dl class="sum" style="margin-top: 12px">
+<dt>Supplier</dt><dd>{{sup}}</dd>
+<dt>Product</dt><dd>{{pName}}</dd>
+<dt>Tracking</dt><dd>{{track}}</dd>
+<dt>Batch</dt><dd class="mono">{{batch}}</dd>
+<dt>Quantity</dt><dd>{{qty}}</dd>
+<dt>Received</dt><dd>{{dateLabel}} · Chetan</dd>
+<dt>Location</dt><dd>{{loc}}</dd>
+<dt>PO / invoice</dt><dd class="mono">{{poInv}}</dd>
+<dt>Unit identities</dt><dd>{{unitsLine}}</dd>
+<dt>Documents</dt><dd>{{docCount}} attached</dd>
+</dl>
+</div>
+<div style="border: 1px solid #E3E7EC; border-radius: 10px; padding: 16px; background: #FBFCFD">
+<span class="ov">What will happen</span>
+<div style="margin-top: 8px">
+<sc-for list="{{effects}}" as="e" hint-placeholder-count="4">
+<div class="wh"><span class="ic2"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg></span><span><span style="display: block; font-weight: 500">{{e.t}}</span><span class="muted" style="font-size: 12.5px">{{e.s}}</span></span></div>
+</sc-for>
+</div>
+</div>
+</div>
+<div style="padding: 0 20px 16px; display: flex; flex-direction: column; gap: 10px">
+<sc-if value="{{blocked}}" hint-placeholder-val="{{ false }}">
+<div class="note n-err"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9.5 17H2.5z"></path><path d="M12 10v4M12 17h.01"></path></svg><span style="flex: 1"><strong>{{dupCount}} duplicate serial number</strong> in the unit list. Each serial can only exist once in the system.</span><button class="btn sm" onClick="{{fixDup}}">Remove duplicate</button></div>
+</sc-if>
+<sc-if value="{{partial}}" hint-placeholder-val="{{ false }}">
+<div class="note n-warn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg><span>{{missing}} units will be created without serial numbers. Add them later in Device preparation before they can deploy.</span></div>
+</sc-if>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 14px 20px; border-top: 1px solid #EEF1F4; flex-wrap: wrap">
+<button class="btn" onClick="{{backFrom3}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg>Back</button>
+<span style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+<sc-if value="{{blocked}}" hint-placeholder-val="{{ false }}"><span class="muted" style="font-size: 12.5px">Resolve the duplicate to confirm</span><button class="btn p" disabled="disabled" aria-disabled="true" title="Resolve the duplicate serial first" style="opacity: .45; cursor: not-allowed">Confirm receipt</button></sc-if>
+<sc-if value="{{canConfirm}}" hint-placeholder-val="{{ true }}"><button class="btn p" onClick="{{confirm}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>Confirm receipt</button></sc-if>
+</span>
+</div>
+</div>
+</sc-if>
+</div>
+
+<aside style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 16px; position: sticky; top: 20px">
+<div class="card" style="padding: 18px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: center"><h2 style="font-size: 15px; font-weight: 600">Receipt summary</h2><span class="{{sumBadgeCls}}">{{sumBadge}}</span></div>
+<div style="display: flex; gap: 12px; align-items: center; padding: 12px; border-radius: 10px; background: #F8FAFB">
+<span style="width: 44px; height: 44px; border-radius: 10px; background: #E9EEF2; color: #3B4758; display: flex; align-items: center; justify-content: center; flex: 0 0 44px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"></path><path d="M3 8v8l9 5 9-5V8"></path><path d="M12 13v8"></path></svg></span>
+<span style="min-width: 0"><span style="display: block; font-weight: 600">{{qty}} × {{pName}}</span><span class="muted" style="font-size: 12px">{{pCat}}</span></span>
+</div>
+<dl class="sum">
+<dt>Supplier</dt><dd>{{sup}}</dd>
+<dt>Batch</dt><dd class="mono">{{batch}}</dd>
+<dt>Received</dt><dd>{{dateLabel}}</dd>
+<dt>Into</dt><dd>{{loc}}</dd>
+<dt>Status</dt><dd><span class="b {{initCls}}">{{initStatus}}</span></dd>
+<dt>Identities</dt><dd>{{unitsShort}}</dd>
+<dt>Documents</dt><dd>{{docCount}}</dd>
+</dl>
+<div style="border-top: 1px solid #EEF1F4; padding-top: 10px">
+<sc-for list="{{checks}}" as="c" hint-placeholder-count="3">
+<div class="ck"><i style="background: {{c.bg}}; color: {{c.fg}}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="{{c.path}}"></path></svg></i><span style="flex: 1">{{c.label}}</span><span class="muted" style="font-size: 12px">{{c.v}}</span></div>
+</sc-for>
+</div>
+</div>
+<div class="card" style="padding: 16px 18px; display: flex; gap: 12px; font-size: 13px; line-height: 1.5">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B7A6B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 18px; margin-top: 1px" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg>
+<span class="muted">Receiving is open to Admin and Operations roles. Technicians can scan serials but a receipt must be confirmed by Operations. <a href="Users.dc.html">Roles</a></span>
+</div>
+</aside>
+</section>
+</main>
+</div>
+</div>
+<sc-if value="{{shell.menuOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 70; display: flex">
+<nav aria-label="Mobile navigation" style="width: min(300px, 85vw); height: 100%; overflow-y: auto; background: #0C1424; padding: 16px 12px; display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 8px 14px; color: #fff"><span style="font-weight: 600">Moonrock R&amp;D</span><button onClick="{{shell.closeAll}}" aria-label="Close menu" style="width: 40px; height: 40px; border: 0; border-radius: 8px; background: #1C2A42; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<a href="Main.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Dashboard</a>
+<a href="Search.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Search</a>
+<a href="Inventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">All inventory</a>
+<a href="Products.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Products</a>
+<a href="Batches.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Batches</a>
+<a href="ReceiveInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Receive stock</a>
+<a href="DevicePrep.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Device preparation</a>
+<a href="SimInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">SIM cards</a>
+<a href="Facilities.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Facilities</a>
+<a href="PocManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">POC projects</a>
+<a href="ContractManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Contracts</a>
+<a href="Deployments.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Deployments</a>
+<a href="CreateDeployment.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">New deployment</a>
+<a href="Reports.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Reports</a>
+<a href="AuditLog.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Audit log</a>
+<a href="Users.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Users &amp; roles</a>
+<a href="Settings.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Settings</a>
+</nav>
+<button aria-label="Close menu" onClick="{{shell.closeAll}}" style="flex: 1; border: 0; padding: 0; background: rgba(14,23,38,.5); cursor: default"></button>
+</div>
+</sc-if>
+<sc-if value="{{shell.blocked}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 80; display: flex; align-items: center; gap: 12px; max-width: min(560px, calc(100vw - 32px)); padding: 12px 12px 12px 16px; border-radius: 12px; background: #7A1F1E; color: #fff; font-size: 13.5px; box-shadow: 0 12px 32px rgba(14,23,38,.3)">
+<span style="flex: 1">You have view access to this canvas, so that change wasn't saved. Ask the owner for edit access to change shared data.</span>
+<button onClick="{{shell.unblock}}" style="height: 32px; padding: 0 12px; border: 1px solid rgba(255,255,255,.4); border-radius: 8px; background: transparent; color: #fff; font: inherit; font-size: 12.5px; cursor: pointer">OK</button>
+</div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+  // Prototype persistence: this screen's data survives reloads and is shared by every screen in this browser.
+  componentDidMount() {
+    this._init = JSON.parse(JSON.stringify(this.state));
+    this._onStore = e => { if (!e || !e.key || e.key === 'mrd-proto:store') this.forceUpdate(); };
+    try { window.addEventListener('storage', this._onStore); } catch (e) {}
+    this._sharedInit();
+    try { const raw = window.localStorage.getItem('mrd-proto:v1:ReceiveInventory'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
+  }
+  // Shared prototype store: one record in browser storage that every screen reads and writes (key mrd-proto:store).
+  readStore() {
+    const empty = { v: 1, units: {}, added: [], deployments: [], events: [], catalog: {} };
+    try { const s = JSON.parse(window.localStorage.getItem('mrd-proto:store') || 'null'); return Object.assign(empty, s || {}); } catch (e) { return empty; }
+  }
+  writeStore(mutate) {
+    const s = this.readStore();
+    if (this._shared && this._shared.mode === 'live' && !this._shared.canEdit) { const t = JSON.parse(JSON.stringify(s)); mutate(t); const strip = o => { const c = Object.assign({}, o); delete c.ui; return JSON.stringify(c); }; if (strip(t) !== strip(s)) this.setState({ _blocked: true }); s.ui = t.ui || s.ui; try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {} this.forceUpdate(); return s; }
+    mutate(s); s.events = s.events.slice(0, 200);
+    try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {}
+    this._pushShared(s);
+    this.forceUpdate(); return s;
+  }
+  // Shared across viewers: the store is mirrored to one document in this artifact's database (mrd_prototype/store).
+  // Browser storage stays as the local cache; everyone who opens the canvas sees the same data, editors can change it.
+  _host() {
+    let w = window;
+    for (let i = 0; i < 8; i++) {
+      try { if (w.claude && typeof w.claude.use === 'function') return w.claude; } catch (e) { return null; }
+      let p = null; try { p = w.parent; } catch (e) { return null; }
+      if (!p || p === w) return null; w = p;
+    }
+    return null;
+  }
+  async _sharedInit() {
+    const host = this._host();
+    if (!host) { this._shared = { mode: 'local' }; this.forceUpdate(); return; }
+    let db = null; try { db = await host.use('db'); } catch (e) { db = null; }
+    if (!db) { this._shared = { mode: 'local' }; this.forceUpdate(); return; }
+    let canEdit = false; try { const u = await host.use('user'); canEdit = u ? !!(await u.canEdit()) : false; } catch (e) { canEdit = false; }
+    this._shared = { mode: 'live', canEdit, db };
+    try {
+      this._unsubShared = db.doc('mrd_prototype/store').onSnapshot(snap => {
+        const local = this.readStore();
+        let next = null;
+        if (snap && snap.exists) { const d = snap.data() || {}; if (typeof d.json === 'string') { try { next = JSON.parse(d.json); } catch (e) { next = null; } } }
+        if (!next) {
+          if (snap && !snap.exists) {
+            let seen = false; try { seen = !!window.localStorage.getItem('mrd-proto:shared-seen'); } catch (e) {}
+            const hasLocal = local.events.length || Object.keys(local.units).length || local.added.length;
+            if (!seen && canEdit && hasLocal) this._pushShared(local);
+            else if (seen || !canEdit) { try { window.localStorage.setItem('mrd-proto:store', JSON.stringify({ v: 1, units: {}, added: [], deployments: [], events: [], catalog: {}, ui: local.ui || {} })); } catch (e) {} this.forceUpdate(); }
+          }
+          return;
+        }
+        next.ui = local.ui || {};
+        try { window.localStorage.setItem('mrd-proto:shared-seen', '1'); } catch (e) {}
+        try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(next)); } catch (e) {}
+        this.forceUpdate();
+      }, err => { this._shared = { mode: 'local', err: err && err.code }; this.forceUpdate(); });
+    } catch (e) { this._shared = { mode: 'local' }; }
+    this.forceUpdate();
+  }
+  _pushShared(s) {
+    const sh = this._shared;
+    if (!sh || sh.mode !== 'live' || !sh.canEdit) return;
+    const out = Object.assign({}, s); delete out.ui;
+    let json = JSON.stringify(out);
+    if (json.length > 240000) { out.events = (out.events || []).slice(0, 40); json = JSON.stringify(out); }
+    sh.db.doc('mrd_prototype/store').set({ json, savedAt: Date.now() }).catch(err => { this._shared = Object.assign({}, sh, { lastErr: (err && err.code) || 'unavailable' }); this.forceUpdate(); });
+  }
+  _clearShared() {
+    const sh = this._shared;
+    if (sh && sh.mode === 'live' && sh.canEdit) { try { sh.db.doc('mrd_prototype/store').delete().catch(() => {}); } catch (e) {} }
+  }
+  syncInfo() {
+    const sh = this._shared;
+    if (!sh) return { label: 'Connecting…', cls: 's-unconf', tip: 'Connecting to the shared store', readOnly: false };
+    if (sh.mode === 'live' && sh.lastErr) return { label: 'Not saved', cls: 's-damaged', tip: 'The last change could not be saved to the shared store (' + sh.lastErr + ')', readOnly: false };
+    if (sh.mode === 'live' && sh.canEdit) return { label: 'Shared · live', cls: 's-deployed', tip: 'Changes are saved for everyone who opens this canvas', readOnly: false };
+    if (sh.mode === 'live') return { label: 'View only', cls: 's-ready', tip: 'You can see shared changes live; only people with edit access can change data', readOnly: true };
+    return { label: 'This browser only', cls: 's-prep', tip: 'The shared store is not available here, so changes stay in this browser', readOnly: false };
+  }
+  nowLabel() { const d = new Date(); return 'Today, ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  patchUnit(s, ident, patch, prevSt) {
+    const cur = s.units[ident] || {};
+    s.units[ident] = Object.assign({}, cur, patch, { st0: cur.st0 !== undefined ? cur.st0 : (prevSt || ''), upd: this.nowLabel() });
+  }
+  logEvent(s, ev) {
+    const d = new Date();
+    s.events.unshift(Object.assign({ id: 'e' + d.getTime() + Math.random().toString(36).slice(2, 6), at: d.getTime(), when: this.nowLabel(), who: 'Chetan', ini: 'CH', role: 'Admin', source: 'Web' }, ev));
+  }
+  componentWillUnmount() { try { if (this._unsubShared) this._unsubShared(); } catch (e) {} try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
+  componentDidUpdate() {
+    try { const keep = Object.assign({}, this.state); delete keep._shell; delete keep._blocked; ["done", "csvFile", "csvErr"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:ReceiveInventory', JSON.stringify(keep)); } catch (e) {}
+  }
+  constructor(props) {
+    super(props);
+    const sn = ['1108675320','1108675321','1108675322','1108675323','1108675324','1108675325','1108675326','1108675327','1108675327','1108675329','1108675330','1108675331'];
+    const im = ['860548043912951','860548043912955','860548043912958','860548043912962','860548043912966','860548043912970','860548043912973','860548043912978','860548043912981','860548043912984','860548043912988','860548043912992'];
+    const hx = ['41','42','43','44','45','46','47','48','49','4A','4B','4C'];
+    const rows = [];
+    for (let i = 0; i < 20; i++) rows.push(i < 12 ? { sn: sn[i], imei: im[i], mac: '00:1E:42:3A:7C:' + hx[i] } : { sn: '', imei: '', mac: '' });
+    const lines = [];
+    for (let i = 0; i < 20; i++) lines.push('11086753' + (20 + i) + '\t8605480439129' + (51 + i * 2) + '\t00:1E:42:3A:7C:' + (65 + i).toString(16).toUpperCase());
+    this.state = {
+      step: 1, done: false, prod: 'rut956', sup: 'Al Noor Technologies LLC', batch: 'TEL-2026-005', qty: '20', date: '2026-10-05',
+      loc: 'MRD Office · Shelf A3', po: 'PO-MRD-2026-0447', inv: '', notes: '', docs: [], mode: 'manual', rows, allRows: false,
+      bulk: lines.join('\n'), csv: true, map: { serial_number: 'sn', imei: 'imei', mac_address: 'mac', carton: 'ignore' }
+    };
+  }
+  sizeLabel(n) { if (typeof n !== 'number') return String(n || ''); return n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; }
+  // Supplier CSV: parsed in the browser into rows of identifiers; only the parsed values are kept, in memory, for this receipt.
+  readCsv(file) {
+    if (!file) return;
+    const done = text => {
+      const lines = String(text || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      if (lines.length < 2) { this.setState({ csvErr: file.name + ' has no data rows. The first row must be column headers.' }); return; }
+      const split = l => l.split(/[,;\t]/).map(x => x.trim().replace(/^"|"$/g, ''));
+      const head = split(lines[0]).map((h, i) => h || 'column_' + (i + 1));
+      const rows = lines.slice(1, 5001).map(split);
+      const guess = h => /serial|^s\/?n$|^sn$|iccid/i.test(h) ? 'sn' : /imei|eui|msisdn/i.test(h) ? 'imei' : /mac/i.test(h) ? 'mac' : 'ignore';
+      const map = {}; let hasSn = false;
+      head.forEach(h => { let g = guess(h); if (g === 'sn') { if (hasSn) g = 'ignore'; hasSn = true; } map[h] = g; });
+      if (!hasSn && head.length) map[head[0]] = 'sn';
+      this.setState({ csv: 'file', csvFile: { name: String(file.name || 'import.csv'), size: +file.size || 0, head, rows }, csvMap: map, csvErr: '' });
+    };
+    try {
+      if (file.text) { file.text().then(done, () => this.setState({ csvErr: 'Could not read ' + file.name + '.' })); return; }
+      const r = new FileReader(); r.onload = () => done(r.result); r.onerror = () => this.setState({ csvErr: 'Could not read ' + file.name + '.' }); r.readAsText(file);
+    } catch (e) { this.setState({ csvErr: 'Could not read ' + (file.name || 'the file') + '.' }); }
+  }
+  setRow(i, k, v) {
+    const rows = this.state.rows.slice();
+    const r = Object.assign({}, rows[i]);
+    r[k] = v;
+    rows[i] = r;
+    this.setState({ rows });
+  }
+  // Shared shell: notifications bell (fed by the shared store) and the mobile navigation drawer.
+  shellVals() {
+    const S = this.state, st = this.readStore();
+    const seen = (st.ui && st.ui.seenAt) || 0;
+    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Stage changed': 'moved the stage of', 'POC decision': 'recorded a POC decision for', 'Contract ended': 'ended the contract for', 'Issue reported': 'reported an issue on', 'Reserved': 'reserved', 'Labels printed': 'printed labels for', 'File attached': 'attached a file to', 'File removed': 'removed a file from', 'User updated': 'updated user', 'Product edited': 'edited', 'Invite resent': 'resent the invite to', 'Document uploaded': 'uploaded a document to', 'Document removed': 'removed a document from', 'Contact added': 'added a contact to', 'Contact removed': 'removed a contact from', 'Contract updated': 'updated the contract for', 'Batch updated': 'updated batch', 'Batch archived': 'archived batch', 'Batch restored': 'restored batch', 'Facility updated': 'updated facility', 'Facility restored': 'restored facility', 'Report exported': 'exported', 'Record corrected': 'corrected', 'Note added': 'added a note to', 'Settings changed': 'updated settings ·', 'User invited': 'invited', 'Role changed': 'changed the role of', 'Verified on site': 'verified on site', 'Deployment cancelled': 'cancelled', 'Deployment updated': 'updated deployment' };
+    const fromStore = st.events.slice(0, 8).map(e => ({ text: (e.who || 'Chetan') + ' ' + (VERB[e.action] || String(e.action || '').toLowerCase()) + ' ' + e.item + (e.to && e.to !== '—' && e.action !== 'Imported' ? ' → ' + e.to : ''), when: e.when, href: e.itemHref || 'AuditLog.dc.html', unread: (e.at || 0) > seen }));
+    const alerts = [
+      { text: '14 Teltonika RUT956 units are waiting for preparation', when: 'Batch TEL-2026-004', href: 'DevicePrep.dc.html', alert: true },
+      { text: 'Cat6 patch cable 1 m is below its minimum level', when: 'Low stock · 18 of 25', href: 'InventoryItem.dc.html', alert: true },
+      { text: 'Qatar Foundation: 2 CO₂ sensors scheduled to install on 08 Oct', when: 'Upcoming deployment', href: 'Deployments.dc.html', alert: true }
+    ].map(a => Object.assign(a, { unread: !seen }));
+    const all = fromStore.concat(alerts);
+    const unread = all.filter(n => n.unread).length;
+    const SY = this.syncInfo();
+    return {
+      syncLabel: SY.label, syncCls: SY.cls, syncTip: SY.tip, blocked: !!S._blocked, unblock: () => this.setState({ _blocked: false }),
+      bellOpen: S._shell === 'bell', bellExp: S._shell === 'bell' ? 'true' : 'false', bellZ: S._shell === 'bell' ? '40' : 'auto',
+      menuOpen: S._shell === 'menu', menuExp: S._shell === 'menu' ? 'true' : 'false',
+      unread: unread > 9 ? '9+' : String(unread), hasUnread: unread > 0,
+      notes: all.map(n => ({ text: n.text, when: n.when, href: n.href, bg: n.unread ? '#F4FBF8' : '#fff', dot: n.alert ? '#E08A00' : (n.unread ? '#0B7A6B' : '#D5DBE3') })),
+      toggleBell: () => this.setState({ _shell: this.state._shell === 'bell' ? '' : 'bell' }),
+      toggleMenu: () => this.setState({ _shell: this.state._shell === 'menu' ? '' : 'menu' }),
+      closeAll: () => this.setState({ _shell: '' }),
+      markRead: () => { const st = this.readStore(); st.ui = Object.assign({}, st.ui || {}, { seenAt: Date.now() }); try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(st)); } catch (e) {} this.forceUpdate(); }
+    };
+  }
+  renderVals() { return Object.assign(this._screenVals(), { shell: this.shellVals() }); }
+  _screenVals() {
+    const S = this.state;
+    const ST0 = this.readStore();
+    const storeHas = {};
+    (ST0.added || []).forEach(a => { if (a && a.ident) storeHas[a.ident] = a.batch || 'an earlier batch'; });
+    const usedBatches = {};
+    (ST0.added || []).forEach(a => { if (a && a.batch) usedBatches[a.batch] = true; });
+    (ST0.events || []).forEach(e => { const m = e && e.action === 'Received' && /^Batch (\S+)/.exec(e.item || ''); if (m) usedBatches[m[1]] = true; });
+    const bumpBatch = b => b.replace(/(\d+)$/, m => { const n = parseInt(m, 10) + 1; return String(n).padStart(m.length, '0'); });
+    const skipUsed = b => { let x = b, i = 0; while (usedBatches[x] && /\d+$/.test(x) && i++ < 500) x = bumpBatch(x); return x; };
+    // While the user has not typed a batch, suggest the next unused number; after confirming, show the batch just received.
+    const batch = (S.done || S.batchTyped) ? S.batch : skipUsed(S.batch);
+    const SUP0 = ['Al Noor Technologies LLC', 'SensorTech Trading', 'Gulf Network Supplies', 'Gulf Electro-Mechanical Supplies', 'Omantel Business', 'Ooredoo Business'];
+    const supNames = SUP0.slice();
+    ((ST0.catalog && ST0.catalog.suppliers) || []).forEach(x => { const n = x && (typeof x === 'string' ? x : x.name); if (n && supNames.indexOf(n) < 0) supNames.push(n); });
+    if (S.sup && supNames.indexOf(S.sup) < 0) supNames.push(S.sup);
+    const suppliers = supNames.map(v => ({ v }));
+    const P = {
+      rut956: { name: 'Teltonika RUT956', cat: 'Teltonika Devices', track: 'Serialised', cfg: true, batch: 'TEL-2026-005', fields: 'S/N, IMEI, MAC', cols: ['Serial number', 'IMEI', 'MAC address'], sup: 'Al Noor Technologies LLC', note: 'Each unit gets its own record. SIM, IP, Device ID and firmware are captured later in preparation.' },
+      em500: { name: 'Milesight EM500-CO2', cat: 'CO₂ Sensors', track: 'Hybrid', cfg: true, batch: 'CO2-2026-003', fields: 'S/N, DevEUI (optional now)', cols: ['Serial number', 'DevEUI', 'Notes'], sup: 'SensorTech Trading', note: 'Received as a counted batch; units can be serialised now or during preparation (LoRaWAN join keys).' },
+      ug65: { name: 'Milesight UG65', cat: 'LoRaWAN Gateways', track: 'Serialised', cfg: true, batch: 'GW-2026-002', fields: 'S/N, Gateway EUI, MAC', cols: ['Serial number', 'Gateway EUI', 'MAC address'], sup: 'SensorTech Trading', note: 'Each gateway gets its own record. LoRa network settings are applied in preparation.' },
+      sim: { name: 'Omantel M2M SIM', cat: 'M2M SIM Cards', track: 'Serialised', cfg: false, batch: 'SIM-2026-006', fields: 'ICCID, MSISDN', cols: ['ICCID', 'MSISDN', 'Notes'], sup: 'Omantel Business', note: 'Each SIM is identified by ICCID. Plan and APN come from the carrier settings.' },
+      cab1: { name: 'Cat6 patch cable 1 m', cat: 'Cables & Accessories', track: 'Quantity', cfg: false, batch: 'CAB-2026-008', fields: 'count only', cols: ['', '', ''], sup: 'Gulf Network Supplies', note: 'Counted stock. No unit identities; low-stock alert at 25 pcs.' }
+    };
+    const p = P[S.prod];
+    const qty = parseInt(S.qty, 10) || 0;
+    const isQty = p.track === 'Quantity';
+    const needUnits = !isQty;
+    // unit identities
+    const counts = {};
+    S.rows.forEach(r => { const k = r.sn.trim(); if (k) counts[k] = (counts[k] || 0) + 1; });
+    const firstIdx = {};
+    S.rows.forEach((r, i) => { const k = r.sn.trim(); if (k && firstIdx[k] === undefined) firstIdx[k] = i; });
+    const manualEntered = S.rows.filter(r => r.sn.trim()).length;
+    const manualDup = S.rows.filter((r, i) => { const k = r.sn.trim(); return k && ((counts[k] > 1 && firstIdx[k] !== i) || storeHas[k]); }).length;
+    const bLines = S.bulk.split('\n').map(l => l.trim()).filter(l => l);
+    const bSn = bLines.map(l => l.split(/[\t,;]+/)[0].trim());
+    const bSeen = {}; let bDup = 0;
+    bSn.forEach(s => { if (bSeen[s] || storeHas[s]) bDup++; bSeen[s] = true; });
+    const realCsv = S.csv === 'file' && S.csvFile ? S.csvFile : null;
+    const curMap = realCsv ? (S.csvMap || {}) : S.map;
+    const mapVals = Object.keys(curMap).map(k => curMap[k]);
+    const csvHasSn = mapVals.indexOf('sn') >= 0;
+    const colOf = f => realCsv ? realCsv.head.findIndex(h => curMap[h] === f) : -1;
+    const realCsvIds = realCsv && csvHasSn ? realCsv.rows.map(r => [colOf('sn'), colOf('imei'), colOf('mac')].map(i => i > -1 ? (r[i] || '').trim() : '')).filter(x => x[0]) : [];
+    let entered = 0, dup = 0;
+    if (S.mode === 'manual') { entered = manualEntered; dup = manualDup; }
+    else if (S.mode === 'bulk') { entered = bSn.length; dup = bDup; }
+    else if (realCsv) { const cs = {}; realCsvIds.forEach(x => { if (cs[x[0]] || storeHas[x[0]]) dup++; cs[x[0]] = true; }); entered = realCsvIds.length; }
+    else { entered = S.csv && csvHasSn ? 20 : 0; dup = 0; if (entered) for (let i = 0; i < 20; i++) { if (storeHas['11086753' + (20 + i)]) dup++; } }
+    if (isQty) { entered = qty; dup = 0; }
+    const visible = S.allRows ? S.rows : S.rows.slice(0, 14);
+    const rows = visible.map((r, i) => {
+      const k = r.sn.trim();
+      const inStore = !!k && !!storeHas[k];
+      const isDup = !!k && ((counts[k] > 1 && firstIdx[k] !== i) || inStore);
+      return {
+        n: i + 1, sn: r.sn, imei: r.imei, mac: r.mac, snCls: 'inp' + (isDup ? ' err' : ''),
+        dup: isDup, dupMsg: isDup ? (inStore && !(counts[k] > 1 && firstIdx[k] !== i) ? 'Already received in ' + storeHas[k] : 'Duplicate of row ' + (firstIdx[k] + 1)) : '', ok: !!k && !isDup, blank: !k,
+        onSn: e => this.setRow(i, 'sn', e.target.value), onImei: e => this.setRow(i, 'imei', e.target.value), onMac: e => this.setRow(i, 'mac', e.target.value)
+      };
+    });
+    const modes = [['manual', 'Manual'], ['bulk', 'Bulk paste'], ['csv', 'CSV import']].map(([id, label]) => ({ label, cls: 'chip' + (S.mode === id ? ' on' : ''), sel: S.mode === id ? 'true' : 'false', pick: () => this.setState({ mode: id }) }));
+    const bulkOk = bDup === 0 && bSn.length === qty;
+    const bulkMsg = bSn.length + ' serial' + (bSn.length === 1 ? '' : 's') + ' detected · ' + bDup + ' duplicate' + (bDup === 1 ? '' : 's') + (bSn.length === qty ? ' · matches quantity' : ' · quantity is ' + qty);
+    const mapsDef = [['serial_number', '1108675320'], ['imei', '860548043912951'], ['mac_address', '00:1E:42:3A:7C:41'], ['carton', 'CTN-01']];
+    const maps = realCsv ? realCsv.head.map((col, i) => ({ col, sample: (realCsv.rows[0] || [])[i] || '—', val: curMap[col] || 'ignore', on: e => { const m = Object.assign({}, this.state.csvMap || {}); m[col] = e.target.value; this.setState({ csvMap: m }); } }))
+      : mapsDef.map(([col, sample]) => ({ col, sample, val: S.map[col], on: e => { const m = Object.assign({}, S.map); m[col] = e.target.value; this.setState({ map: m }); } }));
+    const missing = Math.max(0, qty - entered);
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const dp = S.date.split('-');
+    const dateLabel = dp.length === 3 ? dp[2] + ' ' + months[(parseInt(dp[1], 10) || 1) - 1] + ' ' + dp[0] : S.date;
+    const initStatus = p.cfg ? 'Unconfigured' : 'In stock';
+    const step = S.step;
+    const stepDefs = [['Shipment', 'Supplier, product, quantity'], ['Units', isQty ? 'Not needed · counted stock' : 'Serials and identifiers'], ['Review', 'Check and confirm']];
+    const steps = stepDefs.map(([label, sub], i) => {
+      const n = i + 1, isDone = S.done || n < step, on = !S.done && n === step;
+      return { label, sub, mark: isDone ? '✓' : '' + n, cls: 'stp' + (on ? ' on' : '') + (isDone ? ' dn' : ''), cur: on ? 'step' : 'false', go: () => this.setState({ step: n, done: false }) };
+    });
+    const unitsShort = isQty ? 'Counted' : entered + ' / ' + qty + (dup ? ' · ' + dup + ' dup' : '');
+    const effects = [
+      { t: qty + ' units → ' + S.loc + ' → ' + initStatus, s: 'Each unit gets a record linked to its batch and supplier' },
+      { t: 'Batch ' + batch + ' created', s: S.sup + ' · ' + (S.po || 'no PO') },
+      { t: qty + ' audit entries recorded', s: 'Received by Chetan · ' + dateLabel },
+      p.cfg ? { t: 'Added to Device Preparation queue', s: 'Queue grows from 15 to ' + (15 + qty) + ' devices' } : { t: 'Available immediately', s: 'No configuration required for this product' }
+    ];
+    const blocked = needUnits && dup > 0;
+    const okP = 'M20 6L9 17l-5-5', dotP = 'M12 12h.01';
+    const shipOk = !!S.sup && qty > 0 && !!batch.trim();
+    const unitsOk = isQty || (entered >= qty && dup === 0);
+    const checks = [
+      { label: 'Shipment details', v: shipOk ? 'Complete' : 'Incomplete', bg: shipOk ? '#E1F4EC' : '#EEF1F5', fg: shipOk ? '#0A6648' : '#5E6B7D', path: shipOk ? okP : dotP },
+      { label: 'Unit identities', v: isQty ? 'Not needed' : entered + ' of ' + qty + (dup ? ' · fix 1' : ''), bg: unitsOk ? '#E1F4EC' : dup ? '#FDEBEA' : '#FFF3DC', fg: unitsOk ? '#0A6648' : dup ? '#A3201F' : '#8A4B00', path: unitsOk ? okP : dotP },
+      { label: 'Review and confirm', v: S.done ? 'Done' : 'Pending', bg: S.done ? '#E1F4EC' : '#EEF1F5', fg: S.done ? '#0A6648' : '#5E6B7D', path: S.done ? okP : dotP }
+    ];
+    const docs = S.docs.map((d, i) => ({ name: d.name, ext: (String(d.name).split('.').pop() || 'FILE').slice(0, 4).toUpperCase(), meta: d.meta || (this.sizeLabel(d.size) + (d.type ? ' · ' + d.type : '') + ' · added by ' + (d.by || 'Chetan') + ', ' + (d.when || '')), remove: () => this.setState({ docs: S.docs.filter((x, j) => j !== i) }) }));
+    // Batches received through this screen (shared store) come first.
+    const storeBatches = [];
+    const byBatch = {};
+    (ST0.added || []).forEach(a => {
+      if (!a || !a.batch) return;
+      if (!byBatch[a.batch]) { byBatch[a.batch] = { id: a.batch, product: a.name || '—', sup: a.sup || '—', n: 0, date: (a.recv || '').slice(0, 6), by: 'Chetan' }; storeBatches.push(byBatch[a.batch]); }
+      byBatch[a.batch].n++;
+    });
+    const recent = storeBatches.slice().reverse().map(b => ({ id: b.id, product: b.product, sup: b.sup, qty: '' + b.n, date: b.date, by: b.by })).concat([
+      { id: 'CAB-2026-007', product: 'Cat6 patch cable 3 m', sup: 'Gulf Network Supplies', qty: '200 pcs', date: '01 Oct', by: 'Aisha' },
+      { id: 'SIM-2026-005', product: 'Omantel M2M SIM', sup: 'Omantel Business', qty: '50', date: '30 Sep', by: 'Nitin' },
+      { id: 'TEL-2026-004', product: 'Teltonika RUT956', sup: 'Al Noor Technologies LLC', qty: '20', date: '22 Sep', by: 'Nitin' },
+      { id: 'VFD-2026-001', product: 'ABB ACS580 VFD', sup: 'Gulf Electro-Mechanical Supplies', qty: '4', date: '18 Sep', by: 'Nitin' }
+    ]).slice(0, 6);
+    return {
+      steps, s1: !S.done && step === 1, s2: !S.done && step === 2, s3: !S.done && step === 3, done: S.done,
+      sup: S.sup, suppliers, prod: S.prod, batch, qty: S.qty, date: S.date, loc: S.loc, po: S.po, inv: S.inv, notes: S.notes,
+      pName: p.name, pCat: p.cat, track: p.track, cfg: p.cfg, trackNote: p.note, fields: p.fields, c1: p.cols[0], c2: p.cols[1], c3: p.cols[2],
+      qtyHint: isQty ? 'Pieces · counted stock' : qty + ' unit records will be created',
+      initStatus, initCls: p.cfg ? 's-unconf' : 's-stock',
+      initWhy: p.cfg ? 'Set automatically: this product requires configuration before deployment' : 'Set automatically: no configuration required',
+      next1: isQty ? 'Next: Review' : 'Next: Units',
+      docs, docCount: S.docs.length, recent,
+      isQty, isHybrid: p.track === 'Hybrid', needUnits, modes,
+      showManual: needUnits && S.mode === 'manual', showBulk: needUnits && S.mode === 'bulk', showCsv: needUnits && S.mode === 'csv',
+      rows, entered, pctW: Math.min(100, qty ? entered / qty * 100 : 0) + '%', hasDup: dup > 0, dupCount: dup,
+      moreRows: !S.allRows, hiddenRows: 6, showAllRows: () => this.setState({ allRows: true }),
+      bulk: S.bulk, bulkMsg, bulkNoteCls: 'note ' + (bulkOk ? 'n-ok' : 'n-warn'),
+      csvLoaded: S.csv === true || !!realCsv, csvEmpty: !(S.csv === true || !!realCsv), maps,
+      csvName: realCsv ? realCsv.name : 'AlNoor_RUT956_shipment_88341.csv (sample)', csvInfo: realCsv ? realCsv.rows.length + ' rows · ' + realCsv.head.length + ' columns · ' + this.sizeLabel(realCsv.size) : '20 rows · 4 columns · 2 KB',
+      hasCsvErr: !!S.csvErr, csvErr: S.csvErr || '',
+      onCsvFile: e => { const t = e && e.target; const f = t && t.files && t.files[0]; if (f) this.readCsv(f); try { t.value = ''; } catch (x) {} },
+      csvMsg: !csvHasSn ? 'Map one column to ' + p.cols[0] + ' to continue' : realCsv ? realCsvIds.length + ' rows with a ' + p.cols[0].toLowerCase() + (dup && S.mode === 'csv' ? ' · ' + dup + ' duplicate' + (dup === 1 ? '' : 's') : ' · no duplicates found') + (realCsvIds.length !== qty ? ' · quantity is ' + qty : ' · matches quantity') : '20 rows ready · Serial number, IMEI and MAC mapped · "carton" ignored · no duplicates found',
+      csvNoteCls: 'note ' + (csvHasSn ? 'n-ok' : 'n-err'),
+      dateLabel, poInv: (S.po || '—') + ' / ' + (S.inv || '—'),
+      unitsLine: isQty ? 'Counted stock' : entered + ' of ' + qty + ' serialised',
+      unitsShort, effects, blocked, canConfirm: !blocked, partial: needUnits && !blocked && missing > 0, missing,
+      auditLine: qty + ' audit entries recorded under Chetan.',
+      sumBadge: S.done ? 'Received' : 'Draft', sumBadgeCls: 'b ' + (S.done ? 's-deployed' : 's-unconf'),
+      checks,
+      onSup: e => this.setState({ sup: e.target.value }),
+      onProd: e => { const np = P[e.target.value]; this.setState({ prod: e.target.value, batch: np.batch, batchTyped: false, sup: np.sup, mode: 'manual' }); },
+      onBatch: e => this.setState({ batch: e.target.value, batchTyped: true }),
+      onQty: e => this.setState({ qty: e.target.value }),
+      onDate: e => this.setState({ date: e.target.value }),
+      onLoc: e => this.setState({ loc: e.target.value }),
+      onPo: e => this.setState({ po: e.target.value }),
+      onInv: e => this.setState({ inv: e.target.value }),
+      onNotes: e => this.setState({ notes: e.target.value }),
+      onBulk: e => this.setState({ bulk: e.target.value }),
+      onDocFile: e => {
+        const t = e && e.target; const list = t && t.files ? Array.prototype.slice.call(t.files) : [];
+        if (!list.length) return;
+        this.setState({ docs: this.state.docs.concat(list.map(f => ({ name: String(f.name || 'document'), size: +f.size || 0, type: String(f.type || ''), by: 'Chetan', when: this.nowLabel() }))) });
+        try { t.value = ''; } catch (x) {}
+      },
+      applyBulk: () => {
+        const nr = [];
+        for (let i = 0; i < Math.max(qty, bLines.length); i++) {
+          const parts = bLines[i] ? bLines[i].split(/[\t,;]+/) : [];
+          nr.push({ sn: (parts[0] || '').trim(), imei: (parts[1] || '').trim(), mac: (parts[2] || '').trim() });
+        }
+        this.setState({ rows: nr, mode: 'manual', allRows: true });
+      },
+      loadCsv: () => this.setState({ csv: true, csvFile: null, csvErr: '' }),
+      clearCsv: () => this.setState({ csv: false, csvFile: null, csvMap: null, csvErr: '' }),
+      fixDup: () => {
+        const seen = {};
+        const nr = S.rows.map(r => { const k = r.sn.trim(); if (k && (seen[k] || storeHas[k])) return { sn: '', imei: '', mac: '' }; if (k) seen[k] = true; return r; });
+        const nb = S.bulk.split('\n').filter((l, i, arr) => { const k = l.split(/[\t,;]+/)[0].trim(); return !k || (!storeHas[k] && arr.findIndex(x => x.split(/[\t,;]+/)[0].trim() === k) === i); }).join('\n');
+        const upd = { rows: nr, bulk: nb };
+        if (realCsv) { const si = colOf('sn'), cs = {}; upd.csvFile = Object.assign({}, realCsv, { rows: realCsv.rows.filter(r => { const k = (r[si] || '').trim(); if (!k) return true; if (cs[k] || storeHas[k]) return false; cs[k] = true; return true; }) }); }
+        this.setState(upd);
+      },
+      toStep1: () => this.setState({ step: 1 }),
+      toStep2: () => this.setState({ step: isQty ? 3 : 2 }),
+      toStep3: () => this.setState({ step: 3 }),
+      backFrom3: () => this.setState({ step: isQty ? 1 : 2 }),
+      confirm: () => {
+        if (blocked || !shipOk) return;
+        // Collect the unit identities from whichever entry method is active.
+        let ids = [];
+        if (needUnits) {
+          if (S.mode === 'manual') ids = S.rows.map(r => [r.sn, r.imei, r.mac]);
+          else if (S.mode === 'bulk') ids = bLines.map(l => l.split(/[\t,;]+/));
+          else if (realCsv) ids = realCsvIds.slice();
+          else if (S.csv && csvHasSn) { for (let i = 0; i < 20; i++) ids.push(['11086753' + (20 + i), '8605480439129' + (51 + i * 2), '00:1E:42:3A:7C:' + (65 + i).toString(16).toUpperCase()]); }
+          ids = ids.map(x => x.map(y => (y || '').trim())).filter(x => x[0]).slice(0, qty);
+        }
+        const SPEC = { rut956: ['tel', 'Teltonika', 'RUT956'], em500: ['co2', 'Milesight', 'EM500-CO2'], ug65: ['gw', 'Milesight', 'UG65'], sim: ['sim', 'Omantel', 'M2M SIM'], cab1: ['cab', 'Generic', 'Cat6 1 m'] }[S.prod];
+        const inTransit = /transit/i.test(S.loc);
+        const loc2 = inTransit ? '' : S.loc.replace(/^MRD Office · /, '');
+        const stKey = inTransit ? 'transit' : (p.cfg ? 'unconf' : 'stock');
+        this.writeStore(s => {
+          const have = {};
+          s.added.forEach(a => { if (a && a.ident) have[a.ident] = true; });
+          ids.forEach(x => {
+            if (have[x[0]]) return; have[x[0]] = true;
+            const u = { ident: x[0], name: p.name, cat: SPEC[0], brand: SPEC[1], model: SPEC[2], batch, st: stKey, loc: inTransit ? 'In transit' : 'MRD Office', loc2, recv: dateLabel, sup: S.sup, upd: this.nowLabel() };
+            if (S.prod === 'rut956') { u.imei = x[1] || ''; u.mac = x[2] || ''; }
+            else if (S.prod === 'ug65') { u.eui = x[1] || ''; u.mac = x[2] || ''; }
+            else if (S.prod === 'em500') { u.eui = x[1] || ''; }
+            else if (S.prod === 'sim') { u.msisdn = x[1] || ''; }
+            s.added.push(u);
+          });
+          this.logEvent(s, { action: 'Received', item: 'Batch ' + batch + ' · ' + qty + ' × ' + p.name, itemHref: 'BatchDetail.dc.html', from: S.sup, to: S.loc, note: (needUnits ? ids.length + ' serialised · ' : 'Counted stock · ') + (S.po || 'no PO') + (S.inv ? ' · ' + S.inv : '') });
+          // Batch record: PO / invoice / notes and document metadata (name, size, type) — never file contents.
+          s.batches = s.batches || {};
+          const prevB = s.batches[batch] || {};
+          const newDocs = S.docs.filter(d => typeof d.size === 'number').map(d => ({ name: d.name, size: d.size, type: d.type || '', by: d.by || 'Chetan', when: d.when || this.nowLabel() }));
+          s.batches[batch] = Object.assign({}, prevB, { product: p.name, sup: S.sup, qty, received: dateLabel, loc: S.loc, po: S.po || '', inv: S.inv || '', notes: S.notes || '', docs: (prevB.docs || []).concat(newDocs) });
+          newDocs.forEach(d => this.logEvent(s, { action: 'Document uploaded', item: 'Batch ' + batch, itemHref: 'BatchDetail.dc.html', from: '—', to: d.name, note: this.sizeLabel(d.size) + (d.type ? ' · ' + d.type : '') }));
+        });
+        this.setState({ done: true, step: 1, batch, batchTyped: false });
+      },
+      again: () => this.setState({ done: false, step: 1, batchTyped: false, batch: p.batch.replace(/(\d+)$/, m => { const n = parseInt(m, 10) + 1; return (n < 10 ? '00' : n < 100 ? '0' : '') + n; }), docs: [], notes: '' })
+    };
+  }
+}
+</script>
+</body>
+</html>

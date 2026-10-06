@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Audit log · MRD Inventory</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F6F8;color:#0E1726;font-family:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#0B7A6B;text-decoration:none}a:hover{color:#075C51}
+h1,h2,h3,h4,p{margin:0}
+.mono{font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;letter-spacing:-.01em}
+.muted{color:#5E6B7D}
+.side{flex:0 0 248px;background:#0C1424;padding:18px 12px 16px;display:flex;flex-direction:column;gap:1px}
+.nav{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:8px;color:#B3BDCB;font-size:13.5px}
+.nav:hover{background:#152036;color:#fff}
+.nav.on{background:#1C2A42;color:#fff;box-shadow:inset 2px 0 0 #2BC4A8}
+.nav svg{flex:0 0 16px;width:16px;height:16px}
+.nav .ct{margin-left:auto;font-size:11px;font-weight:600;background:#2BC4A8;color:#04211C;border-radius:999px;padding:1px 7px}
+.sec{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#7F8CA0;padding:16px 10px 6px;font-weight:500}
+.mtop{display:none}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 32px;background:#fff;border-bottom:1px solid #E3E7EC}
+.srch{flex:1 1 320px;max-width:560px;display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border:1px solid #DCE1E8;border-radius:10px;background:#F8FAFB;color:#5E6B7D;font-size:13.5px}
+.srch:hover{border-color:#B9C2CE;color:#3B4758}
+.kbd{margin-left:auto;font-family:'Geist Mono',monospace;font-size:11px;border:1px solid #DCE1E8;border-radius:5px;padding:1px 6px;background:#fff;color:#5E6B7D}
+.main{padding:28px 32px 48px;max-width:1400px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+.card{background:#fff;border:1px solid #E3E7EC;border-radius:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 14px;border-radius:9px;border:1px solid #D5DBE3;background:#fff;color:#1B2638;font:inherit;font-size:13.5px;font-weight:500;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#F4F6F8;color:#0E1726}
+.btn.p{background:#0B7A6B;border-color:#0B7A6B;color:#fff}.btn.p:hover{background:#08695C;color:#fff}
+.btn.sm{height:32px;padding:0 10px;font-size:12.5px;border-radius:8px}
+.btn.ic{width:40px;padding:0}
+.btn svg{width:16px;height:16px}
+.b{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;background:#EEF1F5;color:#3E4A5C}
+.b::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.s-unconf{background:#EEF1F5;color:#3E4A5C}.s-prep{background:#FFF3DC;color:#8A4B00}.s-ready{background:#E6EEFF;color:#1D4FB8}.s-reserved{background:#F0EAFE;color:#5B32B4}.s-deployed{background:#E1F4EC;color:#0A6648}.s-stock{background:#E3F2F6;color:#0E5E73}.s-maint{background:#FFEDE3;color:#9A3D0B}.s-damaged{background:#FDEBEA;color:#A3201F}.s-transit{background:#E9EDFC;color:#3346A8}.s-returned{background:#F1EEE8;color:#5E554A}.s-retired{background:#EFF0F2;color:#646C79}
+.g-insp{background:#EEF1F5;color:#3E4A5C}.g-bms{background:#E3F2F6;color:#0E5E73}.g-poc{background:#F0EAFE;color:#5B32B4}.g-study{background:#FFF3DC;color:#8A4B00}.g-cpend{background:#E6EEFF;color:#1D4FB8}.g-contract{background:#E1F4EC;color:#0A6648}.g-ops{background:#0B7A6B;color:#fff}.g-done{background:#EFF0F2;color:#646C79}.g-hold{background:#FDEBEA;color:#A3201F}
+.t{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:6px;font-size:11.5px;font-weight:600;letter-spacing:.02em;border:1px solid}
+.t-poc{color:#5B32B4;border-color:#D7C8FA;background:#FAF7FF}.t-con{color:#0A6648;border-color:#BFE3D3;background:#F4FBF8}.t-rep{color:#8A4B00;border-color:#F3D9A6;background:#FFFBF2}.t-add{color:#1D4FB8;border-color:#C8D8FA;background:#F6F9FF}
+.tw{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-weight:500;color:#5E6B7D;font-size:12px;padding:10px 14px;border-bottom:1px solid #E3E7EC;background:#F8FAFB;white-space:nowrap}
+.tbl td{padding:11px 14px;border-bottom:1px solid #EEF1F4;white-space:nowrap;vertical-align:middle}
+.tbl tr:hover td{background:#F8FAFB}
+.tbl tr:last-child td{border-bottom:0}
+.ov{font-size:12px;font-weight:500;color:#5E6B7D;text-transform:uppercase;letter-spacing:.06em}
+.kpi{padding:16px 18px;display:flex;flex-direction:column;gap:6px;color:#0E1726}
+.kpi:hover{border-color:#B9C2CE;color:#0E1726}
+.kpi .n{font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
+.seg{display:flex;gap:2px;height:8px;border-radius:4px;overflow:hidden}
+.seg span{display:block;height:100%}
+.row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-top:1px solid #EEF1F4;color:#0E1726}
+.row:hover{background:#F8FAFB;color:#0E1726}
+.chip{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;border:0;background:transparent;font:inherit;font-size:13px;color:#3B4758;cursor:pointer}
+.chip.on{background:#fff;color:#0E1726;box-shadow:0 1px 2px rgba(14,23,38,.12)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lbl{display:block;font-size:12.5px;font-weight:500;color:#3B4758;margin-bottom:6px}
+.fld{width:100%;height:40px;border:1px solid #D5DBE3;border-radius:9px;background:#fff;padding:0 12px;font:inherit;font-size:13.5px;color:#0E1726}
+.fld:focus,.qin input:focus{outline:2px solid #0B7A6B;outline-offset:1px}
+.qin{display:flex;align-items:center;gap:8px;height:40px;border:1px solid #D5DBE3;border-radius:9px;background:#fff;padding:0 12px;color:#5E6B7D}
+.qin input{flex:1;min-width:0;border:0;background:transparent;font:inherit;font-size:13.5px;color:#0E1726;height:36px}
+.chips{display:flex;flex-wrap:wrap;gap:2px;padding:3px;background:#E9EDF1;border-radius:10px}
+.chip .cn{margin-left:6px;font-size:11px;font-weight:600;color:#5E6B7D}
+.av{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#0E1726;flex:0 0 28px}
+.act{display:inline-flex;align-items:center;gap:8px;color:#1B2638;font-weight:500}
+.act svg{width:16px;height:16px;flex:0 0 16px;color:#5E6B7D}
+.pv{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:6px;background:#F1F3F6;color:#5E6B7D;font-size:12px;text-decoration:line-through;text-decoration-color:#8A96A8}
+.nv{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:6px;background:#1B2638;color:#fff;font-size:12px;font-weight:500}
+.src{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:6px;border:1px solid #E3E7EC;font-size:12px;color:#3B4758}
+.grp td{background:#F8FAFB;padding:8px 14px;font-size:12px;font-weight:600;color:#1B2638;border-bottom:1px solid #E3E7EC}
+.tbl tr.grp:hover td{background:#F8FAFB}
+.clk{cursor:pointer}
+.tbl tr.sel td{background:#EEF7F5}
+.dl{display:grid;grid-template-columns:110px 1fr;gap:10px 14px;font-size:13px}
+.dl dt{color:#5E6B7D}.dl dd{margin:0;min-width:0}
+.dtbl{width:100%;border-collapse:collapse;font-size:13px}
+.dtbl th{text-align:left;font-weight:500;color:#5E6B7D;font-size:12px;padding:8px 10px;border-bottom:1px solid #E3E7EC;background:#F8FAFB}
+.dtbl td{padding:9px 10px;border-bottom:1px solid #EEF1F4;vertical-align:top}
+@media (max-width:900px){.side{display:none}.mtop{display:flex}.main{padding:20px 16px 40px}.top{padding:12px 16px}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh; background: #F4F6F8">
+<nav class="side" aria-label="Primary">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 2px 8px 14px; color: #fff">
+<span style="width: 32px; height: 32px; border-radius: 9px; background: #0B7A6B; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4a8 8 0 1 0 4 11.5A6.5 6.5 0 0 1 16 4z"></path><path d="M6 18l2.5-2.5"></path></svg></span>
+<span style="display: flex; flex-direction: column; line-height: 1.15"><span style="font-weight: 600; font-size: 14px">Moonrock R&amp;D</span><span style="font-size: 11.5px; color: #8D99AC">Inventory × Exergio</span></span>
+</a>
+<a class="nav" href="Main.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>Dashboard</a>
+<div class="sec">Inventory</div>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"></path><path d="M3 8v8l9 5 9-5V8"></path><path d="M12 13v8"></path></svg>All inventory</a>
+<a class="nav" href="Products.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg>Products</a>
+<a class="nav" href="Batches.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l10 5-10 5L2 7l10-5z"></path><path d="M2 12l10 5 10-5"></path><path d="M2 17l10 5 10-5"></path></svg>Batches</a>
+<a class="nav" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive stock</a>
+<div class="sec">Devices</div>
+<a class="nav" href="DevicePrep.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg>Device preparation<span class="ct">15</span></a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="18" height="7" rx="2"></rect><path d="M7 16.5h.01M11 16.5h.01"></path><path d="M17 13V5"></path><path d="M14 7.5a4 4 0 0 1 6 0"></path></svg>Teltonika</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h11a3 3 0 1 0-3-3"></path><path d="M3 12h16a3 3 0 1 1-3 3"></path><path d="M3 16h7"></path></svg>CO₂ sensors</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"></circle><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7M5.6 5.6a9 9 0 0 0 0 12.8M18.4 5.6a9 9 0 0 1 0 12.8"></path></svg>LoRaWAN gateways</a>
+<a class="nav" href="SimInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"></path><rect x="8.5" y="11" width="7" height="6" rx="1"></rect></svg>SIM cards</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"></rect><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"></path></svg>Other equipment</a>
+<div class="sec">Facilities &amp; projects</div>
+<a class="nav" href="Facilities.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"></rect><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1"></path></svg>Facilities</a>
+<a class="nav" href="PocManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6L4.5 18.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3"></path><path d="M7 15h10"></path></svg>POC projects</a>
+<a class="nav" href="ContractManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path><path d="M9 13h6M9 17h4"></path></svg>Contracts</a>
+<div class="sec">Deployments</div>
+<a class="nav" href="Deployments.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3z"></path><path d="M14 10h4l3 3v3h-7"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>Deployments</a>
+<a class="nav" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>New deployment</a>
+<div class="sec">Insights &amp; admin</div>
+<a class="nav" href="Reports.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M10 20V5M16 20v-6M21 20H3"></path></svg>Reports</a>
+<a class="nav on" href="AuditLog.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l3 2"></path></svg>Audit log</a>
+<a class="nav" href="Users.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20a6.5 6.5 0 0 1 13 0"></path><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"></path></svg>Users &amp; roles</a>
+<a class="nav" href="Settings.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Settings</a>
+<div style="margin-top: auto; padding: 16px 8px 0; display: flex; align-items: center; gap: 10px; border-top: 1px solid #1C2A42">
+<span style="width: 32px; height: 32px; border-radius: 50%; background: #2BC4A8; color: #04211C; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600">CH</span>
+<span style="display: flex; flex-direction: column; line-height: 1.2"><span style="color: #fff; font-size: 13px; font-weight: 500">Chetan</span><span style="color: #8D99AC; font-size: 11.5px">Admin · MRD Office</span></span>
+</div>
+</nav>
+
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+<div class="mtop" style="align-items: center; justify-content: space-between; padding: 12px 16px; background: #0C1424; color: #fff">
+<span style="font-weight: 600">Moonrock R&amp;D</span>
+<button class="btn sm" aria-label="Open menu" aria-expanded="{{shell.menuExp}}" onClick="{{shell.toggleMenu}}" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
+</div>
+<header class="top">
+<a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
+<span style="flex: 1"></span>
+<span class="b s-prep" title="All records shown are sample data">Sample data</span>
+<span class="b {{shell.syncCls}}" title="{{shell.syncTip}}">{{shell.syncLabel}}</span>
+<a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
+<a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
+<div style="position: relative; z-index: {{shell.bellZ}}">
+<button class="btn ic" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="{{shell.bellExp}}" onClick="{{shell.toggleBell}}" style="position: relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg><sc-if value="{{shell.hasUnread}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #DC3B3A; color: #fff; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #fff">{{shell.unread}}</span></sc-if></button>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="Notifications" style="position: absolute; right: 0; top: calc(100% + 8px); z-index: 41; width: 360px; max-width: calc(100vw - 32px); background: #fff; border: 1px solid #DCE1E8; border-radius: 12px; box-shadow: 0 16px 40px rgba(14,23,38,.18); overflow: hidden; text-align: left">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #EEF1F4"><span style="font-weight: 600; font-size: 14px; color: #0E1726">Notifications</span><button onClick="{{shell.markRead}}" style="border: 0; background: none; padding: 4px; font: inherit; font-size: 12.5px; color: #0B7A6B; cursor: pointer">Mark all as read</button></div>
+<div style="max-height: 380px; overflow-y: auto">
+<sc-for list="{{shell.notes}}" as="n" hint-placeholder-count="4">
+<a href="{{n.href}}" style="display: flex; gap: 10px; padding: 11px 14px; border-bottom: 1px solid #F1F4F7; color: #0E1726; background: {{n.bg}}">
+<span style="width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: 0 0 8px; background: {{n.dot}}"></span>
+<span style="flex: 1; min-width: 0; font-size: 13px; line-height: 1.4"><span style="display: block">{{n.text}}</span><span style="display: block; font-size: 12px; color: #5E6B7D">{{n.when}}</span></span>
+</a>
+</sc-for>
+</div>
+<a href="AuditLog.dc.html" style="display: block; padding: 10px 14px; font-size: 13px; font-weight: 500; text-align: center; border-top: 1px solid #EEF1F4">Open audit log</a>
+</div>
+</sc-if>
+</div>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}"><button aria-label="Close notifications" onClick="{{shell.closeAll}}" style="position: fixed; inset: 0; z-index: 30; background: transparent; border: 0; padding: 0; cursor: default"></button></sc-if>
+</header>
+
+<main class="main">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<nav aria-label="Breadcrumb" style="font-size: 13px; display: flex; gap: 6px; flex-wrap: wrap; color: #5E6B7D"><a href="Main.dc.html" style="color: #5E6B7D">Dashboard</a><span aria-hidden="true">/</span><span>Insights &amp; admin</span><span aria-hidden="true">/</span><span style="color: #0E1726" aria-current="page">Audit log</span></nav>
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap">
+<div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+<h1 style="font-size: 26px; font-weight: 600; letter-spacing: -.02em">Audit log</h1>
+<p class="muted" style="font-size: 14px">Every change to every record: who did it, when, from where, and what it was before.</p>
+</div>
+<div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+<span style="display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px; border-radius: 9px; background: #EEF1F5; color: #3B4758; font-size: 12.5px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>Audit records are immutable · retained {{retention}} <a href="Settings.dc.html" style="font-size: 12.5px">Change in Settings</a></span>
+<button class="btn" onClick="{{exportCsv}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"></path></svg>Export CSV</button>
+</div>
+</div>
+</div>
+
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 10px; background: #F4FBF8; border: 1px solid #BFE3D3; color: #0A6648; font-size: 13.5px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8 12l3 3 5-6"></path></svg>
+<span style="flex: 1">{{toast}}</span>
+<button class="btn sm" onClick="{{hideToast}}" style="background: transparent; border-color: #BFE3D3; color: #0A6648">Dismiss</button>
+</div>
+</sc-if>
+
+<section class="card" aria-label="Filters" style="padding: 16px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end">
+<div style="flex: 2 1 260px; min-width: 0">
+<label class="lbl" for="aq">Search</label>
+<div class="qin"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg><input id="aq" type="search" placeholder="Serial, ICCID, IP, batch, facility, user…" value="{{q}}" onChange="{{onQ}}"></div>
+</div>
+<div style="flex: 1 1 150px; min-width: 0">
+<label class="lbl" for="au">User</label>
+<select id="au" class="fld" value="{{user}}" onChange="{{onUser}}"><option value="all">All users</option><option value="Chetan">Chetan · Admin</option><option value="Nitin">Nitin · Operations</option><option value="Aisha">Aisha · Operations</option><option value="Rahul">Rahul · Technician</option><option value="Saif">Saif · Technician</option></select>
+</div>
+<div style="flex: 1 1 150px; min-width: 0">
+<label class="lbl" for="ae">Entity type</label>
+<select id="ae" class="fld" value="{{ent}}" onChange="{{onEnt}}"><option value="all">All entities</option><option value="Device">Device</option><option value="SIM">SIM card</option><option value="Batch">Batch</option><option value="Facility">Facility</option><option value="Product">Product</option><option value="User">User</option></select>
+</div>
+<div style="flex: 1 1 140px; min-width: 0">
+<label class="lbl" for="af">From</label>
+<input id="af" class="fld" type="date" value="{{from}}" onChange="{{onFrom}}">
+</div>
+<div style="flex: 1 1 140px; min-width: 0">
+<label class="lbl" for="at">To</label>
+<input id="at" class="fld" type="date" value="{{to}}" onChange="{{onTo}}">
+</div>
+</div>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap">
+<div class="chips" role="group" aria-label="Action type">
+<sc-for list="{{cats}}" as="c" hint-placeholder-count="8"><button class="{{c.cls}}" aria-pressed="{{c.pressed}}" onClick="{{c.pick}}">{{c.label}}<span class="cn">{{c.n}}</span></button></sc-for>
+</div>
+<div style="display: flex; align-items: center; gap: 10px">
+<span class="muted" style="font-size: 12.5px">{{summary}}</span>
+<sc-if value="{{isFiltered}}" hint-placeholder-val="{{ false }}"><button class="btn sm" onClick="{{reset}}">Clear filters</button></sc-if>
+</div>
+</div>
+</section>
+
+<section class="card" aria-label="Audit events">
+<sc-if value="{{hasRows}}" hint-placeholder-val="{{ true }}">
+<div class="tw">
+<table class="tbl">
+<thead><tr><th>Time</th><th>User</th><th>Action</th><th>Item</th><th>Change</th><th>Source</th><th><span class="sr">Details</span></th></tr></thead>
+<tbody>
+<sc-for list="{{groups}}" as="g" hint-placeholder-count="4">
+<tr class="grp"><td colspan="7">{{g.label}}<span class="muted" style="font-weight: 500"> · {{g.n}}</span></td></tr>
+<sc-for list="{{g.rows}}" as="r" hint-placeholder-count="3">
+<tr class="{{r.trCls}}" onClick="{{r.open}}">
+<td class="mono muted">{{r.time}}</td>
+<td><span style="display: flex; align-items: center; gap: 10px"><span class="av" style="background: {{r.bg}}">{{r.ini}}</span><span style="line-height: 1.25"><span style="display: block; font-weight: 500">{{r.who}}</span><span class="muted" style="font-size: 12px">{{r.role}}</span></span></span></td>
+<td><span class="act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{r.icon}}"></path></svg>{{r.action}}</span></td>
+<td><a class="{{r.mc}}" href="{{r.href}}" style="font-weight: 500">{{r.item}}</a><span class="muted" style="display: block; font-size: 12px">{{r.sub}}</span></td>
+<td><span style="display: inline-flex; align-items: center; gap: 6px"><span class="pv">{{r.prev}}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-label="changed to"><path d="M5 12h14M13 6l6 6-6 6"></path></svg><span class="nv">{{r.next}}</span></span></td>
+<td><span class="src">{{r.src}}</span></td>
+<td style="text-align: right"><button class="btn sm ic" style="width: 32px" aria-label="{{r.aria}}" onClick="{{r.open}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></button></td>
+</tr>
+</sc-for>
+</sc-for>
+</tbody>
+</table>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 16px; border-top: 1px solid #EEF1F4">
+<span class="muted" style="font-size: 12.5px">Showing {{shown}} of {{totalN}} events · newest first · times in GST (UTC+4)</span>
+<span class="muted" style="font-size: 12.5px">Start of the prototype’s history · nothing older to load</span>
+</div>
+</sc-if>
+<sc-if value="{{noRows}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 56px 24px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center">
+<span style="width: 44px; height: 44px; border-radius: 12px; background: #F1F4F7; color: #5E6B7D; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l3 2"></path></svg></span>
+<h2 style="font-size: 15px; font-weight: 600">No events match these filters</h2>
+<p class="muted" style="font-size: 13px; max-width: 380px">Try a wider date range or another action type. Nothing is ever removed from the audit log, so older entries are still here.</p>
+<button class="btn sm" onClick="{{reset}}">Clear filters</button>
+</div>
+</sc-if>
+</section>
+
+<sc-if value="{{hasSel}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 50; display: flex; justify-content: flex-end">
+<div onClick="{{close}}" aria-hidden="true" style="position: absolute; inset: 0; background: rgba(14,23,38,.45)"></div>
+<aside role="dialog" aria-modal="true" aria-label="Audit event details" style="position: relative; width: min(540px, 100%); height: 100%; overflow-y: auto; background: #fff; box-shadow: -12px 0 32px rgba(14,23,38,.16); display: flex; flex-direction: column">
+<div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 20px 22px 16px; border-bottom: 1px solid #E3E7EC">
+<div style="display: flex; flex-direction: column; gap: 6px; min-width: 0">
+<span class="ov">Audit event · <span class="mono" style="text-transform: none; letter-spacing: 0">{{d.id}}</span></span>
+<h2 style="font-size: 19px; font-weight: 600; letter-spacing: -.01em; display: flex; align-items: center; gap: 8px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{d.icon}}"></path></svg>{{d.action}}</h2>
+<a class="{{d.mc}}" href="{{d.href}}" style="font-weight: 500">{{d.item}}</a>
+<span class="muted" style="font-size: 12.5px">{{d.sub}}</span>
+</div>
+<button class="btn ic sm" style="width: 32px" aria-label="Close details" onClick="{{close}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<div style="padding: 18px 22px; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 14px; border-radius: 10px; background: #F8FAFB; border: 1px solid #EEF1F4">
+<span class="pv" style="height: 26px; font-size: 13px">{{d.prev}}</span>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-label="changed to"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+<span class="nv" style="height: 26px; font-size: 13px">{{d.next}}</span>
+</div>
+<dl class="dl" style="margin: 0">
+<dt>Actor</dt><dd><span style="display: inline-flex; align-items: center; gap: 8px"><span class="av" style="width: 24px; height: 24px; flex: 0 0 24px; font-size: 10px; background: {{d.bg}}">{{d.ini}}</span><strong style="font-weight: 600">{{d.who}}</strong><span class="muted">· {{d.role}}</span></span></dd>
+<dt>When</dt><dd>{{d.when}}</dd>
+<dt>Source</dt><dd><span class="src">{{d.src}}</span></dd>
+<dt>Entity</dt><dd>{{d.ent}}</dd>
+<dt>Client IP</dt><dd class="mono muted">[client IP] · recorded server-side</dd>
+<dt>Session</dt><dd class="mono muted">{{d.session}}</dd>
+</dl>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h3 style="font-size: 13.5px; font-weight: 600">Field changes</h3>
+<div style="border: 1px solid #E3E7EC; border-radius: 10px; overflow: hidden">
+<table class="dtbl">
+<thead><tr><th>Field</th><th>Before</th><th>After</th></tr></thead>
+<tbody>
+<sc-for list="{{d.diff}}" as="f" hint-placeholder-count="3"><tr><td style="color: #3B4758">{{f.field}}</td><td class="muted" style="text-decoration: line-through; text-decoration-color: #A3ADBB">{{f.before}}</td><td style="font-weight: 500">{{f.after}}</td></tr></sc-for>
+</tbody>
+</table>
+</div>
+</div>
+<sc-if value="{{d.hasNote}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border-radius: 10px; background: #FFFBF2; border: 1px solid #F3D9A6">
+<span style="font-size: 12px; font-weight: 600; color: #8A4B00">Correction note</span>
+<span style="font-size: 13px; color: #3B2A10">{{d.note}}</span>
+</div>
+</sc-if>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h3 style="font-size: 13.5px; font-weight: 600">Related records</h3>
+<div style="display: flex; flex-direction: column; border: 1px solid #E3E7EC; border-radius: 10px; overflow: hidden">
+<sc-for list="{{d.rel}}" as="x" hint-placeholder-count="3">
+<a href="{{x.href}}" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border-top: 1px solid #EEF1F4; color: #0E1726; font-size: 13px"><span style="display: flex; flex-direction: column"><span class="muted" style="font-size: 11.5px">{{x.kind}}</span><span class="{{x.mc}}" style="font-weight: 500">{{x.label}}</span></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></a>
+</sc-for>
+</div>
+</div>
+<div style="display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 10px; background: #EEF1F5; color: #3B4758; font-size: 13px">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: 0 0 16px; margin-top: 2px"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+<span>Corrections create a new entry; original entries are never edited. To fix a mistake, correct the record itself and the change appears here as a new <strong style="font-weight: 600">Record corrected</strong> event.</span>
+</div>
+</div>
+<div style="margin-top: auto; display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; padding: 14px 22px; border-top: 1px solid #E3E7EC">
+<button class="btn" onClick="{{close}}">Close</button>
+<a class="btn p" href="{{d.href}}">Open record</a>
+</div>
+</aside>
+</div>
+</sc-if>
+</main>
+</div>
+</div>
+<!-- Export CSV -->
+<sc-if value="{{exOpen}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{exClose}}" style="position: fixed; inset: 0; background: rgba(14,23,38,.45); z-index: 50"></div>
+<div role="dialog" aria-modal="true" aria-label="{{exTitle}}" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(640px, calc(100% - 32px)); max-height: calc(100vh - 32px); overflow-y: auto; background: #fff; border-radius: 14px; z-index: 51; box-shadow: 0 20px 48px rgba(14,23,38,.25); display: flex; flex-direction: column">
+<div style="padding: 20px 22px 6px; display: flex; justify-content: space-between; gap: 12px; align-items: flex-start">
+<div><h2 style="font-size: 17px; font-weight: 600">{{exTitle}}</h2><p style="font-size: 13px; margin-top: 4px; color: #5E6B7D">{{exDesc}}</p></div>
+<button onClick="{{exClose}}" aria-label="Close export" style="width: 32px; height: 32px; border: 1px solid #D5DBE3; border-radius: 8px; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #1B2638; flex: 0 0 32px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<div style="padding: 10px 22px; display: flex; flex-direction: column; gap: 8px">
+<label for="ex-csv" style="display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: 12.5px; font-weight: 500; color: #3B4758"><span>Preview · <span style="font-family: 'Geist Mono', ui-monospace, monospace">{{exFile}}</span></span><span style="font-weight: 400; color: #5E6B7D">{{exMeta}}</span></label>
+<textarea id="ex-csv" readonly="readonly" value="{{exCsv}}" style="width: 100%; min-height: 200px; border: 1px solid #D5DBE3; border-radius: 8px; padding: 9px 11px; font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12px; color: #0E1726; background: #F8FAFB; resize: vertical"></textarea>
+<sc-if value="{{exHasErr}}" hint-placeholder-val="{{ false }}"><p role="alert" style="font-size: 12.5px; color: #8A4B00; background: #FFF3DC; padding: 8px 10px; border-radius: 8px">{{exErr}}</p></sc-if>
+</div>
+<div style="padding: 14px 22px; border-top: 1px solid #E3E7EC; display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap">
+<button class="btn" onClick="{{exClose}}">Close</button>
+<button class="btn p" onClick="{{exSave}}">Download CSV</button>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{shell.menuOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 70; display: flex">
+<nav aria-label="Mobile navigation" style="width: min(300px, 85vw); height: 100%; overflow-y: auto; background: #0C1424; padding: 16px 12px; display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 8px 14px; color: #fff"><span style="font-weight: 600">Moonrock R&amp;D</span><button onClick="{{shell.closeAll}}" aria-label="Close menu" style="width: 40px; height: 40px; border: 0; border-radius: 8px; background: #1C2A42; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<a href="Main.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Dashboard</a>
+<a href="Search.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Search</a>
+<a href="Inventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">All inventory</a>
+<a href="Products.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Products</a>
+<a href="Batches.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Batches</a>
+<a href="ReceiveInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Receive stock</a>
+<a href="DevicePrep.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Device preparation</a>
+<a href="SimInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">SIM cards</a>
+<a href="Facilities.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Facilities</a>
+<a href="PocManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">POC projects</a>
+<a href="ContractManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Contracts</a>
+<a href="Deployments.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Deployments</a>
+<a href="CreateDeployment.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">New deployment</a>
+<a href="Reports.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Reports</a>
+<a href="AuditLog.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Audit log</a>
+<a href="Users.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Users &amp; roles</a>
+<a href="Settings.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Settings</a>
+</nav>
+<button aria-label="Close menu" onClick="{{shell.closeAll}}" style="flex: 1; border: 0; padding: 0; background: rgba(14,23,38,.5); cursor: default"></button>
+</div>
+</sc-if>
+<sc-if value="{{shell.blocked}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 80; display: flex; align-items: center; gap: 12px; max-width: min(560px, calc(100vw - 32px)); padding: 12px 12px 12px 16px; border-radius: 12px; background: #7A1F1E; color: #fff; font-size: 13.5px; box-shadow: 0 12px 32px rgba(14,23,38,.3)">
+<span style="flex: 1">You have view access to this canvas, so that change wasn't saved. Ask the owner for edit access to change shared data.</span>
+<button onClick="{{shell.unblock}}" style="height: 32px; padding: 0 12px; border: 1px solid rgba(255,255,255,.4); border-radius: 8px; background: transparent; color: #fff; font: inherit; font-size: 12.5px; cursor: pointer">OK</button>
+</div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+  // Prototype persistence: this screen's data survives reloads and is shared by every screen in this browser.
+  componentDidMount() {
+    this._init = JSON.parse(JSON.stringify(this.state));
+    this._onStore = e => { if (!e || !e.key || e.key === 'mrd-proto:store') this.forceUpdate(); };
+    try { window.addEventListener('storage', this._onStore); } catch (e) {}
+    this._sharedInit();
+    try { const raw = window.localStorage.getItem('mrd-proto:v1:AuditLog'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
+  }
+  // Shared prototype store: one record in browser storage that every screen reads and writes (key mrd-proto:store).
+  readStore() {
+    const empty = { v: 1, units: {}, added: [], deployments: [], events: [], catalog: {} };
+    try { const s = JSON.parse(window.localStorage.getItem('mrd-proto:store') || 'null'); return Object.assign(empty, s || {}); } catch (e) { return empty; }
+  }
+  writeStore(mutate) {
+    const s = this.readStore();
+    if (this._shared && this._shared.mode === 'live' && !this._shared.canEdit) { const t = JSON.parse(JSON.stringify(s)); mutate(t); const strip = o => { const c = Object.assign({}, o); delete c.ui; return JSON.stringify(c); }; if (strip(t) !== strip(s)) this.setState({ _blocked: true }); s.ui = t.ui || s.ui; try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {} this.forceUpdate(); return s; }
+    mutate(s); s.events = s.events.slice(0, 200);
+    try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {}
+    this._pushShared(s);
+    this.forceUpdate(); return s;
+  }
+  // Shared across viewers: the store is mirrored to one document in this artifact's database (mrd_prototype/store).
+  // Browser storage stays as the local cache; everyone who opens the canvas sees the same data, editors can change it.
+  _host() {
+    let w = window;
+    for (let i = 0; i < 8; i++) {
+      try { if (w.claude && typeof w.claude.use === 'function') return w.claude; } catch (e) { return null; }
+      let p = null; try { p = w.parent; } catch (e) { return null; }
+      if (!p || p === w) return null; w = p;
+    }
+    return null;
+  }
+  async _sharedInit() {
+    const host = this._host();
+    if (!host) { this._shared = { mode: 'local' }; this.forceUpdate(); return; }
+    let db = null; try { db = await host.use('db'); } catch (e) { db = null; }
+    if (!db) { this._shared = { mode: 'local' }; this.forceUpdate(); return; }
+    let canEdit = false; try { const u = await host.use('user'); canEdit = u ? !!(await u.canEdit()) : false; } catch (e) { canEdit = false; }
+    this._shared = { mode: 'live', canEdit, db };
+    try {
+      this._unsubShared = db.doc('mrd_prototype/store').onSnapshot(snap => {
+        const local = this.readStore();
+        let next = null;
+        if (snap && snap.exists) { const d = snap.data() || {}; if (typeof d.json === 'string') { try { next = JSON.parse(d.json); } catch (e) { next = null; } } }
+        if (!next) {
+          if (snap && !snap.exists) {
+            let seen = false; try { seen = !!window.localStorage.getItem('mrd-proto:shared-seen'); } catch (e) {}
+            const hasLocal = local.events.length || Object.keys(local.units).length || local.added.length;
+            if (!seen && canEdit && hasLocal) this._pushShared(local);
+            else if (seen || !canEdit) { try { window.localStorage.setItem('mrd-proto:store', JSON.stringify({ v: 1, units: {}, added: [], deployments: [], events: [], catalog: {}, ui: local.ui || {} })); } catch (e) {} this.forceUpdate(); }
+          }
+          return;
+        }
+        next.ui = local.ui || {};
+        try { window.localStorage.setItem('mrd-proto:shared-seen', '1'); } catch (e) {}
+        try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(next)); } catch (e) {}
+        this.forceUpdate();
+      }, err => { this._shared = { mode: 'local', err: err && err.code }; this.forceUpdate(); });
+    } catch (e) { this._shared = { mode: 'local' }; }
+    this.forceUpdate();
+  }
+  _pushShared(s) {
+    const sh = this._shared;
+    if (!sh || sh.mode !== 'live' || !sh.canEdit) return;
+    const out = Object.assign({}, s); delete out.ui;
+    let json = JSON.stringify(out);
+    if (json.length > 240000) { out.events = (out.events || []).slice(0, 40); json = JSON.stringify(out); }
+    sh.db.doc('mrd_prototype/store').set({ json, savedAt: Date.now() }).catch(err => { this._shared = Object.assign({}, sh, { lastErr: (err && err.code) || 'unavailable' }); this.forceUpdate(); });
+  }
+  _clearShared() {
+    const sh = this._shared;
+    if (sh && sh.mode === 'live' && sh.canEdit) { try { sh.db.doc('mrd_prototype/store').delete().catch(() => {}); } catch (e) {} }
+  }
+  syncInfo() {
+    const sh = this._shared;
+    if (!sh) return { label: 'Connecting…', cls: 's-unconf', tip: 'Connecting to the shared store', readOnly: false };
+    if (sh.mode === 'live' && sh.lastErr) return { label: 'Not saved', cls: 's-damaged', tip: 'The last change could not be saved to the shared store (' + sh.lastErr + ')', readOnly: false };
+    if (sh.mode === 'live' && sh.canEdit) return { label: 'Shared · live', cls: 's-deployed', tip: 'Changes are saved for everyone who opens this canvas', readOnly: false };
+    if (sh.mode === 'live') return { label: 'View only', cls: 's-ready', tip: 'You can see shared changes live; only people with edit access can change data', readOnly: true };
+    return { label: 'This browser only', cls: 's-prep', tip: 'The shared store is not available here, so changes stay in this browser', readOnly: false };
+  }
+  nowLabel() { const d = new Date(); return 'Today, ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  patchUnit(s, ident, patch, prevSt) {
+    const cur = s.units[ident] || {};
+    s.units[ident] = Object.assign({}, cur, patch, { st0: cur.st0 !== undefined ? cur.st0 : (prevSt || ''), upd: this.nowLabel() });
+  }
+  logEvent(s, ev) {
+    const d = new Date();
+    s.events.unshift(Object.assign({ id: 'e' + d.getTime() + Math.random().toString(36).slice(2, 6), at: d.getTime(), when: this.nowLabel(), who: 'Chetan', ini: 'CH', role: 'Admin', source: 'Web' }, ev));
+  }
+  componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} try { if (this._unsubShared) this._unsubShared(); } catch (e) {} }
+  componentDidUpdate() {
+    try { const keep = Object.assign({}, this.state); delete keep._shell; delete keep._blocked; ["sel", "toast", "ex"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:AuditLog', JSON.stringify(keep)); } catch (e) {}
+  }
+  constructor(props) { super(props); this.state = { cat: 'all', user: 'all', ent: 'all', q: '', from: '2026-09-01', to: '2026-10-05', sel: null, toast: '' }; }
+  // Shared shell: notifications bell (fed by the shared store) and the mobile navigation drawer.
+  shellVals() {
+    const S = this.state, st = this.readStore();
+    const seen = (st.ui && st.ui.seenAt) || 0;
+    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Stage changed': 'moved the stage of', 'POC decision': 'recorded a POC decision for', 'Contract ended': 'ended the contract for', 'Issue reported': 'reported an issue on', 'Reserved': 'reserved', 'Labels printed': 'printed labels for', 'File attached': 'attached a file to', 'File removed': 'removed a file from', 'User updated': 'updated user', 'Product edited': 'edited', 'Invite resent': 'resent the invite to', 'Document uploaded': 'uploaded a document to', 'Document removed': 'removed a document from', 'Contact added': 'added a contact to', 'Contact removed': 'removed a contact from', 'Contract updated': 'updated the contract for', 'Batch updated': 'updated batch', 'Batch archived': 'archived batch', 'Batch restored': 'restored batch', 'Facility updated': 'updated facility', 'Facility restored': 'restored facility', 'Report exported': 'exported', 'Record corrected': 'corrected', 'Note added': 'added a note to', 'Settings changed': 'updated settings ·', 'User invited': 'invited', 'Role changed': 'changed the role of', 'Verified on site': 'verified on site', 'Deployment cancelled': 'cancelled', 'Deployment updated': 'updated deployment' };
+    const fromStore = st.events.slice(0, 8).map(e => ({ text: (e.who || 'Chetan') + ' ' + (VERB[e.action] || String(e.action || '').toLowerCase()) + ' ' + e.item + (e.to && e.to !== '—' && e.action !== 'Imported' ? ' → ' + e.to : ''), when: e.when, href: e.itemHref || 'AuditLog.dc.html', unread: (e.at || 0) > seen }));
+    const alerts = [
+      { text: '14 Teltonika RUT956 units are waiting for preparation', when: 'Batch TEL-2026-004', href: 'DevicePrep.dc.html', alert: true },
+      { text: 'Cat6 patch cable 1 m is below its minimum level', when: 'Low stock · 18 of 25', href: 'InventoryItem.dc.html', alert: true },
+      { text: 'Qatar Foundation: 2 CO₂ sensors scheduled to install on 08 Oct', when: 'Upcoming deployment', href: 'Deployments.dc.html', alert: true }
+    ].map(a => Object.assign(a, { unread: !seen }));
+    const all = fromStore.concat(alerts);
+    const unread = all.filter(n => n.unread).length;
+    const SY = this.syncInfo();
+    return {
+      syncLabel: SY.label, syncCls: SY.cls, syncTip: SY.tip, blocked: !!S._blocked, unblock: () => this.setState({ _blocked: false }),
+      bellOpen: S._shell === 'bell', bellExp: S._shell === 'bell' ? 'true' : 'false', bellZ: S._shell === 'bell' ? '40' : 'auto',
+      menuOpen: S._shell === 'menu', menuExp: S._shell === 'menu' ? 'true' : 'false',
+      unread: unread > 9 ? '9+' : String(unread), hasUnread: unread > 0,
+      notes: all.map(n => ({ text: n.text, when: n.when, href: n.href, bg: n.unread ? '#F4FBF8' : '#fff', dot: n.alert ? '#E08A00' : (n.unread ? '#0B7A6B' : '#D5DBE3') })),
+      toggleBell: () => this.setState({ _shell: this.state._shell === 'bell' ? '' : 'bell' }),
+      toggleMenu: () => this.setState({ _shell: this.state._shell === 'menu' ? '' : 'menu' }),
+      closeAll: () => this.setState({ _shell: '' }),
+      markRead: () => { const st = this.readStore(); st.ui = Object.assign({}, st.ui || {}, { seenAt: Date.now() }); try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(st)); } catch (e) {} this.forceUpdate(); }
+    };
+  }
+  // CSV export through the host's downloads capability, with an inline fallback (preview to copy) when it is unavailable.
+  exportVals(spec) {
+    const st = this.state, ex = st.ex || null;
+    const q2 = v => { const t = String(v == null ? '' : v); return /[",\n\r]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
+    const csv = [spec.cols.map(c => q2(c[0])).join(',')].concat(spec.rows.map(r => spec.cols.map(c => q2(c[1](r))).join(','))).join('\n');
+    const meta = spec.rows.length + (spec.rows.length === 1 ? ' row' : ' rows') + ' · ' + spec.cols.length + ' columns';
+    const save = async () => {
+      let dl = null;
+      try { dl = (window.claude && window.claude.use) ? await window.claude.use('downloads') : null; } catch (e) { dl = null; }
+      if (!dl) { this.setState({ ex: Object.assign({}, this.state.ex, { err: 'Downloads aren’t available in this preview. Select the CSV above and copy it into a .csv file instead.' }) }); return; }
+      try {
+        await dl.save({ filename: spec.file, data: csv });
+        this.writeStore(s => { this.logEvent(s, { action: 'Report exported', item: spec.item, itemHref: spec.href, from: '—', to: spec.file, note: meta }); });
+        this.setState(Object.assign({ ex: null }, spec.doneState ? spec.doneState(spec.file + ' saved · ' + meta) : {}));
+      } catch (e) {
+        this.setState({ ex: Object.assign({}, this.state.ex, { err: e && e.code === 'declined' ? 'Download cancelled.' : 'The download didn’t start (' + ((e && e.code) || 'unavailable') + '). Copy the CSV above instead.' }) });
+      }
+    };
+    return {
+      exOpen: !!ex, exTitle: spec.title, exDesc: spec.desc, exFile: spec.file, exMeta: meta, exCsv: csv,
+      exErr: (ex && ex.err) || '', exHasErr: !!(ex && ex.err),
+      openExport: () => this.setState({ ex: { err: '' } }), exClose: () => this.setState({ ex: null }), exSave: save
+    };
+  }
+  renderVals() { return Object.assign(this._screenVals(), { shell: this.shellVals() }); }
+  _screenVals() {
+    const S = this.state;
+    const U = {
+      Chetan: { ini: 'CH', bg: '#CDEFE7', role: 'Admin' },
+      Nitin: { ini: 'NI', bg: '#F6E3C4', role: 'Operations' },
+      Aisha: { ini: 'AI', bg: '#E6DDFB', role: 'Operations' },
+      Rahul: { ini: 'RA', bg: '#DCE6FB', role: 'Technician' },
+      Saif: { ini: 'SA', bg: '#FBE0DC', role: 'Technician' }
+    };
+    const IC = {
+      status: 'M4 7h13l-3-3M20 17H7l3 3',
+      cfg: 'M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z',
+      ip: 'M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18',
+      sim: 'M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zM8.5 11h7v6h-7z',
+      fw: 'M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5',
+      dep: 'M3 6h11v10H3zM14 10h4l3 3v3h-7M7 16v2M17 16v2',
+      recv: 'M12 3v12M7 10l5 5 5-5M4 17v3h16v-3',
+      stage: 'M5 21V4h11l-2 4 2 4H5',
+      corr: 'M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4',
+      role: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z',
+      arch: 'M3 4h18v4H3zM5 8v12h14V8M10 12h4'
+    };
+    const DEV = 'DeviceDetail.dc.html', BAT = 'BatchDetail.dc.html', FAC = 'FacilityDetail.dc.html';
+    const E = [
+      { day: '2026-10-05', time: '09:42', sec: '18', who: 'Chetan', action: 'Status changed', cat: 'status', icon: IC.status, ent: 'Device', item: 'RUT956 · 1108675309', mono: true, href: DEV, sub: 'Teltonika RUT956 · TEL-2026-004', prev: 'In preparation', next: 'Ready for deployment', src: 'Web',
+        diff: [['Status', 'In preparation', 'Ready for deployment'], ['Prep checklist', '4 of 5 steps', '5 of 5 steps'], ['Available to deploy', 'No', 'Yes']],
+        rel: [['Device', 'RUT956 · 1108675309', DEV, true], ['Batch', 'TEL-2026-004', BAT, true], ['SIM', '8996802026093001427', 'SimInventory.dc.html', true]] },
+      { day: '2026-10-05', time: '09:40', sec: '51', who: 'Chetan', action: 'Configured', cat: 'cfg', icon: IC.cfg, ent: 'Device', item: 'RUT956 · 1108675309', mono: true, href: DEV, sub: 'Configuration profile applied', prev: '—', next: 'Exergio BMS gateway v2.3', src: 'Web',
+        diff: [['Config profile', '—', 'Exergio BMS gateway v2.3'], ['APN', '—', 'mrd.m2m'], ['Remote management', 'Off', 'On']],
+        rel: [['Device', 'RUT956 · 1108675309', DEV, true], ['Prep queue', 'Device preparation', 'DevicePrep.dc.html', false]] },
+      { day: '2026-10-05', time: '09:39', sec: '07', who: 'Chetan', action: 'IP assigned', cat: 'simip', icon: IC.ip, ent: 'Device', item: 'RUT956 · 1108675309', mono: true, href: DEV, sub: 'Pool 10.64.12.0/24 · Omantel', prev: '—', next: '10.64.12.37', src: 'Web',
+        diff: [['Static IP', '—', '10.64.12.37'], ['IP pool', '—', '10.64.12.0/24 · Omantel APN mrd.m2m'], ['IP status', 'Free', 'Assigned']],
+        rel: [['Device', 'RUT956 · 1108675309', DEV, true], ['IP pool', '10.64.12.0/24', 'Settings.dc.html', true]] },
+      { day: '2026-10-05', time: '09:38', sec: '30', who: 'Chetan', action: 'SIM assigned', cat: 'simip', icon: IC.sim, ent: 'SIM', item: '8996802026093001427', mono: true, href: 'SimInventory.dc.html', sub: '→ RUT956 · 1108675309', prev: 'Available', next: 'Assigned', src: 'Web',
+        diff: [['SIM status', 'Available', 'Assigned'], ['Assigned device', '—', 'RUT956 · 1108675309'], ['Carrier', 'Omantel', 'Omantel (unchanged)']],
+        rel: [['SIM', '8996802026093001427', 'SimInventory.dc.html', true], ['Device', 'RUT956 · 1108675309', DEV, true], ['Batch', 'SIM-2026-005', BAT, true]] },
+      { day: '2026-10-05', time: '09:12', sec: '44', who: 'Chetan', action: 'Firmware updated', cat: 'cfg', icon: IC.fw, ent: 'Device', item: 'RUT956 · 1108675309', mono: true, href: DEV, sub: 'Teltonika RUT956', prev: 'RUT9M_R_00.07.06', next: 'RUT9M_R_00.07.08.3', src: 'Web',
+        diff: [['Firmware', 'RUT9M_R_00.07.06', 'RUT9M_R_00.07.08.3'], ['Status', 'Unconfigured', 'In preparation']],
+        rel: [['Device', 'RUT956 · 1108675309', DEV, true]] },
+      { day: '2026-10-03', time: '14:10', sec: '02', who: 'Rahul', action: 'Deployed', cat: 'dep', icon: IC.dep, ent: 'Device', item: 'EM500-CO2 × 4', mono: false, href: DEV, sub: '→ Qatar Foundation · DEP-0148 · POC', prev: 'MRD Office · Shelf B1', next: 'Qatar Foundation · L3', src: 'Mobile',
+        diff: [['Location', 'MRD Office · Shelf B1', 'Qatar Foundation · L3'], ['Status', 'Reserved', 'Deployed'], ['Deployment', '—', 'DEP-0148 (POC)'], ['Quantity', '4', '4']],
+        rel: [['Deployment', 'DEP-0148', 'Deployments.dc.html', true], ['Facility', 'Qatar Foundation', FAC, false], ['Batch', 'CO2-2026-002', BAT, true]] },
+      { day: '2026-10-01', time: '16:30', sec: '26', who: 'Chetan', action: 'Deployed', cat: 'dep', icon: IC.dep, ent: 'Device', item: 'RUT956 · 1108675311', mono: true, href: DEV, sub: '→ Qatar Foundation · DEP-0147 · POC', prev: 'Ready for deployment', next: 'Deployed', src: 'Web',
+        diff: [['Status', 'Ready for deployment', 'Deployed'], ['Location', 'MRD Office · Shelf A2', 'Qatar Foundation'], ['Deployment', '—', 'DEP-0147 (POC)']],
+        rel: [['Deployment', 'DEP-0147', 'Deployments.dc.html', true], ['Facility', 'Qatar Foundation', FAC, false], ['Device', 'RUT956 · 1108675311', DEV, true]] },
+      { day: '2026-10-01', time: '10:05', sec: '13', who: 'Nitin', action: 'Received', cat: 'recv', icon: IC.recv, ent: 'Batch', item: 'CAB-2026-007', mono: true, href: BAT, sub: 'Cat6 patch cable 3 m × 200', prev: '—', next: '200 pcs · In stock', src: 'Web',
+        diff: [['Batch', '—', 'CAB-2026-007'], ['Quantity', '—', '200 pcs'], ['Supplier', '—', 'Gulf Network Supplies'], ['Location', '—', 'MRD Office · Shelf C1']],
+        rel: [['Batch', 'CAB-2026-007', BAT, true], ['Product', 'Cat6 patch cable 3 m', 'ProductDetail.dc.html', false]] },
+      { day: '2026-09-30', time: '11:02', sec: '39', who: 'Nitin', action: 'Received', cat: 'recv', icon: IC.recv, ent: 'Batch', item: 'SIM-2026-005', mono: true, href: BAT, sub: 'Omantel M2M SIM × 50', prev: '—', next: '50 SIMs · Available', src: 'CSV import',
+        diff: [['Batch', '—', 'SIM-2026-005'], ['Quantity', '—', '50 SIMs (ICCIDs imported)'], ['Supplier', '—', 'Omantel Business'], ['SIM status', '—', 'Available']],
+        rel: [['Batch', 'SIM-2026-005', BAT, true], ['SIM inventory', 'Omantel M2M SIM', 'SimInventory.dc.html', false]] },
+      { day: '2026-09-29', time: '16:25', sec: '55', who: 'Aisha', action: 'Stage changed', cat: 'status', icon: IC.stage, ent: 'Facility', item: 'Lulu Hypermarket', mono: false, href: FAC, sub: 'Bausher, Muscat', prev: 'POC', next: 'POC study', src: 'Web',
+        diff: [['Project stage', 'POC', 'POC study'], ['Stage owner', 'Aisha', 'Aisha (unchanged)']],
+        rel: [['Facility', 'Lulu Hypermarket', FAC, false], ['POC project', 'Lulu Hypermarket POC', 'PocManagement.dc.html', false]] },
+      { day: '2026-09-28', time: '12:40', sec: '08', who: 'Saif', action: 'Deployed', cat: 'dep', icon: IC.dep, ent: 'Device', item: 'RUT956 · 1108675302', mono: true, href: DEV, sub: '→ Bank Muscat Head Office · DEP-0146 · Additional', prev: 'Ready for deployment', next: 'Deployed', src: 'Mobile',
+        diff: [['Status', 'Ready for deployment', 'Deployed'], ['Location', 'MRD Office · Shelf A2', 'Bank Muscat Head Office'], ['Deployment', '—', 'DEP-0146 (Additional)']],
+        rel: [['Deployment', 'DEP-0146', 'Deployments.dc.html', true], ['Facility', 'Bank Muscat Head Office', FAC, false]] },
+      { day: '2026-09-27', time: '08:55', sec: '21', who: 'Chetan', action: 'Record corrected', cat: 'corr', icon: IC.corr, ent: 'Device', item: 'RUT956 · 1107442103', mono: true, href: DEV, sub: 'Correction by Admin', prev: 'Deployed', next: 'Under maintenance', src: 'Web', note: 'LTE modem fault, returned from Bank Muscat.',
+        diff: [['Status', 'Deployed', 'Under maintenance'], ['Location', 'Bank Muscat Head Office', 'MRD Office · Repair bench'], ['Corrects', '—', 'Original deployment entry (kept unchanged)']],
+        rel: [['Device', 'RUT956 · 1107442103', DEV, true], ['Facility', 'Bank Muscat Head Office', FAC, false]] },
+      { day: '2026-09-25', time: '15:20', sec: '47', who: 'Chetan', action: 'Role changed', cat: 'admin', icon: IC.role, ent: 'User', item: 'Rahul', mono: false, href: 'Users.dc.html', sub: 'User account', prev: 'Viewer', next: 'Technician', src: 'Web',
+        diff: [['Role', 'Viewer', 'Technician'], ['Device preparation', 'View', 'Edit'], ['Deployments', 'View', 'Edit']],
+        rel: [['User', 'Rahul', 'Users.dc.html', false], ['Roles & permissions', 'Permission matrix', 'Users.dc.html', false]] },
+      { day: '2026-09-22', time: '10:15', sec: '33', who: 'Nitin', action: 'Received', cat: 'recv', icon: IC.recv, ent: 'Batch', item: 'TEL-2026-004', mono: true, href: BAT, sub: 'Teltonika RUT956 × 20', prev: '—', next: '20 units · Unconfigured', src: 'CSV import',
+        diff: [['Batch', '—', 'TEL-2026-004'], ['Quantity', '—', '20 units (serial, IMEI, MAC imported)'], ['Supplier', '—', 'Al Noor Technologies LLC'], ['Status', '—', 'Unconfigured']],
+        rel: [['Batch', 'TEL-2026-004', BAT, true], ['Product', 'Teltonika RUT956', 'ProductDetail.dc.html', false]] },
+      { day: '2026-09-18', time: '13:00', sec: '05', who: 'Aisha', action: 'Product archived', cat: 'admin', icon: IC.arch, ent: 'Product', item: 'Teltonika RUT240 (sample)', mono: false, href: 'ProductDetail.dc.html', sub: 'Catalogue · Teltonika Devices', prev: 'Active', next: 'Archived', src: 'Web',
+        diff: [['Product state', 'Active', 'Archived'], ['Visible in receiving', 'Yes', 'No'], ['Existing units', '0', '0']],
+        rel: [['Product', 'Teltonika RUT240 (sample)', 'ProductDetail.dc.html', false], ['Category', 'Teltonika Devices', 'Settings.dc.html', false]] }
+    ];
+    // Shared store: events recorded on any screen of this prototype come first.
+    const ST0 = this.readStore();
+    const CATMAP = { 'Received': 'recv', 'Imported': 'recv', 'Configured': 'cfg', 'SIM assigned': 'simip', 'IP assigned': 'simip', 'Deployed': 'dep', 'Status changed': 'status', 'Moved': 'status', 'Note added': 'status', 'Record corrected': 'corr', 'Settings changed': 'admin', 'Stage changed': 'status', 'POC decision': 'status', 'Contract ended': 'status', 'Facility added': 'admin', 'Facility archived': 'admin', 'Product added': 'admin', 'Product archived': 'admin', 'Product restored': 'admin', 'Stock adjusted': 'corr', 'Reorder placed': 'recv', 'Role changed': 'admin', 'User invited': 'admin', 'User deactivated': 'admin', 'Report exported': 'admin', 'Report scheduled': 'admin', 'Issue reported': 'status', 'Verified on site': 'dep', 'User reactivated': 'admin', 'Facility restored': 'admin', 'Facility updated': 'admin', 'Labels printed': 'cfg', 'Label printed': 'cfg', 'File attached': 'status', 'File removed': 'status', 'User updated': 'admin', 'Invite resent': 'admin', 'Product edited': 'admin', 'Reserved': 'dep', 'Document uploaded': 'admin', 'Document removed': 'admin', 'Contact added': 'admin', 'Contact removed': 'admin', 'Contract updated': 'status', 'Batch updated': 'corr', 'Batch archived': 'admin', 'Batch restored': 'admin', 'Deployment cancelled': 'dep', 'Deployment updated': 'dep', 'Transferred': 'status' };
+    const ICMAP = { recv: 'recv', cfg: 'cfg', simip: 'sim', dep: 'dep', status: 'status', corr: 'corr', admin: 'role' };
+    const ENTMAP = { 'BatchDetail.dc.html': 'Batch', 'SimInventory.dc.html': 'SIM', 'FacilityDetail.dc.html': 'Facility', 'Settings.dc.html': 'Settings', 'Users.dc.html': 'User', 'Deployments.dc.html': 'Device', 'PocManagement.dc.html': 'Facility', 'ContractManagement.dc.html': 'Facility', 'Facilities.dc.html': 'Facility', 'Products.dc.html': 'Product', 'ProductDetail.dc.html': 'Product', 'InventoryItem.dc.html': 'Product', 'Reports.dc.html': 'Settings', 'AuditLog.dc.html': 'Settings', 'DevicePrep.dc.html': 'Device' };
+    const fromStore = ST0.events.map(ev => {
+      const cat = CATMAP[ev.action] || 'status', ent = ENTMAP[ev.itemHref] || 'Device', mono = /\d{6,}/.test(ev.item || ''), href = ev.itemHref || 'Inventory.dc.html';
+      return { day: '2026-10-05', time: String(ev.when || '').replace('Today, ', '') || '00:00', sec: String(new Date(ev.at || 0).getSeconds()).padStart(2, '0'), who: U[ev.who] ? ev.who : 'Chetan', action: ev.action, cat, icon: IC[ICMAP[cat]] || IC.status, ent, item: ev.item, mono, href,
+        sub: ev.note || 'Recorded on this prototype', prev: ev.from || '—', next: ev.to || '—', src: ev.source || 'Web', note: ev.note || '',
+        diff: [[ev.action === 'Moved' ? 'Location' : ev.action === 'Settings changed' ? 'Setting' : 'Value', ev.from || '—', ev.to || '—']], rel: [[ent, ev.item, href, mono]] };
+    });
+    E.unshift.apply(E, fromStore);
+    const DAYS = { '2026-10-05': ['Today · 5 Oct', '05 Oct 2026'], '2026-10-03': ['Sat 3 Oct', '03 Oct 2026'], '2026-10-01': ['Thu 1 Oct', '01 Oct 2026'], '2026-09-30': ['Wed 30 Sep', '30 Sep 2026'], '2026-09-29': ['Tue 29 Sep', '29 Sep 2026'], '2026-09-28': ['Mon 28 Sep', '28 Sep 2026'], '2026-09-27': ['Sun 27 Sep', '27 Sep 2026'], '2026-09-25': ['Fri 25 Sep', '25 Sep 2026'], '2026-09-22': ['Tue 22 Sep', '22 Sep 2026'], '2026-09-18': ['Fri 18 Sep', '18 Sep 2026'] };
+    E.forEach((e, i) => { e.id = 'EVT-' + e.day.replace(/-/g, '') + '-' + e.time.replace(':', '') + e.sec; e.idx = i; });
+
+    const CATS = [['all', 'All'], ['recv', 'Received'], ['cfg', 'Configured'], ['simip', 'SIM/IP'], ['dep', 'Deployed'], ['status', 'Status changes'], ['corr', 'Corrections'], ['admin', 'Admin']];
+    const cats = CATS.map(([id, label]) => ({ label, n: id === 'all' ? E.length : E.filter(e => e.cat === id).length, pressed: S.cat === id ? 'true' : 'false', cls: 'chip' + (S.cat === id ? ' on' : ''), pick: () => this.setState({ cat: id }) }));
+
+    const q = (S.q || '').trim().toLowerCase();
+    const list = E.filter(e => (S.cat === 'all' || e.cat === S.cat) && (S.user === 'all' || e.who === S.user) && (S.ent === 'all' || e.ent === S.ent) && (!S.from || e.day >= S.from) && (!S.to || e.day <= S.to) && (!q || [e.item, e.sub, e.action, e.who, e.prev, e.next, e.ent].join(' ').toLowerCase().indexOf(q) >= 0));
+
+    const order = [];
+    list.forEach(e => { if (order.indexOf(e.day) < 0) order.push(e.day); });
+    const groups = order.map(day => {
+      const rows = list.filter(e => e.day === day).map(e => {
+        const u = U[e.who];
+        return { time: e.time, who: e.who, ini: u.ini, bg: u.bg, role: u.role, action: e.action, icon: e.icon, item: e.item, mc: e.mono ? 'mono' : '', href: e.href, sub: e.sub, prev: e.prev, next: e.next, src: e.src,
+          trCls: 'clk' + (S.sel === e.idx ? ' sel' : ''), aria: 'View details: ' + e.action + ', ' + e.item, open: () => this.setState({ sel: e.idx }) };
+      });
+      return { label: DAYS[day][0], n: rows.length + (rows.length === 1 ? ' event' : ' events'), rows };
+    });
+
+    const isFiltered = S.cat !== 'all' || S.user !== 'all' || S.ent !== 'all' || !!q || S.from !== '2026-09-01' || S.to !== '2026-10-05';
+    const e = S.sel === null ? null : E[S.sel];
+    let d = { id: '', action: '', icon: '', item: '', mc: '', href: 'AuditLog.dc.html', sub: '', prev: '', next: '', who: '', ini: '', bg: '#E3E7EC', role: '', src: '', ent: '', when: '', session: '', diff: [], rel: [], hasNote: false, note: '' };
+    if (e) {
+      const u = U[e.who];
+      d = { id: e.id, action: e.action, icon: e.icon, item: e.item, mc: e.mono ? 'mono' : '', href: e.href, sub: e.sub, prev: e.prev, next: e.next, who: e.who, ini: u.ini, bg: u.bg, role: u.role, src: e.src, ent: e.ent,
+        when: DAYS[e.day][1] + ' · ' + e.time + ':' + e.sec + ' GST', session: '[session id] · ' + (e.src === 'Mobile' ? 'MRD mobile app' : e.src === 'CSV import' ? 'Import job · web' : 'Web browser'),
+        diff: e.diff.map(([field, before, after]) => ({ field, before, after })),
+        rel: e.rel.map(([kind, label, href, m]) => ({ kind, label, href, mc: m ? 'mono' : '' })),
+        hasNote: !!e.note, note: e.note || '' };
+    }
+    const exV = this.exportVals({
+      title: 'Export audit log', desc: 'A CSV of the ' + list.length + ' events matching the current filters, newest first.',
+      file: 'mrd-audit-log-' + new Date().toISOString().slice(0, 10) + '.csv', item: 'Audit log (' + list.length + ' events)', href: 'AuditLog.dc.html',
+      cols: [['Date', e => e.day], ['Time', e => e.time + ':' + e.sec], ['User', e => e.who], ['Role', e => U[e.who].role], ['Action', e => e.action], ['Entity', e => e.ent], ['Item', e => e.item], ['Before', e => e.prev], ['After', e => e.next], ['Source', e => e.src], ['Note', e => e.note || ''], ['Event ID', e => e.id]],
+      rows: list, doneState: msg => ({ toast: msg + '. The export is recorded in the audit log.' })
+    });
+    return Object.assign(exV, {
+      totalN: E.length, retention: (ST0.settings && ST0.settings.retention) || '7 years',
+      cats, groups, summary: list.length + (list.length === 1 ? ' event' : ' events') + ' · ' + groups.length + (groups.length === 1 ? ' day' : ' days'),
+      hasRows: list.length > 0, noRows: list.length === 0, shown: list.length, isFiltered,
+      q: S.q, user: S.user, ent: S.ent, from: S.from, to: S.to,
+      onQ: (ev) => this.setState({ q: ev.target.value }),
+      onUser: (ev) => this.setState({ user: ev.target.value }),
+      onEnt: (ev) => this.setState({ ent: ev.target.value }),
+      onFrom: (ev) => this.setState({ from: ev.target.value }),
+      onTo: (ev) => this.setState({ to: ev.target.value }),
+      reset: () => this.setState({ cat: 'all', user: 'all', ent: 'all', q: '', from: '2026-09-01', to: '2026-10-05' }),
+      hasSel: !!e, d, close: () => this.setState({ sel: null }),
+      hasToast: !!S.toast, toast: S.toast, hideToast: () => this.setState({ toast: '' }),
+      exportCsv: exV.openExport
+    });
+  }
+}
+</script>
+</body>
+</html>

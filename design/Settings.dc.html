@@ -1,0 +1,1008 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Settings · MRD Inventory</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F6F8;color:#0E1726;font-family:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#0B7A6B;text-decoration:none}a:hover{color:#075C51}
+h1,h2,h3,h4,p{margin:0}
+.mono{font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;letter-spacing:-.01em}
+.muted{color:#5E6B7D}
+.side{flex:0 0 248px;background:#0C1424;padding:18px 12px 16px;display:flex;flex-direction:column;gap:1px}
+.nav{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:8px;color:#B3BDCB;font-size:13.5px}
+.nav:hover{background:#152036;color:#fff}
+.nav.on{background:#1C2A42;color:#fff;box-shadow:inset 2px 0 0 #2BC4A8}
+.nav svg{flex:0 0 16px;width:16px;height:16px}
+.nav .ct{margin-left:auto;font-size:11px;font-weight:600;background:#2BC4A8;color:#04211C;border-radius:999px;padding:1px 7px}
+.sec{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#7F8CA0;padding:16px 10px 6px;font-weight:500}
+.mtop{display:none}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 32px;background:#fff;border-bottom:1px solid #E3E7EC}
+.srch{flex:1 1 320px;max-width:560px;display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border:1px solid #DCE1E8;border-radius:10px;background:#F8FAFB;color:#5E6B7D;font-size:13.5px}
+.srch:hover{border-color:#B9C2CE;color:#3B4758}
+.kbd{margin-left:auto;font-family:'Geist Mono',monospace;font-size:11px;border:1px solid #DCE1E8;border-radius:5px;padding:1px 6px;background:#fff;color:#5E6B7D}
+.main{padding:28px 32px 48px;max-width:1400px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+.card{background:#fff;border:1px solid #E3E7EC;border-radius:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 14px;border-radius:9px;border:1px solid #D5DBE3;background:#fff;color:#1B2638;font:inherit;font-size:13.5px;font-weight:500;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#F4F6F8;color:#0E1726}
+.btn.p{background:#0B7A6B;border-color:#0B7A6B;color:#fff}.btn.p:hover{background:#08695C;color:#fff}
+.btn.sm{height:32px;padding:0 10px;font-size:12.5px;border-radius:8px}
+.btn.ic{width:40px;padding:0}
+.btn svg{width:16px;height:16px}
+.b{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;background:#EEF1F5;color:#3E4A5C}
+.b::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.s-unconf{background:#EEF1F5;color:#3E4A5C}.s-prep{background:#FFF3DC;color:#8A4B00}.s-ready{background:#E6EEFF;color:#1D4FB8}.s-reserved{background:#F0EAFE;color:#5B32B4}.s-deployed{background:#E1F4EC;color:#0A6648}.s-stock{background:#E3F2F6;color:#0E5E73}.s-maint{background:#FFEDE3;color:#9A3D0B}.s-damaged{background:#FDEBEA;color:#A3201F}.s-transit{background:#E9EDFC;color:#3346A8}.s-returned{background:#F1EEE8;color:#5E554A}.s-retired{background:#EFF0F2;color:#646C79}
+.g-insp{background:#EEF1F5;color:#3E4A5C}.g-bms{background:#E3F2F6;color:#0E5E73}.g-poc{background:#F0EAFE;color:#5B32B4}.g-study{background:#FFF3DC;color:#8A4B00}.g-cpend{background:#E6EEFF;color:#1D4FB8}.g-contract{background:#E1F4EC;color:#0A6648}.g-ops{background:#0B7A6B;color:#fff}.g-done{background:#EFF0F2;color:#646C79}.g-hold{background:#FDEBEA;color:#A3201F}
+.t{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:6px;font-size:11.5px;font-weight:600;letter-spacing:.02em;border:1px solid}
+.t-poc{color:#5B32B4;border-color:#D7C8FA;background:#FAF7FF}.t-con{color:#0A6648;border-color:#BFE3D3;background:#F4FBF8}.t-rep{color:#8A4B00;border-color:#F3D9A6;background:#FFFBF2}.t-add{color:#1D4FB8;border-color:#C8D8FA;background:#F6F9FF}
+.tw{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-weight:500;color:#5E6B7D;font-size:12px;padding:10px 14px;border-bottom:1px solid #E3E7EC;background:#F8FAFB;white-space:nowrap}
+.tbl td{padding:11px 14px;border-bottom:1px solid #EEF1F4;white-space:nowrap;vertical-align:middle}
+.tbl tr:hover td{background:#F8FAFB}
+.tbl tr:last-child td{border-bottom:0}
+.ov{font-size:12px;font-weight:500;color:#5E6B7D;text-transform:uppercase;letter-spacing:.06em}
+.kpi{padding:16px 18px;display:flex;flex-direction:column;gap:6px;color:#0E1726}
+.kpi:hover{border-color:#B9C2CE;color:#0E1726}
+.kpi .n{font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
+.seg{display:flex;gap:2px;height:8px;border-radius:4px;overflow:hidden}
+.seg span{display:block;height:100%}
+.row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-top:1px solid #EEF1F4;color:#0E1726}
+.row:hover{background:#F8FAFB;color:#0E1726}
+.chip{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;border:0;background:transparent;font:inherit;font-size:13px;color:#3B4758;cursor:pointer}
+.chip.on{background:#fff;color:#0E1726;box-shadow:0 1px 2px rgba(14,23,38,.12)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lbl{display:block;font-size:12.5px;font-weight:500;color:#3B4758;margin-bottom:6px}
+.fld{width:100%;height:40px;border:1px solid #D5DBE3;border-radius:9px;background:#fff;padding:0 12px;font:inherit;font-size:13.5px;color:#0E1726}
+.fld:focus{outline:2px solid #0B7A6B;outline-offset:1px}
+.fld.mono{font-family:'Geist Mono',ui-monospace,monospace;font-size:13px}
+.hint{font-size:12px;color:#5E6B7D;margin-top:6px}
+.sside{flex:0 0 236px;max-width:236px}
+.snav{display:flex;flex-direction:column;gap:2px;padding:10px}
+.sbtn{display:flex;align-items:center;gap:8px;min-height:34px;padding:0 10px;border-radius:8px;border:0;background:transparent;font:inherit;font-size:13.5px;color:#3B4758;cursor:pointer;text-align:left;white-space:nowrap}
+.sbtn:hover{background:#F4F6F8;color:#0E1726}
+.sbtn.on{background:#E7F3F0;color:#075C51;font-weight:500}
+.sbtn.in{padding-left:24px}
+.sgrp{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#5E6B7D;padding:12px 10px 4px;font-weight:500}
+.sh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;padding:18px 18px 14px}
+.sh h2{font-size:16px;font-weight:600}
+.sh p{font-size:13px;color:#5E6B7D;margin-top:2px;max-width:620px}
+.ico{width:32px;height:32px;border-radius:8px;background:#F1F4F7;color:#3B4758;display:inline-flex;align-items:center;justify-content:center;flex:0 0 32px}
+.ico svg{width:17px;height:17px}
+.sw{position:relative;width:36px;height:20px;border-radius:999px;border:0;background:#B9C2CE;cursor:pointer;flex:0 0 36px;padding:0}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(14,23,38,.25)}
+.sw.on{background:#0B7A6B}.sw.on::after{left:18px}
+.lrow{display:flex;align-items:center;gap:12px;padding:10px 18px;border-top:1px solid #EEF1F4;font-size:13.5px}
+.lrow:hover{background:#F8FAFB}
+.hdl{color:#8A96A8;cursor:grab;flex:0 0 16px}
+.rc{display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid #D5DBE3;border-radius:10px;background:#fff;text-align:left;font:inherit;color:#0E1726;cursor:pointer;width:100%}
+.rc.on{border-color:#0B7A6B;box-shadow:0 0 0 1px #0B7A6B;background:#F4FBF8}
+.dot{width:16px;height:16px;border-radius:50%;border:1.5px solid #8A96A8;flex:0 0 16px;margin-top:2px;display:flex;align-items:center;justify-content:center}
+.rc.on .dot{border-color:#0B7A6B}.rc.on .dot::after{content:"";width:8px;height:8px;border-radius:50%;background:#0B7A6B}
+.icp{width:40px;height:40px;border-radius:9px;border:1px solid #D5DBE3;background:#fff;color:#3B4758;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.icp.on{border-color:#0B7A6B;box-shadow:0 0 0 1px #0B7A6B;color:#0B7A6B;background:#F4FBF8}
+.icp svg{width:18px;height:18px}
+.tok{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 8px;border-radius:6px;background:#F1F4F7;font-size:12px;color:#3B4758}
+.s-recv{background:#EAF4FB;color:#1F5F86}
+.danger{background:#B42318;border-color:#B42318;color:#fff}.danger:hover{background:#951C13;color:#fff}
+@media (max-width:900px){.sside{flex:1 1 100%;max-width:none}.snav{flex-direction:row;overflow-x:auto;padding:6px}.sgrp{display:none}.sbtn.in{padding-left:10px}}
+@media (max-width:900px){.side{display:none}.mtop{display:flex}.main{padding:20px 16px 40px}.top{padding:12px 16px}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh; background: #F4F6F8">
+<nav class="side" aria-label="Primary">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 2px 8px 14px; color: #fff">
+<span style="width: 32px; height: 32px; border-radius: 9px; background: #0B7A6B; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4a8 8 0 1 0 4 11.5A6.5 6.5 0 0 1 16 4z"></path><path d="M6 18l2.5-2.5"></path></svg></span>
+<span style="display: flex; flex-direction: column; line-height: 1.15"><span style="font-weight: 600; font-size: 14px">Moonrock R&amp;D</span><span style="font-size: 11.5px; color: #8D99AC">Inventory × Exergio</span></span>
+</a>
+<a class="nav" href="Main.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>Dashboard</a>
+<div class="sec">Inventory</div>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"></path><path d="M3 8v8l9 5 9-5V8"></path><path d="M12 13v8"></path></svg>All inventory</a>
+<a class="nav" href="Products.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg>Products</a>
+<a class="nav" href="Batches.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l10 5-10 5L2 7l10-5z"></path><path d="M2 12l10 5 10-5"></path><path d="M2 17l10 5 10-5"></path></svg>Batches</a>
+<a class="nav" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive stock</a>
+<div class="sec">Devices</div>
+<a class="nav" href="DevicePrep.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg>Device preparation<span class="ct">15</span></a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="18" height="7" rx="2"></rect><path d="M7 16.5h.01M11 16.5h.01"></path><path d="M17 13V5"></path><path d="M14 7.5a4 4 0 0 1 6 0"></path></svg>Teltonika</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h11a3 3 0 1 0-3-3"></path><path d="M3 12h16a3 3 0 1 1-3 3"></path><path d="M3 16h7"></path></svg>CO₂ sensors</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"></circle><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7M5.6 5.6a9 9 0 0 0 0 12.8M18.4 5.6a9 9 0 0 1 0 12.8"></path></svg>LoRaWAN gateways</a>
+<a class="nav" href="SimInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"></path><rect x="8.5" y="11" width="7" height="6" rx="1"></rect></svg>SIM cards</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"></rect><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"></path></svg>Other equipment</a>
+<div class="sec">Facilities &amp; projects</div>
+<a class="nav" href="Facilities.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"></rect><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1"></path></svg>Facilities</a>
+<a class="nav" href="PocManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6L4.5 18.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3"></path><path d="M7 15h10"></path></svg>POC projects</a>
+<a class="nav" href="ContractManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path><path d="M9 13h6M9 17h4"></path></svg>Contracts</a>
+<div class="sec">Deployments</div>
+<a class="nav" href="Deployments.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3z"></path><path d="M14 10h4l3 3v3h-7"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>Deployments</a>
+<a class="nav" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>New deployment</a>
+<div class="sec">Insights &amp; admin</div>
+<a class="nav" href="Reports.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M10 20V5M16 20v-6M21 20H3"></path></svg>Reports</a>
+<a class="nav" href="AuditLog.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l3 2"></path></svg>Audit log</a>
+<a class="nav" href="Users.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20a6.5 6.5 0 0 1 13 0"></path><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"></path></svg>Users &amp; roles</a>
+<a class="nav on" href="Settings.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Settings</a>
+<div style="margin-top: auto; padding: 16px 8px 0; display: flex; align-items: center; gap: 10px; border-top: 1px solid #1C2A42">
+<span style="width: 32px; height: 32px; border-radius: 50%; background: #2BC4A8; color: #04211C; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600">CH</span>
+<span style="display: flex; flex-direction: column; line-height: 1.2"><span style="color: #fff; font-size: 13px; font-weight: 500">Chetan</span><span style="color: #8D99AC; font-size: 11.5px">Admin · MRD Office</span></span>
+</div>
+</nav>
+
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+<div class="mtop" style="align-items: center; justify-content: space-between; padding: 12px 16px; background: #0C1424; color: #fff">
+<span style="font-weight: 600">Moonrock R&amp;D</span>
+<button class="btn sm" aria-label="Open menu" aria-expanded="{{shell.menuExp}}" onClick="{{shell.toggleMenu}}" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
+</div>
+<header class="top">
+<a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
+<span style="flex: 1"></span>
+<span class="b s-prep" title="All records shown are sample data">Sample data</span>
+<span class="b {{shell.syncCls}}" title="{{shell.syncTip}}">{{shell.syncLabel}}</span>
+<a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
+<a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
+<div style="position: relative; z-index: {{shell.bellZ}}">
+<button class="btn ic" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="{{shell.bellExp}}" onClick="{{shell.toggleBell}}" style="position: relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg><sc-if value="{{shell.hasUnread}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #DC3B3A; color: #fff; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #fff">{{shell.unread}}</span></sc-if></button>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="Notifications" style="position: absolute; right: 0; top: calc(100% + 8px); z-index: 41; width: 360px; max-width: calc(100vw - 32px); background: #fff; border: 1px solid #DCE1E8; border-radius: 12px; box-shadow: 0 16px 40px rgba(14,23,38,.18); overflow: hidden; text-align: left">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #EEF1F4"><span style="font-weight: 600; font-size: 14px; color: #0E1726">Notifications</span><button onClick="{{shell.markRead}}" style="border: 0; background: none; padding: 4px; font: inherit; font-size: 12.5px; color: #0B7A6B; cursor: pointer">Mark all as read</button></div>
+<div style="max-height: 380px; overflow-y: auto">
+<sc-for list="{{shell.notes}}" as="n" hint-placeholder-count="4">
+<a href="{{n.href}}" style="display: flex; gap: 10px; padding: 11px 14px; border-bottom: 1px solid #F1F4F7; color: #0E1726; background: {{n.bg}}">
+<span style="width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: 0 0 8px; background: {{n.dot}}"></span>
+<span style="flex: 1; min-width: 0; font-size: 13px; line-height: 1.4"><span style="display: block">{{n.text}}</span><span style="display: block; font-size: 12px; color: #5E6B7D">{{n.when}}</span></span>
+</a>
+</sc-for>
+</div>
+<a href="AuditLog.dc.html" style="display: block; padding: 10px 14px; font-size: 13px; font-weight: 500; text-align: center; border-top: 1px solid #EEF1F4">Open audit log</a>
+</div>
+</sc-if>
+</div>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}"><button aria-label="Close notifications" onClick="{{shell.closeAll}}" style="position: fixed; inset: 0; z-index: 30; background: transparent; border: 0; padding: 0; cursor: default"></button></sc-if>
+</header>
+
+<main class="main">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<nav aria-label="Breadcrumb" style="font-size: 13px; display: flex; gap: 6px; flex-wrap: wrap; color: #5E6B7D"><a href="Main.dc.html" style="color: #5E6B7D">Dashboard</a><span aria-hidden="true">/</span><span>Insights &amp; admin</span><span aria-hidden="true">/</span><span style="color: #0E1726" aria-current="page">Settings</span><span aria-hidden="true">/</span><span style="color: #0E1726">{{secLabel}}</span></nav>
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap">
+<div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap"><h1 style="font-size: 26px; font-weight: 600; letter-spacing: -.02em">Settings</h1><span class="t" style="color: #3B4758; border-color: #D5DBE3; background: #F8FAFB; gap: 5px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>Admin only</span></div>
+<p class="muted" style="font-size: 14px">The catalogue, locations, statuses and identifiers every other screen uses. Nothing here is hard-coded.</p>
+</div>
+<a href="AuditLog.dc.html" style="display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px; border-radius: 9px; background: #EEF1F5; color: #3B4758; font-size: 12.5px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l3 2"></path></svg>All changes here are logged to the audit log →</a>
+</div>
+</div>
+
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 10px; background: #F4FBF8; border: 1px solid #BFE3D3; color: #0A6648; font-size: 13.5px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8 12l3 3 5-6"></path></svg>
+<span style="flex: 1">{{toast}}</span>
+<button class="btn sm" onClick="{{hideToast}}" style="background: transparent; border-color: #BFE3D3; color: #0A6648">Dismiss</button>
+</div>
+</sc-if>
+
+<div style="display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap">
+<aside class="card sside">
+<nav class="snav" aria-label="Settings sections">
+<sc-for list="{{snav}}" as="n" hint-placeholder-count="10">
+<sc-if value="{{n.grp}}" hint-placeholder-val="{{ false }}"><span class="sgrp">{{n.label}}</span></sc-if>
+<sc-if value="{{n.btn}}" hint-placeholder-val="{{ true }}"><button class="{{n.cls}}" aria-current="{{n.cur}}" onClick="{{n.pick}}">{{n.label}}</button></sc-if>
+</sc-for>
+</nav>
+</aside>
+
+<div style="flex: 1 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+
+<!-- GENERAL -->
+<sc-if value="{{sGeneral}}" hint-placeholder-val="{{ false }}">
+<section class="card">
+<div class="sh"><div><h2>General</h2><p>Organisation defaults used for receiving, dates and record retention.</p></div></div>
+<div style="padding: 0 18px 18px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px">
+<div><label class="lbl" for="g1">Organisation</label><input id="g1" class="fld" value="{{gen.org}}" onChange="{{gen.onOrg}}"></div>
+<div><label class="lbl" for="g2">Partner programme</label><input id="g2" class="fld" value="{{gen.partner}}" onChange="{{gen.onPartner}}"></div>
+<div><label class="lbl" for="g3">Default receiving location</label><select id="g3" class="fld" value="{{gen.loc}}" onChange="{{gen.onLoc}}"><sc-for list="{{gen.locOpts}}" as="o" hint-placeholder-count="2"><option value="{{o.v}}">{{o.v}}</option></sc-for></select><p class="hint">New batches land here unless changed on the receive form.</p></div>
+<div><label class="lbl" for="g4">Time zone</label><select id="g4" class="fld" value="{{gen.tz}}" onChange="{{gen.onTz}}"><option value="Asia/Muscat · GST (UTC+4)">Asia/Muscat · GST (UTC+4)</option><option value="Asia/Qatar · AST (UTC+3)">Asia/Qatar · AST (UTC+3)</option></select></div>
+<div><label class="lbl" for="g5">Date format</label><select id="g5" class="fld" value="{{gen.datefmt}}" onChange="{{gen.onDatefmt}}"><option value="05 Oct 2026">05 Oct 2026</option><option value="2026-10-05">2026-10-05</option><option value="05/10/2026">05/10/2026</option></select></div>
+<div><label class="lbl" for="g6">Audit retention</label><select id="g6" class="fld" value="{{gen.retention}}" onChange="{{gen.onRetention}}"><option value="7 years">7 years</option><option value="5 years">5 years</option><option value="10 years">10 years</option></select><p class="hint">Audit records are immutable for the whole period.</p></div>
+</div>
+<sc-if value="{{gen.hasErr}}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin: 0 18px 12px; font-size: 13px; color: #A3201F">{{gen.err}}</p></sc-if>
+<div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; padding: 14px 18px; border-top: 1px solid #EEF1F4; flex-wrap: wrap"><span class="muted" style="font-size: 12px; flex: 1 1 200px">{{gen.status}}</span><sc-if value="{{gen.dirty}}" hint-placeholder-val="{{ false }}"><button class="btn" onClick="{{gen.discard}}">Discard</button></sc-if><button class="btn p" onClick="{{gen.save}}">Save changes</button></div>
+</section>
+<section class="card">
+<div class="sh"><div><h2>Prototype data</h2><p>Changes you make on any screen of this prototype are saved in this browser and survive reloads. They are not shared with other people.</p></div><button class="btn danger" onClick="{{askReset}}">Reset sample data</button></div>
+</section>
+</sc-if>
+
+<!-- CATEGORIES -->
+<sc-if value="{{sCat}}" hint-placeholder-val="{{ true }}">
+<section class="card">
+<div class="sh">
+<div><h2>Product categories</h2><p>Categories set the defaults new products inherit: how units are tracked and whether they must be configured before they can deploy.</p></div>
+<button class="btn p" onClick="{{openAdd}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add category</button>
+</div>
+<div class="tw">
+<table class="tbl">
+<thead><tr><th>Category</th><th>Products</th><th>Tracking default</th><th>Requires config</th><th>Custom fields</th><th>ID code</th><th><span class="sr">Actions</span></th></tr></thead>
+<tbody>
+<sc-for list="{{cats}}" as="c" hint-placeholder-count="8">
+<tr>
+<td><span style="display: flex; align-items: center; gap: 12px"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{c.icon}}"></path></svg></span><span style="line-height: 1.3"><span style="display: flex; align-items: center; gap: 8px; font-weight: 500; color: {{c.color}}">{{c.name}}<sc-if value="{{c.arch}}" hint-placeholder-val="{{ false }}"><span class="b s-retired">Archived</span></sc-if></span><span class="muted" style="font-size: 12px">{{c.desc}}</span></span></span></td>
+<td><a href="Products.dc.html">{{c.products}}</a></td>
+<td>{{c.track}}</td>
+<td><span class="b {{c.cfgCls}}">{{c.cfg}}</span></td>
+<td class="muted">{{c.fields}}</td>
+<td class="mono">{{c.code}}</td>
+<td style="text-align: right"><span style="display: inline-flex; gap: 6px"><button class="btn sm" onClick="{{c.edit}}" aria-label="{{c.editAria}}">Edit</button><sc-if value="{{c.live}}" hint-placeholder-val="{{ true }}"><button class="btn sm" onClick="{{c.archive}}" aria-label="{{c.archAria}}">Archive</button></sc-if><sc-if value="{{c.arch}}" hint-placeholder-val="{{ false }}"><button class="btn sm" onClick="{{c.restore}}">Restore</button></sc-if></span></td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card">
+<div class="sh">
+<div><h2>Custom fields · Teltonika Devices</h2><p>Captured when units are received or prepared. Unique fields are checked across all inventory and are searchable from ⌘K.</p></div>
+<button class="btn sm" onClick="{{goFields}}">All custom fields</button>
+</div>
+<div class="tw">
+<table class="tbl">
+<thead><tr><th>Field</th><th>Type</th><th>Captured at</th><th>Required</th><th>Unique</th><th>Example</th></tr></thead>
+<tbody>
+<sc-for list="{{telFields}}" as="f" hint-placeholder-count="7">
+<tr><td style="font-weight: 500"><span style="display: inline-flex; align-items: center; gap: 6px">{{f.name}}<sc-if value="{{f.sys}}" hint-placeholder-val="{{ false }}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="System field"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></sc-if></span></td><td class="muted">{{f.type}}</td><td class="muted">{{f.at}}</td><td>{{f.req}}</td><td>{{f.uniq}}</td><td class="mono muted">{{f.ex}}</td></tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+</section>
+</sc-if>
+
+<!-- BRANDS -->
+<sc-if value="{{sBrands}}" hint-placeholder-val="{{ false }}">
+<section class="card">
+<div class="sh"><div><h2>Brands</h2><p>Manufacturers and carriers. A brand can span several categories.</p></div><button class="btn p" onClick="{{openBrand}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add brand</button></div>
+<div style="padding: 0 18px 18px; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px">
+<sc-for list="{{brands}}" as="b" hint-placeholder-count="8">
+<div style="border: 1px solid #E3E7EC; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; align-items: center; justify-content: space-between"><span style="font-weight: 600">{{b.name}}</span><span class="muted" style="font-size: 12px">{{b.n}}</span></span>
+<span class="muted" style="font-size: 12.5px">{{b.cats}}</span>
+</div>
+</sc-for>
+</div>
+</section>
+</sc-if>
+
+<!-- CUSTOM FIELDS -->
+<sc-if value="{{sFields}}" hint-placeholder-val="{{ false }}">
+<section class="card">
+<div class="sh"><div><h2>Custom fields</h2><p>Extra attributes per category. Fields marked unique are validated on receive and searchable everywhere.</p></div><button class="btn p" onClick="{{openField}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add field</button></div>
+<div class="tw">
+<table class="tbl">
+<thead><tr><th>Field</th><th>Category</th><th>Type</th><th>Required</th><th>Unique</th></tr></thead>
+<tbody>
+<sc-for list="{{allFields}}" as="f" hint-placeholder-count="10"><tr><td style="font-weight: 500">{{f.name}}</td><td>{{f.cat}}</td><td class="muted">{{f.type}}</td><td>{{f.req}}</td><td>{{f.uniq}}</td></tr></sc-for>
+</tbody>
+</table>
+</div>
+</section>
+</sc-if>
+
+<!-- LOCATIONS -->
+<sc-if value="{{sLoc}}" hint-placeholder-val="{{ false }}">
+<section class="card">
+<div class="sh"><div><h2>Locations</h2><p>Where an item can be. MRD Office is the default receiving location; facilities are added automatically when a facility is created.</p></div><button class="btn p" onClick="{{openLoc}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add location</button></div>
+<div class="lrow" style="background: #F8FAFB">
+<span class="ico" style="background: #E7F3F0; color: #0B7A6B"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="1.5"></rect><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1"></path></svg></span>
+<span style="flex: 1; min-width: 0"><span style="display: flex; align-items: center; gap: 8px; font-weight: 600">{{office.name}} <span class="t t-con">Default</span></span><span class="muted" style="font-size: 12px">{{office.desc}} · {{office.count}} sub-locations</span></span>
+<span style="font-weight: 600">655 <span class="muted" style="font-weight: 400; font-size: 12px">items</span></span>
+<button class="btn sm" onClick="{{editOffice}}" aria-label="Edit {{office.name}}">Edit</button>
+</div>
+<div style="margin-left: 34px; border-left: 1px solid #E3E7EC">
+<sc-for list="{{subLocs}}" as="l" hint-placeholder-count="14">
+<div class="lrow" style="padding-left: 20px">
+<span aria-hidden="true" style="width: 12px; height: 1px; background: #D5DBE3; margin-left: -20px"></span>
+<span style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; color: {{l.color}}"><span style="font-weight: 500">{{l.name}}</span><span class="muted" style="font-size: 12px">{{l.kind}}</span><sc-if value="{{l.arch}}" hint-placeholder-val="{{ false }}"><span class="b s-retired">Archived</span></sc-if></span>
+<a href="Inventory.dc.html" style="font-size: 13px; color: {{l.color}}">{{l.items}} items</a>
+<sc-if value="{{l.live}}" hint-placeholder-val="{{ true }}"><button class="btn sm" onClick="{{l.archive}}" aria-label="{{l.aria}}">Archive</button></sc-if>
+<sc-if value="{{l.arch}}" hint-placeholder-val="{{ false }}"><button class="btn sm" onClick="{{l.restore}}">Restore</button></sc-if>
+</div>
+</sc-for>
+</div>
+</section>
+<section class="card">
+<div class="sh"><div><h2>Logical locations</h2><p>States of movement rather than places. Locked ones are used by receiving and deployment flows.</p></div></div>
+<sc-for list="{{logLocs}}" as="l" hint-placeholder-count="4">
+<div class="lrow">
+<span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{l.icon}}"></path></svg></span>
+<span style="flex: 1; min-width: 0"><span style="display: flex; align-items: center; gap: 6px; font-weight: 500">{{l.name}}<sc-if value="{{l.sys}}" hint-placeholder-val="{{ true }}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="System location, cannot be archived"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></sc-if></span><span class="muted" style="font-size: 12px">{{l.desc}}</span></span>
+<a href="Inventory.dc.html" style="font-size: 13px">{{l.items}} items</a>
+<sc-if value="{{l.canArch}}" hint-placeholder-val="{{ false }}"><button class="btn sm" onClick="{{l.archive}}" aria-label="{{l.aria}}">Archive</button></sc-if>
+</div>
+</sc-for>
+</section>
+<section class="card">
+<div class="sh"><div><h2>Facility locations</h2><p>Added automatically from Facilities. Rename or close them on the facility itself.</p></div><a class="btn sm" href="Facilities.dc.html">Manage facilities</a></div>
+<sc-for list="{{facLocs}}" as="f" hint-placeholder-count="5">
+<a class="lrow" href="FacilityDetail.dc.html" style="color: #0E1726"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg></span><span style="flex: 1; min-width: 0"><span style="display: block; font-weight: 500">{{f.name}}</span><span class="muted" style="font-size: 12px">{{f.sub}}</span></span><span class="b {{f.cls}}">{{f.stage}}</span><span style="min-width: 70px; text-align: right; font-size: 13px">{{f.items}} items</span></a>
+</sc-for>
+</section>
+</sc-if>
+
+<!-- STATUSES & STAGES -->
+<sc-if value="{{sStat}}" hint-placeholder-val="{{ false }}">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 16px; align-items: start">
+<section class="card">
+<div class="sh"><div><h2>Inventory statuses</h2><p>Order sets how statuses appear in filters and reports.</p></div><button class="btn sm p" onClick="{{openStatus}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add status</button></div>
+<div style="display: flex; justify-content: space-between; padding: 8px 18px; background: #F8FAFB; border-top: 1px solid #EEF1F4; font-size: 12px; color: #5E6B7D"><span>Status</span><span>Counts as available</span></div>
+<sc-for list="{{statuses}}" as="s" hint-placeholder-count="12">
+<div class="lrow" style="padding: 9px 18px">
+<svg class="hdl" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01"></path></svg>
+<span style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px"><span class="b {{s.cls}}">{{s.name}}</span><sc-if value="{{s.sys}}" hint-placeholder-val="{{ false }}"><span title="System status: can be renamed or recoloured, not removed" style="display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; color: #5E6B7D"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>System</span></sc-if></span>
+<span class="muted" style="font-size: 12px; min-width: 56px; text-align: right">{{s.items}}</span>
+<button class="{{s.swCls}}" role="switch" aria-checked="{{s.on}}" aria-label="{{s.aria}}" onClick="{{s.toggle}}"></button>
+</div>
+</sc-for>
+</section>
+<section class="card">
+<div class="sh"><div><h2>Facility stages</h2><p>The MRD × Exergio project lifecycle, in order.</p></div><button class="btn sm" onClick="{{openStage}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add stage</button></div>
+<sc-for list="{{stages}}" as="s" hint-placeholder-count="9">
+<div class="lrow" style="padding: 9px 18px">
+<svg class="hdl" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01"></path></svg>
+<span class="mono muted" style="width: 18px">{{s.n}}</span>
+<span style="flex: 1; min-width: 0"><span class="b {{s.cls}}">{{s.name}}</span></span>
+<span class="muted" style="font-size: 12px">{{s.fac}}</span>
+<span style="display: inline-flex; gap: 4px"><button class="btn sm ic" style="width: 30px; height: 30px" aria-label="{{s.upAria}}" onClick="{{s.up}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"></path></svg></button><button class="btn sm ic" style="width: 30px; height: 30px" aria-label="{{s.downAria}}" onClick="{{s.down}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button></span>
+</div>
+</sc-for>
+<p class="muted" style="font-size: 12px; padding: 12px 18px; border-top: 1px solid #EEF1F4">Drag a row or use the arrows. Reordering never changes a facility's current stage.</p>
+</section>
+</div>
+</sc-if>
+
+<!-- SUPPLIERS -->
+<sc-if value="{{sSup}}" hint-placeholder-val="{{ false }}">
+<section class="card">
+<div class="sh"><div><h2>Suppliers</h2><p>Picked when receiving a batch. Each batch keeps its supplier for traceability.</p></div><button class="btn p" onClick="{{openSup}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add supplier</button></div>
+<div class="tw">
+<table class="tbl">
+<thead><tr><th>Supplier</th><th>Supplies</th><th>Batches</th><th>Last received</th><th>Contact</th><th><span class="sr">Actions</span></th></tr></thead>
+<tbody>
+<sc-for list="{{suppliers}}" as="s" hint-placeholder-count="6"><tr><td style="font-weight: 500">{{s.name}}</td><td class="muted">{{s.cats}}</td><td><a href="Batches.dc.html">{{s.n}}</a></td><td class="muted">{{s.last}}</td><td class="muted">{{s.contact}}</td><td style="text-align: right"><button class="btn sm" onClick="{{s.edit}}" aria-label="Edit {{s.name}}">Edit</button></td></tr></sc-for>
+</tbody>
+</table>
+</div>
+</section>
+</sc-if>
+
+<!-- ID FORMATS & IP POOLS -->
+<sc-if value="{{sIds}}" hint-placeholder-val="{{ false }}">
+<section class="card">
+<div class="sh"><div><h2>ID formats</h2><p>Patterns for generated references. Existing IDs never change; a new pattern applies to the next record.</p></div></div>
+<div style="padding: 0 18px 6px; display: flex; flex-direction: column">
+<sc-for list="{{patterns}}" as="p" hint-placeholder-count="3">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; align-items: end; padding: 14px 0; border-top: 1px solid #EEF1F4">
+<div><label class="lbl" for="{{p.id}}">{{p.label}}</label><input id="{{p.id}}" class="fld mono" value="{{p.value}}" onChange="{{p.onChange}}"></div>
+<div style="display: flex; flex-direction: column; gap: 4px; padding-bottom: 2px"><span class="muted" style="font-size: 12px">Next ID preview</span><span class="mono" style="font-size: 15px; font-weight: 500">{{p.preview}}</span><span style="font-size: 12px; color: {{p.noteColor}}">{{p.note}}</span></div>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 12px 18px 16px; border-top: 1px solid #EEF1F4">
+<span class="muted" style="font-size: 12px; margin-right: 4px">Tokens</span>
+<span class="tok"><span class="mono">{CAT}</span>category code</span><span class="tok"><span class="mono">{YYYY}</span>year</span><span class="tok"><span class="mono">{YY}</span>short year</span><span class="tok"><span class="mono">{MM}</span>month</span><span class="tok"><span class="mono">{###}</span>sequence, one # per digit</span>
+<span class="muted" style="font-size: 12px">Codes: <span class="mono">TEL CO2 GW SIM NET VFD BMS CAB</span></span>
+</div>
+</section>
+<section class="card">
+<div class="sh"><div><h2>IP pools</h2><p>Static IPs handed out during Teltonika preparation. An IP is released when its router is retired.</p></div><button class="btn sm" onClick="{{openPool}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add pool</button></div>
+<div style="padding: 0 18px 18px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px">
+<sc-for list="{{pools}}" as="p" hint-placeholder-count="2">
+<div style="border: 1px solid #E3E7EC; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px"><div><div class="mono" style="font-size: 15px; font-weight: 500">{{p.cidr}}</div><div class="muted" style="font-size: 12.5px">{{p.carrier}}</div></div><span class="b s-deployed">Active</span></div>
+<div class="seg" role="img" aria-label="{{p.aria}}"><span style="width: {{p.wa}}; background: #0E8A78"></span><span style="width: {{p.wr}}; background: #8A96A8"></span><span style="width: {{p.wf}}; background: #E3E7EC"></span></div>
+<div style="display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: #3B4758"><span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 2px; background: #0E8A78"></span>Assigned <strong>{{p.a}}</strong></span><span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 2px; background: #8A96A8"></span>Reserved <strong>{{p.r}}</strong></span><span style="display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 2px; background: #E3E7EC; border: 1px solid #C9D1DC"></span>Free <strong>{{p.f}}</strong></span><span style="margin-left: auto; font-weight: 600">{{p.pct}} used</span></div>
+<dl style="margin: 0; display: grid; grid-template-columns: 90px 1fr; gap: 6px 10px; font-size: 12.5px"><dt class="muted">APN</dt><dd class="mono" style="margin: 0">{{p.apn}}</dd><dt class="muted">Reserved</dt><dd class="mono" style="margin: 0">{{p.res}}</dd><dt class="muted">Next free</dt><dd class="mono" style="margin: 0; font-weight: 500">{{p.next}}</dd></dl>
+</div>
+</sc-for>
+</div>
+</section>
+</sc-if>
+
+<!-- NOTIFICATIONS -->
+<sc-if value="{{sNotif}}" hint-placeholder-val="{{ false }}">
+<section class="card">
+<div class="sh"><div><h2>Low-stock thresholds</h2><p>Alert when available units (statuses that count as available) drop below the minimum.</p></div></div>
+<div class="tw">
+<table class="tbl">
+<thead><tr><th>Product</th><th>Scope</th><th>Available now</th><th>Minimum</th><th>State</th></tr></thead>
+<tbody>
+<sc-for list="{{thresholds}}" as="t" hint-placeholder-count="6"><tr><td style="font-weight: 500">{{t.name}}</td><td class="muted">{{t.scope}}</td><td>{{t.cur}}</td><td><label class="sr" for="{{t.id}}">{{t.minLabel}}</label><input id="{{t.id}}" class="fld" type="number" min="0" style="width: 88px; height: 34px" value="{{t.min}}" onChange="{{t.onMin}}"></td><td><span class="b {{t.cls}}">{{t.state}}</span></td></tr></sc-for>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card">
+<div class="sh"><div><h2>Notifications</h2><p>Sent by email to the roles listed. Each person can mute their own copy.</p></div></div>
+<sc-for list="{{notifs}}" as="n" hint-placeholder-count="5">
+<div class="lrow"><span style="flex: 1; min-width: 0"><span style="display: block; font-weight: 500">{{n.name}}</span><span class="muted" style="font-size: 12px">{{n.desc}}</span></span><button class="{{n.swCls}}" role="switch" aria-checked="{{n.on}}" aria-label="{{n.name}}" onClick="{{n.toggle}}"></button></div>
+</sc-for>
+</section>
+</sc-if>
+
+<p class="muted" style="font-size: 12px; display: flex; align-items: center; gap: 8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l3 2"></path></svg>Every change on this page is recorded in the <a href="AuditLog.dc.html">audit log</a> with the previous and new value. Archived items keep their history and can be restored.</p>
+</div>
+</div>
+
+<!-- Add category modal -->
+<sc-if value="{{addOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 16px">
+<div onClick="{{closeAdd}}" aria-hidden="true" style="position: absolute; inset: 0; background: rgba(14,23,38,.45)"></div>
+<div role="dialog" aria-modal="true" aria-labelledby="addt" style="position: relative; width: min(600px, 100%); max-height: 100%; overflow-y: auto; background: #fff; border-radius: 14px; box-shadow: 0 24px 48px rgba(14,23,38,.2)">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 20px 22px 0"><div><h2 id="addt" style="font-size: 18px; font-weight: 600">{{addTitle}}</h2><p class="muted" style="font-size: 13px; margin-top: 2px">Products in this category inherit these defaults. You can override them per product.</p></div><button class="btn sm ic" style="width: 32px" aria-label="Close" onClick="{{closeAdd}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<div style="padding: 18px 22px; display: flex; flex-direction: column; gap: 18px">
+<div><label class="lbl" for="cn">Name</label><input id="cn" class="fld" placeholder="e.g. Energy meters" value="{{newName}}" onChange="{{onNewName}}"></div>
+<div><span class="lbl" id="icl">Icon</span><div role="radiogroup" aria-labelledby="icl" style="display: flex; gap: 8px; flex-wrap: wrap"><sc-for list="{{iconPick}}" as="i" hint-placeholder-count="9"><button class="{{i.cls}}" role="radio" aria-checked="{{i.on}}" aria-label="{{i.label}}" onClick="{{i.pick}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{i.path}}"></path></svg></button></sc-for></div></div>
+<div><span class="lbl" id="trl">Default tracking method</span><div role="radiogroup" aria-labelledby="trl" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px"><sc-for list="{{trackOpts}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}"><span class="dot"></span><span><span style="display: block; font-weight: 500; font-size: 13.5px">{{o.label}}</span><span class="muted" style="font-size: 12px">{{o.desc}}</span></span></button></sc-for></div></div>
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid #E3E7EC; border-radius: 10px"><span style="flex: 1"><span style="display: block; font-weight: 500; font-size: 13.5px" id="rcl">Requires configuration before deployment</span><span class="muted" style="font-size: 12px">Units start as Unconfigured and appear in Device preparation.</span></span><button class="{{reqCls}}" role="switch" aria-checked="{{reqOn}}" aria-labelledby="rcl" onClick="{{toggleReq}}"></button></div>
+<div style="display: flex; flex-direction: column; gap: 8px"><span class="lbl" style="margin: 0">Custom fields</span>
+<sc-for list="{{newFields}}" as="f" hint-placeholder-count="2">
+<div style="display: flex; gap: 8px; align-items: center"><label class="sr" for="{{f.id}}">Field name</label><input id="{{f.id}}" class="fld" style="flex: 2" placeholder="{{f.ph}}" value="{{f.name}}" onChange="{{f.onName}}"><label class="sr" for="{{f.tid}}">Field type</label><select id="{{f.tid}}" class="fld" style="flex: 1" value="{{f.type}}" onChange="{{f.onType}}"><option value="Text">Text</option><option value="Number">Number</option><option value="List">List</option><option value="Date">Date</option><option value="MAC address">MAC address</option></select><button class="btn sm ic" style="width: 32px; flex: 0 0 32px" aria-label="Remove field" onClick="{{f.remove}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+</sc-for>
+<button class="btn sm" style="align-self: flex-start" onClick="{{addField}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add field</button>
+<p class="hint" style="margin: 0">Serial number and status are always included.</p>
+</div>
+</div>
+<div style="display: flex; justify-content: flex-end; gap: 10px; padding: 14px 22px; border-top: 1px solid #E3E7EC"><button class="btn" onClick="{{closeAdd}}">Cancel</button><button class="btn p" onClick="{{createCat}}">{{addCta}}</button></div>
+</div>
+</div>
+</sc-if>
+
+<!-- Add status modal -->
+<sc-if value="{{statusOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 16px">
+<div onClick="{{closeStatus}}" aria-hidden="true" style="position: absolute; inset: 0; background: rgba(14,23,38,.45)"></div>
+<div role="dialog" aria-modal="true" aria-labelledby="stt" style="position: relative; width: min(460px, 100%); background: #fff; border-radius: 14px; box-shadow: 0 24px 48px rgba(14,23,38,.2)">
+<div style="padding: 20px 22px 0"><h2 id="stt" style="font-size: 18px; font-weight: 600">Add status</h2><p class="muted" style="font-size: 13px; margin-top: 2px">Custom statuses can be archived later. System statuses cannot.</p></div>
+<div style="padding: 18px 22px; display: flex; flex-direction: column; gap: 16px">
+<div><label class="lbl" for="sn">Name</label><input id="sn" class="fld" placeholder="e.g. Awaiting RMA" value="{{stName}}" onChange="{{onStName}}"></div>
+<div><span class="lbl" id="scl">Colour</span><div role="radiogroup" aria-labelledby="scl" style="display: flex; gap: 8px; flex-wrap: wrap"><sc-for list="{{swatches}}" as="w" hint-placeholder-count="8"><button class="{{w.cls}}" role="radio" aria-checked="{{w.on}}" aria-label="{{w.label}}" onClick="{{w.pick}}" style="width: 36px; height: 36px"><span class="{{w.dot}}" style="width: 18px; height: 18px; border-radius: 50%; display: block"></span></button></sc-for></div></div>
+<div style="display: flex; align-items: center; gap: 12px"><span style="flex: 1; font-size: 13.5px" id="sal">Counts as available stock</span><button class="{{stAvCls}}" role="switch" aria-checked="{{stAvOn}}" aria-labelledby="sal" onClick="{{toggleStAv}}"></button></div>
+<div style="display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 10px; background: #F8FAFB"><span class="muted" style="font-size: 12px">Preview</span><span class="b {{stCls}}">{{stPreview}}</span></div>
+</div>
+<div style="display: flex; justify-content: flex-end; gap: 10px; padding: 14px 22px; border-top: 1px solid #E3E7EC"><button class="btn" onClick="{{closeStatus}}">Cancel</button><button class="btn p" onClick="{{createStatus}}">Add status</button></div>
+</div>
+</div>
+</sc-if>
+
+<!-- Generic add / edit form -->
+<sc-if value="{{fmOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 16px">
+<div onClick="{{closeForm}}" aria-hidden="true" style="position: absolute; inset: 0; background: rgba(14,23,38,.45)"></div>
+<div role="dialog" aria-modal="true" aria-labelledby="fmt" style="position: relative; width: min(520px, 100%); max-height: 100%; overflow-y: auto; background: #fff; border-radius: 14px; box-shadow: 0 24px 48px rgba(14,23,38,.2)">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 20px 22px 0"><div><h2 id="fmt" style="font-size: 18px; font-weight: 600">{{fm.title}}</h2><p class="muted" style="font-size: 13px; margin-top: 2px">{{fm.desc}}</p></div><button class="btn sm ic" style="width: 32px" aria-label="Close" onClick="{{closeForm}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<div style="padding: 18px 22px; display: flex; flex-direction: column; gap: 16px">
+<sc-for list="{{fm.fields}}" as="f" hint-placeholder-count="3">
+<div>
+<label class="lbl" for="{{f.id}}">{{f.label}}</label>
+<sc-if value="{{f.isText}}" hint-placeholder-val="{{ true }}"><input id="{{f.id}}" class="{{f.cls}}" type="{{f.type}}" placeholder="{{f.ph}}" value="{{f.value}}" onChange="{{f.onChange}}"></sc-if>
+<sc-if value="{{f.isSel}}" hint-placeholder-val="{{ false }}"><select id="{{f.id}}" class="fld" value="{{f.value}}" onChange="{{f.onChange}}"><sc-for list="{{f.opts}}" as="o" hint-placeholder-count="4"><option value="{{o.v}}">{{o.l}}</option></sc-for></select></sc-if>
+<sc-if value="{{f.hasHint}}" hint-placeholder-val="{{ false }}"><p class="hint">{{f.hint}}</p></sc-if>
+</div>
+</sc-for>
+<sc-if value="{{fm.hasPreview}}" hint-placeholder-val="{{ false }}"><div style="display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 10px; background: #F8FAFB"><span class="muted" style="font-size: 12px">Preview</span><span class="{{fm.previewCls}}">{{fm.preview}}</span></div></sc-if>
+<sc-if value="{{hasFormErr}}" hint-placeholder-val="{{ false }}"><p role="alert" style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #A3201F"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg>{{formErr}}</p></sc-if>
+</div>
+<div style="display: flex; justify-content: flex-end; gap: 10px; padding: 14px 22px; border-top: 1px solid #E3E7EC"><button class="btn" onClick="{{closeForm}}">Cancel</button><button class="btn p" onClick="{{submitForm}}">{{fm.cta}}</button></div>
+</div>
+</div>
+</sc-if>
+
+<!-- Confirm dialog (archive category / location) -->
+<sc-if value="{{cfOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; padding: 16px">
+<div onClick="{{cfCancel}}" aria-hidden="true" style="position: absolute; inset: 0; background: rgba(14,23,38,.45)"></div>
+<div role="alertdialog" aria-modal="true" aria-labelledby="cft" aria-describedby="cfd" style="position: relative; width: min(460px, 100%); background: #fff; border-radius: 14px; box-shadow: 0 24px 48px rgba(14,23,38,.2); padding: 22px; display: flex; flex-direction: column; gap: 14px">
+<span style="width: 40px; height: 40px; border-radius: 10px; background: {{cf.iconBg}}; color: {{cf.iconFg}}; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h18v4H3zM5 8v12h14V8M10 12h4"></path></svg></span>
+<h2 id="cft" style="font-size: 17px; font-weight: 600">{{cf.title}}</h2>
+<p id="cfd" style="font-size: 13.5px; color: #3B4758">{{cf.body}}</p>
+<p class="muted" style="font-size: 12.5px">{{cf.foot}}</p>
+<div style="display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap">
+<button class="btn" onClick="{{cfCancel}}">Cancel</button>
+<sc-if value="{{cf.blocked}}" hint-placeholder-val="{{ false }}"><a class="btn p" href="Inventory.dc.html">Move items first</a></sc-if>
+<sc-if value="{{cf.ok}}" hint-placeholder-val="{{ true }}"><button class="btn danger" onClick="{{cfConfirm}}">{{cf.cta}}</button></sc-if>
+</div>
+</div>
+</div>
+</sc-if>
+</main>
+</div>
+</div>
+<sc-if value="{{shell.menuOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 70; display: flex">
+<nav aria-label="Mobile navigation" style="width: min(300px, 85vw); height: 100%; overflow-y: auto; background: #0C1424; padding: 16px 12px; display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 8px 14px; color: #fff"><span style="font-weight: 600">Moonrock R&amp;D</span><button onClick="{{shell.closeAll}}" aria-label="Close menu" style="width: 40px; height: 40px; border: 0; border-radius: 8px; background: #1C2A42; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<a href="Main.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Dashboard</a>
+<a href="Search.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Search</a>
+<a href="Inventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">All inventory</a>
+<a href="Products.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Products</a>
+<a href="Batches.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Batches</a>
+<a href="ReceiveInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Receive stock</a>
+<a href="DevicePrep.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Device preparation</a>
+<a href="SimInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">SIM cards</a>
+<a href="Facilities.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Facilities</a>
+<a href="PocManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">POC projects</a>
+<a href="ContractManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Contracts</a>
+<a href="Deployments.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Deployments</a>
+<a href="CreateDeployment.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">New deployment</a>
+<a href="Reports.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Reports</a>
+<a href="AuditLog.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Audit log</a>
+<a href="Users.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Users &amp; roles</a>
+<a href="Settings.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Settings</a>
+</nav>
+<button aria-label="Close menu" onClick="{{shell.closeAll}}" style="flex: 1; border: 0; padding: 0; background: rgba(14,23,38,.5); cursor: default"></button>
+</div>
+</sc-if>
+<sc-if value="{{shell.blocked}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 80; display: flex; align-items: center; gap: 12px; max-width: min(560px, calc(100vw - 32px)); padding: 12px 12px 12px 16px; border-radius: 12px; background: #7A1F1E; color: #fff; font-size: 13.5px; box-shadow: 0 12px 32px rgba(14,23,38,.3)">
+<span style="flex: 1">You have view access to this canvas, so that change wasn't saved. Ask the owner for edit access to change shared data.</span>
+<button onClick="{{shell.unblock}}" style="height: 32px; padding: 0 12px; border: 1px solid rgba(255,255,255,.4); border-radius: 8px; background: transparent; color: #fff; font: inherit; font-size: 12.5px; cursor: pointer">OK</button>
+</div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+  // Prototype persistence: this screen's data survives reloads and is shared by every screen in this browser.
+  componentDidMount() {
+    this._init = JSON.parse(JSON.stringify(this.state));
+    this._onStore = e => { if (!e || !e.key || e.key === 'mrd-proto:store') this.forceUpdate(); };
+    try { window.addEventListener('storage', this._onStore); } catch (e) {}
+    this._sharedInit();
+    try { const raw = window.localStorage.getItem('mrd-proto:v1:Settings'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
+  }
+  // Shared prototype store: one record in browser storage that every screen reads and writes (key mrd-proto:store).
+  readStore() {
+    const empty = { v: 1, units: {}, added: [], deployments: [], events: [], catalog: {} };
+    try { const s = JSON.parse(window.localStorage.getItem('mrd-proto:store') || 'null'); return Object.assign(empty, s || {}); } catch (e) { return empty; }
+  }
+  writeStore(mutate) {
+    const s = this.readStore();
+    if (this._shared && this._shared.mode === 'live' && !this._shared.canEdit) { const t = JSON.parse(JSON.stringify(s)); mutate(t); const strip = o => { const c = Object.assign({}, o); delete c.ui; return JSON.stringify(c); }; if (strip(t) !== strip(s)) this.setState({ _blocked: true }); s.ui = t.ui || s.ui; try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {} this.forceUpdate(); return s; }
+    mutate(s); s.events = s.events.slice(0, 200);
+    try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {}
+    this._pushShared(s);
+    this.forceUpdate(); return s;
+  }
+  // Shared across viewers: the store is mirrored to one document in this artifact's database (mrd_prototype/store).
+  // Browser storage stays as the local cache; everyone who opens the canvas sees the same data, editors can change it.
+  _host() {
+    let w = window;
+    for (let i = 0; i < 8; i++) {
+      try { if (w.claude && typeof w.claude.use === 'function') return w.claude; } catch (e) { return null; }
+      let p = null; try { p = w.parent; } catch (e) { return null; }
+      if (!p || p === w) return null; w = p;
+    }
+    return null;
+  }
+  async _sharedInit() {
+    const host = this._host();
+    if (!host) { this._shared = { mode: 'local' }; this.forceUpdate(); return; }
+    let db = null; try { db = await host.use('db'); } catch (e) { db = null; }
+    if (!db) { this._shared = { mode: 'local' }; this.forceUpdate(); return; }
+    let canEdit = false; try { const u = await host.use('user'); canEdit = u ? !!(await u.canEdit()) : false; } catch (e) { canEdit = false; }
+    this._shared = { mode: 'live', canEdit, db };
+    try {
+      this._unsubShared = db.doc('mrd_prototype/store').onSnapshot(snap => {
+        const local = this.readStore();
+        let next = null;
+        if (snap && snap.exists) { const d = snap.data() || {}; if (typeof d.json === 'string') { try { next = JSON.parse(d.json); } catch (e) { next = null; } } }
+        if (!next) {
+          if (snap && !snap.exists) {
+            let seen = false; try { seen = !!window.localStorage.getItem('mrd-proto:shared-seen'); } catch (e) {}
+            const hasLocal = local.events.length || Object.keys(local.units).length || local.added.length;
+            if (!seen && canEdit && hasLocal) this._pushShared(local);
+            else if (seen || !canEdit) { try { window.localStorage.setItem('mrd-proto:store', JSON.stringify({ v: 1, units: {}, added: [], deployments: [], events: [], catalog: {}, ui: local.ui || {} })); } catch (e) {} this.forceUpdate(); }
+          }
+          return;
+        }
+        next.ui = local.ui || {};
+        try { window.localStorage.setItem('mrd-proto:shared-seen', '1'); } catch (e) {}
+        try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(next)); } catch (e) {}
+        this.forceUpdate();
+      }, err => { this._shared = { mode: 'local', err: err && err.code }; this.forceUpdate(); });
+    } catch (e) { this._shared = { mode: 'local' }; }
+    this.forceUpdate();
+  }
+  _pushShared(s) {
+    const sh = this._shared;
+    if (!sh || sh.mode !== 'live' || !sh.canEdit) return;
+    const out = Object.assign({}, s); delete out.ui;
+    let json = JSON.stringify(out);
+    if (json.length > 240000) { out.events = (out.events || []).slice(0, 40); json = JSON.stringify(out); }
+    sh.db.doc('mrd_prototype/store').set({ json, savedAt: Date.now() }).catch(err => { this._shared = Object.assign({}, sh, { lastErr: (err && err.code) || 'unavailable' }); this.forceUpdate(); });
+  }
+  _clearShared() {
+    const sh = this._shared;
+    if (sh && sh.mode === 'live' && sh.canEdit) { try { sh.db.doc('mrd_prototype/store').delete().catch(() => {}); } catch (e) {} }
+  }
+  syncInfo() {
+    const sh = this._shared;
+    if (!sh) return { label: 'Connecting…', cls: 's-unconf', tip: 'Connecting to the shared store', readOnly: false };
+    if (sh.mode === 'live' && sh.lastErr) return { label: 'Not saved', cls: 's-damaged', tip: 'The last change could not be saved to the shared store (' + sh.lastErr + ')', readOnly: false };
+    if (sh.mode === 'live' && sh.canEdit) return { label: 'Shared · live', cls: 's-deployed', tip: 'Changes are saved for everyone who opens this canvas', readOnly: false };
+    if (sh.mode === 'live') return { label: 'View only', cls: 's-ready', tip: 'You can see shared changes live; only people with edit access can change data', readOnly: true };
+    return { label: 'This browser only', cls: 's-prep', tip: 'The shared store is not available here, so changes stay in this browser', readOnly: false };
+  }
+  nowLabel() { const d = new Date(); return 'Today, ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  patchUnit(s, ident, patch, prevSt) {
+    const cur = s.units[ident] || {};
+    s.units[ident] = Object.assign({}, cur, patch, { st0: cur.st0 !== undefined ? cur.st0 : (prevSt || ''), upd: this.nowLabel() });
+  }
+  logEvent(s, ev) {
+    const d = new Date();
+    s.events.unshift(Object.assign({ id: 'e' + d.getTime() + Math.random().toString(36).slice(2, 6), at: d.getTime(), when: this.nowLabel(), who: 'Chetan', ini: 'CH', role: 'Admin', source: 'Web' }, ev));
+  }
+  componentWillUnmount() { try { if (this._unsubShared) this._unsubShared(); } catch (e) {} try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
+  componentDidUpdate() {
+    try { const keep = Object.assign({}, this.state); delete keep._shell; delete keep._blocked; ["toast", "addOpen", "statusOpen", "confirm", "form", "formErr", "genDraft", "genErr", "editCat"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:Settings', JSON.stringify(keep)); } catch (e) {}
+  }
+  constructor(props) {
+    super(props);
+    this.state = {
+      sec: 'categories', toast: '', addOpen: false, newName: '', icon: 'box', track: 'serial', reqCfg: true, newFields: [1, 2], fieldSeq: 3, nfVals: {}, extraCats: [], archCats: [], catEdits: {}, editCat: '', genDraft: null, genErr: '',
+      confirm: null, archLocs: [], statusOpen: false, stName: '', stColor: 's-recv', stAvail: false, extraStatuses: [],
+      avail: { 'In stock': true, 'Unconfigured': true, 'Ready for deployment': true },
+      stageOrder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+      pat: { batch: '{CAT}-{YYYY}-{###}', dev: 'MRD-{CAT}-{####}', dep: 'DEP-{####}' },
+      mins: { t1: 5, t2: 25, t3: 3, t4: 2, t5: 10, t6: 20 },
+      notif: { low: true, ready: true, dep: true, poc: true, partner: false },
+      form: null, formErr: '', extraBrands: [], extraFields: [], extraShelves: [], extraLog: [], extraStages: [], extraPools: [], extraSups: [], supEdits: {},
+      office: { name: 'MRD Office · Muscat', desc: 'Office warehouse' }
+    };
+  }
+  // Shared shell: notifications bell (fed by the shared store) and the mobile navigation drawer.
+  shellVals() {
+    const S = this.state, st = this.readStore();
+    const seen = (st.ui && st.ui.seenAt) || 0;
+    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Stage changed': 'moved the stage of', 'POC decision': 'recorded a POC decision for', 'Contract ended': 'ended the contract for', 'Issue reported': 'reported an issue on', 'Reserved': 'reserved', 'Labels printed': 'printed labels for', 'File attached': 'attached a file to', 'File removed': 'removed a file from', 'User updated': 'updated user', 'Product edited': 'edited', 'Invite resent': 'resent the invite to', 'Document uploaded': 'uploaded a document to', 'Document removed': 'removed a document from', 'Contact added': 'added a contact to', 'Contact removed': 'removed a contact from', 'Contract updated': 'updated the contract for', 'Batch updated': 'updated batch', 'Batch archived': 'archived batch', 'Batch restored': 'restored batch', 'Facility updated': 'updated facility', 'Facility restored': 'restored facility', 'Report exported': 'exported', 'Record corrected': 'corrected', 'Note added': 'added a note to', 'Settings changed': 'updated settings ·', 'User invited': 'invited', 'Role changed': 'changed the role of', 'Verified on site': 'verified on site', 'Deployment cancelled': 'cancelled', 'Deployment updated': 'updated deployment' };
+    const fromStore = st.events.slice(0, 8).map(e => ({ text: (e.who || 'Chetan') + ' ' + (VERB[e.action] || String(e.action || '').toLowerCase()) + ' ' + e.item + (e.to && e.to !== '—' && e.action !== 'Imported' ? ' → ' + e.to : ''), when: e.when, href: e.itemHref || 'AuditLog.dc.html', unread: (e.at || 0) > seen }));
+    const alerts = [
+      { text: '14 Teltonika RUT956 units are waiting for preparation', when: 'Batch TEL-2026-004', href: 'DevicePrep.dc.html', alert: true },
+      { text: 'Cat6 patch cable 1 m is below its minimum level', when: 'Low stock · 18 of 25', href: 'InventoryItem.dc.html', alert: true },
+      { text: 'Qatar Foundation: 2 CO₂ sensors scheduled to install on 08 Oct', when: 'Upcoming deployment', href: 'Deployments.dc.html', alert: true }
+    ].map(a => Object.assign(a, { unread: !seen }));
+    const all = fromStore.concat(alerts);
+    const unread = all.filter(n => n.unread).length;
+    const SY = this.syncInfo();
+    return {
+      syncLabel: SY.label, syncCls: SY.cls, syncTip: SY.tip, blocked: !!S._blocked, unblock: () => this.setState({ _blocked: false }),
+      bellOpen: S._shell === 'bell', bellExp: S._shell === 'bell' ? 'true' : 'false', bellZ: S._shell === 'bell' ? '40' : 'auto',
+      menuOpen: S._shell === 'menu', menuExp: S._shell === 'menu' ? 'true' : 'false',
+      unread: unread > 9 ? '9+' : String(unread), hasUnread: unread > 0,
+      notes: all.map(n => ({ text: n.text, when: n.when, href: n.href, bg: n.unread ? '#F4FBF8' : '#fff', dot: n.alert ? '#E08A00' : (n.unread ? '#0B7A6B' : '#D5DBE3') })),
+      toggleBell: () => this.setState({ _shell: this.state._shell === 'bell' ? '' : 'bell' }),
+      toggleMenu: () => this.setState({ _shell: this.state._shell === 'menu' ? '' : 'menu' }),
+      closeAll: () => this.setState({ _shell: '' }),
+      markRead: () => { const st = this.readStore(); st.ui = Object.assign({}, st.ui || {}, { seenAt: Date.now() }); try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(st)); } catch (e) {} this.forceUpdate(); }
+    };
+  }
+  renderVals() { return Object.assign(this._screenVals(), { shell: this.shellVals() }); }
+  _screenVals() {
+    const S = this.state;
+    const P = {
+      router: 'M3 13h18v7H3zM7 16.5h.01M11 16.5h.01M17 13V5M14 7.5a4 4 0 0 1 6 0',
+      co2: 'M3 8h11a3 3 0 1 0-3-3M3 12h16a3 3 0 1 1-3 3M3 16h7',
+      gw: 'M12 10a2 2 0 1 0 0 4a2 2 0 1 0 0-4zM8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7M5.6 5.6a9 9 0 0 0 0 12.8M18.4 5.6a9 9 0 0 1 0 12.8',
+      sim: 'M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zM8.5 11h7v6h-7z',
+      net: 'M3 6h18v8H3zM7 10h.01M11 10h.01M15 10h.01M8 14v4M16 14v4M5 18h14',
+      vfd: 'M4 18a8 8 0 1 1 16 0M12 18l4-6M3 21h18',
+      bms: 'M6 6h12v12H6zM9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4',
+      cab: 'M7 3v6a5 5 0 0 0 10 0V3M5 3h4M15 3h4M12 14v7',
+      box: 'M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8'
+    };
+    const sections = [
+      ['general', 'General', false], ['#', 'Product catalogue'], ['categories', 'Categories', true], ['brands', 'Brands', true], ['fields', 'Custom fields', true], ['#', 'Operations'],
+      ['locations', 'Locations', false], ['statuses', 'Statuses & stages', false], ['suppliers', 'Suppliers', false], ['ids', 'ID formats & IP pools', false], ['notif', 'Notifications & low stock', false]
+    ];
+    const snav = sections.map(([id, label, ind]) => id === '#' ? { grp: true, btn: false, label } : { grp: false, btn: true, label, cls: 'sbtn' + (ind ? ' in' : '') + (S.sec === id ? ' on' : ''), cur: S.sec === id ? 'page' : 'false', pick: () => this.setState({ sec: id }) });
+    const secLabel = sections.filter(s => s[0] === S.sec)[0][1];
+    const saved = () => this.setState({ toast: 'Saved. The change is recorded in the audit log under your name.' });
+    // Every change this screen reports as logged goes into the shared audit trail.
+    const logSetting = (item, from, to, note) => this.writeStore(s => { this.logEvent(s, { action: 'Settings changed', item, itemHref: 'Settings.dc.html', from: from || '—', to: to || '—', note: note || '' }); });
+    // General: organisation defaults saved in the shared store (store.settings).
+    const ST0 = this.readStore();
+    const GDEF = { org: 'Moonrock Research & Development (MRD)', partner: 'Exergio', loc: 'MRD Office · Muscat', tz: 'Asia/Muscat · GST (UTC+4)', datefmt: '05 Oct 2026', retention: '7 years' };
+    const GSAVED = Object.assign({}, GDEF, (ST0.settings && typeof ST0.settings === 'object') ? ST0.settings : {});
+    const GV = Object.assign({}, GSAVED, S.genDraft || {});
+    const GLBL = { org: 'Organisation', partner: 'Partner programme', loc: 'Default receiving location', tz: 'Time zone', datefmt: 'Date format', retention: 'Audit retention' };
+    const gSet = k => e => this.setState({ genDraft: Object.assign({}, this.state.genDraft || {}, { [k]: e.target.value }), genErr: '' });
+    const gDiff = Object.keys(GLBL).filter(k => String(GV[k]).trim() !== String(GSAVED[k]));
+    const officeLocs = [S.office.name, 'MRD Office · Prep bench'].concat(S.extraShelves.map(x => 'MRD Office · ' + x[0]));
+    if (officeLocs.indexOf(GV.loc) < 0) officeLocs.push(GV.loc);
+    const gen = Object.assign({}, GV, {
+      locOpts: officeLocs.map(v => ({ v })),
+      onOrg: gSet('org'), onPartner: gSet('partner'), onLoc: gSet('loc'), onTz: gSet('tz'), onDatefmt: gSet('datefmt'), onRetention: gSet('retention'),
+      err: S.genErr || '', hasErr: !!S.genErr, dirty: gDiff.length > 0,
+      status: gDiff.length ? gDiff.length + ' unsaved change' + (gDiff.length === 1 ? '' : 's') : (ST0.settings && ST0.settings.savedAt ? 'Saved ' + ST0.settings.savedAt + ' by ' + (ST0.settings.savedBy || 'Chetan') : 'Sample defaults · not changed yet'),
+      discard: () => this.setState({ genDraft: null, genErr: '' }),
+      save: () => {
+        const v = {}; Object.keys(GLBL).forEach(k => { v[k] = String(GV[k] == null ? '' : GV[k]).trim(); });
+        if (!v.org) { this.setState({ genErr: 'Organisation can’t be empty.' }); return; }
+        const diff = Object.keys(GLBL).filter(k => v[k] !== String(GSAVED[k]));
+        if (!diff.length) { this.setState({ genDraft: null, genErr: '', toast: 'No changes to save.' }); return; }
+        this.writeStore(s => {
+          s.settings = Object.assign({}, s.settings || {}, v, { savedAt: this.nowLabel(), savedBy: 'Chetan' });
+          this.logEvent(s, { action: 'Settings changed', item: 'General settings', itemHref: 'Settings.dc.html', from: diff.map(k => GLBL[k] + ': ' + GSAVED[k]).join(' · '), to: diff.map(k => GLBL[k] + ': ' + v[k]).join(' · '), note: diff.map(k => GLBL[k]).join(', ') });
+        });
+        this.setState({ genDraft: null, genErr: '', toast: 'Saved ' + diff.length + ' change' + (diff.length === 1 ? '' : 's') + ' to General settings. Logged to the audit log.' });
+      }
+    });
+
+    // Categories
+    const baseCats = [
+      ['Teltonika Devices', 'Routers & gateways · IMEI, MAC, firmware', 2, 'Serialised', true, 7, 'router', 'TEL'],
+      ['CO₂ Sensors', 'LoRaWAN indoor sensors · DevEUI, AppKey', 1, 'Serialised', true, 4, 'co2', 'CO2'],
+      ['LoRaWAN Gateways', 'Network servers for sensor fleets', 1, 'Serialised', true, 4, 'gw', 'GW'],
+      ['M2M SIM Cards', 'ICCID, MSISDN, carrier, APN', 2, 'Serialised (ICCID)', false, 5, 'sim', 'SIM'],
+      ['Network Equipment', 'PoE switches & access points', 2, 'Serialised', true, 3, 'net', 'NET'],
+      ['VFDs', 'Variable frequency drives for AHUs & pumps', 2, 'Serialised', false, 4, 'vfd', 'VFD'],
+      ['Controllers & BMS', 'DDC controllers & BMS interfaces', 4, 'Serialised', true, 5, 'bms', 'BMS'],
+      ['Cables & Accessories', 'Patch cables, mounts, power supplies', 4, 'Quantity', false, 2, 'cab', 'CAB']
+    ].concat(S.extraCats);
+    const cats = baseCats.map(([name, desc, products, track0, cfg0, fields, icon0, code]) => {
+      const ce = S.catEdits[name] || {};
+      const track = ce.track || track0, cfg = ce.cfg !== undefined ? ce.cfg : cfg0, icon = ce.icon || icon0;
+      const arch = S.archCats.indexOf(name) >= 0;
+      return { name, desc, products: products + (products === 1 ? ' product' : ' products'), track, cfg: cfg ? 'Required' : 'Not required', cfgCls: cfg ? 's-ready' : 's-unconf', fields: fields + ' fields', icon: P[icon], code,
+        arch, live: !arch, color: arch ? '#5E6B7D' : '#0E1726', editAria: 'Edit ' + name, archAria: 'Archive ' + name,
+        edit: () => this.setState({ addOpen: true, editCat: name, newName: name, icon, track: track === 'Quantity' ? 'qty' : track === 'Batch / lot' ? 'batch' : 'serial', reqCfg: cfg, newFields: [], nfVals: {} }),
+        archive: () => this.setState({ confirm: { kind: 'cat', name, items: products } }),
+        restore: () => { this.setState({ archCats: S.archCats.filter(x => x !== name), toast: name + ' restored. Logged to the audit log.' }); logSetting('Category: ' + name, 'Archived', 'Active', 'Category restored'); } };
+    });
+    const telFields = [
+      ['Serial number', 'Text', 'Receive', 'Yes', 'Yes', '1108675309', true], ['IMEI', 'Text · 15 digits', 'Receive', 'Yes', 'Yes', '862292050123456', false],
+      ['MAC address', 'MAC', 'Receive', 'Yes', 'Yes', '00:1E:42:3A:7C:19', false], ['Firmware version', 'Text', 'Preparation', 'Yes', 'No', 'RUT9M_R_00.07.08.3', false],
+      ['Config profile', 'List', 'Preparation', 'Yes', 'No', 'Exergio BMS gateway v2.3', false], ['Assigned SIM', 'Link · SIM', 'Preparation', 'No', 'Yes', '8996802026093001427', false],
+      ['Static IP', 'Link · IP pool', 'Preparation', 'No', 'Yes', '10.64.12.37', false]
+    ].map(([name, type, at, req, uniq, ex, sys]) => ({ name, type, at, req, uniq, ex, sys }));
+    const allFields = [
+      ['IMEI', 'Teltonika Devices', 'Text · 15 digits', 'Yes', 'Yes'], ['MAC address', 'Teltonika Devices', 'MAC', 'Yes', 'Yes'], ['Firmware version', 'Teltonika Devices', 'Text', 'Yes', 'No'],
+      ['DevEUI', 'CO₂ Sensors', 'Hex · 16', 'Yes', 'Yes'], ['AppKey', 'CO₂ Sensors', 'Secret (masked)', 'Yes', 'No'], ['Gateway EUI', 'LoRaWAN Gateways', 'Hex · 16', 'Yes', 'Yes'],
+      ['ICCID', 'M2M SIM Cards', 'Text · 19–20 digits', 'Yes', 'Yes'], ['MSISDN', 'M2M SIM Cards', 'Text', 'No', 'Yes'], ['Carrier', 'M2M SIM Cards', 'List', 'Yes', 'No'],
+      ['Rated power (kW)', 'VFDs', 'Number', 'Yes', 'No'], ['BACnet device ID', 'Controllers & BMS', 'Number', 'No', 'Yes'], ['Length (m)', 'Cables & Accessories', 'Number', 'Yes', 'No']
+    ].concat(S.extraFields).map(([name, cat, type, req, uniq]) => ({ name, cat, type, req, uniq }));
+    const brands = [['Teltonika', 2, 'Teltonika Devices'], ['Milesight', 2, 'CO₂ Sensors · LoRaWAN Gateways'], ['Ubiquiti', 2, 'Network Equipment'], ['ABB', 1, 'VFDs'], ['Danfoss', 1, 'VFDs'], ['Omantel', 1, 'M2M SIM Cards'], ['Ooredoo', 1, 'M2M SIM Cards'], ['Generic', 4, 'Cables & Accessories']].concat(S.extraBrands)
+      .map(([name, n, cats]) => ({ name, n: n + (n === 1 ? ' product' : ' products'), cats }));
+
+    // Add category modal
+    const iconPick = Object.keys(P).map(k => ({ path: P[k], label: k + ' icon', on: S.icon === k ? 'true' : 'false', cls: 'icp' + (S.icon === k ? ' on' : ''), pick: () => this.setState({ icon: k }) }));
+    const trackOpts = [['serial', 'Serialised', 'Every unit has its own serial / ID'], ['qty', 'Quantity', 'Counted in bulk per location'], ['batch', 'Batch / lot', 'Quantity tracked per received batch']]
+      .map(([id, label, desc]) => ({ label, desc, on: S.track === id ? 'true' : 'false', cls: 'rc' + (S.track === id ? ' on' : ''), pick: () => this.setState({ track: id }) }));
+    const nfv = n => (S.nfVals || {})[n] || { name: '', type: 'Text' };
+    const setNf = (n, patch) => this.setState({ nfVals: Object.assign({}, this.state.nfVals || {}, { [n]: Object.assign({}, nfv(n), patch) }) });
+    const newFields = S.newFields.map((n, i) => ({ id: 'nf' + n, tid: 'nt' + n, ph: i === 0 ? 'e.g. Firmware version' : 'Field name', name: nfv(n).name, type: nfv(n).type, onName: e => setNf(n, { name: e.target.value }), onType: e => setNf(n, { type: e.target.value }), remove: () => this.setState({ newFields: S.newFields.filter(x => x !== n) }) }));
+
+    // Locations
+    const shelves = [['Shelf A1', 42], ['Shelf A2', 18], ['Shelf A3', 64], ['Shelf A4', 30], ['Shelf B1', 96], ['Shelf B2', 54], ['Shelf B3', 120], ['Shelf B4', 26], ['Shelf C1', 148], ['Shelf C2', 31], ['Shelf C3', 9], ['Shelf C4', 0], ['Prep bench', 9], ['Repair bench', 8]].map(([n, i]) => [n, i, n.indexOf('Shelf') === 0 ? 'Shelf' : 'Work area']).concat(S.extraShelves);
+    const subLocs = shelves.map(([name, items, kind]) => {
+      const arch = S.archLocs.indexOf(name) >= 0;
+      return { name, items, kind, arch, live: !arch, color: arch ? '#5E6B7D' : '#0E1726', aria: 'Archive ' + name,
+        archive: () => this.setState({ confirm: { kind: 'loc', name, items } }),
+        restore: () => { this.setState({ archLocs: S.archLocs.filter(x => x !== name), toast: name + ' restored. Logged to the audit log.' }); logSetting('Location: ' + name, 'Archived', 'Active', 'Location restored'); } };
+    });
+    const logLocs = [
+      ['In Transit', 'Shipments between supplier, office and sites', 12, true, 'M3 6h11v10H3zM14 10h4l3 3v3h-7M7 16v2M17 16v2'],
+      ['Maintenance', 'With an external repair partner', 7, true, 'M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z'],
+      ['Supplier', 'Returned to supplier (RMA)', 3, false, 'M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5'],
+      ['With technician', 'Checked out to a technician for a site visit', 4, false, 'M12 8a3.5 3.5 0 1 0 0-7a3.5 3.5 0 0 0 0 7zM5 21a7 7 0 0 1 14 0']
+    ].concat(S.extraLog).map(([name, desc, items, sys, icon]) => ({ name, desc, items, sys, canArch: !sys, icon, aria: 'Archive ' + name, archive: () => this.setState({ confirm: { kind: 'loc', name, items } }) }));
+    const facLocs = [['Qatar Foundation', 'Education City, Doha', 'POC', 'g-poc', 12], ['Bank Muscat Head Office', 'Airport Heights, Muscat', 'Active operations', 'g-contract', 35], ['Lulu Hypermarket', 'Bausher, Muscat', 'POC study', 'g-study', 8], ['Al Khuwair Business Tower', 'Al Khuwair, Muscat', 'BMS scan', 'g-bms', 0], ['Sohar Logistics Hub', 'Sohar', 'Site inspection', 'g-insp', 0]]
+      .map(([name, sub, stage, cls, items]) => ({ name, sub, stage, cls, items }));
+
+    // Statuses & stages
+    const baseStatuses = [['Received', 's-recv', true, 14], ['In stock', 's-stock', true, 486], ['Unconfigured', 's-unconf', false, 16], ['In preparation', 's-prep', false, 9], ['Ready for deployment', 's-ready', true, 46], ['Reserved', 's-reserved', true, 8], ['Deployed', 's-deployed', true, 538], ['Under maintenance', 's-maint', false, 7], ['Damaged', 's-damaged', false, 3], ['Returned', 's-returned', false, 2], ['In transit', 's-transit', true, 12], ['Retired', 's-retired', true, 11]]
+      .concat(S.extraStatuses);
+    const statuses = baseStatuses.map(([name, cls, sys, items]) => {
+      const on = !!S.avail[name];
+      return { name, cls, sys, items: items + ' items', on: on ? 'true' : 'false', swCls: 'sw' + (on ? ' on' : ''), aria: name + ' counts as available',
+        toggle: () => { const a = Object.assign({}, S.avail); a[name] = !on; this.setState({ avail: a, toast: '“' + name + '” ' + (on ? 'no longer counts' : 'now counts') + ' as available stock. Logged to the audit log.' }); logSetting('Status: ' + name, on ? 'Counts as available' : 'Not available', on ? 'Not available' : 'Counts as available', 'Availability rule'); } };
+    });
+    const STG = [['Site inspection', 'g-insp', 1], ['BMS scan', 'g-bms', 1], ['POC', 'g-poc', 1], ['POC study', 'g-study', 1], ['Contract pending', 'g-cpend', 0], ['Contract active', 'g-contract', 1], ['Active operations', 'g-ops', 0], ['Completed', 'g-done', 0], ['On hold', 'g-hold', 1]].concat(S.extraStages);
+    const ord = S.stageOrder;
+    const move = (pos, dir) => { const t = pos + dir; if (t < 0 || t >= ord.length) return; const o = ord.slice(); const x = o[pos]; o[pos] = o[t]; o[t] = x; this.setState({ stageOrder: o }); };
+    const stages = ord.map((k, pos) => ({ n: pos + 1, name: STG[k][0], cls: STG[k][1], fac: STG[k][2] + (STG[k][2] === 1 ? ' facility' : ' facilities'), upAria: 'Move ' + STG[k][0] + ' up', downAria: 'Move ' + STG[k][0] + ' down', up: () => move(pos, -1), down: () => move(pos, 1) }));
+    const SW = [['s-recv', 'Sky'], ['s-stock', 'Teal'], ['s-unconf', 'Grey'], ['s-prep', 'Amber'], ['s-ready', 'Blue'], ['s-reserved', 'Violet'], ['s-deployed', 'Green'], ['s-maint', 'Orange'], ['s-damaged', 'Red'], ['s-returned', 'Sand']];
+    const swatches = SW.map(([c, label]) => ({ label, dot: c, on: S.stColor === c ? 'true' : 'false', cls: 'icp' + (S.stColor === c ? ' on' : ''), pick: () => this.setState({ stColor: c }) }));
+
+    // Suppliers
+    const SUP_BASE = [['Al Noor Technologies LLC', 'Teltonika Devices', 4, '22 Sep 2026'], ['SensorTech Trading', 'CO₂ Sensors · LoRaWAN Gateways', 3, '03 Sep 2026'], ['Gulf Network Supplies', 'Network Equipment · Cables & Accessories', 5, '01 Oct 2026'], ['Gulf Electro-Mechanical Supplies', 'VFDs · Controllers & BMS', 2, '18 Sep 2026'], ['Omantel Business', 'M2M SIM Cards', 3, '30 Sep 2026'], ['Ooredoo Business', 'M2M SIM Cards', 1, '14 Jul 2026']];
+    const suppliers = SUP_BASE.concat(S.extraSups)
+      .map(([orig, cats0, n, last]) => {
+        const e = S.supEdits[orig] || {};
+        const name = e.name || orig, cats = e.cats || cats0, contact = e.contact || '[contact on file]';
+        return { name, cats, contact, n: n + (n === 1 ? ' batch' : ' batches'), last,
+          edit: () => this.setState({ form: { kind: 'sup', orig, v: { name, cats, contact: e.contact || '' } }, formErr: '' }) };
+      });
+
+    // ID formats
+    const fill = (p, seq) => p.replace(/\{CAT\}/g, 'TEL').replace(/\{YYYY\}/g, '2026').replace(/\{YY\}/g, '26').replace(/\{MM\}/g, '10').replace(/\{(#+)\}/g, (m, h) => { const s = String(seq); return s.length >= h.length ? s : ('0000000000' + s).slice(-h.length); });
+    const pdef = [['batch', 'pb', 'Batch ID', 5, 'TEL-2026-004 → next for Teltonika this year'], ['dev', 'pd', 'Device ID', 31, 'Assigned at receiving, printed on the asset label'], ['dep', 'pp', 'Deployment reference', 149, 'Shared with Exergio on handover notes']];
+    const patterns = pdef.map(([key, id, label, seq, okNote]) => {
+      const v = S.pat[key];
+      const hasSeq = /\{#+\}/.test(v);
+      return { id, label, value: v, preview: fill(v, seq) || '—', note: hasSeq ? okNote : 'Add a sequence token such as {###} so IDs stay unique.', noteColor: hasSeq ? '#5E6B7D' : '#A3201F',
+        onChange: (e) => { const p = Object.assign({}, S.pat); p[key] = e.target.value; this.setState({ pat: p }); } };
+    });
+    const pool = (cidr, carrier, apn, a, r, res, next, tot) => { const T = tot || 254, f = T - a - r; return { cidr, carrier, apn, a, r, f, res, next, wa: (a / T * 100).toFixed(1) + '%', wr: (r / T * 100).toFixed(1) + '%', wf: (f / T * 100).toFixed(1) + '%', pct: Math.round((a + r) / T * 100) + '%', aria: a + ' assigned, ' + r + ' reserved, ' + f + ' free of ' + T }; };
+    const pools = [pool('10.64.12.0/24', 'Omantel M2M', 'mrd.m2m', 16, 10, '10.64.12.1 – .10 (gateway, infra)', '10.64.12.38'), pool('10.72.4.0/24', 'Ooredoo M2M', '[APN to confirm]', 4, 10, '10.72.4.1 – .10 (gateway, infra)', '10.72.4.15')].concat(S.extraPools.map(x => pool.apply(null, x)));
+
+    // Notifications
+    const thDef = [['t1', 'Teltonika RUT956 · Ready', 'Ready for deployment', 4], ['t2', 'Cat6 patch cable 1 m', 'MRD Office', 18], ['t3', 'UniFi Switch Lite 8 PoE', 'MRD Office', 2], ['t4', 'Milesight UG65 gateway', 'MRD Office', 2], ['t5', 'Milesight EM500-CO2', 'MRD Office', 31], ['t6', 'Omantel M2M SIM', 'Available SIMs', 64]];
+    const thresholds = thDef.map(([id, name, scope, cur]) => {
+      const min = S.mins[id]; const st = cur < min ? ['Below minimum', 's-damaged'] : cur === +min ? ['At minimum', 's-prep'] : ['OK', 's-deployed'];
+      return { id, name, scope, cur, min, minLabel: 'Minimum for ' + name, state: st[0], cls: st[1], onMin: (e) => { const m = Object.assign({}, S.mins); m[id] = e.target.value; this.setState({ mins: m }); } };
+    });
+    const nDef = [['low', 'Low-stock digest', 'Daily at 08:00 GST · Admin, Operations'], ['ready', 'Device ready for deployment', 'When preparation completes · Operations'], ['dep', 'Deployment reminders', 'Two days before a scheduled deployment · assigned technician'], ['poc', 'POC ending soon', '14 days before a POC end date · Admin, Operations'], ['partner', 'Weekly summary to Exergio partner', 'Mondays · Viewer accounts (read-only)']];
+    const notifs = nDef.map(([k, name, desc]) => { const on = !!S.notif[k]; return { name, desc, on: on ? 'true' : 'false', swCls: 'sw' + (on ? ' on' : ''), toggle: () => { const n = Object.assign({}, S.notif); n[k] = !on; this.setState({ notif: n }); } }; });
+
+
+    // Add / edit forms (brand, custom field, location, office, stage, supplier, IP pool)
+    const catNames = baseCats.filter(x => S.archCats.indexOf(x[0]) < 0).map(x => x[0]);
+    const lc = x => String(x).toLowerCase();
+    const has = (list, nm) => list.some(x => lc(x) === lc(nm));
+    const GCOL = [['g-insp', 'Grey'], ['g-bms', 'Teal'], ['g-poc', 'Violet'], ['g-study', 'Amber'], ['g-cpend', 'Blue'], ['g-contract', 'Green'], ['g-ops', 'Solid teal'], ['g-done', 'Muted'], ['g-hold', 'Red']];
+    const FORMS = {
+      brand: { title: 'Add brand', desc: 'Brands appear on product forms and in inventory filters.', cta: 'Add brand',
+        fields: [['name', 'Brand name', 'text', null, 'e.g. Siemens'], ['cat', 'Main category', 'select', catNames, '', 'You can link more categories when you add products.']],
+        submit: v => has(brands.map(b => b.name), v.name) ? { err: v.name + ' is already a brand.' } : { ok: 'Brand “' + v.name + '” added.', state: { extraBrands: S.extraBrands.concat([[v.name, 0, v.cat]]) } } },
+      field: { title: 'Add custom field', desc: 'Captured on the receive or preparation form for every product in the category.', cta: 'Add field',
+        fields: [['name', 'Field name', 'text', null, 'e.g. Calibration date'], ['cat', 'Category', 'select', catNames], ['type', 'Type', 'select', ['Text', 'Number', 'List', 'Date', 'MAC', 'Hex · 16', 'Secret (masked)']], ['req', 'Required', 'select', ['Yes', 'No']], ['uniq', 'Unique across inventory', 'select', ['No', 'Yes'], '', 'Unique fields are checked on receive and searchable from ⌘K.']],
+        submit: v => allFields.some(f => lc(f.name) === lc(v.name) && f.cat === v.cat) ? { err: v.cat + ' already has a field called ' + v.name + '.' } : { ok: 'Field “' + v.name + '” added to ' + v.cat + '.', state: { extraFields: S.extraFields.concat([[v.name, v.cat, v.type, v.req, v.uniq]]) } } },
+      loc: { title: 'Add location', desc: 'Shelves and work areas sit inside MRD Office. Logical locations describe movement, such as a courier.', cta: 'Add location',
+        fields: [['name', 'Name', 'text', null, 'e.g. Shelf D1'], ['kind', 'Type', 'select', ['Shelf', 'Work area', 'Logical location']], ['desc', 'Description', 'text', null, 'Shown under the name', '', true]],
+        submit: v => has(shelves.map(x => x[0]).concat(logLocs.map(x => x.name)), v.name) ? { err: 'A location called ' + v.name + ' already exists.' } :
+          v.kind === 'Logical location' ? { ok: v.name + ' added to logical locations.', state: { extraLog: S.extraLog.concat([[v.name, v.desc || 'Custom location', 0, false, 'M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z']]) } }
+          : { ok: v.name + ' added to ' + S.office.name + '.', state: { extraShelves: S.extraShelves.concat([[v.name, 0, v.kind]]) } } },
+      office: { title: 'Edit office location', desc: 'The default receiving location. Renaming it updates every record that points to it.', cta: 'Save changes',
+        fields: [['name', 'Name', 'text', null, 'MRD Office · Muscat'], ['desc', 'Description', 'text', null, 'Office warehouse']],
+        submit: v => ({ ok: 'Office location saved as “' + v.name + '”.', state: { office: { name: v.name, desc: v.desc } } }) },
+      stage: { title: 'Add facility stage', desc: 'New stages appear on facility steppers and in the dashboard pipeline.', cta: 'Add stage',
+        fields: [['name', 'Stage name', 'text', null, 'e.g. Commissioning'], ['cls', 'Colour', 'select', GCOL], ['after', 'Insert after', 'select', ord.map((k, i) => [String(i), STG[k][0]])]],
+        preview: v => ({ text: v.name || 'New stage', cls: 'b ' + v.cls }),
+        submit: v => has(STG.map(x => x[0]), v.name) ? { err: v.name + ' is already a stage.' } : (() => {
+          const idx = STG.length, o = ord.slice(); o.splice(+v.after + 1, 0, idx);
+          return { ok: 'Stage “' + v.name + '” added after ' + STG[ord[+v.after]][0] + '.', state: { extraStages: S.extraStages.concat([[v.name, v.cls, 0]]), stageOrder: o } };
+        })() },
+      sup: { title: 'Add supplier', editTitle: 'Edit supplier', desc: 'Suppliers are picked when receiving a batch and stay linked to it.', cta: 'Add supplier', editCta: 'Save changes',
+        fields: [['name', 'Supplier name', 'text', null, 'e.g. Muscat Controls LLC'], ['cats', 'Supplies', 'text', null, 'e.g. Controllers & BMS'], ['contact', 'Contact', 'text', null, 'Name, phone or email', '', true]],
+        submit: (v, orig) => {
+          if (has(suppliers.filter(x => x.name !== (S.supEdits[orig] || {}).name && x.name !== orig).map(x => x.name), v.name)) return { err: v.name + ' is already a supplier.' };
+          if (orig) { const e = Object.assign({}, S.supEdits); e[orig] = { name: v.name, cats: v.cats, contact: v.contact }; return { ok: v.name + ' updated.', state: { supEdits: e } }; }
+          const e = Object.assign({}, S.supEdits); e[v.name] = { name: v.name, cats: v.cats, contact: v.contact };
+          return { ok: 'Supplier “' + v.name + '” added.', state: { extraSups: S.extraSups.concat([[v.name, v.cats, 0, '—']]), supEdits: e } };
+        } },
+      pool: { title: 'Add IP pool', desc: 'Static IPs for routers on a carrier APN. MRD hands them out in order during preparation.', cta: 'Add pool',
+        fields: [['cidr', 'Network (CIDR)', 'text', null, '10.80.2.0/24', 'Between /24 and /29.'], ['carrier', 'Carrier', 'select', ['Omantel M2M', 'Ooredoo M2M', 'Other']], ['apn', 'APN', 'text', null, 'e.g. mrd2.m2m', '', true], ['res', 'Reserved addresses at start', 'number', null, '10', 'Kept for gateway and infrastructure.']],
+        submit: v => {
+          const m = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\/(\d{1,2})$/.exec(v.cidr);
+          if (!m || [1, 2, 3, 4].some(i => +m[i] > 255)) return { err: 'Enter a network like 10.80.2.0/24.' };
+          const pre = +m[5]; if (pre < 24 || pre > 29) return { err: 'Use a prefix between /24 and /29.' };
+          if (has(pools.map(x => x.cidr), v.cidr)) return { err: v.cidr + ' is already a pool.' };
+          const tot = Math.pow(2, 32 - pre) - 2, r = parseInt(v.res, 10);
+          if (isNaN(r) || r < 0 || r >= tot) return { err: 'Reserved must be between 0 and ' + (tot - 1) + '.' };
+          const base = m[1] + '.' + m[2] + '.' + m[3] + '.', d = +m[4];
+          const resTxt = r ? base + (d + 1) + ' – .' + (d + r) + ' (gateway, infra)' : 'None';
+          return { ok: 'Pool ' + v.cidr + ' added.', state: { extraPools: S.extraPools.concat([[v.cidr, v.carrier, v.apn || '[APN to confirm]', 0, r, resTxt, base + (d + r + 1), tot]]) } };
+        } }
+    };
+    const INIT = {
+      brand: { name: '', cat: catNames[0] }, field: { name: '', cat: catNames[0], type: 'Text', req: 'Yes', uniq: 'No' }, loc: { name: '', kind: 'Shelf', desc: '' },
+      office: { name: S.office.name, desc: S.office.desc }, stage: { name: '', cls: 'g-cpend', after: String(ord.length - 1) }, sup: { name: '', cats: '', contact: '' }, pool: { cidr: '', carrier: 'Omantel M2M', apn: '', res: '10' }
+    };
+    const openForm = kind => () => this.setState({ form: { kind, v: Object.assign({}, INIT[kind]) }, formErr: '' });
+    const F0 = S.form, FD = F0 ? FORMS[F0.kind] : null;
+    const fm = FD ? {
+      title: F0.orig && FD.editTitle ? FD.editTitle : FD.title, cta: F0.orig && FD.editCta ? FD.editCta : FD.cta, desc: FD.desc,
+      hasPreview: !!FD.preview, preview: FD.preview ? FD.preview(F0.v).text : '', previewCls: FD.preview ? FD.preview(F0.v).cls : '',
+      fields: FD.fields.map(([key, label, type, opts, ph, hint, optional]) => ({
+        id: 'fm-' + key, label: label + (optional ? ' (optional)' : ''), isText: type !== 'select', isSel: type === 'select', type: type === 'number' ? 'number' : 'text',
+        cls: (key === 'cidr' || key === 'apn') ? 'fld mono' : 'fld', ph: ph || '', value: F0.v[key], hasHint: !!hint, hint: hint || '',
+        opts: (opts || []).map(o => Array.isArray(o) ? { v: o[0], l: o[1] } : { v: o, l: o }),
+        onChange: e => { const nv = Object.assign({}, this.state.form.v); nv[key] = e.target.value; this.setState({ form: Object.assign({}, this.state.form, { v: nv }), formErr: '' }); }
+      }))
+    } : { title: '', desc: '', cta: '', hasPreview: false, preview: '', previewCls: '', fields: [] };
+    const submitForm = () => {
+      if (!F0) return;
+      const v = {}; Object.keys(F0.v).forEach(k => { v[k] = String(F0.v[k] == null ? '' : F0.v[k]).trim(); });
+      const miss = FD.fields.filter(f => !f[6] && !v[f[0]]);
+      if (miss.length) { this.setState({ formErr: miss[0][1] + ' is required.' }); return; }
+      const res = FD.submit(v, F0.orig);
+      if (res.err) { this.setState({ formErr: res.err }); return; }
+      this.setState(Object.assign({ form: null, formErr: '', toast: res.ok + ' Logged to the audit log.' }, res.state));
+      // Publish the catalogue to the shared store so other screens (receiving, inventory moves) can use it.
+      const nx = Object.assign({}, S, res.state);
+      this.writeStore(st => {
+        st.catalog = {
+          brands: nx.extraBrands.map(b => b[0]),
+          locations: nx.extraShelves.map(x => ({ name: x[0], kind: x[2] })).concat(nx.extraLog.map(x => ({ name: x[0], kind: 'Logical location' }))),
+          suppliers: SUP_BASE.concat(nx.extraSups).map(x => { const e = nx.supEdits[x[0]] || {}; return { name: e.name || x[0], cats: e.cats || x[1], contact: e.contact || '' }; }),
+          office: nx.office
+        };
+        this.logEvent(st, { action: 'Settings changed', item: FD.title.replace(/^(Add|Edit) /, '').replace(/^./, c => c.toUpperCase()) + ': ' + (v.name || v.cidr || ''), itemHref: 'Settings.dc.html', from: F0.orig || '—', to: v.name || v.cidr || '' });
+      });
+    };
+
+    // Confirm
+    const c = S.confirm;
+    let cf = { title: '', body: '', foot: '', ok: false, blocked: false, cta: '', iconBg: '#F1F4F7', iconFg: '#3B4758' };
+    if (c) {
+      if (c.kind === 'reset') cf = { title: 'Reset all sample data?', body: 'Every screen goes back to the original sample records: imports, moves, status changes, new brands, locations, suppliers, deployments and notes are discarded.', foot: 'This resets the shared data for everyone who opens this canvas. Screens that are already open update as soon as the reset arrives.', ok: true, blocked: false, cta: 'Reset sample data', iconBg: '#FDEBEA', iconFg: '#A3201F' };
+      else if (c.kind === 'cat') cf = { title: 'Archive ' + c.name + '?', body: 'Its ' + c.items + (c.items === 1 ? ' product stays' : ' products stay') + ' in inventory, reports and history, but the category can\'t be picked for new products until it is restored.', foot: 'Nothing is deleted. The archive is recorded in the audit log.', ok: true, blocked: false, cta: 'Archive category', iconBg: '#FDEBEA', iconFg: '#A3201F' };
+      else if (c.items > 0) cf = { title: c.name + ' can\'t be archived yet', body: c.items + ' items are stored at ' + c.name + '. Move them to another location first, then archive it. This keeps every unit\'s location history accurate.', foot: 'Tip: filter All inventory by this location and use bulk Move.', ok: false, blocked: true, cta: '', iconBg: '#FFF3DC', iconFg: '#8A4B00' };
+      else cf = { title: 'Archive ' + c.name + '?', body: c.name + ' has 0 items, so it can be archived. It will disappear from location pickers but stays in past movement records.', foot: 'You can restore it at any time. The archive is recorded in the audit log.', ok: true, blocked: false, cta: 'Archive location', iconBg: '#FDEBEA', iconFg: '#A3201F' };
+    }
+    const cfConfirm = () => {
+      if (!c) return;
+      if (c.kind === 'reset') {
+        this._clearShared();
+        try { const ls = window.localStorage; const ks = []; for (let i = 0; i < ls.length; i++) { const k = ls.key(i); if (k && k.indexOf('mrd-proto:') === 0) ks.push(k); } ks.forEach(k => ls.removeItem(k)); } catch (e) {}
+        this.setState(Object.assign({}, this._init || {}, { confirm: null, sec: 'general', toast: 'Sample data restored. Reload the canvas to reset screens that are already open.' }));
+        return;
+      }
+      if (c.kind === 'cat') { this.setState({ archCats: S.archCats.concat([c.name]), confirm: null, toast: c.name + ' archived. Logged to the audit log.' }); logSetting('Category: ' + c.name, 'Active', 'Archived', 'Category archived'); }
+      else { this.setState({ archLocs: S.archLocs.concat([c.name]), confirm: null, toast: c.name + ' archived. Logged to the audit log.' }); logSetting('Location: ' + c.name, 'Active', 'Archived', 'Location archived'); }
+    };
+
+    return {
+      snav, secLabel, saved, gen,
+      addTitle: S.editCat ? 'Edit ' + S.editCat : 'Add category', addCta: S.editCat ? 'Save changes' : 'Create category',
+      sGeneral: S.sec === 'general', sCat: S.sec === 'categories', sBrands: S.sec === 'brands', sFields: S.sec === 'fields', sLoc: S.sec === 'locations', sStat: S.sec === 'statuses', sSup: S.sec === 'suppliers', sIds: S.sec === 'ids', sNotif: S.sec === 'notif',
+      hasToast: !!S.toast, toast: S.toast, hideToast: () => this.setState({ toast: '' }),
+      cats, telFields, allFields, brands, goFields: () => this.setState({ sec: 'fields' }),
+      addOpen: S.addOpen, openAdd: () => this.setState({ addOpen: true, editCat: '', newName: '', icon: 'box', track: 'serial', reqCfg: true, newFields: [1, 2], nfVals: {} }), closeAdd: () => this.setState({ addOpen: false, editCat: '' }),
+      newName: S.newName, onNewName: (e) => this.setState({ newName: e.target.value }), iconPick, trackOpts,
+      reqOn: S.reqCfg ? 'true' : 'false', reqCls: 'sw' + (S.reqCfg ? ' on' : ''), toggleReq: () => this.setState({ reqCfg: !S.reqCfg }),
+      newFields, addField: () => this.setState({ newFields: S.newFields.concat([S.fieldSeq]), fieldSeq: S.fieldSeq + 1 }),
+      createCat: () => {
+        const TR = S.track === 'qty' ? 'Quantity' : S.track === 'batch' ? 'Batch / lot' : 'Serialised';
+        const flds = S.newFields.map(n => nfv(n)).filter(f => String(f.name || '').trim()).map(f => [String(f.name).trim(), f.type || 'Text']);
+        if (S.editCat) {
+          const cur = cats.find(x => x.name === S.editCat) || {};
+          const prev = { track: cur.track, cfg: cur.cfg === 'Required', icon: S.catEdits[S.editCat] && S.catEdits[S.editCat].icon || (baseCats.find(x => x[0] === S.editCat) || [])[6] };
+          const ch = [];
+          if (prev.track !== TR) ch.push(['Tracking', prev.track, TR]);
+          if (prev.cfg !== S.reqCfg) ch.push(['Requires config', prev.cfg ? 'Yes' : 'No', S.reqCfg ? 'Yes' : 'No']);
+          if (prev.icon !== S.icon) ch.push(['Icon', prev.icon, S.icon]);
+          const ce = Object.assign({}, S.catEdits); ce[S.editCat] = { track: TR, cfg: S.reqCfg, icon: S.icon };
+          const extraF = S.extraFields.concat(flds.map(f => [f[0], S.editCat, f[1], 'No', 'No']));
+          this.setState({ addOpen: false, editCat: '', catEdits: ce, extraFields: extraF, toast: ch.length || flds.length ? S.editCat + ' updated. Logged to the audit log.' : 'No changes to ' + S.editCat + '.' });
+          if (ch.length || flds.length) logSetting('Category: ' + S.editCat, ch.map(x => x[0] + ': ' + x[1]).join(' · ') || '—', ch.map(x => x[0] + ': ' + x[2]).concat(flds.map(f => 'Field: ' + f[0])).join(' · '), 'Category edited');
+          return;
+        }
+        const nm = (S.newName || '').trim();
+        if (!nm) { this.setState({ toast: 'Give the category a name first.' }); return; }
+        if (baseCats.some(x => x[0].toLowerCase() === nm.toLowerCase())) { this.setState({ toast: nm + ' already exists — use Edit on its row.' }); return; }
+        this.setState({ addOpen: false, extraCats: S.extraCats.concat([[nm, 'Added just now', 0, TR, S.reqCfg, flds.length, S.icon, nm.replace(/[^A-Za-z]/g, '').slice(0, 3).toUpperCase() || 'NEW']]), extraFields: S.extraFields.concat(flds.map(f => [f[0], nm, f[1], 'No', 'No'])), toast: nm + ' created. Logged to the audit log.' });
+        logSetting('Category: ' + nm, '—', TR + (S.reqCfg ? ' · requires configuration' : ''), flds.length ? 'Fields: ' + flds.map(f => f[0]).join(', ') : 'Category added');
+      },
+      subLocs, logLocs, facLocs,
+      statuses, stages, swatches,
+      statusOpen: S.statusOpen, openStatus: () => this.setState({ statusOpen: true, stName: '', stColor: 's-recv', stAvail: false }), closeStatus: () => this.setState({ statusOpen: false }),
+      stName: S.stName, onStName: (e) => this.setState({ stName: e.target.value }), stCls: S.stColor, stPreview: (S.stName || '').trim() || 'New status',
+      stAvOn: S.stAvail ? 'true' : 'false', stAvCls: 'sw' + (S.stAvail ? ' on' : ''), toggleStAv: () => this.setState({ stAvail: !S.stAvail }),
+      createStatus: () => { const nm = (S.stName || '').trim(); if (!nm) { this.setState({ toast: 'Give the status a name first.' }); return; } if (baseStatuses.some(x => x[0].toLowerCase() === nm.toLowerCase())) { this.setState({ toast: 'A status called ' + nm + ' already exists.' }); return; } const a = Object.assign({}, S.avail); a[nm] = S.stAvail; this.setState({ statusOpen: false, avail: a, extraStatuses: S.extraStatuses.concat([[nm, S.stColor, false, 0]]), toast: 'Status “' + nm + '” added. Logged to the audit log.' }); logSetting('Status: ' + nm, '—', 'Added', S.stAvail ? 'Counts as available' : 'Not available'); },
+      suppliers, patterns, pools, thresholds, notifs,
+      askReset: () => this.setState({ confirm: { kind: 'reset' } }),
+      cfOpen: !!c, cf, cfCancel: () => this.setState({ confirm: null }), cfConfirm,
+      fmOpen: !!F0, fm, hasFormErr: !!S.formErr, formErr: S.formErr, closeForm: () => this.setState({ form: null, formErr: '' }), submitForm,
+      openBrand: openForm('brand'), openField: openForm('field'), openLoc: openForm('loc'), editOffice: openForm('office'), openStage: openForm('stage'), openSup: openForm('sup'), openPool: openForm('pool'),
+      office: { name: S.office.name, desc: S.office.desc, count: shelves.length }
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,837 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>RUT956 1108675309 · MRD Inventory</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F6F8;color:#0E1726;font-family:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#0B7A6B;text-decoration:none}a:hover{color:#075C51}
+h1,h2,h3,h4,p{margin:0}
+.mono{font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;letter-spacing:-.01em}
+.muted{color:#5E6B7D}
+.side{flex:0 0 248px;background:#0C1424;padding:18px 12px 16px;display:flex;flex-direction:column;gap:1px}
+.nav{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:8px;color:#B3BDCB;font-size:13.5px}
+.nav:hover{background:#152036;color:#fff}
+.nav.on{background:#1C2A42;color:#fff;box-shadow:inset 2px 0 0 #2BC4A8}
+.nav svg{flex:0 0 16px;width:16px;height:16px}
+.nav .ct{margin-left:auto;font-size:11px;font-weight:600;background:#2BC4A8;color:#04211C;border-radius:999px;padding:1px 7px}
+.sec{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#7F8CA0;padding:16px 10px 6px;font-weight:500}
+.mtop{display:none}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 32px;background:#fff;border-bottom:1px solid #E3E7EC}
+.srch{flex:1 1 320px;max-width:560px;display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border:1px solid #DCE1E8;border-radius:10px;background:#F8FAFB;color:#5E6B7D;font-size:13.5px}
+.srch:hover{border-color:#B9C2CE;color:#3B4758}
+.kbd{margin-left:auto;font-family:'Geist Mono',monospace;font-size:11px;border:1px solid #DCE1E8;border-radius:5px;padding:1px 6px;background:#fff;color:#5E6B7D}
+.main{padding:28px 32px 48px;max-width:1400px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+.card{background:#fff;border:1px solid #E3E7EC;border-radius:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 14px;border-radius:9px;border:1px solid #D5DBE3;background:#fff;color:#1B2638;font:inherit;font-size:13.5px;font-weight:500;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#F4F6F8;color:#0E1726}
+.btn.p{background:#0B7A6B;border-color:#0B7A6B;color:#fff}.btn.p:hover{background:#08695C;color:#fff}
+.btn.sm{height:32px;padding:0 10px;font-size:12.5px;border-radius:8px}
+.btn.ic{width:40px;padding:0}
+.btn svg{width:16px;height:16px}
+.b{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;background:#EEF1F5;color:#3E4A5C}
+.b::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.s-unconf{background:#EEF1F5;color:#3E4A5C}.s-prep{background:#FFF3DC;color:#8A4B00}.s-ready{background:#E6EEFF;color:#1D4FB8}.s-reserved{background:#F0EAFE;color:#5B32B4}.s-deployed{background:#E1F4EC;color:#0A6648}.s-stock{background:#E3F2F6;color:#0E5E73}.s-maint{background:#FFEDE3;color:#9A3D0B}.s-damaged{background:#FDEBEA;color:#A3201F}.s-transit{background:#E9EDFC;color:#3346A8}.s-returned{background:#F1EEE8;color:#5E554A}.s-retired{background:#EFF0F2;color:#646C79}
+.g-insp{background:#EEF1F5;color:#3E4A5C}.g-bms{background:#E3F2F6;color:#0E5E73}.g-poc{background:#F0EAFE;color:#5B32B4}.g-study{background:#FFF3DC;color:#8A4B00}.g-cpend{background:#E6EEFF;color:#1D4FB8}.g-contract{background:#E1F4EC;color:#0A6648}.g-ops{background:#0B7A6B;color:#fff}.g-done{background:#EFF0F2;color:#646C79}.g-hold{background:#FDEBEA;color:#A3201F}
+.t{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:6px;font-size:11.5px;font-weight:600;letter-spacing:.02em;border:1px solid}
+.t-poc{color:#5B32B4;border-color:#D7C8FA;background:#FAF7FF}.t-con{color:#0A6648;border-color:#BFE3D3;background:#F4FBF8}.t-rep{color:#8A4B00;border-color:#F3D9A6;background:#FFFBF2}.t-add{color:#1D4FB8;border-color:#C8D8FA;background:#F6F9FF}
+.tw{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-weight:500;color:#5E6B7D;font-size:12px;padding:10px 14px;border-bottom:1px solid #E3E7EC;background:#F8FAFB;white-space:nowrap}
+.tbl td{padding:11px 14px;border-bottom:1px solid #EEF1F4;white-space:nowrap;vertical-align:middle}
+.tbl tr:hover td{background:#F8FAFB}
+.tbl tr:last-child td{border-bottom:0}
+.ov{font-size:12px;font-weight:500;color:#5E6B7D;text-transform:uppercase;letter-spacing:.06em}
+.kpi{padding:16px 18px;display:flex;flex-direction:column;gap:6px;color:#0E1726}
+.kpi:hover{border-color:#B9C2CE;color:#0E1726}
+.kpi .n{font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
+.seg{display:flex;gap:2px;height:8px;border-radius:4px;overflow:hidden}
+.seg span{display:block;height:100%}
+.row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-top:1px solid #EEF1F4;color:#0E1726}
+.row:hover{background:#F8FAFB;color:#0E1726}
+.chip{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;border:0;background:transparent;font:inherit;font-size:13px;color:#3B4758;cursor:pointer}
+.chip.on{background:#fff;color:#0E1726;box-shadow:0 1px 2px rgba(14,23,38,.12)}
+.crumb{font-size:13px;color:#5E6B7D;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.fact{display:flex;align-items:center;gap:8px;font-size:13px;color:#3B4758}
+.fact svg{flex:0 0 16px;color:#5E6B7D}
+.ans{padding:14px 16px;display:flex;flex-direction:column;gap:4px;border-right:1px solid #EEF1F4;border-bottom:1px solid #EEF1F4;min-width:0}
+.ans .q{font-size:12px;color:#5E6B7D}
+.ans .a{font-size:13.5px;font-weight:500;color:#0E1726;overflow-wrap:anywhere}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 18px 12px}
+.hd h2{font-size:15px;font-weight:600}
+.kv{display:grid;grid-template-columns:140px minmax(0,1fr) auto;align-items:center;gap:12px;padding:10px 18px;border-top:1px solid #EEF1F4;font-size:13px}
+.kv .k{color:#5E6B7D}
+.cp{border:0;background:transparent;color:#5E6B7D;cursor:pointer;width:28px;height:28px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center}
+.cp:hover{background:#F1F4F7;color:#0E1726}
+.st{display:flex;flex-direction:column;gap:8px;position:relative;min-width:0}
+.st .c{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #D5DBE3;background:#fff;color:#fff;position:relative;z-index:1}
+.st.done .c{background:#0B7A6B;border-color:#0B7A6B}
+.st.cur .c{background:#2F6FE4;border-color:#2F6FE4;box-shadow:0 0 0 4px rgba(47,111,228,.16)}
+.st.next .c{border-color:#2F6FE4;color:#2F6FE4}
+.st.opt .c{border-style:dashed;color:#8794A6}
+.st .ln{position:absolute;top:13px;left:28px;right:0;height:2px;background:#E3E7EC}
+.st.done .ln{background:#0B7A6B}
+.st.last .ln{display:none}
+.ev{display:grid;grid-template-columns:32px minmax(0,1fr);gap:14px;position:relative;padding-bottom:14px}
+.ev .ic{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;z-index:1}
+.ev .rail{position:absolute;left:15px;top:32px;bottom:0;width:2px;background:#EEF1F4}
+.pv{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px}
+.pv .k{color:#5E6B7D}
+.pv .o{font-family:'Geist Mono',ui-monospace,monospace;font-size:11.5px;padding:2px 7px;border-radius:5px;background:#F4F6F8;color:#5E6B7D;text-decoration:line-through;text-decoration-color:#B9C2CE}
+.pv .n{font-family:'Geist Mono',ui-monospace,monospace;font-size:11.5px;padding:2px 7px;border-radius:5px;background:#E1F4EC;color:#0A6648}
+.av{width:22px;height:22px;border-radius:50%;font-size:10px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;color:#0E1726;flex:0 0 22px}
+.menu{position:absolute;right:0;top:46px;width:220px;background:#fff;border:1px solid #E3E7EC;border-radius:10px;box-shadow:0 12px 32px rgba(14,23,38,.16);padding:6px;z-index:20;display:flex;flex-direction:column}
+.mi{display:flex;align-items:center;gap:10px;height:36px;padding:0 10px;border-radius:7px;border:0;background:transparent;font:inherit;font-size:13px;color:#1B2638;cursor:pointer;text-align:left;width:100%}
+.mi:hover{background:#F4F6F8;color:#0E1726}
+.mi.dg{color:#A3201F}
+.trail{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.node{display:flex;flex-direction:column;gap:2px;padding:10px 14px;border:1px solid #E3E7EC;border-radius:10px;background:#fff;color:#0E1726;min-width:0}
+.node:hover{border-color:#0B7A6B;color:#0E1726}
+.node .k{font-size:11.5px;color:#5E6B7D}
+.inp{height:38px;width:100%;border:1px solid #D5DBE3;border-radius:8px;padding:0 11px;font:inherit;font-size:13.5px;color:#0E1726;background:#fff}
+textarea.inp{height:68px;padding:9px 11px;resize:vertical}
+.inp:focus{outline:2px solid #2BC4A8;outline-offset:0;border-color:#0B7A6B}
+.lblc{border:1.5px dashed #8794A6;border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;font-size:12.5px;max-width:320px}
+.lblc .k{color:#5E6B7D;display:inline-block;width:70px}
+@media print{body *{visibility:hidden!important}.pmodal,.pmodal *{visibility:visible!important}.pmodal{position:absolute!important;left:0!important;top:0!important;transform:none!important;width:100%!important;box-shadow:none!important}.noprint{display:none!important}}
+@media (max-width:900px){.side{display:none}.mtop{display:flex}.main{padding:20px 16px 40px}.top{padding:12px 16px}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh; background: #F4F6F8">
+<nav class="side" aria-label="Primary">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 2px 8px 14px; color: #fff">
+<span style="width: 32px; height: 32px; border-radius: 9px; background: #0B7A6B; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4a8 8 0 1 0 4 11.5A6.5 6.5 0 0 1 16 4z"></path><path d="M6 18l2.5-2.5"></path></svg></span>
+<span style="display: flex; flex-direction: column; line-height: 1.15"><span style="font-weight: 600; font-size: 14px">Moonrock R&amp;D</span><span style="font-size: 11.5px; color: #8D99AC">Inventory × Exergio</span></span>
+</a>
+<a class="nav" href="Main.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>Dashboard</a>
+<div class="sec">Inventory</div>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"></path><path d="M3 8v8l9 5 9-5V8"></path><path d="M12 13v8"></path></svg>All inventory</a>
+<a class="nav" href="Products.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg>Products</a>
+<a class="nav" href="Batches.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l10 5-10 5L2 7l10-5z"></path><path d="M2 12l10 5 10-5"></path><path d="M2 17l10 5 10-5"></path></svg>Batches</a>
+<a class="nav" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive stock</a>
+<div class="sec">Devices</div>
+<a class="nav" href="DevicePrep.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg>Device preparation<span class="ct">15</span></a>
+<a class="nav on" href="Inventory.dc.html" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="18" height="7" rx="2"></rect><path d="M7 16.5h.01M11 16.5h.01"></path><path d="M17 13V5"></path><path d="M14 7.5a4 4 0 0 1 6 0"></path></svg>Teltonika</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h11a3 3 0 1 0-3-3"></path><path d="M3 12h16a3 3 0 1 1-3 3"></path><path d="M3 16h7"></path></svg>CO₂ sensors</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"></circle><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7M5.6 5.6a9 9 0 0 0 0 12.8M18.4 5.6a9 9 0 0 1 0 12.8"></path></svg>LoRaWAN gateways</a>
+<a class="nav" href="SimInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"></path><rect x="8.5" y="11" width="7" height="6" rx="1"></rect></svg>SIM cards</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"></rect><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"></path></svg>Other equipment</a>
+<div class="sec">Facilities &amp; projects</div>
+<a class="nav" href="Facilities.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"></rect><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1"></path></svg>Facilities</a>
+<a class="nav" href="PocManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6L4.5 18.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3"></path><path d="M7 15h10"></path></svg>POC projects</a>
+<a class="nav" href="ContractManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path><path d="M9 13h6M9 17h4"></path></svg>Contracts</a>
+<div class="sec">Deployments</div>
+<a class="nav" href="Deployments.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3z"></path><path d="M14 10h4l3 3v3h-7"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>Deployments</a>
+<a class="nav" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>New deployment</a>
+<div class="sec">Insights &amp; admin</div>
+<a class="nav" href="Reports.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M10 20V5M16 20v-6M21 20H3"></path></svg>Reports</a>
+<a class="nav" href="AuditLog.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l3 2"></path></svg>Audit log</a>
+<a class="nav" href="Users.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20a6.5 6.5 0 0 1 13 0"></path><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"></path></svg>Users &amp; roles</a>
+<a class="nav" href="Settings.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Settings</a>
+<div style="margin-top: auto; padding: 16px 8px 0; display: flex; align-items: center; gap: 10px; border-top: 1px solid #1C2A42">
+<span style="width: 32px; height: 32px; border-radius: 50%; background: #2BC4A8; color: #04211C; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600">CH</span>
+<span style="display: flex; flex-direction: column; line-height: 1.2"><span style="color: #fff; font-size: 13px; font-weight: 500">Chetan</span><span style="color: #8D99AC; font-size: 11.5px">Admin · MRD Office</span></span>
+</div>
+</nav>
+
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+<div class="mtop" style="align-items: center; justify-content: space-between; padding: 12px 16px; background: #0C1424; color: #fff">
+<span style="font-weight: 600">Moonrock R&amp;D</span>
+<button class="btn sm" aria-label="Open menu" aria-expanded="{{shell.menuExp}}" onClick="{{shell.toggleMenu}}" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
+</div>
+<header class="top">
+<a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
+<span style="flex: 1"></span>
+<span class="b s-prep" title="All records shown are sample data">Sample data</span>
+<span class="b {{shell.syncCls}}" title="{{shell.syncTip}}">{{shell.syncLabel}}</span>
+<a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
+<a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
+<div style="position: relative; z-index: {{shell.bellZ}}">
+<button class="btn ic" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="{{shell.bellExp}}" onClick="{{shell.toggleBell}}" style="position: relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg><sc-if value="{{shell.hasUnread}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #DC3B3A; color: #fff; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #fff">{{shell.unread}}</span></sc-if></button>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="Notifications" style="position: absolute; right: 0; top: calc(100% + 8px); z-index: 41; width: 360px; max-width: calc(100vw - 32px); background: #fff; border: 1px solid #DCE1E8; border-radius: 12px; box-shadow: 0 16px 40px rgba(14,23,38,.18); overflow: hidden; text-align: left">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #EEF1F4"><span style="font-weight: 600; font-size: 14px; color: #0E1726">Notifications</span><button onClick="{{shell.markRead}}" style="border: 0; background: none; padding: 4px; font: inherit; font-size: 12.5px; color: #0B7A6B; cursor: pointer">Mark all as read</button></div>
+<div style="max-height: 380px; overflow-y: auto">
+<sc-for list="{{shell.notes}}" as="n" hint-placeholder-count="4">
+<a href="{{n.href}}" style="display: flex; gap: 10px; padding: 11px 14px; border-bottom: 1px solid #F1F4F7; color: #0E1726; background: {{n.bg}}">
+<span style="width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: 0 0 8px; background: {{n.dot}}"></span>
+<span style="flex: 1; min-width: 0; font-size: 13px; line-height: 1.4"><span style="display: block">{{n.text}}</span><span style="display: block; font-size: 12px; color: #5E6B7D">{{n.when}}</span></span>
+</a>
+</sc-for>
+</div>
+<a href="AuditLog.dc.html" style="display: block; padding: 10px 14px; font-size: 13px; font-weight: 500; text-align: center; border-top: 1px solid #EEF1F4">Open audit log</a>
+</div>
+</sc-if>
+</div>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}"><button aria-label="Close notifications" onClick="{{shell.closeAll}}" style="position: fixed; inset: 0; z-index: 30; background: transparent; border: 0; padding: 0; cursor: default"></button></sc-if>
+</header>
+
+<main class="main" style="gap: 20px">
+<nav class="crumb" aria-label="Breadcrumb"><a href="Inventory.dc.html">Inventory</a><span aria-hidden="true">/</span><a href="Inventory.dc.html">Teltonika</a><span aria-hidden="true">/</span><a href="ProductDetail.dc.html">RUT956</a><span aria-hidden="true">/</span><span class="mono" style="color: #0E1726">1108675309</span></nav>
+
+<!-- Hero -->
+<section class="card" style="padding: 22px; display: flex; gap: 22px; flex-wrap: wrap; align-items: flex-start">
+<div style="width: 120px; height: 120px; border-radius: 12px; background: #E9EEF2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: #5E6B7D; flex: 0 0 120px">
+<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="13" width="18" height="7" rx="2"></rect><path d="M7 16.5h.01M11 16.5h.01"></path><path d="M17 13V5"></path><path d="M14 7.5a4 4 0 0 1 6 0"></path></svg>
+<span style="font-size: 11.5px">Product photo</span>
+</div>
+<div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
+<span class="ov">Teltonika · 4G LTE industrial router</span>
+</div>
+<div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+<h1 style="font-size: 26px; font-weight: 600; letter-spacing: -.02em">Teltonika RUT956</h1>
+<span class="b {{statusCls}}">{{statusLabel}}</span>
+</div>
+<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+<span class="muted" style="font-size: 13px">S/N</span>
+<span class="mono" style="font-size: 22px; font-weight: 500; letter-spacing: 0">1108675309</span>
+<button class="btn sm" onClick="{{copy}}" aria-label="Copy serial number 1108675309"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a1 1 0 0 1 1-1h10"></path></svg>{{copyLabel}}</button>
+</div>
+<div style="display: flex; gap: 8px 22px; flex-wrap: wrap; padding-top: 4px">
+<span class="fact"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>{{locLabel}}</span>
+<span class="fact"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l10 5-10 5L2 7l10-5z"></path><path d="M2 12l10 5 10-5"></path></svg>Batch <a href="BatchDetail.dc.html" class="mono">TEL-2026-004</a></span>
+<span class="fact"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg>Configured by <a href="Users.dc.html">{{cfgBy}}</a> · {{cfgWhen}}</span>
+<span class="fact"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3z"></path><path d="M14 10h4l3 3v3h-7"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>Deployment: {{deployFact}}</span>
+</div>
+</div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; position: relative">
+<a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3z"></path><path d="M14 10h4l3 3v3h-7"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>Deploy</a>
+<button class="btn" onClick="{{openEdit}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg>Edit</button>
+<button class="btn" onClick="{{askMove}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>Move</button>
+<button class="btn" onClick="{{askStatus}}">Change status</button>
+<button class="btn ic" onClick="{{toggleMenu}}" aria-label="More actions" aria-expanded="{{menuAria}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h.01M12 12h.01M19 12h.01"></path></svg></button>
+<sc-if value="{{menu}}" hint-placeholder-val="{{ false }}">
+<div class="menu" role="menu">
+<button class="mi" role="menuitem" onClick="{{openLabel}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"></path><rect x="3" y="9" width="18" height="8" rx="2"></rect><path d="M7 14h10v7H7z"></path></svg>Print label</button>
+<a class="mi" role="menuitem" href="AuditLog.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path></svg>View in audit log</a>
+<span style="height: 1px; background: #EEF1F4; margin: 4px 0"></span>
+<button class="mi dg" role="menuitem" onClick="{{askDamaged}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9.5 17H2.5z"></path><path d="M12 10v4M12 17h.01"></path></svg>Mark damaged…</button>
+<button class="mi dg" role="menuitem" onClick="{{askRetire}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1"></rect><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M10 13h4"></path></svg>Retire…</button>
+</div>
+</sc-if>
+</div>
+</section>
+
+<!-- Answers -->
+<section class="card" aria-label="Key answers" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); overflow: hidden">
+<sc-for list="{{answers}}" as="a" hint-placeholder-count="8">
+<div class="ans"><span class="q">{{a.q}}</span><span class="a {{a.cls}}" title="{{a.a}}">{{a.a}}</span></div>
+</sc-for>
+</section>
+
+<!-- Lifecycle -->
+<section class="card" style="padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap">
+<h2 style="font-size: 15px; font-weight: 600">Lifecycle</h2>
+<span class="muted" style="font-size: 12.5px">{{lifeDone}} · next: <a href="{{lifeHref}}">{{lifeNext}}</a></span>
+</div>
+<ol style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px 0">
+<sc-for list="{{stages}}" as="s" hint-placeholder-count="7">
+<li class="{{s.cls}}">
+<span class="ln" aria-hidden="true"></span>
+<span class="c"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="{{s.icon}}"></path></svg></span>
+<span style="display: flex; flex-direction: column; padding-right: 10px"><span style="font-size: 13px; font-weight: 500">{{s.label}}</span><span class="muted" style="font-size: 12px">{{s.sub}}</span></span>
+</li>
+</sc-for>
+</ol>
+</section>
+
+<!-- Two columns -->
+<section style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+<div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+
+<div class="card">
+<div class="hd"><h2>Identity</h2><button class="btn sm" onClick="{{openEdit}}">Edit</button></div>
+<sc-for list="{{identity}}" as="r" hint-placeholder-count="6">
+<div class="kv"><span class="k">{{r.k}}</span><span class="{{r.cls}}">{{r.v}}</span><button class="cp" aria-label="{{r.aria}}" title="{{r.title}}" onClick="{{r.copy}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a1 1 0 0 1 1-1h10"></path></svg></button></div>
+</sc-for>
+</div>
+
+<div class="card">
+<div class="hd"><h2>Connectivity</h2><a href="SimInventory.dc.html" style="font-size: 13px; font-weight: 500">SIM record →</a></div>
+<div class="kv"><span class="k">SIM carrier</span><span>Omantel M2M</span><span></span></div>
+<div class="kv"><span class="k">ICCID</span><a class="mono" href="SimInventory.dc.html">{{simIccid}}</a><button class="cp" aria-label="Copy ICCID" onClick="{{copyIccid}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a1 1 0 0 1 1-1h10"></path></svg></button></div>
+<div class="kv"><span class="k">Phone number</span><span class="mono">{{simMsisdn}}</span><span></span></div>
+<div class="kv"><span class="k">Data plan</span><span>M2M Pooled 5 GB</span><span></span></div>
+<div class="kv"><span class="k">APN</span><span class="mono">mrd.m2m</span><span></span></div>
+<div class="kv"><span class="k">IP address</span><span style="display: flex; align-items: center; gap: 8px"><span class="mono">{{ipAddr}}</span><span class="t t-add">Static</span></span><button class="cp" aria-label="Copy IP address" onClick="{{copyIp}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a1 1 0 0 1 1-1h10"></path></svg></button></div>
+<div style="padding: 10px 18px 14px; border-top: 1px solid #EEF1F4; font-size: 12px" class="muted">Pool <span class="mono" style="font-size: 11.5px">10.64.12.0/24</span> · connectivity test passed 05 Oct 09:40 · live monitoring not connected</div>
+</div>
+
+<div class="card">
+<div class="hd"><h2>Deployment</h2></div>
+<sc-if value="{{notDeployed}}" hint-placeholder-val="{{ true }}">
+<div style="padding: 8px 18px 22px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px">
+<span style="width: 44px; height: 44px; border-radius: 12px; background: #F1F4F7; color: #5E6B7D; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3z"></path><path d="M14 10h4l3 3v3h-7"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg></span>
+<span style="font-weight: 600">Not deployed yet</span>
+<span class="muted" style="font-size: 13px; max-width: 340px">This router is configured and tested. Deploy it as a POC, Contract, Replacement or Additional unit — facility, placement and project stage are recorded on deployment.</span>
+<a class="btn p sm" href="CreateDeployment.dc.html" style="margin-top: 4px">Deploy device</a>
+</div>
+</sc-if>
+<sc-if value="{{isDeployed}}" hint-placeholder-val="{{ false }}">
+<div class="kv"><span class="k">Facility</span><a href="FacilityDetail.dc.html">{{depFac}}</a><span></span></div>
+<div class="kv"><span class="k">Deployment type</span><span><span class="{{depTypeCls}}">{{depType}}</span></span><span></span></div>
+<div class="kv"><span class="k">Reference</span><a class="mono" href="Deployments.dc.html">{{depRef}}</a><span></span></div>
+<div class="kv"><span class="k">Deployed</span><span>{{depWhen}}</span><span></span></div>
+</sc-if>
+</div>
+</div>
+
+<div style="flex: 1.25 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+<div class="card">
+<div class="hd" style="flex-wrap: wrap">
+<div><h2>History</h2><p class="muted" style="font-size: 12.5px">Every change, who made it and what it was before</p></div>
+<div role="group" aria-label="Filter history" style="display: flex; gap: 2px; padding: 3px; background: #E9EDF1; border-radius: 10px">
+<sc-for list="{{filters}}" as="x" hint-placeholder-count="4"><button class="{{x.cls}}" aria-pressed="{{x.pressed}}" onClick="{{x.pick}}" style="height: 28px; font-size: 12.5px">{{x.label}}</button></sc-for>
+</div>
+</div>
+<div style="padding: 6px 18px 4px">
+<sc-for list="{{events}}" as="e" hint-placeholder-count="9">
+<div class="ev">
+<span class="rail" aria-hidden="true"></span>
+<span class="ic" style="background: {{e.bg}}; color: {{e.fg}}; border: {{e.border}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{e.icon}}"></path></svg></span>
+<div style="display: flex; flex-direction: column; gap: 6px; min-width: 0; padding-top: 5px">
+<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+<span style="font-size: 13.5px; font-weight: 600">{{e.title}}</span>
+<span style="margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: 12px" class="muted"><span class="av" style="background: {{e.avbg}}">{{e.ini}}</span>{{e.who}} · {{e.when}}</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px 16px">
+<sc-for list="{{e.changes}}" as="c" hint-placeholder-count="2">
+<span class="pv"><span class="k">{{c.k}}</span><span class="o">{{c.from}}</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="changed to"><path d="M5 12h14M13 6l6 6-6 6"></path></svg><span class="n">{{c.to}}</span></span>
+</sc-for>
+</div>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="padding: 10px 18px 14px; border-top: 1px solid #EEF1F4; display: flex; justify-content: space-between; font-size: 12.5px"><span class="muted">{{eventCount}} events · times in Gulf Standard Time</span><a href="AuditLog.dc.html" style="font-weight: 500">Full audit log →</a></div>
+</div>
+
+<div class="card">
+<div class="hd"><h2>Notes &amp; attachments</h2><span class="muted" style="font-size: 12px">Visible to MRD and Exergio</span></div>
+<div style="padding: 0 18px 16px; display: flex; flex-direction: column; gap: 12px">
+<sc-for list="{{notes}}" as="n" hint-placeholder-count="1">
+<div style="display: flex; gap: 10px; padding: 10px 12px; border-radius: 10px; background: #F8FAFB">
+<span class="av" style="background: #CDEFE7; width: 26px; height: 26px; flex: 0 0 26px">CH</span>
+<div style="font-size: 13px; display: flex; flex-direction: column; gap: 2px"><span><strong style="font-weight: 600">{{n.who}}</strong> <span class="muted" style="font-size: 12px">· {{n.when}}</span></span><span>{{n.text}}</span></div>
+</div>
+</sc-for>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<a href="AuditLog.dc.html" style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid #E3E7EC; border-radius: 8px; font-size: 12.5px; color: #1B2638"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path></svg><span class="mono" style="font-size: 12px">config-backup-1108675309.tar.gz</span><span class="muted">18 KB</span></a>
+<a href="AuditLog.dc.html" style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid #E3E7EC; border-radius: 8px; font-size: 12.5px; color: #1B2638"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path></svg>Connectivity test 0940.pdf<span class="muted">212 KB</span></a>
+<sc-for list="{{files}}" as="fl" hint-placeholder-count="1">
+<span style="display: flex; align-items: center; gap: 8px; padding: 6px 6px 6px 10px; border: 1px solid #BFE3D3; background: #F4FBF8; border-radius: 8px; font-size: 12.5px; color: #1B2638" title="{{fl.title}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path></svg><span>{{fl.name}}</span><span class="muted">{{fl.size}}</span><button class="cp" onClick="{{fl.remove}}" aria-label="{{fl.aria}}" style="width: 24px; height: 24px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></span>
+</sc-for>
+</div>
+<p class="muted" style="font-size: 12px">Prototype stores the file name, size and type only — file contents are not uploaded anywhere.</p>
+<label for="note" class="sr" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Add a note</label>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<input id="note" class="inp" value="{{draft}}" onChange="{{onDraft}}" placeholder="Add a note — e.g. label re-printed, reserved for a kit…" style="flex: 1 1 220px; width: auto; height: 32px">
+<label class="btn sm" style="position: relative; overflow: hidden"><input type="file" multiple="multiple" style="position: absolute; width: 1px; height: 1px; opacity: 0" onChange="{{onFile}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.5l-8.5 8.5a5 5 0 0 1-7-7L14 5.5a3.5 3.5 0 0 1 5 5L10.5 19a2 2 0 0 1-3-3L15 8.5"></path></svg>Attach file</label>
+<button class="btn sm p" onClick="{{addNote}}">Add note</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Relationship trail -->
+<section class="card" style="padding: 18px 20px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap"><h2 style="font-size: 15px; font-weight: 600">Traceability</h2><span class="muted" style="font-size: 12.5px">Supplier → Batch → Device → SIM → IP → Facility</span></div>
+<div class="trail">
+<sc-for list="{{trail}}" as="t" hint-placeholder-count="6">
+<a class="node" href="{{t.href}}" style="border-style: {{t.bs}}"><span class="k">{{t.k}}</span><span class="{{t.cls}}" style="font-size: 13px; font-weight: 500">{{t.v}}</span></a>
+<span aria-hidden="true" style="color: #8794A6; font-size: 16px">{{t.arrow}}</span>
+</sc-for>
+</div>
+</section>
+</main>
+</div>
+</div>
+
+<sc-if value="{{dialog}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{cancel}}" style="position: fixed; inset: 0; background: rgba(14,23,38,.45); z-index: 40"></div>
+<div role="alertdialog" aria-modal="true" aria-label="{{dlgTitle}}" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(460px, calc(100% - 32px)); background: #fff; border-radius: 14px; z-index: 41; box-shadow: 0 20px 48px rgba(14,23,38,.25)">
+<div style="padding: 22px 22px 8px; display: flex; gap: 14px">
+<span style="width: 40px; height: 40px; border-radius: 50%; background: {{dlgIconBg}}; color: {{dlgIconFg}}; display: flex; align-items: center; justify-content: center; flex: 0 0 40px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9.5 17H2.5z"></path><path d="M12 10v4M12 17h.01"></path></svg></span>
+<div style="display: flex; flex-direction: column; gap: 6px"><h2 style="font-size: 17px; font-weight: 600">{{dlgTitle}}</h2><p class="muted" style="font-size: 13.5px">{{dlgBody}}</p></div>
+</div>
+<div style="padding: 10px 22px 4px 76px; display: flex; flex-direction: column; gap: 6px">
+<sc-if value="{{dlgDanger}}" hint-placeholder-val="{{ true }}">
+<label for="reason" style="font-size: 12.5px; font-weight: 500; color: #3B4758">Reason</label>
+<select id="reason" class="inp" value="{{dlgReason}}" onChange="{{onReason}}"><option>End of life</option><option>Physical damage — not repairable</option><option>Lost or stolen</option><option>Other</option></select>
+</sc-if>
+<sc-if value="{{dlgPick}}" hint-placeholder-val="{{ false }}">
+<label for="dlg-pick" style="font-size: 12.5px; font-weight: 500; color: #3B4758">{{dlgPickLabel}}</label>
+<select id="dlg-pick" class="inp" value="{{dlgValue}}" onChange="{{onDlgValue}}"><sc-for list="{{dlgOpts}}" as="o" hint-placeholder-count="6"><option value="{{o.v}}">{{o.l}}</option></sc-for></select>
+<label for="dlg-note" style="font-size: 12.5px; font-weight: 500; color: #3B4758; margin-top: 6px">Note <span style="font-weight: 400; color: #5E6B7D">· optional</span></label>
+<input id="dlg-note" class="inp" value="{{dlgNote}}" onChange="{{onDlgNote}}" placeholder="Why the change?">
+</sc-if>
+</div>
+<div style="padding: 18px 22px; display: flex; justify-content: flex-end; gap: 10px">
+<button class="btn" onClick="{{cancel}}">Cancel</button>
+<button class="btn" onClick="{{confirm}}" style="background: {{dlgCtaBg}}; border-color: {{dlgCtaBg}}; color: #fff">{{dlgCta}}</button>
+</div>
+</div>
+</sc-if>
+<!-- Edit identity -->
+<sc-if value="{{editOpen}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{editClose}}" style="position: fixed; inset: 0; background: rgba(14,23,38,.45); z-index: 40"></div>
+<div role="dialog" aria-modal="true" aria-label="Edit device record" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(520px, calc(100% - 32px)); max-height: calc(100vh - 32px); overflow-y: auto; background: #fff; border-radius: 14px; z-index: 41; box-shadow: 0 20px 48px rgba(14,23,38,.25)">
+<div style="padding: 20px 22px 6px"><h2 style="font-size: 17px; font-weight: 600">Edit device record</h2><p class="muted" style="font-size: 13px; margin-top: 4px">Corrections are logged field by field with the previous value. Serial number cannot be changed.</p></div>
+<div style="padding: 12px 22px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px">
+<sc-for list="{{editFields}}" as="ef" hint-placeholder-count="5">
+<div style="display: flex; flex-direction: column; gap: 6px"><label for="{{ef.id}}" style="font-size: 12.5px; font-weight: 500; color: #3B4758">{{ef.label}}</label><input id="{{ef.id}}" class="inp" value="{{ef.v}}" onChange="{{ef.on}}" style="font-family: {{ef.font}}"></div>
+</sc-for>
+</div>
+<sc-if value="{{editHasErr}}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin: 0 22px; font-size: 12.5px; color: #A3201F; background: #FDEBEA; padding: 8px 10px; border-radius: 8px">{{editErr}}</p></sc-if>
+<div style="padding: 16px 22px; display: flex; justify-content: flex-end; gap: 10px">
+<button class="btn" onClick="{{editClose}}">Cancel</button>
+<button class="btn p" onClick="{{editSave}}">Save changes</button>
+</div>
+</div>
+</sc-if>
+
+<!-- Print label -->
+<sc-if value="{{labelOpen}}" hint-placeholder-val="{{ false }}">
+<div class="noprint" onClick="{{labelClose}}" style="position: fixed; inset: 0; background: rgba(14,23,38,.45); z-index: 40"></div>
+<div class="pmodal" role="dialog" aria-modal="true" aria-label="Print device label" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(420px, calc(100% - 32px)); background: #fff; border-radius: 14px; z-index: 41; box-shadow: 0 20px 48px rgba(14,23,38,.25)">
+<div class="noprint" style="padding: 20px 22px 6px"><h2 style="font-size: 17px; font-weight: 600">Print label</h2><p class="muted" style="font-size: 13px; margin-top: 4px">Opens your browser's print dialog with this label only.</p></div>
+<div style="padding: 14px 22px">
+<div class="lblc">
+<span style="font-weight: 600; font-size: 13px">Moonrock R&amp;D · Teltonika RUT956</span>
+<span><span class="k">S/N</span><span class="mono" style="font-weight: 600">1108675309</span></span>
+<span><span class="k">IMEI</span><span class="mono">{{lblImei}}</span></span>
+<span><span class="k">Device ID</span><span class="mono">{{lblDevId}}</span></span>
+<span><span class="k">IP</span><span class="mono">{{ipAddr}}</span></span>
+</div>
+</div>
+<div class="noprint" style="padding: 14px 22px; border-top: 1px solid #E3E7EC; display: flex; justify-content: flex-end; gap: 10px">
+<button class="btn" onClick="{{labelClose}}">Cancel</button>
+<button class="btn p" onClick="{{labelPrint}}">Print</button>
+</div>
+</div>
+</sc-if>
+
+<!-- Status message -->
+<sc-if value="{{hasMsg}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 60; display: flex; align-items: center; gap: 12px; padding: 12px 14px 12px 16px; border-radius: 12px; background: #0E1726; color: #fff; font-size: 13.5px; box-shadow: 0 12px 32px rgba(14,23,38,.3); max-width: calc(100% - 32px); flex-wrap: wrap">
+<span style="word-break: break-all">{{msg}}</span>
+<button onClick="{{dismissMsg}}" aria-label="Dismiss" style="border: 0; background: transparent; color: #B3BDCB; cursor: pointer; padding: 4px; display: flex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-if>
+<sc-if value="{{shell.menuOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 70; display: flex">
+<nav aria-label="Mobile navigation" style="width: min(300px, 85vw); height: 100%; overflow-y: auto; background: #0C1424; padding: 16px 12px; display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 8px 14px; color: #fff"><span style="font-weight: 600">Moonrock R&amp;D</span><button onClick="{{shell.closeAll}}" aria-label="Close menu" style="width: 40px; height: 40px; border: 0; border-radius: 8px; background: #1C2A42; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<a href="Main.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Dashboard</a>
+<a href="Search.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Search</a>
+<a href="Inventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">All inventory</a>
+<a href="Products.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Products</a>
+<a href="Batches.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Batches</a>
+<a href="ReceiveInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Receive stock</a>
+<a href="DevicePrep.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Device preparation</a>
+<a href="SimInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">SIM cards</a>
+<a href="Facilities.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Facilities</a>
+<a href="PocManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">POC projects</a>
+<a href="ContractManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Contracts</a>
+<a href="Deployments.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Deployments</a>
+<a href="CreateDeployment.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">New deployment</a>
+<a href="Reports.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Reports</a>
+<a href="AuditLog.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Audit log</a>
+<a href="Users.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Users &amp; roles</a>
+<a href="Settings.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Settings</a>
+</nav>
+<button aria-label="Close menu" onClick="{{shell.closeAll}}" style="flex: 1; border: 0; padding: 0; background: rgba(14,23,38,.5); cursor: default"></button>
+</div>
+</sc-if>
+<sc-if value="{{shell.blocked}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 80; display: flex; align-items: center; gap: 12px; max-width: min(560px, calc(100vw - 32px)); padding: 12px 12px 12px 16px; border-radius: 12px; background: #7A1F1E; color: #fff; font-size: 13.5px; box-shadow: 0 12px 32px rgba(14,23,38,.3)">
+<span style="flex: 1">You have view access to this canvas, so that change wasn't saved. Ask the owner for edit access to change shared data.</span>
+<button onClick="{{shell.unblock}}" style="height: 32px; padding: 0 12px; border: 1px solid rgba(255,255,255,.4); border-radius: 8px; background: transparent; color: #fff; font: inherit; font-size: 12.5px; cursor: pointer">OK</button>
+</div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1760}}'>
+class Component extends DCLogic {
+  // Prototype persistence: this screen's data survives reloads and is shared by every screen in this browser.
+  componentDidMount() {
+    this._init = JSON.parse(JSON.stringify(this.state));
+    this._onStore = e => { if (!e || !e.key || e.key === 'mrd-proto:store') this.forceUpdate(); };
+    try { window.addEventListener('storage', this._onStore); } catch (e) {}
+    this._sharedInit();
+    try { const raw = window.localStorage.getItem('mrd-proto:v1:DeviceDetail'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
+  }
+  // Shared prototype store: one record in browser storage that every screen reads and writes (key mrd-proto:store).
+  readStore() {
+    const empty = { v: 1, units: {}, added: [], deployments: [], events: [], catalog: {} };
+    try { const s = JSON.parse(window.localStorage.getItem('mrd-proto:store') || 'null'); return Object.assign(empty, s || {}); } catch (e) { return empty; }
+  }
+  writeStore(mutate) {
+    const s = this.readStore();
+    if (this._shared && this._shared.mode === 'live' && !this._shared.canEdit) { const t = JSON.parse(JSON.stringify(s)); mutate(t); const strip = o => { const c = Object.assign({}, o); delete c.ui; return JSON.stringify(c); }; if (strip(t) !== strip(s)) this.setState({ _blocked: true }); s.ui = t.ui || s.ui; try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {} this.forceUpdate(); return s; }
+    mutate(s); s.events = s.events.slice(0, 200);
+    try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {}
+    this._pushShared(s);
+    this.forceUpdate(); return s;
+  }
+  // Shared across viewers: the store is mirrored to one document in this artifact's database (mrd_prototype/store).
+  // Browser storage stays as the local cache; everyone who opens the canvas sees the same data, editors can change it.
+  _host() {
+    let w = window;
+    for (let i = 0; i < 8; i++) {
+      try { if (w.claude && typeof w.claude.use === 'function') return w.claude; } catch (e) { return null; }
+      let p = null; try { p = w.parent; } catch (e) { return null; }
+      if (!p || p === w) return null; w = p;
+    }
+    return null;
+  }
+  async _sharedInit() {
+    const host = this._host();
+    if (!host) { this._shared = { mode: 'local' }; this.forceUpdate(); return; }
+    let db = null; try { db = await host.use('db'); } catch (e) { db = null; }
+    if (!db) { this._shared = { mode: 'local' }; this.forceUpdate(); return; }
+    let canEdit = false; try { const u = await host.use('user'); canEdit = u ? !!(await u.canEdit()) : false; } catch (e) { canEdit = false; }
+    this._shared = { mode: 'live', canEdit, db };
+    try {
+      this._unsubShared = db.doc('mrd_prototype/store').onSnapshot(snap => {
+        const local = this.readStore();
+        let next = null;
+        if (snap && snap.exists) { const d = snap.data() || {}; if (typeof d.json === 'string') { try { next = JSON.parse(d.json); } catch (e) { next = null; } } }
+        if (!next) {
+          if (snap && !snap.exists) {
+            let seen = false; try { seen = !!window.localStorage.getItem('mrd-proto:shared-seen'); } catch (e) {}
+            const hasLocal = local.events.length || Object.keys(local.units).length || local.added.length;
+            if (!seen && canEdit && hasLocal) this._pushShared(local);
+            else if (seen || !canEdit) { try { window.localStorage.setItem('mrd-proto:store', JSON.stringify({ v: 1, units: {}, added: [], deployments: [], events: [], catalog: {}, ui: local.ui || {} })); } catch (e) {} this.forceUpdate(); }
+          }
+          return;
+        }
+        next.ui = local.ui || {};
+        try { window.localStorage.setItem('mrd-proto:shared-seen', '1'); } catch (e) {}
+        try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(next)); } catch (e) {}
+        this.forceUpdate();
+      }, err => { this._shared = { mode: 'local', err: err && err.code }; this.forceUpdate(); });
+    } catch (e) { this._shared = { mode: 'local' }; }
+    this.forceUpdate();
+  }
+  _pushShared(s) {
+    const sh = this._shared;
+    if (!sh || sh.mode !== 'live' || !sh.canEdit) return;
+    const out = Object.assign({}, s); delete out.ui;
+    let json = JSON.stringify(out);
+    if (json.length > 240000) { out.events = (out.events || []).slice(0, 40); json = JSON.stringify(out); }
+    sh.db.doc('mrd_prototype/store').set({ json, savedAt: Date.now() }).catch(err => { this._shared = Object.assign({}, sh, { lastErr: (err && err.code) || 'unavailable' }); this.forceUpdate(); });
+  }
+  _clearShared() {
+    const sh = this._shared;
+    if (sh && sh.mode === 'live' && sh.canEdit) { try { sh.db.doc('mrd_prototype/store').delete().catch(() => {}); } catch (e) {} }
+  }
+  syncInfo() {
+    const sh = this._shared;
+    if (!sh) return { label: 'Connecting…', cls: 's-unconf', tip: 'Connecting to the shared store', readOnly: false };
+    if (sh.mode === 'live' && sh.lastErr) return { label: 'Not saved', cls: 's-damaged', tip: 'The last change could not be saved to the shared store (' + sh.lastErr + ')', readOnly: false };
+    if (sh.mode === 'live' && sh.canEdit) return { label: 'Shared · live', cls: 's-deployed', tip: 'Changes are saved for everyone who opens this canvas', readOnly: false };
+    if (sh.mode === 'live') return { label: 'View only', cls: 's-ready', tip: 'You can see shared changes live; only people with edit access can change data', readOnly: true };
+    return { label: 'This browser only', cls: 's-prep', tip: 'The shared store is not available here, so changes stay in this browser', readOnly: false };
+  }
+  nowLabel() { const d = new Date(); return 'Today, ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  patchUnit(s, ident, patch, prevSt) {
+    const cur = s.units[ident] || {};
+    s.units[ident] = Object.assign({}, cur, patch, { st0: cur.st0 !== undefined ? cur.st0 : (prevSt || ''), upd: this.nowLabel() });
+  }
+  logEvent(s, ev) {
+    const d = new Date();
+    s.events.unshift(Object.assign({ id: 'e' + d.getTime() + Math.random().toString(36).slice(2, 6), at: d.getTime(), when: this.nowLabel(), who: 'Chetan', ini: 'CH', role: 'Admin', source: 'Web' }, ev));
+  }
+  componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} try { if (this._unsubShared) this._unsubShared(); } catch (e) {} }
+  componentDidUpdate() {
+    try { const keep = Object.assign({}, this.state); delete keep._shell; delete keep._blocked; ["copied", "menu", "dialog", "draft", "edit", "label", "msg"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:DeviceDetail', JSON.stringify(keep)); } catch (e) {}
+  }
+  constructor(props) {
+    super(props);
+    this.state = {
+      status: 'ready', copied: false, menu: false, dialog: null, filter: 'all', draft: '', reason: 'End of life', dlgValue: '', dlgNote: '',
+      notes: [{ who: 'Chetan', when: 'Today, 09:43', text: 'Earmarked for the Al Khuwair Business Tower POC kit (20 Oct). Confirm with Aisha before deploying elsewhere.' }]
+    };
+  }
+  // Shared shell: notifications bell (fed by the shared store) and the mobile navigation drawer.
+  shellVals() {
+    const S = this.state, st = this.readStore();
+    const seen = (st.ui && st.ui.seenAt) || 0;
+    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Stage changed': 'moved the stage of', 'POC decision': 'recorded a POC decision for', 'Contract ended': 'ended the contract for', 'Issue reported': 'reported an issue on', 'Reserved': 'reserved', 'Labels printed': 'printed labels for', 'File attached': 'attached a file to', 'File removed': 'removed a file from', 'User updated': 'updated user', 'Product edited': 'edited', 'Invite resent': 'resent the invite to', 'Document uploaded': 'uploaded a document to', 'Document removed': 'removed a document from', 'Contact added': 'added a contact to', 'Contact removed': 'removed a contact from', 'Contract updated': 'updated the contract for', 'Batch updated': 'updated batch', 'Batch archived': 'archived batch', 'Batch restored': 'restored batch', 'Facility updated': 'updated facility', 'Facility restored': 'restored facility', 'Report exported': 'exported', 'Record corrected': 'corrected', 'Note added': 'added a note to', 'Settings changed': 'updated settings ·', 'User invited': 'invited', 'Role changed': 'changed the role of', 'Verified on site': 'verified on site', 'Deployment cancelled': 'cancelled', 'Deployment updated': 'updated deployment' };
+    const fromStore = st.events.slice(0, 8).map(e => ({ text: (e.who || 'Chetan') + ' ' + (VERB[e.action] || String(e.action || '').toLowerCase()) + ' ' + e.item + (e.to && e.to !== '—' && e.action !== 'Imported' ? ' → ' + e.to : ''), when: e.when, href: e.itemHref || 'AuditLog.dc.html', unread: (e.at || 0) > seen }));
+    const alerts = [
+      { text: '14 Teltonika RUT956 units are waiting for preparation', when: 'Batch TEL-2026-004', href: 'DevicePrep.dc.html', alert: true },
+      { text: 'Cat6 patch cable 1 m is below its minimum level', when: 'Low stock · 18 of 25', href: 'InventoryItem.dc.html', alert: true },
+      { text: 'Qatar Foundation: 2 CO₂ sensors scheduled to install on 08 Oct', when: 'Upcoming deployment', href: 'Deployments.dc.html', alert: true }
+    ].map(a => Object.assign(a, { unread: !seen }));
+    const all = fromStore.concat(alerts);
+    const unread = all.filter(n => n.unread).length;
+    const SY = this.syncInfo();
+    return {
+      syncLabel: SY.label, syncCls: SY.cls, syncTip: SY.tip, blocked: !!S._blocked, unblock: () => this.setState({ _blocked: false }),
+      bellOpen: S._shell === 'bell', bellExp: S._shell === 'bell' ? 'true' : 'false', bellZ: S._shell === 'bell' ? '40' : 'auto',
+      menuOpen: S._shell === 'menu', menuExp: S._shell === 'menu' ? 'true' : 'false',
+      unread: unread > 9 ? '9+' : String(unread), hasUnread: unread > 0,
+      notes: all.map(n => ({ text: n.text, when: n.when, href: n.href, bg: n.unread ? '#F4FBF8' : '#fff', dot: n.alert ? '#E08A00' : (n.unread ? '#0B7A6B' : '#D5DBE3') })),
+      toggleBell: () => this.setState({ _shell: this.state._shell === 'bell' ? '' : 'bell' }),
+      toggleMenu: () => this.setState({ _shell: this.state._shell === 'menu' ? '' : 'menu' }),
+      closeAll: () => this.setState({ _shell: '' }),
+      markRead: () => { const st = this.readStore(); st.ui = Object.assign({}, st.ui || {}, { seenAt: Date.now() }); try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(st)); } catch (e) {} this.forceUpdate(); }
+    };
+  }
+  renderVals() { return Object.assign(this._screenVals(), { shell: this.shellVals() }); }
+  _screenVals() {
+    const ST0 = this.readStore();
+    const st = this.state;
+    const SN = '1108675309', NAME = 'Teltonika RUT956', ITEM = NAME + ' ' + SN;
+    // Sample record for this device; the shared store overlays it.
+    const BASE = { st: 'ready', loc: 'MRD Office', loc2: 'Shelf A2', fac: '', type: '', sim: '8996802026093001427', msisdn: '+968 7912 3045', ip: '10.64.12.37',
+      imei: '860548043912877', mac: '00:1E:42:3A:7C:19', devId: 'MRD-TEL-0417', fw: 'RUT9M_R_00.07.08.3', profile: 'Exergio BMS gateway v2.3', configuredBy: 'Chetan', batch: 'TEL-2026-004' };
+    const P = ST0.units[SN] || {};
+    const U = Object.assign({}, BASE, P);
+    const LBL = { unconf: 'Unconfigured', prep: 'In preparation', ready: 'Ready for deployment', reserved: 'Reserved', stock: 'In stock', deployed: 'Deployed', maint: 'Under maintenance', transit: 'In transit', returned: 'Returned', damaged: 'Damaged', retired: 'Retired' };
+    const stKey = LBL[U.st] ? U.st : 'ready';
+    const S = ['s-' + stKey, LBL[stKey]];
+    const locOf = u => (u.loc || '—') + (u.loc2 ? ' · ' + u.loc2 : '');
+    const locLabel = locOf(U);
+    const simTail = U.sim ? '…' + String(U.sim).slice(-4) : '—';
+    const ipAddr = U.ip || '—';
+    const deployed = stKey === 'deployed';
+    const dep = (ST0.deployments || []).find(d => (d.items || []).some(it => it.ident === SN)) || null;
+    const fac = U.fac || (dep && dep.fac) || (deployed ? U.loc : '');
+    const dtype = U.type || (dep && dep.type) || '';
+    const cfgEvent = ST0.events.find(e => e.action === 'Configured' && String(e.item || '').indexOf(SN) >= 0);
+    const cfgWhen = P.configuredBy && cfgEvent ? cfgEvent.when : '05 Oct 09:40';
+    const answers = [
+      ['What is it?', 'RUT956 4G router', ''],
+      ['Which batch?', U.batch, 'mono'],
+      ['Where now?', locLabel, ''],
+      ['Who configured?', U.configuredBy + ' · ' + cfgWhen, ''],
+      ['Which SIM?', U.sim ? 'Omantel ' + simTail : '— none', U.sim ? 'mono' : 'muted'],
+      ['What IP?', U.ip ? U.ip + ' static' : '— none', U.ip ? 'mono' : 'muted'],
+      ['Which facility?', fac || '— not deployed', fac ? '' : 'muted'],
+      ['POC or Contract?', dtype || '— not deployed', dtype ? '' : 'muted']
+    ].map(([q, a, cls]) => ({ q, a, cls }));
+    const CHECK = 'M5 12l5 5 9-10';
+    const atReady = ['ready', 'reserved', 'stock'].indexOf(stKey) >= 0;
+    const afterDeploy = ['returned', 'transit'].indexOf(stKey) >= 0;
+    const depEv = ST0.events.find(e => e.action === 'Deployed' && String(e.item || '').indexOf(SN) >= 0);
+    const stages = [
+      ['Received', '22 Sep · Nitin', 'done', CHECK],
+      ['Configured', '05 Oct 09:40', 'done', CHECK],
+      ['SIM assigned', U.sim ? '05 Oct 09:38' : 'Released', U.sim ? 'done' : 'opt', CHECK],
+      ['IP assigned', U.ip ? '05 Oct 09:39' : 'Released', U.ip ? 'done' : 'opt', CHECK],
+      ['Ready', atReady ? 'Current · ' + (P.st ? P.upd || '09:42' : '09:42') : (deployed || afterDeploy ? 'Done · 09:42' : LBL[stKey] + ' · ' + (P.upd || '')), atReady ? 'cur' : 'done', atReady || deployed || afterDeploy ? CHECK : 'M12 8v5M12 16h.01'],
+      ['Deployed', deployed ? (fac || 'Facility') + (dtype ? ' · ' + dtype : '') : afterDeploy ? 'Done' : atReady ? 'Next step' : 'Blocked', deployed ? 'cur' : afterDeploy ? 'done' : 'next', deployed || afterDeploy ? CHECK : 'M12 5v14M5 12h14'],
+      ['Returned / transferred', afterDeploy ? LBL[stKey] + ' · ' + (P.upd || '') : 'Optional', afterDeploy ? 'cur' : 'opt', 'M4 12h12M12 8l4 4-4 4']
+    ].map(([label, sub, s, icon], i) => ({ label, sub, icon, cls: 'st ' + s + (i === 6 ? ' last' : '') }));
+    const doneN = stages.slice(0, 6).filter(x => /done|cur/.test(x.cls)).length;
+    const lifeNext = atReady ? 'Deploy to a facility' : deployed ? 'Monitor at facility' : afterDeploy ? 'Re-check and restock' : stKey === 'retired' ? 'None — retired' : 'Repair or re-configure';
+    const lifeHref = atReady ? 'CreateDeployment.dc.html' : deployed ? 'FacilityDetail.dc.html' : 'DevicePrep.dc.html';
+    // Clipboard: real copy where the browser allows it; otherwise show the value to copy by hand.
+    const copyText = (key, text) => {
+      const ok = () => this.setState({ copied: key, msg: key + ' copied to clipboard' });
+      const no = () => this.setState({ copied: '', msg: 'Clipboard not available here — select and copy: ' + text });
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(String(text)).then(ok, no); return; }
+      } catch (e) {}
+      no();
+    };
+    const identity = [
+      ['Serial number', SN, true], ['IMEI', U.imei, true], ['MAC address', U.mac, true],
+      ['Device ID', U.devId, true], ['Firmware', U.fw, true], ['Config profile', U.profile, false]
+    ].map(([k, v, m]) => ({ k, v, cls: m ? 'mono' : '', aria: 'Copy ' + k, title: st.copied === k ? 'Copied' : 'Copy ' + k, copy: () => copyText(k, v) }));
+    const I = {
+      box: 'M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8',
+      tag: 'M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z',
+      move: 'M5 12h14M13 6l6 6-6 6',
+      chip: 'M4 4h16v16H4zM9 9h6v6H9z',
+      sim: 'M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z',
+      net: 'M3 12h18M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18',
+      check: 'M5 12l5 5 9-10',
+      truck: 'M3 6h11v10H3zM14 10h4l3 3v3h-7',
+      warn: 'M12 3l9.5 17H2.5zM12 10v4'
+    };
+    const NI = ['NI', '#F6E3C4', 'Nitin'], CH = ['CH', '#CDEFE7', 'Chetan'];
+    const sample = [
+      { cat: 'location', title: 'Moved to shelf', u: CH, when: '05 Oct 2026, 09:44', icon: I.move, changes: [{ k: 'Location', from: 'Prep bench', to: 'MRD Office · Shelf A2' }] },
+      { cat: 'status', title: 'Marked ready for deployment', u: CH, when: '05 Oct 2026, 09:42', icon: I.check, tone: 'blue', changes: [{ k: 'Status', from: 'In preparation', to: 'Ready for deployment' }] },
+      { cat: 'config', title: 'Config profile applied · connectivity test passed', u: CH, when: '05 Oct 2026, 09:40', icon: I.chip, changes: [{ k: 'Profile', from: 'none', to: 'Exergio BMS gateway v2.3' }, { k: 'Test', from: 'untested', to: 'passed · 38 ms' }] },
+      { cat: 'config', title: 'IP address assigned', u: CH, when: '05 Oct 2026, 09:39', icon: I.net, changes: [{ k: 'IP', from: 'none', to: '10.64.12.37 (static)' }] },
+      { cat: 'config', title: 'SIM assigned', u: CH, when: '05 Oct 2026, 09:38', icon: I.sim, changes: [{ k: 'SIM', from: 'none', to: 'Omantel …1427' }, { k: 'MSISDN', from: 'none', to: '+968 7912 3045' }] },
+      { cat: 'config', title: 'Firmware updated', u: CH, when: '05 Oct 2026, 09:12', icon: I.chip, changes: [{ k: 'Firmware', from: 'RUT9M_R_00.07.06', to: 'RUT9M_R_00.07.08.3' }] },
+      { cat: 'location', title: 'Moved to Prep bench', u: CH, when: '05 Oct 2026, 09:05', icon: I.move, changes: [{ k: 'Location', from: 'Shelf A1', to: 'Prep bench' }, { k: 'Status', from: 'Unconfigured', to: 'In preparation' }] },
+      { cat: 'status', title: 'Labelled & inspected', u: NI, when: '23 Sep 2026, 11:20', icon: I.tag, changes: [{ k: 'Label', from: 'none', to: 'MRD-TEL-0417' }, { k: 'Inspection', from: 'pending', to: 'passed' }] },
+      { cat: 'location', title: 'Received from Al Noor Technologies LLC', u: NI, when: '22 Sep 2026, 10:15', icon: I.box, changes: [{ k: 'Batch', from: 'none', to: 'TEL-2026-004' }, { k: 'Location', from: 'Supplier', to: 'MRD Office · Shelf A1' }] }
+    ];
+    // Store events for this device, newest first, ahead of the sample history.
+    const mine = ST0.events.filter(e => String(e.item || '').indexOf(SN) >= 0);
+    const AV = { CH: '#CDEFE7', NI: '#F6E3C4', AI: '#E6DDFB', RA: '#DCE6FB', SA: '#FBE0DC' };
+    const EV = {
+      'Status changed': ['status', I.check, 'Status'], 'Moved': ['location', I.move, 'Location'], 'Deployed': ['status', I.truck, 'Facility'],
+      'Configured': ['config', I.chip, 'Status'], 'SIM assigned': ['config', I.sim, 'SIM'], 'IP assigned': ['config', I.net, 'IP'],
+      'Record corrected': ['config', I.chip, 'Field'], 'Note added': ['note', I.tag, 'Note'], 'File attached': ['note', I.tag, 'File'], 'File removed': ['note', I.tag, 'File'], 'Label printed': ['status', I.tag, 'Label'], 'Received': ['location', I.box, 'Location'], 'Imported': ['location', I.box, 'Location']
+    };
+    const storeEvents = mine.map(e => {
+      const m = EV[e.action] || ['status', I.check, 'Change'];
+      const bad = /Damaged|Retired/.test(e.to || '');
+      const isNote = e.action === 'Note added';
+      return {
+        cat: m[0], title: isNote ? 'Note added' : e.action + (e.note ? ' · ' + e.note : ''), ini: e.ini || '··', avbg: AV[e.ini] || '#E3E7EC', who: e.who || '—', when: e.when || '',
+        icon: bad ? I.warn : m[1], bg: bad ? '#FDEBEA' : '#E6EEFF', fg: bad ? '#A3201F' : '#1D4FB8', border: '0',
+        changes: isNote ? [{ k: 'Note', from: '—', to: e.note || '' }] : (e.from || e.to) ? [{ k: m[2], from: e.from || 'none', to: e.to || '—' }] : []
+      };
+    });
+    const pending = atReady ? [{ cat: 'status', title: 'Deploy — pending', who: 'Not yet', ini: '··', avbg: '#EEF1F4', when: 'awaiting deployment', icon: I.truck, bg: '#fff', fg: '#2F6FE4', border: '2px dashed #9DB6EC', changes: [{ k: 'Facility', from: 'none', to: 'choose on deploy' }] }] : [];
+    const all = pending.concat(storeEvents, sample.map(e => Object.assign({ ini: e.u[0], avbg: e.u[1], who: e.u[2], bg: e.tone === 'blue' ? '#E6EEFF' : '#F1F4F7', fg: e.tone === 'blue' ? '#1D4FB8' : '#3B4758', border: '0' }, e)));
+    const events = all.filter(e => st.filter === 'all' || e.cat === st.filter);
+    const filters = [['all', 'All'], ['status', 'Status'], ['location', 'Location'], ['config', 'Config']].map(([id, label]) => ({
+      label, cls: 'chip' + (st.filter === id ? ' on' : ''), pressed: st.filter === id ? 'true' : 'false', pick: () => this.setState({ filter: id })
+    }));
+    const trail = [
+      ['Supplier', 'Al Noor Technologies LLC', 'Batches.dc.html', '', 'solid'],
+      ['Batch', U.batch, 'BatchDetail.dc.html', 'mono', 'solid'],
+      ['Device', SN, 'DeviceDetail.dc.html', 'mono', 'solid'],
+      ['SIM', simTail, 'SimInventory.dc.html', 'mono', U.sim ? 'solid' : 'dashed'],
+      ['IP', ipAddr, 'SimInventory.dc.html', 'mono', U.ip ? 'solid' : 'dashed'],
+      fac ? ['Facility', fac, 'FacilityDetail.dc.html', '', 'solid'] : ['Facility', 'Pending deployment', 'CreateDeployment.dc.html', 'muted', 'dashed']
+    ].map(([k, v, href, cls, bs], i, arr) => ({ k, v, href, cls, bs, arrow: i < arr.length - 1 ? '→' : '' }));
+    // Notes: sample notes plus notes added to the shared store (oldest first).
+    const storeNotes = mine.filter(e => e.action === 'Note added').slice().reverse().map(e => ({ who: e.who || 'Chetan', when: e.when || '', text: e.note || '' }));
+    const notes = (this._init ? this._init.notes : st.notes).concat(storeNotes);
+    // Dialog: damaged / retire / status / move.
+    const dlg = st.dialog;
+    const EDIT_F = [['imei', 'IMEI', true], ['mac', 'MAC address', true], ['devId', 'Device ID', true], ['fw', 'Firmware', true], ['profile', 'Config profile', false]];
+    const storeFiles = (P.files || []).filter(Boolean);
+    const fmtSize = n => n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : n >= 1024 ? Math.round(n / 1024) + ' KB' : (n || 0) + ' B';
+    const LOCS = [['MRD Office|Shelf A2', 'MRD Office · Shelf A2'], ['MRD Office|Shelf A1', 'MRD Office · Shelf A1'], ['MRD Office|Prep bench', 'MRD Office · Prep bench'], ['In transit|', 'In transit'], ['With technician|', 'With technician']]
+      .concat(['Qatar Foundation', 'Bank Muscat Head Office', 'Lulu Hypermarket', 'Al Khuwair Business Tower', 'Sohar Logistics Hub', 'Ruwi Medical Centre'].map(f => [f + '|', f]));
+    const dlgOpts = dlg === 'status' ? Object.keys(LBL).map(k => ({ v: k, l: LBL[k] })) : dlg === 'move' ? LOCS.map(([v, l]) => ({ v, l })) : [];
+    const dlgValue = st.dlgValue || (dlg === 'status' ? stKey : dlg === 'move' ? (U.loc || '') + '|' + (U.loc2 || '') : '');
+    const danger = dlg === 'retire' || dlg === 'damaged';
+    const confirm = () => {
+      const d = this.state.dialog, val = this.state.dlgValue || dlgValue, note = (this.state.dlgNote || '').trim();
+      this.writeStore(s => {
+        if (d === 'damaged' || d === 'retire') {
+          const to = d === 'retire' ? 'retired' : 'damaged';
+          const patch = { st: to };
+          if (to === 'retired') {
+            Object.assign(patch, { sim: '', ip: '', msisdn: '' });
+            if (U.sim) this.patchUnit(s, U.sim, { device: '', ip: '', assigned: false }, (s.units[U.sim] || {}).st || '');
+          }
+          this.patchUnit(s, SN, patch, stKey);
+          this.logEvent(s, { action: 'Status changed', item: ITEM, itemHref: 'DeviceDetail.dc.html', from: LBL[stKey], to: LBL[to], note: this.state.reason || '' });
+        } else if (d === 'status') {
+          if (val === stKey) return;
+          this.patchUnit(s, SN, { st: val }, stKey);
+          this.logEvent(s, { action: 'Status changed', item: ITEM, itemHref: 'DeviceDetail.dc.html', from: LBL[stKey], to: LBL[val], note });
+        } else if (d === 'move') {
+          const parts = val.split('|'), loc = parts[0], loc2 = parts[1] || '';
+          const to = loc + (loc2 ? ' · ' + loc2 : '');
+          if (to === locLabel) return;
+          this.patchUnit(s, SN, { loc, loc2 }, stKey);
+          this.logEvent(s, { action: 'Moved', item: ITEM, itemHref: 'DeviceDetail.dc.html', from: locLabel, to, note });
+        }
+      });
+      this.setState({ dialog: null, dlgValue: '', dlgNote: '' });
+    };
+    return {
+      statusCls: S[0], statusLabel: S[1], locLabel, cfgBy: U.configuredBy, cfgWhen, deployFact: deployed ? (fac || 'Facility') + (dtype ? ' · ' + dtype : '') : 'Not yet deployed',
+      copy: () => copyText('Serial number', SN), copyLabel: st.copied === 'Serial number' ? 'Copied' : 'Copy',
+      copyIccid: () => { if (U.sim) copyText('ICCID', U.sim); }, copyIp: () => { if (U.ip) copyText('IP address', U.ip); },
+      hasMsg: !!st.msg, msg: st.msg || '', dismissMsg: () => this.setState({ msg: '' }),
+      // Edit identity: saved to the shared store, one 'Record corrected' event per changed field.
+      openEdit: () => this.setState({ menu: false, edit: { imei: U.imei || '', mac: U.mac || '', devId: U.devId || '', fw: U.fw || '', profile: U.profile || '', err: '' } }),
+      editOpen: !!st.edit, editClose: () => this.setState({ edit: null }),
+      editFields: EDIT_F.map(([k, label, mono]) => ({ id: 'ed-' + k, label, v: (st.edit || {})[k] || '', font: mono ? "'Geist Mono', ui-monospace, monospace" : 'inherit',
+        on: e => this.setState({ edit: Object.assign({}, this.state.edit, { [k]: e.target.value, err: '' }) }) })),
+      editErr: (st.edit || {}).err || '', editHasErr: !!(st.edit && st.edit.err),
+      editSave: () => {
+        const ed = this.state.edit || {};
+        const v = {}; EDIT_F.forEach(([k]) => { v[k] = String(ed[k] || '').trim(); });
+        const fail = err => this.setState({ edit: Object.assign({}, ed, { err }) });
+        if (!/^\d{15}$/.test(v.imei)) return fail('IMEI must be 15 digits.');
+        if (!/^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/.test(v.mac)) return fail('MAC address must look like 00:1E:42:3A:7C:19.');
+        if (!v.devId || !v.fw || !v.profile) return fail('Device ID, firmware and config profile cannot be empty.');
+        v.mac = v.mac.toUpperCase();
+        const changed = EDIT_F.filter(([k]) => v[k] !== (U[k] || ''));
+        if (!changed.length) { this.setState({ edit: null, msg: 'No changes to save' }); return; }
+        this.writeStore(s => {
+          const patch = {}; changed.forEach(([k]) => { patch[k] = v[k]; });
+          this.patchUnit(s, SN, patch, stKey);
+          changed.forEach(([k, label]) => this.logEvent(s, { action: 'Record corrected', item: ITEM, itemHref: 'DeviceDetail.dc.html', from: U[k] || '—', to: v[k], note: label }));
+        });
+        this.setState({ edit: null, msg: changed.length + ' field' + (changed.length === 1 ? '' : 's') + ' updated' });
+      },
+      // Print label: modal with the label and the browser print dialog.
+      openLabel: () => this.setState({ menu: false, label: true }),
+      labelOpen: !!st.label, labelClose: () => this.setState({ label: false }),
+      lblImei: U.imei || '—', lblDevId: U.devId || '—',
+      labelPrint: () => {
+        try { window.print(); } catch (e) {}
+        this.writeStore(s => { this.logEvent(s, { action: 'Label printed', item: ITEM, itemHref: 'DeviceDetail.dc.html', from: '—', to: U.devId || SN, note: 'Device label' }); });
+        this.setState({ label: false, msg: 'Print dialog opened for the device label' });
+      },
+      // Attachments: metadata only (name, size, type) in units[SN].files.
+      files: storeFiles.map((x, i) => ({ name: x.name, size: fmtSize(x.size), title: (x.type || 'file') + ' · ' + x.by + ' · ' + x.when, aria: 'Remove ' + x.name,
+        remove: () => this.writeStore(s => {
+          const cur = ((s.units[SN] || {}).files || []).slice(); const gone = cur.splice(i, 1)[0];
+          this.patchUnit(s, SN, { files: cur }, stKey);
+          if (gone) this.logEvent(s, { action: 'File removed', item: ITEM, itemHref: 'DeviceDetail.dc.html', from: gone.name, to: '—', note: gone.name });
+        }) })),
+      onFile: e => {
+        const list = Array.prototype.slice.call((e && e.target && e.target.files) || []);
+        if (!list.length) return;
+        const metas = list.map(fl => ({ name: fl.name, size: fl.size || 0, type: fl.type || '', by: 'Chetan', when: this.nowLabel() }));
+        this.writeStore(s => {
+          const cur = ((s.units[SN] || {}).files || []).concat(metas);
+          this.patchUnit(s, SN, { files: cur }, stKey);
+          metas.forEach(m => this.logEvent(s, { action: 'File attached', item: ITEM, itemHref: 'DeviceDetail.dc.html', from: '—', to: m.name, note: m.name + ' · ' + fmtSize(m.size) }));
+        });
+        try { e.target.value = ''; } catch (err) {}
+        this.setState({ msg: metas.length + ' file' + (metas.length === 1 ? '' : 's') + ' attached' });
+      },
+      menu: st.menu, menuAria: st.menu ? 'true' : 'false', toggleMenu: () => this.setState({ menu: !this.state.menu }),
+      askDamaged: () => this.setState({ menu: false, dialog: 'damaged' }), askRetire: () => this.setState({ menu: false, dialog: 'retire' }),
+      askStatus: () => this.setState({ menu: false, dialog: 'status', dlgValue: '', dlgNote: '' }), askMove: () => this.setState({ menu: false, dialog: 'move', dlgValue: '', dlgNote: '' }),
+      dialog: !!dlg, cancel: () => this.setState({ dialog: null, dlgValue: '', dlgNote: '' }),
+      dlgTitle: dlg === 'retire' ? 'Retire RUT956 ' + SN + '?' : dlg === 'status' ? 'Change status of ' + SN : dlg === 'move' ? 'Move ' + SN : 'Mark ' + SN + ' as damaged?',
+      dlgBody: dlg === 'retire' ? 'The device leaves active inventory and can no longer be deployed. SIM ' + simTail + ' and IP ' + ipAddr + ' are released back to their pools. The record and its history stay in the audit log.'
+        : dlg === 'status' ? 'Currently ' + LBL[stKey] + '. The change is recorded in the device history and audit log.'
+        : dlg === 'move' ? 'Currently at ' + locLabel + '. Status stays ' + LBL[stKey] + '.'
+        : 'The device is blocked from deployment until repaired. SIM and IP stay assigned so you can test after repair.',
+      dlgCta: dlg === 'retire' ? 'Retire device' : dlg === 'status' ? 'Change status' : dlg === 'move' ? 'Move device' : 'Mark damaged',
+      dlgDanger: danger, dlgPick: dlg === 'status' || dlg === 'move', dlgPickLabel: dlg === 'move' ? 'New location' : 'New status',
+      dlgOpts, dlgValue, onDlgValue: e => this.setState({ dlgValue: e.target.value }), dlgNote: st.dlgNote || '', onDlgNote: e => this.setState({ dlgNote: e.target.value }),
+      dlgReason: st.reason || 'End of life', onReason: e => this.setState({ reason: e.target.value }),
+      dlgIconBg: danger ? '#FDEBEA' : '#E6EEFF', dlgIconFg: danger ? '#A3201F' : '#1D4FB8', dlgCtaBg: danger ? '#B42318' : '#0B7A6B',
+      confirm,
+      answers, stages, identity, events, eventCount: events.length, filters, trail,
+      lifeDone: doneN + ' of 6 stages complete', lifeNext, lifeHref,
+      simIccid: U.sim || '— none', simMsisdn: U.msisdn || '—', ipAddr,
+      notDeployed: !deployed, isDeployed: deployed, depFac: fac || '—', depType: dtype || '—',
+      depTypeCls: dtype === 'POC' ? 't t-poc' : dtype === 'Contract' ? 't t-con' : dtype === 'Replacement' ? 't t-rep' : dtype ? 't t-add' : 'muted',
+      depRef: dep ? dep.ref : '—', depWhen: dep ? (dep.date || '') + (dep.by ? ' · ' + dep.by : '') : depEv ? depEv.when + ' · ' + (depEv.who || '') : (P.upd || '—'),
+      notes, draft: st.draft, onDraft: e => this.setState({ draft: e.target.value }),
+      addNote: () => {
+        const t = this.state.draft.trim(); if (!t) return;
+        this.writeStore(s => { this.logEvent(s, { action: 'Note added', item: ITEM, itemHref: 'DeviceDetail.dc.html', from: '', to: '', note: t }); });
+        this.setState({ draft: '' });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

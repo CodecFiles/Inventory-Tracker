@@ -1,0 +1,912 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Device preparation · MRD Inventory</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F6F8;color:#0E1726;font-family:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#0B7A6B;text-decoration:none}a:hover{color:#075C51}
+h1,h2,h3,h4,p{margin:0}
+.mono{font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;letter-spacing:-.01em}
+.muted{color:#5E6B7D}
+.side{flex:0 0 248px;background:#0C1424;padding:18px 12px 16px;display:flex;flex-direction:column;gap:1px}
+.nav{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:8px;color:#B3BDCB;font-size:13.5px}
+.nav:hover{background:#152036;color:#fff}
+.nav.on{background:#1C2A42;color:#fff;box-shadow:inset 2px 0 0 #2BC4A8}
+.nav svg{flex:0 0 16px;width:16px;height:16px}
+.nav .ct{margin-left:auto;font-size:11px;font-weight:600;background:#2BC4A8;color:#04211C;border-radius:999px;padding:1px 7px}
+.sec{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#7F8CA0;padding:16px 10px 6px;font-weight:500}
+.mtop{display:none}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 32px;background:#fff;border-bottom:1px solid #E3E7EC}
+.srch{flex:1 1 320px;max-width:560px;display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border:1px solid #DCE1E8;border-radius:10px;background:#F8FAFB;color:#5E6B7D;font-size:13.5px}
+.srch:hover{border-color:#B9C2CE;color:#3B4758}
+.kbd{margin-left:auto;font-family:'Geist Mono',monospace;font-size:11px;border:1px solid #DCE1E8;border-radius:5px;padding:1px 6px;background:#fff;color:#5E6B7D}
+.main{padding:28px 32px 48px;max-width:1400px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+.card{background:#fff;border:1px solid #E3E7EC;border-radius:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 14px;border-radius:9px;border:1px solid #D5DBE3;background:#fff;color:#1B2638;font:inherit;font-size:13.5px;font-weight:500;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#F4F6F8;color:#0E1726}
+.btn.p{background:#0B7A6B;border-color:#0B7A6B;color:#fff}.btn.p:hover{background:#08695C;color:#fff}
+.btn.sm{height:32px;padding:0 10px;font-size:12.5px;border-radius:8px}
+.btn.ic{width:40px;padding:0}
+.btn svg{width:16px;height:16px}
+.b{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;background:#EEF1F5;color:#3E4A5C}
+.b::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.s-unconf{background:#EEF1F5;color:#3E4A5C}.s-prep{background:#FFF3DC;color:#8A4B00}.s-ready{background:#E6EEFF;color:#1D4FB8}.s-reserved{background:#F0EAFE;color:#5B32B4}.s-deployed{background:#E1F4EC;color:#0A6648}.s-stock{background:#E3F2F6;color:#0E5E73}.s-maint{background:#FFEDE3;color:#9A3D0B}.s-damaged{background:#FDEBEA;color:#A3201F}.s-transit{background:#E9EDFC;color:#3346A8}.s-returned{background:#F1EEE8;color:#5E554A}.s-retired{background:#EFF0F2;color:#646C79}
+.g-insp{background:#EEF1F5;color:#3E4A5C}.g-bms{background:#E3F2F6;color:#0E5E73}.g-poc{background:#F0EAFE;color:#5B32B4}.g-study{background:#FFF3DC;color:#8A4B00}.g-cpend{background:#E6EEFF;color:#1D4FB8}.g-contract{background:#E1F4EC;color:#0A6648}.g-ops{background:#0B7A6B;color:#fff}.g-done{background:#EFF0F2;color:#646C79}.g-hold{background:#FDEBEA;color:#A3201F}
+.t{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:6px;font-size:11.5px;font-weight:600;letter-spacing:.02em;border:1px solid}
+.t-poc{color:#5B32B4;border-color:#D7C8FA;background:#FAF7FF}.t-con{color:#0A6648;border-color:#BFE3D3;background:#F4FBF8}.t-rep{color:#8A4B00;border-color:#F3D9A6;background:#FFFBF2}.t-add{color:#1D4FB8;border-color:#C8D8FA;background:#F6F9FF}
+.tw{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-weight:500;color:#5E6B7D;font-size:12px;padding:10px 14px;border-bottom:1px solid #E3E7EC;background:#F8FAFB;white-space:nowrap}
+.tbl td{padding:11px 14px;border-bottom:1px solid #EEF1F4;white-space:nowrap;vertical-align:middle}
+.tbl tr:hover td{background:#F8FAFB}
+.tbl tr:last-child td{border-bottom:0}
+.ov{font-size:12px;font-weight:500;color:#5E6B7D;text-transform:uppercase;letter-spacing:.06em}
+.kpi{padding:16px 18px;display:flex;flex-direction:column;gap:6px;color:#0E1726}
+.kpi:hover{border-color:#B9C2CE;color:#0E1726}
+.kpi .n{font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
+.seg{display:flex;gap:2px;height:8px;border-radius:4px;overflow:hidden}
+.seg span{display:block;height:100%}
+.row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-top:1px solid #EEF1F4;color:#0E1726}
+.row:hover{background:#F8FAFB;color:#0E1726}
+.chip{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;border:0;background:transparent;font:inherit;font-size:13px;color:#3B4758;cursor:pointer}
+.chip.on{background:#fff;color:#0E1726;box-shadow:0 1px 2px rgba(14,23,38,.12)}
+.crumb{font-size:13px;color:#5E6B7D;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.chip .n{margin-left:6px;font-size:11.5px;font-weight:600;color:#5E6B7D;background:#E3E7EC;border-radius:999px;padding:0 6px;line-height:18px}
+.chip.on .n{background:#E1F4EC;color:#0A6648}
+.col{display:flex;flex-direction:column;min-width:0;background:#EDF0F3;border:1px solid #E3E7EC;border-radius:12px}
+.colh{display:flex;align-items:center;gap:8px;padding:14px 14px 10px}
+.cnt{display:inline-flex;align-items:center;height:20px;padding:0 8px;font-size:12px;font-weight:600;background:#fff;border:1px solid #DCE1E8;border-radius:999px;color:#1B2638}
+.lst{display:flex;flex-direction:column;gap:8px;padding:2px 10px 12px;overflow-y:auto;height:1010px}
+.dv{background:#fff;border:1px solid #E3E7EC;border-radius:10px;padding:11px 12px;display:flex;flex-direction:column;gap:7px}
+.dv:hover{border-color:#B9C2CE}
+.dv.sel{border-color:#0B7A6B;box-shadow:0 0 0 3px rgba(11,122,107,.16)}
+.dv.fresh{border-color:#2F6FE4;box-shadow:0 0 0 3px rgba(47,111,228,.14)}
+.pbar{height:4px;border-radius:2px;background:#EEF1F4;overflow:hidden}
+.pbar span{display:block;height:100%;background:#E08A00;border-radius:2px}
+.fld{display:flex;flex-direction:column;gap:6px;min-width:0}
+.fld label,.lbl{font-size:12.5px;font-weight:500;color:#3B4758}
+.inp{height:38px;width:100%;border:1px solid #D5DBE3;border-radius:8px;padding:0 11px;font:inherit;font-size:13.5px;color:#0E1726;background:#fff}
+.inp:focus{outline:2px solid #2BC4A8;outline-offset:0;border-color:#0B7A6B}
+.inp.mono{font-family:'Geist Mono',ui-monospace,monospace;font-size:13px}
+.inp[readonly]{background:#F8FAFB;color:#3B4758}
+textarea.inp{height:64px;padding:9px 11px;resize:vertical}
+.hint{font-size:12px;color:#5E6B7D}
+.fs{display:flex;flex-direction:column;gap:12px;padding:18px 22px;border-top:1px solid #EEF1F4}
+.fs h3{font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:8px}
+.fs h3 .no{width:20px;height:20px;border-radius:50%;background:#EEF1F4;color:#3B4758;font-size:11px;display:inline-flex;align-items:center;justify-content:center}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.ck{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border:1px solid #E3E7EC;border-radius:8px;background:#fff;font:inherit;font-size:13px;color:#1B2638;cursor:pointer;text-align:left}
+.ck .bx{width:18px;height:18px;border-radius:5px;border:1.5px solid #8794A6;display:flex;align-items:center;justify-content:center;color:#fff;flex:0 0 18px}
+.ck.on{border-color:#BFE3D3;background:#F4FBF8}
+.ck.on .bx{background:#0B7A6B;border-color:#0B7A6B}
+.stp{display:flex;align-items:center;gap:6px;font-size:12px;color:#5E6B7D;white-space:nowrap}
+.stp .dot{width:18px;height:18px;border-radius:50%;border:1.5px solid #B9C2CE;display:inline-flex;align-items:center;justify-content:center;background:#fff;color:#fff}
+.stp.done{color:#0A6648}.stp.done .dot{background:#0B7A6B;border-color:#0B7A6B}
+.stp.cur{color:#0E1726;font-weight:500}.stp.cur .dot{border-color:#0B7A6B;box-shadow:0 0 0 3px rgba(11,122,107,.15)}
+.tag{display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:6px;font-size:11px;font-weight:600;background:#E1F4EC;color:#0A6648}
+.lbls{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.lblc{border:1.5px dashed #8794A6;border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:3px;font-size:12px;break-inside:avoid;page-break-inside:avoid;background:#fff}
+.lblc .k{color:#5E6B7D;display:inline-block;width:62px}
+@media print{body *{visibility:hidden!important}.pmodal,.pmodal *{visibility:visible!important}.pmodal{position:absolute!important;left:0!important;top:0!important;transform:none!important;width:100%!important;max-height:none!important;overflow:visible!important;box-shadow:none!important}.noprint{display:none!important}.pscroll{max-height:none!important;overflow:visible!important}}
+@media (max-width:900px){.side{display:none}.mtop{display:flex}.main{padding:20px 16px 40px}.top{padding:12px 16px}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh; background: #F4F6F8">
+<nav class="side" aria-label="Primary">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 2px 8px 14px; color: #fff">
+<span style="width: 32px; height: 32px; border-radius: 9px; background: #0B7A6B; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4a8 8 0 1 0 4 11.5A6.5 6.5 0 0 1 16 4z"></path><path d="M6 18l2.5-2.5"></path></svg></span>
+<span style="display: flex; flex-direction: column; line-height: 1.15"><span style="font-weight: 600; font-size: 14px">Moonrock R&amp;D</span><span style="font-size: 11.5px; color: #8D99AC">Inventory × Exergio</span></span>
+</a>
+<a class="nav" href="Main.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>Dashboard</a>
+<div class="sec">Inventory</div>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"></path><path d="M3 8v8l9 5 9-5V8"></path><path d="M12 13v8"></path></svg>All inventory</a>
+<a class="nav" href="Products.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg>Products</a>
+<a class="nav" href="Batches.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l10 5-10 5L2 7l10-5z"></path><path d="M2 12l10 5 10-5"></path><path d="M2 17l10 5 10-5"></path></svg>Batches</a>
+<a class="nav" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive stock</a>
+<div class="sec">Devices</div>
+<a class="nav on" href="DevicePrep.dc.html" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg>Device preparation<span class="ct">15</span></a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="18" height="7" rx="2"></rect><path d="M7 16.5h.01M11 16.5h.01"></path><path d="M17 13V5"></path><path d="M14 7.5a4 4 0 0 1 6 0"></path></svg>Teltonika</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h11a3 3 0 1 0-3-3"></path><path d="M3 12h16a3 3 0 1 1-3 3"></path><path d="M3 16h7"></path></svg>CO₂ sensors</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"></circle><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7M5.6 5.6a9 9 0 0 0 0 12.8M18.4 5.6a9 9 0 0 1 0 12.8"></path></svg>LoRaWAN gateways</a>
+<a class="nav" href="SimInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"></path><rect x="8.5" y="11" width="7" height="6" rx="1"></rect></svg>SIM cards</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"></rect><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"></path></svg>Other equipment</a>
+<div class="sec">Facilities &amp; projects</div>
+<a class="nav" href="Facilities.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"></rect><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1"></path></svg>Facilities</a>
+<a class="nav" href="PocManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6L4.5 18.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3"></path><path d="M7 15h10"></path></svg>POC projects</a>
+<a class="nav" href="ContractManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path><path d="M9 13h6M9 17h4"></path></svg>Contracts</a>
+<div class="sec">Deployments</div>
+<a class="nav" href="Deployments.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3z"></path><path d="M14 10h4l3 3v3h-7"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>Deployments</a>
+<a class="nav" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>New deployment</a>
+<div class="sec">Insights &amp; admin</div>
+<a class="nav" href="Reports.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M10 20V5M16 20v-6M21 20H3"></path></svg>Reports</a>
+<a class="nav" href="AuditLog.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l3 2"></path></svg>Audit log</a>
+<a class="nav" href="Users.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20a6.5 6.5 0 0 1 13 0"></path><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"></path></svg>Users &amp; roles</a>
+<a class="nav" href="Settings.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Settings</a>
+<div style="margin-top: auto; padding: 16px 8px 0; display: flex; align-items: center; gap: 10px; border-top: 1px solid #1C2A42">
+<span style="width: 32px; height: 32px; border-radius: 50%; background: #2BC4A8; color: #04211C; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600">CH</span>
+<span style="display: flex; flex-direction: column; line-height: 1.2"><span style="color: #fff; font-size: 13px; font-weight: 500">Chetan</span><span style="color: #8D99AC; font-size: 11.5px">Admin · MRD Office</span></span>
+</div>
+</nav>
+
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+<div class="mtop" style="align-items: center; justify-content: space-between; padding: 12px 16px; background: #0C1424; color: #fff">
+<span style="font-weight: 600">Moonrock R&amp;D</span>
+<button class="btn sm" aria-label="Open menu" aria-expanded="{{shell.menuExp}}" onClick="{{shell.toggleMenu}}" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
+</div>
+<header class="top">
+<a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
+<span style="flex: 1"></span>
+<span class="b s-prep" title="All records shown are sample data">Sample data</span>
+<span class="b {{shell.syncCls}}" title="{{shell.syncTip}}">{{shell.syncLabel}}</span>
+<a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
+<a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
+<div style="position: relative; z-index: {{shell.bellZ}}">
+<button class="btn ic" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="{{shell.bellExp}}" onClick="{{shell.toggleBell}}" style="position: relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg><sc-if value="{{shell.hasUnread}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #DC3B3A; color: #fff; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #fff">{{shell.unread}}</span></sc-if></button>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="Notifications" style="position: absolute; right: 0; top: calc(100% + 8px); z-index: 41; width: 360px; max-width: calc(100vw - 32px); background: #fff; border: 1px solid #DCE1E8; border-radius: 12px; box-shadow: 0 16px 40px rgba(14,23,38,.18); overflow: hidden; text-align: left">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #EEF1F4"><span style="font-weight: 600; font-size: 14px; color: #0E1726">Notifications</span><button onClick="{{shell.markRead}}" style="border: 0; background: none; padding: 4px; font: inherit; font-size: 12.5px; color: #0B7A6B; cursor: pointer">Mark all as read</button></div>
+<div style="max-height: 380px; overflow-y: auto">
+<sc-for list="{{shell.notes}}" as="n" hint-placeholder-count="4">
+<a href="{{n.href}}" style="display: flex; gap: 10px; padding: 11px 14px; border-bottom: 1px solid #F1F4F7; color: #0E1726; background: {{n.bg}}">
+<span style="width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: 0 0 8px; background: {{n.dot}}"></span>
+<span style="flex: 1; min-width: 0; font-size: 13px; line-height: 1.4"><span style="display: block">{{n.text}}</span><span style="display: block; font-size: 12px; color: #5E6B7D">{{n.when}}</span></span>
+</a>
+</sc-for>
+</div>
+<a href="AuditLog.dc.html" style="display: block; padding: 10px 14px; font-size: 13px; font-weight: 500; text-align: center; border-top: 1px solid #EEF1F4">Open audit log</a>
+</div>
+</sc-if>
+</div>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}"><button aria-label="Close notifications" onClick="{{shell.closeAll}}" style="position: fixed; inset: 0; z-index: 30; background: transparent; border: 0; padding: 0; cursor: default"></button></sc-if>
+</header>
+
+<main class="main" style="gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<nav class="crumb" aria-label="Breadcrumb"><a href="Main.dc.html">Dashboard</a><span aria-hidden="true">/</span><a href="Inventory.dc.html">Devices</a><span aria-hidden="true">/</span><span style="color: #0E1726">Device preparation</span></nav>
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="font-size: 26px; font-weight: 600; letter-spacing: -.02em">Device preparation</h1>
+<p class="muted" style="font-size: 13.5px">Configure, SIM, address and test devices before they leave the MRD Office. Click <strong style="color: #1B2638; font-weight: 600">Prepare</strong> on any card, or scan a serial.</p>
+</div>
+<div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+<button class="btn" onClick="{{printLabels}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"></path><rect x="3" y="9" width="18" height="8" rx="2"></rect><path d="M7 14h10v7H7z"></path></svg>Print labels</button>
+<button class="btn p" onClick="{{openBulk}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1.5"></rect><rect x="3" y="11" width="18" height="5" rx="1.5"></rect><path d="M7 20h10"></path></svg>Bulk prepare</button>
+</div>
+</div>
+</div>
+
+<!-- Prep resources -->
+<section class="card" aria-label="Preparation resources" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr))">
+<div style="padding: 14px 18px; display: flex; align-items: center; gap: 12px">
+<span style="width: 36px; height: 36px; border-radius: 9px; background: #E1F4EC; color: #0A6648; display: flex; align-items: center; justify-content: center; flex: 0 0 36px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l2.5 2"></path><path d="M9 2h6"></path></svg></span>
+<span><span style="display: block; font-size: 12px" class="muted">Prepared today</span><span style="font-size: 18px; font-weight: 600">{{today}}</span><span class="muted" style="font-size: 12.5px"> · avg 9 min</span></span>
+</div>
+<a href="SimInventory.dc.html" style="padding: 14px 18px; display: flex; align-items: center; gap: 12px; border-left: 1px solid #EEF1F4; color: #0E1726">
+<span style="width: 36px; height: 36px; border-radius: 9px; background: #F1F4F7; color: #3B4758; display: flex; align-items: center; justify-content: center; flex: 0 0 36px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"></path><rect x="8.5" y="11" width="7" height="6" rx="1"></rect></svg></span>
+<span><span style="display: block; font-size: 12px" class="muted">SIMs available</span><span style="font-size: 14px; font-weight: 600">{{simsFree}} Omantel</span><span class="muted" style="font-size: 12.5px"> · 28 Ooredoo</span></span>
+</a>
+<div style="padding: 14px 18px; display: flex; align-items: center; gap: 12px; border-left: 1px solid #EEF1F4">
+<span style="width: 36px; height: 36px; border-radius: 9px; background: #F1F4F7; color: #3B4758; display: flex; align-items: center; justify-content: center; flex: 0 0 36px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"></path></svg></span>
+<span><span style="display: block; font-size: 12px" class="muted">IP pool <span class="mono" style="font-size: 11.5px">10.64.12.0/24</span></span><span style="font-size: 14px; font-weight: 600">{{poolFree}} free</span><span class="muted" style="font-size: 12.5px"> · next <span class="mono">{{nextIp}}</span></span></span>
+</div>
+<div style="padding: 14px 18px; display: flex; align-items: center; gap: 12px; border-left: 1px solid #EEF1F4">
+<span style="width: 36px; height: 36px; border-radius: 9px; background: #F1F4F7; color: #3B4758; display: flex; align-items: center; justify-content: center; flex: 0 0 36px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"></rect><path d="M9 9h6v6H9z"></path></svg></span>
+<span><span style="display: block; font-size: 12px" class="muted">Approved RUT956 firmware</span><span class="mono" style="font-size: 13px; font-weight: 500">RUT9M_R_00.07.08.3</span></span>
+</div>
+</section>
+
+<!-- Toolbar -->
+<div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+<div role="group" aria-label="Filter by product" style="display: flex; flex-wrap: wrap; gap: 2px; padding: 3px; background: #E9EDF1; border-radius: 10px">
+<sc-for list="{{chips}}" as="c" hint-placeholder-count="4"><button class="{{c.cls}}" aria-pressed="{{c.pressed}}" onClick="{{c.pick}}">{{c.label}}<span class="n">{{c.n}}</span></button></sc-for>
+</div>
+<div style="flex: 1 1 260px; max-width: 360px; display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 12px; border: 1px solid #D5DBE3; border-radius: 9px; background: #fff">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"></path><path d="M7 8v8M10 8v8M13 8v8M17 8v8"></path></svg>
+<label class="sr" for="prep-scan">Scan or type a serial number</label>
+<input id="prep-scan" class="mono" value="{{q}}" onChange="{{onQ}}" placeholder="Scan or type serial…" style="flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font-size: 13px; color: #0E1726">
+</div>
+<button class="btn" onClick="{{scanQ}}" style="height: 38px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"></path><path d="M7 8v8M10 8v8M13 8v8M17 8v8"></path></svg>Scan serial</button>
+<span style="flex: 1"></span>
+<span class="muted" style="font-size: 12px; display: flex; align-items: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"></rect><path d="M7 10h.01M11 10h.01M15 10h.01M7 14h10"></path></svg>Tab through fields · scanner input supported</span>
+</div>
+
+<!-- Pipeline -->
+<section aria-label="Preparation pipeline" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 14px; align-items: start">
+
+<div class="col">
+<div class="colh">
+<span style="width: 10px; height: 10px; border-radius: 50%; background: #8A96A8"></span>
+<h2 style="font-size: 14px; font-weight: 600">Unconfigured</h2><span class="cnt">{{nUnconf}}</span>
+<span class="muted" style="margin-left: auto; font-size: 12px">received · needs config</span>
+</div>
+<div class="lst">
+<sc-for list="{{unconf}}" as="d" hint-placeholder-count="8">
+<div class="{{d.cls}}">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+<a href="DeviceDetail.dc.html" class="mono" style="font-size: 13.5px; font-weight: 600; color: #0E1726">{{d.sn}}</a>
+<a href="BatchDetail.dc.html" class="mono" style="font-size: 11.5px">{{d.batch}}</a>
+</div>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+<span style="min-width: 0"><span style="display: block; font-size: 13px; color: #1B2638">{{d.product}}</span><span class="muted" style="font-size: 12px">{{d.meta}}</span></span>
+<button class="btn sm p" onClick="{{d.pick}}" aria-label="{{d.aria}}">Prepare</button>
+</div>
+</div>
+</sc-for>
+<sc-if value="{{emptyUnconf}}" hint-placeholder-val="{{ false }}"><p class="muted" style="font-size: 13px; text-align: center; padding: 28px 8px">Nothing unconfigured for this filter.</p></sc-if>
+</div>
+</div>
+
+<div class="col">
+<div class="colh">
+<span style="width: 10px; height: 10px; border-radius: 50%; background: #E08A00"></span>
+<h2 style="font-size: 14px; font-weight: 600">In preparation</h2><span class="cnt">{{nPrep}}</span>
+<span class="muted" style="margin-left: auto; font-size: 12px">on the prep bench</span>
+</div>
+<div class="lst">
+<sc-for list="{{prep}}" as="d" hint-placeholder-count="6">
+<div class="{{d.cls}}">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+<a href="DeviceDetail.dc.html" class="mono" style="font-size: 13.5px; font-weight: 600; color: #0E1726">{{d.sn}}</a>
+<a href="BatchDetail.dc.html" class="mono" style="font-size: 11.5px">{{d.batch}}</a>
+</div>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+<span style="min-width: 0"><span style="display: block; font-size: 13px; color: #1B2638">{{d.product}}</span><span class="muted" style="font-size: 12px">{{d.meta}}</span></span>
+<span style="width: 24px; height: 24px; border-radius: 50%; background: {{d.techBg}}; font-size: 10px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex: 0 0 24px" title="{{d.tech}}">{{d.techIni}}</span>
+</div>
+<div style="display: flex; align-items: center; gap: 10px">
+<span style="flex: 1; display: flex; flex-direction: column; gap: 4px"><span class="pbar"><span style="width: {{d.progW}}"></span></span><span class="muted" style="font-size: 11.5px">{{d.progT}}</span></span>
+<button class="btn sm" onClick="{{d.pick}}" aria-label="{{d.aria}}">Continue</button>
+</div>
+</div>
+</sc-for>
+<sc-if value="{{emptyPrep}}" hint-placeholder-val="{{ false }}"><p class="muted" style="font-size: 13px; text-align: center; padding: 28px 8px">Nothing on the prep bench for this filter.</p></sc-if>
+</div>
+</div>
+
+<div class="col">
+<div class="colh">
+<span style="width: 10px; height: 10px; border-radius: 50%; background: #2F6FE4"></span>
+<h2 style="font-size: 14px; font-weight: 600">Ready for deployment</h2><span class="cnt">{{nReady}}</span>
+<a href="Inventory.dc.html" style="margin-left: auto; font-size: 12px; font-weight: 500">View all →</a>
+</div>
+<div class="lst">
+<sc-for list="{{ready}}" as="d" hint-placeholder-count="4">
+<div class="{{d.cls}}">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+<a href="DeviceDetail.dc.html" class="mono" style="font-size: 13.5px; font-weight: 600; color: #0E1726">{{d.sn}}</a>
+<span class="b s-ready">Ready</span>
+</div>
+<span style="min-width: 0"><span style="display: block; font-size: 13px; color: #1B2638">{{d.product}} · <span class="mono" style="font-size: 12px">{{d.devId}}</span></span><span class="muted" style="font-size: 12px">{{d.meta}}</span></span>
+<div style="display: flex; align-items: center; gap: 8px; padding: 6px 8px; background: #F8FAFB; border-radius: 7px; font-size: 12px; color: #3B4758">
+<span>IP <span class="mono" style="font-size: 12px; color: #0E1726">{{d.ip}}</span></span><span aria-hidden="true">·</span><span>SIM <span class="mono" style="font-size: 12px; color: #0E1726">{{d.simTail}}</span></span>
+</div>
+<div style="display: flex; gap: 8px">
+<a class="btn sm p" href="CreateDeployment.dc.html" style="flex: 1">Deploy</a>
+<a class="btn sm" href="DeviceDetail.dc.html" style="flex: 1">View device</a>
+</div>
+</div>
+</sc-for>
+<sc-if value="{{emptyReady}}" hint-placeholder-val="{{ false }}"><p class="muted" style="font-size: 13px; text-align: center; padding: 28px 8px">No ready devices for this filter yet.</p></sc-if>
+<p class="muted" style="font-size: 12px; padding: 8px 4px 0; line-height: 1.5">Operations and technicians can prepare devices. The Viewer role (Exergio Partner) sees this board read-only.</p>
+</div>
+</div>
+</section>
+</main>
+</div>
+</div>
+
+<!-- Prepare drawer -->
+<sc-if value="{{open}}" hint-placeholder-val="{{ true }}">
+<div onClick="{{close}}" style="position: fixed; inset: 0; background: rgba(14,23,38,.45); z-index: 40"></div>
+<aside role="dialog" aria-modal="true" aria-label="{{title}}" style="position: fixed; top: 0; right: 0; bottom: 0; width: min(520px, 100%); background: #fff; z-index: 41; display: flex; flex-direction: column; box-shadow: -12px 0 32px rgba(14,23,38,.18)">
+<div style="padding: 18px 22px 14px; display: flex; flex-direction: column; gap: 14px; border-bottom: 1px solid #E3E7EC">
+<div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 3px">
+<h2 style="font-size: 18px; font-weight: 600; letter-spacing: -.01em">{{title}}</h2>
+<span class="muted" style="font-size: 12.5px">S/N <span class="mono" style="color: #0E1726; font-weight: 500">{{f.sn}}</span> · <span class="mono">{{f.batch}}</span> · signed in as Chetan (Admin)</span>
+</div>
+<button class="btn ic sm" onClick="{{close}}" aria-label="Close preparation drawer" style="width: 32px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; justify-content: space-between; font-size: 12px"><span class="muted">Progress</span><span style="font-weight: 600">{{doneN}} of 5</span></div>
+<div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap">
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="5">
+<span class="{{s.cls}}"><span class="dot"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span>{{s.label}}<span style="color: #B9C2CE; padding: 0 2px" aria-hidden="true">{{s.sep}}</span></span>
+</sc-for>
+</div>
+</div>
+</div>
+
+<div style="flex: 1; overflow-y: auto">
+<div class="fs" style="border-top: 0">
+<h3><span class="no">1</span>Identity<span class="tag" style="margin-left: auto">From receiving</span></h3>
+<div class="g2">
+<div class="fld"><label for="f-sn">Serial number</label><div style="display: flex; gap: 6px"><input id="f-sn" class="inp mono" value="{{f.sn}}" onChange="{{onSn}}" style="flex: 1; min-width: 0"><button class="btn" onClick="{{scanSn}}" aria-label="Scan serial number" style="height: 38px; padding: 0 10px">Scan</button></div></div>
+<div class="fld"><label for="f-imei">{{idLabel}}</label><input id="f-imei" class="inp mono" value="{{f.imei}}" onChange="{{onImei}}"></div>
+<div class="fld"><label for="f-mac">MAC address</label><input id="f-mac" class="inp mono" value="{{f.mac}}" onChange="{{onMac}}"></div>
+<div class="fld"><label for="f-dev">Device ID <span class="muted" style="font-weight: 400">· auto</span></label><input id="f-dev" class="inp mono" value="{{f.devId}}" readonly></div>
+</div>
+</div>
+
+<div class="fs">
+<h3><span class="no">2</span>Firmware &amp; configuration</h3>
+<div class="g2">
+<div class="fld"><label for="f-fw">Firmware version</label><input id="f-fw" class="inp mono" value="{{f.fw}}" onChange="{{onFw}}"><span class="hint">Shipped with <span class="mono" style="font-size: 11.5px">{{shippedFw}}</span></span></div>
+<div class="fld"><label for="f-prof">Configuration profile</label>
+<select id="f-prof" class="inp" value="{{f.profile}}" onChange="{{onProfile}}"><sc-for list="{{profiles}}" as="o" hint-placeholder-count="4"><option value="{{o.v}}">{{o.v}}</option></sc-for></select>
+<span class="hint">Approved by Exergio · v2.3 since 18 Sep</span></div>
+</div>
+</div>
+
+<sc-if value="{{isRut}}" hint-placeholder-val="{{ true }}">
+<div class="fs">
+<h3><span class="no">3</span>SIM card</h3>
+<div style="display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap">
+<div class="fld" style="flex: 1 1 260px"><label for="f-sim">Available SIM <span class="muted" style="font-weight: 400">· batch SIM-2026-005</span></label>
+<select id="f-sim" class="inp mono" value="{{f.sim}}" onChange="{{onSim}}"><sc-for list="{{simOpts}}" as="o" hint-placeholder-count="5"><option value="{{o.v}}">{{o.l}}</option></sc-for></select></div>
+<button class="btn" onClick="{{scanIccid}}" style="height: 38px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"></path><path d="M7 8v8M10 8v8M13 8v8M17 8v8"></path></svg>Scan ICCID</button>
+</div>
+<div class="g2">
+<div class="fld"><label for="f-iccid">ICCID</label><input id="f-iccid" class="inp mono" value="{{f.iccid}}" onChange="{{onIccid}}" placeholder="89968…"></div>
+<div class="fld"><label for="f-msisdn">Phone number (MSISDN) <span class="muted" style="font-weight: 400">· autofilled</span></label><input id="f-msisdn" class="inp mono" value="{{f.msisdn}}" readonly></div>
+</div>
+</div>
+
+<div class="fs">
+<h3><span class="no">4</span>Network</h3>
+<div class="g2">
+<div class="fld"><label for="f-ip">IP address <span class="tag" style="height: 18px; margin-left: 4px">Auto-suggested</span></label><input id="f-ip" class="inp mono" value="{{f.ip}}" onChange="{{onIp}}"><span class="hint">Pool <span class="mono" style="font-size: 11.5px">10.64.12.0/24</span> · {{poolFree}} free · static lease</span></div>
+<div class="fld"><label for="f-apn">APN</label><input id="f-apn" class="inp mono" value="{{f.apn}}" onChange="{{onApn}}"><span class="hint">Omantel M2M Pooled 5 GB</span></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{notRut}}" hint-placeholder-val="{{ false }}">
+<div class="fs">
+<h3><span class="no">3</span>LoRaWAN</h3>
+<div style="padding: 10px 12px; border-radius: 8px; background: #F8FAFB; font-size: 12.5px; color: #3B4758">No SIM or IP needed — this device joins the Exergio network server over LoRaWAN (EU868).</div>
+<div class="g2">
+<div class="fld"><label for="f-join">Join EUI</label><input id="f-join" class="inp mono" value="24E124C0002A0001" readonly></div>
+<div class="fld"><label for="f-key">AppKey</label><input id="f-key" class="inp mono" value="•••• •••• •••• 7F3A" readonly></div>
+</div>
+</div>
+</sc-if>
+
+<div class="fs">
+<h3><span class="no">5</span>Sign-off</h3>
+<div class="g2">
+<div class="fld"><label for="f-date">Configuration date</label><input id="f-date" class="inp" type="date" value="{{f.date}}" onChange="{{onDate}}"></div>
+<div class="fld"><label for="f-tech">Technician</label>
+<select id="f-tech" class="inp" value="{{f.tech}}" onChange="{{onTech}}"><sc-for list="{{techs}}" as="o" hint-placeholder-count="5"><option value="{{o.v}}">{{o.l}}</option></sc-for></select></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px" role="group" aria-label="Preparation checklist">
+<span class="lbl">Checklist</span>
+<sc-for list="{{checks}}" as="c" hint-placeholder-count="5">
+<button type="button" role="checkbox" aria-checked="{{c.aria}}" class="{{c.cls}}" onClick="{{c.toggle}}"><span class="bx"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span>{{c.label}}</button>
+</sc-for>
+</div>
+<div class="fld"><label for="f-notes">Notes</label><textarea id="f-notes" class="inp" value="{{f.notes}}" onChange="{{onNotes}}" placeholder="Anything the deployment team should know…"></textarea></div>
+</div>
+</div>
+
+<div style="padding: 14px 22px; border-top: 1px solid #E3E7EC; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: #F8FAFB">
+<span class="muted" style="font-size: 12px; flex: 1 1 160px">Tab through fields · scanner input supported</span>
+<button class="btn" onClick="{{saveDraft}}">Save draft</button>
+<button class="btn p" onClick="{{markReady}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg>Mark ready for deployment</button>
+</div>
+</aside>
+</sc-if>
+
+<!-- Bulk prepare modal -->
+<sc-if value="{{bulk}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{closeBulk}}" style="position: fixed; inset: 0; background: rgba(14,23,38,.45); z-index: 40"></div>
+<div role="dialog" aria-modal="true" aria-label="Bulk prepare" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(520px, calc(100% - 32px)); background: #fff; border-radius: 14px; z-index: 41; box-shadow: 0 20px 48px rgba(14,23,38,.25); display: flex; flex-direction: column">
+<div style="padding: 20px 22px 6px"><h2 style="font-size: 17px; font-weight: 600">Bulk prepare</h2><p class="muted" style="font-size: 13px; margin-top: 4px">{{bulkCount}} unconfigured Teltonika RUT956 from <span class="mono">TEL-2026-004</span> move to In preparation with the same settings.</p></div>
+<div style="padding: 12px 22px; display: flex; flex-direction: column; gap: 6px">
+<sc-for list="{{bulkOpts}}" as="c" hint-placeholder-count="4">
+<button type="button" role="checkbox" aria-checked="{{c.aria}}" class="{{c.cls}}" onClick="{{c.toggle}}"><span class="bx"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span><span style="display: flex; flex-direction: column"><span>{{c.label}}</span><span class="muted" style="font-size: 12px">{{c.sub}}</span></span></button>
+</sc-for>
+<p class="muted" style="font-size: 12px; margin-top: 4px">Each device still needs its connectivity test and label before it can be marked ready.</p>
+</div>
+<div style="padding: 14px 22px; border-top: 1px solid #E3E7EC; display: flex; justify-content: flex-end; gap: 10px">
+<button class="btn" onClick="{{closeBulk}}">Cancel</button>
+<button class="btn p" onClick="{{runBulk}}">Move {{bulkCount}} to In preparation</button>
+</div>
+</div>
+</sc-if>
+
+<!-- Label sheet modal -->
+<sc-if value="{{lblOpen}}" hint-placeholder-val="{{ false }}">
+<div class="noprint" onClick="{{lblClose}}" style="position: fixed; inset: 0; background: rgba(14,23,38,.45); z-index: 40"></div>
+<div class="pmodal" role="dialog" aria-modal="true" aria-label="Print device labels" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(760px, calc(100% - 32px)); max-height: calc(100vh - 48px); background: #fff; border-radius: 14px; z-index: 41; box-shadow: 0 20px 48px rgba(14,23,38,.25); display: flex; flex-direction: column">
+<div style="padding: 20px 22px 8px; display: flex; justify-content: space-between; gap: 12px; align-items: flex-start">
+<div><h2 style="font-size: 17px; font-weight: 600">Device labels</h2><p class="muted" style="font-size: 13px; margin-top: 4px">{{lblSub}}</p></div>
+<button class="btn ic sm noprint" onClick="{{lblClose}}" aria-label="Close label sheet" style="width: 32px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<div class="noprint" style="padding: 4px 22px 10px; display: flex; flex-wrap: wrap; gap: 6px" role="group" aria-label="Devices to label">
+<sc-for list="{{lblRows}}" as="r" hint-placeholder-count="4"><button type="button" role="checkbox" aria-checked="{{r.aria}}" class="{{r.cls}}" onClick="{{r.toggle}}" style="width: auto"><span class="bx"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span><span class="mono">{{r.sn}}</span></button></sc-for>
+</div>
+<div class="pscroll" style="padding: 10px 22px 16px; overflow-y: auto; flex: 1">
+<div class="lbls">
+<sc-for list="{{lblPick}}" as="r" hint-placeholder-count="4">
+<div class="lblc">
+<span style="font-weight: 600; font-size: 12.5px; color: #0E1726">Moonrock R&amp;D · {{r.product}}</span>
+<span><span class="k">S/N</span><span class="mono" style="font-weight: 600">{{r.sn}}</span></span>
+<span><span class="k">{{r.idLbl}}</span><span class="mono">{{r.imei}}</span></span>
+<span><span class="k">Device ID</span><span class="mono">{{r.devId}}</span></span>
+<span><span class="k">IP</span><span class="mono">{{r.ip}}</span></span>
+</div>
+</sc-for>
+</div>
+<sc-if value="{{lblNone}}" hint-placeholder-val="{{ false }}"><p class="muted" style="font-size: 13px; text-align: center; padding: 20px 8px">No devices selected. Pick at least one device above, or mark a device ready first.</p></sc-if>
+</div>
+<div class="noprint" style="padding: 14px 22px; border-top: 1px solid #E3E7EC; display: flex; justify-content: flex-end; align-items: center; gap: 10px; flex-wrap: wrap">
+<span class="muted" style="font-size: 12px; flex: 1 1 200px">Opens your browser's print dialog — choose the Prep bench label printer there.</span>
+<button class="btn" onClick="{{lblClose}}">Cancel</button>
+<button class="btn p" onClick="{{lblPrint}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"></path><rect x="3" y="9" width="18" height="8" rx="2"></rect><path d="M7 14h10v7H7z"></path></svg>Print {{lblN}} labels</button>
+</div>
+</div>
+</sc-if>
+
+<!-- Scan dialog -->
+<sc-if value="{{scanOpen}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{scanClose}}" style="position: fixed; inset: 0; background: rgba(14,23,38,.45); z-index: 50"></div>
+<div role="dialog" aria-modal="true" aria-label="{{scanTitle}}" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(440px, calc(100% - 32px)); background: #fff; border-radius: 14px; z-index: 51; box-shadow: 0 20px 48px rgba(14,23,38,.25); display: flex; flex-direction: column">
+<div style="padding: 20px 22px 6px"><h2 style="font-size: 17px; font-weight: 600">{{scanTitle}}</h2><p class="muted" style="font-size: 13px; margin-top: 4px">{{scanHint}}</p></div>
+<div style="padding: 12px 22px; display: flex; flex-direction: column; gap: 8px">
+<label class="lbl" for="scan-val">{{scanLabel}}</label>
+<input id="scan-val" class="inp mono" autofocus="autofocus" value="{{scanVal}}" onChange="{{onScanVal}}" placeholder="{{scanPh}}">
+<span class="hint">USB / Bluetooth barcode scanners type into this field like a keyboard. No camera is used.</span>
+<sc-if value="{{scanHasErr}}" hint-placeholder-val="{{ false }}"><p role="alert" style="font-size: 12.5px; color: #A3201F; background: #FDEBEA; padding: 8px 10px; border-radius: 8px">{{scanErr}}</p></sc-if>
+</div>
+<div style="padding: 14px 22px; border-top: 1px solid #E3E7EC; display: flex; justify-content: flex-end; gap: 10px">
+<button class="btn" onClick="{{scanClose}}">Cancel</button>
+<button class="btn p" onClick="{{scanApply}}">Use this value</button>
+</div>
+</div>
+</sc-if>
+
+<!-- Toast -->
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 60; display: flex; align-items: center; gap: 12px; padding: 12px 14px 12px 16px; border-radius: 12px; background: #0E1726; color: #fff; font-size: 13.5px; box-shadow: 0 12px 32px rgba(14,23,38,.3); max-width: calc(100% - 32px); flex-wrap: wrap">
+<span style="width: 22px; height: 22px; border-radius: 50%; background: #2BC4A8; color: #04211C; display: flex; align-items: center; justify-content: center; flex: 0 0 22px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span>
+<span>{{toastText}}</span>
+<sc-if value="{{toastLink}}" hint-placeholder-val="{{ true }}"><a href="DeviceDetail.dc.html" style="color: #7EE0CC; font-weight: 600">View device</a></sc-if>
+<button onClick="{{dismissToast}}" aria-label="Dismiss notification" style="border: 0; background: transparent; color: #B3BDCB; cursor: pointer; padding: 4px; display: flex"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</sc-if>
+<sc-if value="{{shell.menuOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 70; display: flex">
+<nav aria-label="Mobile navigation" style="width: min(300px, 85vw); height: 100%; overflow-y: auto; background: #0C1424; padding: 16px 12px; display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 8px 14px; color: #fff"><span style="font-weight: 600">Moonrock R&amp;D</span><button onClick="{{shell.closeAll}}" aria-label="Close menu" style="width: 40px; height: 40px; border: 0; border-radius: 8px; background: #1C2A42; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<a href="Main.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Dashboard</a>
+<a href="Search.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Search</a>
+<a href="Inventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">All inventory</a>
+<a href="Products.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Products</a>
+<a href="Batches.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Batches</a>
+<a href="ReceiveInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Receive stock</a>
+<a href="DevicePrep.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Device preparation</a>
+<a href="SimInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">SIM cards</a>
+<a href="Facilities.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Facilities</a>
+<a href="PocManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">POC projects</a>
+<a href="ContractManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Contracts</a>
+<a href="Deployments.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Deployments</a>
+<a href="CreateDeployment.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">New deployment</a>
+<a href="Reports.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Reports</a>
+<a href="AuditLog.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Audit log</a>
+<a href="Users.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Users &amp; roles</a>
+<a href="Settings.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Settings</a>
+</nav>
+<button aria-label="Close menu" onClick="{{shell.closeAll}}" style="flex: 1; border: 0; padding: 0; background: rgba(14,23,38,.5); cursor: default"></button>
+</div>
+</sc-if>
+<sc-if value="{{shell.blocked}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 80; display: flex; align-items: center; gap: 12px; max-width: min(560px, calc(100vw - 32px)); padding: 12px 12px 12px 16px; border-radius: 12px; background: #7A1F1E; color: #fff; font-size: 13.5px; box-shadow: 0 12px 32px rgba(14,23,38,.3)">
+<span style="flex: 1">You have view access to this canvas, so that change wasn't saved. Ask the owner for edit access to change shared data.</span>
+<button onClick="{{shell.unblock}}" style="height: 32px; padding: 0 12px; border: 1px solid rgba(255,255,255,.4); border-radius: 8px; background: transparent; color: #fff; font: inherit; font-size: 12.5px; cursor: pointer">OK</button>
+</div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1480}}'>
+class Component extends DCLogic {
+  // Prototype persistence: this screen's data survives reloads and is shared by every screen in this browser.
+  componentDidMount() {
+    this._init = JSON.parse(JSON.stringify(this.state));
+    this._onStore = e => { if (!e || !e.key || e.key === 'mrd-proto:store') this.forceUpdate(); };
+    try { window.addEventListener('storage', this._onStore); } catch (e) {}
+    this._sharedInit();
+    try { const raw = window.localStorage.getItem('mrd-proto:v1:DevicePrep'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
+    // Counters, SIM pool and statuses are derived from the shared store; keep the local baselines at their sample values.
+    let savedDevs = null; try { const sv = JSON.parse(window.localStorage.getItem('mrd-proto:v1:DevicePrep') || 'null'); savedDevs = sv && sv.devices; } catch (e) {}
+    const initSt = {}; this._init.devices.forEach(d => { initSt[d.sn] = d; });
+    const devices = (savedDevs || this._init.devices).map(d => initSt[d.sn] ? Object.assign({}, d, { status: initSt[d.sn].status, meta: initSt[d.sn].meta, ip: initSt[d.sn].ip, simTail: initSt[d.sn].simTail }) : d);
+    this.setState({ devices, sims: this._init.sims, tel: this._init.tel, ipN: this._init.ipN, poolFree: this._init.poolFree, today: this._init.today });
+  }
+  // Shared prototype store: one record in browser storage that every screen reads and writes (key mrd-proto:store).
+  readStore() {
+    const empty = { v: 1, units: {}, added: [], deployments: [], events: [], catalog: {} };
+    try { const s = JSON.parse(window.localStorage.getItem('mrd-proto:store') || 'null'); return Object.assign(empty, s || {}); } catch (e) { return empty; }
+  }
+  writeStore(mutate) {
+    const s = this.readStore();
+    if (this._shared && this._shared.mode === 'live' && !this._shared.canEdit) { const t = JSON.parse(JSON.stringify(s)); mutate(t); const strip = o => { const c = Object.assign({}, o); delete c.ui; return JSON.stringify(c); }; if (strip(t) !== strip(s)) this.setState({ _blocked: true }); s.ui = t.ui || s.ui; try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {} this.forceUpdate(); return s; }
+    mutate(s); s.events = s.events.slice(0, 200);
+    try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {}
+    this._pushShared(s);
+    this.forceUpdate(); return s;
+  }
+  // Shared across viewers: the store is mirrored to one document in this artifact's database (mrd_prototype/store).
+  // Browser storage stays as the local cache; everyone who opens the canvas sees the same data, editors can change it.
+  _host() {
+    let w = window;
+    for (let i = 0; i < 8; i++) {
+      try { if (w.claude && typeof w.claude.use === 'function') return w.claude; } catch (e) { return null; }
+      let p = null; try { p = w.parent; } catch (e) { return null; }
+      if (!p || p === w) return null; w = p;
+    }
+    return null;
+  }
+  async _sharedInit() {
+    const host = this._host();
+    if (!host) { this._shared = { mode: 'local' }; this.forceUpdate(); return; }
+    let db = null; try { db = await host.use('db'); } catch (e) { db = null; }
+    if (!db) { this._shared = { mode: 'local' }; this.forceUpdate(); return; }
+    let canEdit = false; try { const u = await host.use('user'); canEdit = u ? !!(await u.canEdit()) : false; } catch (e) { canEdit = false; }
+    this._shared = { mode: 'live', canEdit, db };
+    try {
+      this._unsubShared = db.doc('mrd_prototype/store').onSnapshot(snap => {
+        const local = this.readStore();
+        let next = null;
+        if (snap && snap.exists) { const d = snap.data() || {}; if (typeof d.json === 'string') { try { next = JSON.parse(d.json); } catch (e) { next = null; } } }
+        if (!next) {
+          if (snap && !snap.exists) {
+            let seen = false; try { seen = !!window.localStorage.getItem('mrd-proto:shared-seen'); } catch (e) {}
+            const hasLocal = local.events.length || Object.keys(local.units).length || local.added.length;
+            if (!seen && canEdit && hasLocal) this._pushShared(local);
+            else if (seen || !canEdit) { try { window.localStorage.setItem('mrd-proto:store', JSON.stringify({ v: 1, units: {}, added: [], deployments: [], events: [], catalog: {}, ui: local.ui || {} })); } catch (e) {} this.forceUpdate(); }
+          }
+          return;
+        }
+        next.ui = local.ui || {};
+        try { window.localStorage.setItem('mrd-proto:shared-seen', '1'); } catch (e) {}
+        try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(next)); } catch (e) {}
+        this.forceUpdate();
+      }, err => { this._shared = { mode: 'local', err: err && err.code }; this.forceUpdate(); });
+    } catch (e) { this._shared = { mode: 'local' }; }
+    this.forceUpdate();
+  }
+  _pushShared(s) {
+    const sh = this._shared;
+    if (!sh || sh.mode !== 'live' || !sh.canEdit) return;
+    const out = Object.assign({}, s); delete out.ui;
+    let json = JSON.stringify(out);
+    if (json.length > 240000) { out.events = (out.events || []).slice(0, 40); json = JSON.stringify(out); }
+    sh.db.doc('mrd_prototype/store').set({ json, savedAt: Date.now() }).catch(err => { this._shared = Object.assign({}, sh, { lastErr: (err && err.code) || 'unavailable' }); this.forceUpdate(); });
+  }
+  _clearShared() {
+    const sh = this._shared;
+    if (sh && sh.mode === 'live' && sh.canEdit) { try { sh.db.doc('mrd_prototype/store').delete().catch(() => {}); } catch (e) {} }
+  }
+  syncInfo() {
+    const sh = this._shared;
+    if (!sh) return { label: 'Connecting…', cls: 's-unconf', tip: 'Connecting to the shared store', readOnly: false };
+    if (sh.mode === 'live' && sh.lastErr) return { label: 'Not saved', cls: 's-damaged', tip: 'The last change could not be saved to the shared store (' + sh.lastErr + ')', readOnly: false };
+    if (sh.mode === 'live' && sh.canEdit) return { label: 'Shared · live', cls: 's-deployed', tip: 'Changes are saved for everyone who opens this canvas', readOnly: false };
+    if (sh.mode === 'live') return { label: 'View only', cls: 's-ready', tip: 'You can see shared changes live; only people with edit access can change data', readOnly: true };
+    return { label: 'This browser only', cls: 's-prep', tip: 'The shared store is not available here, so changes stay in this browser', readOnly: false };
+  }
+  nowLabel() { const d = new Date(); return 'Today, ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  patchUnit(s, ident, patch, prevSt) {
+    const cur = s.units[ident] || {};
+    s.units[ident] = Object.assign({}, cur, patch, { st0: cur.st0 !== undefined ? cur.st0 : (prevSt || ''), upd: this.nowLabel() });
+  }
+  logEvent(s, ev) {
+    const d = new Date();
+    s.events.unshift(Object.assign({ id: 'e' + d.getTime() + Math.random().toString(36).slice(2, 6), at: d.getTime(), when: this.nowLabel(), who: 'Chetan', ini: 'CH', role: 'Admin', source: 'Web' }, ev));
+  }
+  componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} try { if (this._unsubShared) this._unsubShared(); } catch (e) {} }
+  componentDidUpdate() {
+    try { const keep = Object.assign({}, this.state); delete keep._shell; delete keep._blocked; ["scanning", "bulk", "toast", "lbl", "lblSel", "scanDlg"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:DevicePrep', JSON.stringify(keep)); } catch (e) {}
+  }
+  constructor(props) {
+    super(props);
+    const pad = n => (n < 10 ? '0' : '') + n;
+    const rut = (n, status, extra) => Object.assign({
+      sn: '11086753' + pad(n), p: 'rut', product: 'Teltonika RUT956', batch: 'TEL-2026-004',
+      imei: '860548043912' + (868 + n), mac: '00:1E:42:3A:7C:' + (16 + n).toString(16).toUpperCase(),
+      fw: 'RUT9M_R_00.07.06', status, meta: (n < 12 ? 'Shelf A1' : 'Shelf B1') + ' · received 22 Sep'
+    }, extra || {});
+    const devices = [];
+    [0, 1, 3, 5, 7, 8, 10, 12, 14, 15, 16, 17, 18, 19].forEach(n => devices.push(rut(n, 'unconf')));
+    devices.push({ sn: '6247B1820051', p: 'ug', product: 'Milesight UG65 gateway', batch: 'GW-2026-001', imei: '24E124FFFEF51A07', mac: '24:E1:24:F5:1A:07', fw: '60.0.0.42', status: 'unconf', meta: 'Shelf B3 · received 15 Jul' });
+    devices.push({ sn: '6247B1820052', p: 'ug', product: 'Milesight UG65 gateway', batch: 'GW-2026-001', imei: '24E124FFFEF51A08', mac: '24:E1:24:F5:1A:08', fw: '60.0.0.42', status: 'unconf', meta: 'Shelf B3 · received 15 Jul' });
+    devices.push({ sn: '1107442109', p: 'rut', product: 'Teltonika RUT956', batch: 'TEL-2026-003', imei: '860548043912955', mac: '00:1E:42:3A:7B:E5', fw: 'RUT9M_R_00.07.08.3', status: 'prep', meta: 'Prep bench · awaiting SIM', done: 3, tech: 'Rahul' });
+    for (let i = 1; i <= 7; i++) {
+      devices.push({ sn: '6136D24710' + (40 + i), p: 'em', product: 'Milesight EM500-CO2', batch: 'CO2-2026-002', imei: '24E124136D2471' + (40 + i), mac: '—', fw: 'V1.3', status: 'prep', meta: 'Prep bench · join keys', done: i < 4 ? 3 : 2, tech: i < 5 ? 'Rahul' : 'Saif' });
+    }
+    devices.push(rut(9, 'ready', { meta: 'Shelf A2 · Chetan, today 09:42', ip: '10.64.12.37', simTail: '…1427', devId: 'MRD-TEL-0417' }));
+    devices.push(rut(13, 'ready', { meta: 'Shelf A2 · Aisha, 02 Oct', ip: '10.64.12.36', simTail: '…1425', devId: 'MRD-TEL-0416' }));
+    devices.push(rut(6, 'ready', { meta: 'Shelf A2 · Saif, 30 Sep', ip: '10.64.12.34', simTail: '…1423', devId: 'MRD-TEL-0414' }));
+    devices.push(rut(4, 'ready', { meta: 'Shelf A2 · Saif, 30 Sep', ip: '10.64.12.33', simTail: '…1421', devId: 'MRD-TEL-0413' }));
+    const sims = [];
+    for (let i = 0; i < 6; i++) sims.push({ iccid: '89968020260930014' + (36 + i), msisdn: '+968 7912 30' + (52 + i) });
+    const sel = devices.find(d => d.sn === '1108675310');
+    this.state = {
+      devices, sims, product: 'all', q: '', open: true, sel: sel.sn, scanning: false, bulk: false,
+      bulkOpts: { fw: true, profile: true, sim: true, ip: true },
+      toast: null, today: 4, tel: 418, ipN: 38, poolFree: 241,
+      f: Object.assign(this.formFor(sel, sims, 418, 38), { checks: { fw: true, profile: true, sim: false, conn: false, label: false } })
+    };
+  }
+  formFor(d, sims, tel, ipN) {
+    const devId = d.p === 'rut' ? 'MRD-TEL-0' + tel : d.p === 'ug' ? 'MRD-GW-0005' : 'MRD-CO2-0061';
+    const s = sims[0] || { iccid: '', msisdn: '' };
+    return {
+      sn: d.sn, batch: d.batch, p: d.p, product: d.product, imei: d.imei, mac: d.mac, devId,
+      fw: d.p === 'rut' ? 'RUT9M_R_00.07.08.3' : d.p === 'ug' ? '60.0.0.44' : 'V1.4',
+      shipped: d.fw, profile: d.p === 'rut' ? 'Exergio BMS gateway v2.3' : d.p === 'ug' ? 'Exergio LNS gateway v1.1' : 'Exergio CO2 room sensor v1.0',
+      sim: s.iccid, iccid: s.iccid, msisdn: s.msisdn, ip: '10.64.12.' + ipN, apn: 'mrd.m2m',
+      date: '2026-10-05', tech: 'Chetan', notes: '',
+      checks: { fw: d.status === 'prep', profile: d.status === 'prep', sim: false, conn: false, label: false }
+    };
+  }
+  // Merge the shared store over this screen's sample devices (status/column, SIM, IP, identity) and add units created elsewhere.
+  mergedDevices(ST0) {
+    const st = this.state;
+    const P = { tel: 'rut', gw: 'ug', co2: 'em' };
+    const base = st.devices.slice();
+    const known = {}; base.forEach(d => { known[d.sn] = true; });
+    (ST0.added || []).forEach(u => {
+      if (!u || !u.ident || known[u.ident] || !P[u.cat]) return;
+      known[u.ident] = true;
+      base.push({ sn: u.ident, p: P[u.cat], product: u.name || '', batch: u.batch || '—', imei: u.imei || '', mac: u.mac || '—', fw: u.fw || '', status: u.st || 'unconf', meta: (u.loc2 || u.loc || 'MRD Office') + ' · received ' + (u.upd || 'recently'), fromStore: true });
+    });
+    return base.map(d => {
+      const u = ST0.units[d.sn];
+      if (!u) return d;
+      const m = Object.assign({}, d);
+      if (u.st) m.status = u.st;
+      if (u.imei) m.imei = u.imei;
+      if (u.mac) m.mac = u.mac;
+      if (u.fw) m.fw = u.fw;
+      if (u.batch) m.batch = u.batch;
+      if (u.ip) m.ip = u.ip;
+      if (u.sim) m.simTail = '…' + String(u.sim).slice(-4);
+      if (u.devId) m.devId = u.devId;
+      if (u.st && u.st !== d.status) {
+        const where = u.loc2 || u.loc || '';
+        m.meta = u.st === 'ready' ? (where || 'Shelf A2') + ' · ' + (u.configuredBy || 'Chetan') + ', ' + (u.upd || 'just now')
+          : u.st === 'prep' ? (where || 'Prep bench') + ' · ' + (m.done ? 'draft saved' : 'in preparation') + ' ' + (u.upd || '')
+          : (where || 'MRD Office') + ' · ' + (u.upd || '');
+      }
+      return m;
+    });
+  }
+  // Shared shell: notifications bell (fed by the shared store) and the mobile navigation drawer.
+  shellVals() {
+    const S = this.state, st = this.readStore();
+    const seen = (st.ui && st.ui.seenAt) || 0;
+    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Stage changed': 'moved the stage of', 'POC decision': 'recorded a POC decision for', 'Contract ended': 'ended the contract for', 'Issue reported': 'reported an issue on', 'Reserved': 'reserved', 'Labels printed': 'printed labels for', 'File attached': 'attached a file to', 'File removed': 'removed a file from', 'User updated': 'updated user', 'Product edited': 'edited', 'Invite resent': 'resent the invite to', 'Document uploaded': 'uploaded a document to', 'Document removed': 'removed a document from', 'Contact added': 'added a contact to', 'Contact removed': 'removed a contact from', 'Contract updated': 'updated the contract for', 'Batch updated': 'updated batch', 'Batch archived': 'archived batch', 'Batch restored': 'restored batch', 'Facility updated': 'updated facility', 'Facility restored': 'restored facility', 'Report exported': 'exported', 'Record corrected': 'corrected', 'Note added': 'added a note to', 'Settings changed': 'updated settings ·', 'User invited': 'invited', 'Role changed': 'changed the role of', 'Verified on site': 'verified on site', 'Deployment cancelled': 'cancelled', 'Deployment updated': 'updated deployment' };
+    const fromStore = st.events.slice(0, 8).map(e => ({ text: (e.who || 'Chetan') + ' ' + (VERB[e.action] || String(e.action || '').toLowerCase()) + ' ' + e.item + (e.to && e.to !== '—' && e.action !== 'Imported' ? ' → ' + e.to : ''), when: e.when, href: e.itemHref || 'AuditLog.dc.html', unread: (e.at || 0) > seen }));
+    const alerts = [
+      { text: '14 Teltonika RUT956 units are waiting for preparation', when: 'Batch TEL-2026-004', href: 'DevicePrep.dc.html', alert: true },
+      { text: 'Cat6 patch cable 1 m is below its minimum level', when: 'Low stock · 18 of 25', href: 'InventoryItem.dc.html', alert: true },
+      { text: 'Qatar Foundation: 2 CO₂ sensors scheduled to install on 08 Oct', when: 'Upcoming deployment', href: 'Deployments.dc.html', alert: true }
+    ].map(a => Object.assign(a, { unread: !seen }));
+    const all = fromStore.concat(alerts);
+    const unread = all.filter(n => n.unread).length;
+    const SY = this.syncInfo();
+    return {
+      syncLabel: SY.label, syncCls: SY.cls, syncTip: SY.tip, blocked: !!S._blocked, unblock: () => this.setState({ _blocked: false }),
+      bellOpen: S._shell === 'bell', bellExp: S._shell === 'bell' ? 'true' : 'false', bellZ: S._shell === 'bell' ? '40' : 'auto',
+      menuOpen: S._shell === 'menu', menuExp: S._shell === 'menu' ? 'true' : 'false',
+      unread: unread > 9 ? '9+' : String(unread), hasUnread: unread > 0,
+      notes: all.map(n => ({ text: n.text, when: n.when, href: n.href, bg: n.unread ? '#F4FBF8' : '#fff', dot: n.alert ? '#E08A00' : (n.unread ? '#0B7A6B' : '#D5DBE3') })),
+      toggleBell: () => this.setState({ _shell: this.state._shell === 'bell' ? '' : 'bell' }),
+      toggleMenu: () => this.setState({ _shell: this.state._shell === 'menu' ? '' : 'menu' }),
+      closeAll: () => this.setState({ _shell: '' }),
+      markRead: () => { const st = this.readStore(); st.ui = Object.assign({}, st.ui || {}, { seenAt: Date.now() }); try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(st)); } catch (e) {} this.forceUpdate(); }
+    };
+  }
+  renderVals() { return Object.assign(this._screenVals(), { shell: this.shellVals() }); }
+  _screenVals() {
+    const ST0 = this.readStore();
+    const st = this.state, f = st.f;
+    const devs = this.mergedDevices(ST0);
+    // Resources derived from the store so they stay right across screens and reloads.
+    const usedIps = {}, usedSims = {};
+    Object.keys(ST0.units).forEach(k => { const u = ST0.units[k] || {}; if (u.ip) usedIps[u.ip] = true; if (u.sim) usedSims[u.sim] = true; if (u.device || u.assigned) usedSims[k] = true; });
+    (ST0.added || []).forEach(u => { if (u && u.ip) usedIps[u.ip] = true; if (u && u.sim) usedSims[u.sim] = true; });
+    devs.forEach(d => { if (d.ip && d.ip !== '—') usedIps[d.ip] = true; });
+    let ipN = st.ipN; while (usedIps['10.64.12.' + ipN] && ipN < 254) ipN++;
+    let ipTaken = 0; Object.keys(usedIps).forEach(ip => { const m = /^10\.64\.12\.(\d+)$/.exec(ip); if (m && +m[1] >= st.ipN) ipTaken++; });
+    const poolFree = Math.max(0, st.poolFree - ipTaken);
+    const freeSims = st.sims.filter(x => !usedSims[x.iccid]);
+    const tel = st.tel + Object.keys(ST0.units).filter(k => /^MRD-TEL-/.test((ST0.units[k] || {}).devId || '')).length;
+    const dayStart = new Date(); dayStart.setHours(0, 0, 0, 0);
+    const today = st.today + ST0.events.filter(e => e.action === 'Configured' && (e.at || 0) >= dayStart.getTime()).length;
+    const prodOk = d => st.product === 'all' || d.p === st.product;
+    const qq = st.q.trim().toLowerCase();
+    const vis = devs.filter(d => prodOk(d) && (!qq || d.sn.toLowerCase().indexOf(qq) >= 0));
+    const techBg = { Chetan: '#CDEFE7', Nitin: '#F6E3C4', Aisha: '#E6DDFB', Rahul: '#DCE6FB', Saif: '#FBE0DC' };
+    const open = d => () => this.setState({ open: true, sel: d.sn, scanning: false, f: this.formFor(d, freeSims, tel, ipN) });
+    const card = d => ({
+      sn: d.sn, product: d.product, batch: d.batch, meta: d.meta, ip: d.ip || '—', simTail: d.simTail || '—', devId: d.devId || '',
+      tech: d.tech || '', techIni: (d.tech || '').slice(0, 2).toUpperCase(), techBg: techBg[d.tech] || '#E3E7EC',
+      progW: ((d.done || 0) / 5 * 100) + '%', progT: (d.done || 0) + ' of 5 steps · ' + (d.tech || ''),
+      cls: 'dv' + (st.open && st.sel === d.sn ? ' sel' : '') + (d.fresh ? ' fresh' : ''),
+      aria: 'Prepare ' + d.product + ' ' + d.sn, pick: open(d)
+    });
+    const unconf = vis.filter(d => d.status === 'unconf').map(card);
+    const prep = vis.filter(d => d.status === 'prep').map(card);
+    const ready = vis.filter(d => d.status === 'ready').sort((a, b) => (b.fresh ? 1 : 0) - (a.fresh ? 1 : 0)).map(card);
+    const pending = p => devs.filter(d => d.status !== 'ready' && (p === 'all' || d.p === p)).length;
+    const chips = [['all', 'All products'], ['rut', 'Teltonika RUT956'], ['ug', 'UG65'], ['em', 'EM500-CO2']].map(([id, label]) => ({
+      label, n: pending(id), cls: 'chip' + (st.product === id ? ' on' : ''), pressed: st.product === id ? 'true' : 'false', pick: () => this.setState({ product: id })
+    }));
+    const setF = k => e => this.setState({ f: Object.assign({}, this.state.f, { [k]: e.target.value }) });
+    const ck = f.checks;
+    const isRut = f.p === 'rut';
+    const stepDone = [
+      !!(f.sn && f.mac && f.imei),
+      ck.fw && ck.profile,
+      isRut ? !!(f.iccid && ck.sim) : true,
+      isRut ? !!(f.ip && ck.conn) : ck.conn,
+      ck.label && !!f.tech
+    ];
+    const labels = ['Identity', 'Firmware & config', isRut ? 'SIM' : 'LoRaWAN', 'Network', 'Sign-off'];
+    const firstOpen = stepDone.indexOf(false);
+    const steps = labels.map((label, i) => ({ label, sep: i < 4 ? '›' : '', cls: 'stp' + (stepDone[i] ? ' done' : (i === firstOpen ? ' cur' : '')) }));
+    const checkDefs = [['fw', 'Firmware updated'], ['profile', 'Config profile applied'], ['sim', isRut ? 'SIM inserted' : 'Join keys provisioned'], ['conn', 'Connectivity test passed'], ['label', 'Label printed']];
+    const checks = checkDefs.map(([k, label]) => ({
+      label, cls: 'ck' + (ck[k] ? ' on' : ''), aria: ck[k] ? 'true' : 'false',
+      toggle: () => this.setState({ f: Object.assign({}, this.state.f, { checks: Object.assign({}, this.state.f.checks, { [k]: !this.state.f.checks[k] }) }) })
+    }));
+    const simOpts = freeSims.map(s => ({ v: s.iccid, l: s.iccid + ' · ' + s.msisdn }));
+    const profiles = (isRut ? ['Exergio BMS gateway v2.3', 'Exergio BMS gateway v2.2 (legacy)', 'Bank Muscat VPN v1.4', 'MRD lab default'] : f.p === 'ug' ? ['Exergio LNS gateway v1.1', 'MRD lab default'] : ['Exergio CO2 room sensor v1.0', 'Exergio CO2 plant room v1.0']).map(v => ({ v }));
+    const techs = [['Chetan', 'Chetan · Admin'], ['Nitin', 'Nitin · Operations'], ['Aisha', 'Aisha · Operations'], ['Rahul', 'Rahul · Technician'], ['Saif', 'Saif · Technician']].map(([v, l]) => ({ v, l }));
+    const LBL = { unconf: 'Unconfigured', prep: 'In preparation', ready: 'Ready for deployment', reserved: 'Reserved', stock: 'In stock', deployed: 'Deployed', maint: 'Under maintenance', transit: 'In transit', returned: 'Returned', damaged: 'Damaged', retired: 'Retired' };
+    const finish = (status) => {
+      const s = this.state, ff = s.f;
+      const rutDev = ff.p === 'rut';
+      const cur = devs.find(d => d.sn === s.sel) || { status: 'unconf', product: ff.product };
+      const prevSt = cur.status;
+      const item = (cur.product || ff.product) + ' ' + s.sel;
+      // Status, SIM and IP live in the shared store; local state only keeps presentation (highlight, progress, technician).
+      this.writeStore(S => {
+        if (status === 'ready') {
+          const patch = { st: 'ready', imei: ff.imei, mac: ff.mac, fw: ff.fw, profile: ff.profile, configuredBy: ff.tech || 'Chetan', loc: 'MRD Office', loc2: 'Shelf A2', devId: ff.devId, batch: ff.batch, name: cur.product || ff.product };
+          if (rutDev) Object.assign(patch, { sim: ff.iccid, msisdn: ff.msisdn, ip: ff.ip });
+          this.patchUnit(S, s.sel, patch, prevSt);
+          this.logEvent(S, { action: 'Configured', item, itemHref: 'DeviceDetail.dc.html', from: LBL[prevSt] || prevSt, to: LBL.ready, note: ff.profile + ' · firmware ' + ff.fw + (ff.notes ? ' · ' + ff.notes : '') });
+          if (rutDev && ff.iccid) {
+            this.patchUnit(S, ff.iccid, { device: s.sel, ip: ff.ip, msisdn: ff.msisdn, assigned: true }, (S.units[ff.iccid] || {}).st || '');
+            this.logEvent(S, { action: 'SIM assigned', item, itemHref: 'DeviceDetail.dc.html', from: '—', to: ff.iccid, note: ff.msisdn });
+          }
+          if (rutDev && ff.ip) this.logEvent(S, { action: 'IP assigned', item, itemHref: 'DeviceDetail.dc.html', from: '—', to: ff.ip, note: 'Pool 10.64.12.0/24 · static lease' });
+        } else {
+          this.patchUnit(S, s.sel, { st: 'prep', loc: 'MRD Office', loc2: 'Prep bench', name: cur.product || ff.product, batch: ff.batch }, prevSt);
+          this.logEvent(S, { action: 'Status changed', item, itemHref: 'DeviceDetail.dc.html', from: LBL[prevSt] || prevSt, to: LBL.prep, note: 'Draft saved by ' + (ff.tech || 'Chetan') });
+        }
+      });
+      const done = Object.keys(ff.checks).filter(k => ff.checks[k]).length;
+      const devices = s.devices.map(d => {
+        const b = Object.assign({}, d, { fresh: false });
+        if (d.sn !== s.sel) return b;
+        return status === 'ready' ? Object.assign(b, { fresh: true, devId: ff.devId }) : Object.assign(b, { done, tech: ff.tech });
+      });
+      this.setState({
+        devices, open: false, scanning: false,
+        toast: status === 'ready' ? { text: s.sel + ' is ready for deployment', link: true } : { text: 'Draft saved · ' + s.sel + ' moved to In preparation', link: false }
+      });
+    };
+    const bulkTargets = devs.filter(d => d.p === 'rut' && d.status === 'unconf');
+    const sd = st.scanDlg || {};
+    const lsel = st.lblSel || {};
+    const idLblFor = p => p === 'rut' ? 'IMEI' : p === 'ug' ? 'EUI' : 'DevEUI';
+    const lblSrc = [];
+    if (st.open && f.sn && !vis.some(d => d.sn === st.sel && d.status === 'ready')) lblSrc.push({ sn: f.sn, product: f.product, imei: f.imei, devId: f.devId, ip: f.p === 'rut' ? f.ip : '—', p: f.p });
+    vis.filter(d => d.status === 'ready').forEach(d => lblSrc.push({ sn: d.sn, product: d.product, imei: d.imei, devId: d.devId, ip: d.ip, p: d.p }));
+    const lblRows = lblSrc.map(d => {
+      const on = lsel[d.sn] !== false;
+      return { sn: d.sn, product: d.product, imei: d.imei || '—', devId: d.devId || '—', ip: d.ip || '—', idLbl: idLblFor(d.p), on, cls: 'ck' + (on ? ' on' : ''), aria: on ? 'true' : 'false',
+        toggle: () => this.setState({ lblSel: Object.assign({}, this.state.lblSel || {}, { [d.sn]: (this.state.lblSel || {})[d.sn] === false }) }) };
+    });
+    const lblPick = lblRows.filter(r => r.on);
+    const bo = st.bulkOpts;
+    const bulkOpts = [
+      ['fw', 'Update firmware to RUT9M_R_00.07.08.3', 'Pushed over LAN from the prep bench'],
+      ['profile', 'Apply profile Exergio BMS gateway v2.3', 'Same profile as the 10 deployed RUT956'],
+      ['sim', 'Auto-assign SIMs from SIM-2026-005', 'Next ' + bulkTargets.length + ' of ' + freeSims.length + '+ available Omantel SIMs, in serial order'],
+      ['ip', 'Reserve IPs from 10.64.12.0/24', 'Sequential from ' + '10.64.12.' + ipN]
+    ].map(([k, label, sub]) => ({ label, sub, cls: 'ck' + (bo[k] ? ' on' : ''), aria: bo[k] ? 'true' : 'false', toggle: () => this.setState({ bulkOpts: Object.assign({}, this.state.bulkOpts, { [k]: !this.state.bulkOpts[k] }) }) }));
+    return {
+      chips, q: st.q, onQ: e => this.setState({ q: e.target.value }),
+      unconf, prep, ready, nUnconf: unconf.length, nPrep: prep.length, nReady: ready.length,
+      emptyUnconf: unconf.length === 0, emptyPrep: prep.length === 0, emptyReady: ready.length === 0,
+      today, poolFree, nextIp: '10.64.12.' + ipN, simsFree: 30 + freeSims.length,
+      open: st.open, close: () => this.setState({ open: false, scanning: false }),
+      title: 'Prepare ' + f.product, f, isRut, notRut: !isRut, idLabel: isRut ? 'IMEI' : f.p === 'ug' ? 'Gateway EUI' : 'DevEUI',
+      shippedFw: f.shipped, steps, doneN: stepDone.filter(Boolean).length, checks, simOpts, profiles, techs,
+      scanning: false,
+      onSn: setF('sn'), onImei: setF('imei'), onMac: setF('mac'), onFw: setF('fw'), onProfile: setF('profile'),
+      onIccid: setF('iccid'), onIp: setF('ip'), onApn: setF('apn'), onDate: setF('date'), onTech: setF('tech'), onNotes: setF('notes'),
+      onSim: e => { const s = this.state.sims.find(x => x.iccid === e.target.value) || { iccid: '', msisdn: '' }; this.setState({ f: Object.assign({}, this.state.f, { sim: s.iccid, iccid: s.iccid, msisdn: s.msisdn }) }); },
+      saveDraft: () => finish('prep'), markReady: () => finish('ready'),
+      bulk: st.bulk, bulkCount: bulkTargets.length, bulkOpts,
+      openBulk: () => this.setState({ bulk: true, open: false }), closeBulk: () => this.setState({ bulk: false }),
+      runBulk: () => {
+        const n = bulkTargets.length;
+        const ids = {}; bulkTargets.forEach(d => { ids[d.sn] = true; });
+        this.writeStore(S => {
+          bulkTargets.forEach(d => {
+            this.patchUnit(S, d.sn, { st: 'prep', loc: 'MRD Office', loc2: 'Prep bench', name: d.product, batch: d.batch }, d.status);
+            this.logEvent(S, { action: 'Status changed', item: d.product + ' ' + d.sn, itemHref: 'DeviceDetail.dc.html', from: LBL.unconf, to: LBL.prep, note: 'Bulk prepare · ' + d.batch });
+          });
+        });
+        const devices = this.state.devices.map(d => ids[d.sn] ? Object.assign({}, d, { done: 2, tech: 'Chetan', fresh: false }) : d);
+        this.setState({ devices, bulk: false, toast: { text: n + ' devices moved to In preparation', link: false } });
+      },
+      // Label sheet: one label per ready device in the current filter, plus the device open in the drawer.
+      printLabels: () => this.setState({ lbl: true, lblSel: {} }),
+      lblOpen: !!st.lbl, lblClose: () => this.setState({ lbl: false }),
+      lblRows, lblPick, lblN: lblPick.length, lblNone: lblPick.length === 0,
+      lblSub: lblRows.length + ' device' + (lblRows.length === 1 ? '' : 's') + ' available · ' + lblPick.length + ' selected for printing',
+      lblPrint: () => {
+        if (!lblPick.length) return;
+        try { window.print(); } catch (e) {}
+        const drawerSn = this.state.open ? this.state.sel : null;
+        const inclDrawer = !!(drawerSn && lblPick.some(r => r.sn === drawerSn));
+        this.writeStore(S => {
+          this.logEvent(S, { action: 'Labels printed', item: lblPick.length + ' device label' + (lblPick.length === 1 ? '' : 's'), itemHref: 'DevicePrep.dc.html', from: '—', to: 'Prep bench printer', note: lblPick.map(r => r.sn).join(', ') });
+        });
+        const patch = { lbl: false, toast: { text: 'Print dialog opened · ' + lblPick.length + ' label' + (lblPick.length === 1 ? '' : 's'), link: false } };
+        if (inclDrawer) patch.f = Object.assign({}, this.state.f, { checks: Object.assign({}, this.state.f.checks, { label: true }) });
+        this.setState(patch);
+      },
+      // Scan dialog: accepts typed or scanner (keyboard-wedge) input; no camera.
+      scanQ: () => this.setState({ scanDlg: { field: 'q', val: '', err: '' } }),
+      scanSn: () => this.setState({ scanDlg: { field: 'sn', val: '', err: '' } }),
+      scanIccid: () => this.setState({ scanDlg: { field: 'iccid', val: '', err: '' } }),
+      scanOpen: !!st.scanDlg, scanClose: () => this.setState({ scanDlg: null }),
+      scanTitle: sd.field === 'iccid' ? 'Scan SIM ICCID' : 'Scan serial number',
+      scanHint: sd.field === 'iccid' ? 'Scan the barcode on the SIM carrier card or type the ICCID. It fills the ICCID field and matches the SIM pool.' : sd.field === 'sn' ? 'Scan the serial label on the device. It replaces the serial in this form.' : 'Scan a device serial to jump straight to its preparation form.',
+      scanLabel: sd.field === 'iccid' ? 'ICCID' : 'Serial number', scanPh: sd.field === 'iccid' ? '89968…' : 'e.g. 1108675310',
+      scanVal: sd.val || '', scanErr: sd.err || '', scanHasErr: !!sd.err,
+      onScanVal: e => this.setState({ scanDlg: Object.assign({}, this.state.scanDlg, { val: e.target.value, err: '' }) }),
+      scanApply: () => {
+        const cur = this.state.scanDlg || {};
+        const v = String(cur.val || '').replace(/\s+/g, '').trim();
+        const fail = err => this.setState({ scanDlg: Object.assign({}, cur, { err }) });
+        if (!v) return fail('Nothing scanned yet — scan or type a value first.');
+        if (cur.field === 'iccid') {
+          if (!/^\d{18,22}$/.test(v)) return fail('An ICCID is 18–22 digits. Check the scan and try again.');
+          const owner = (ST0.units[v] || {}).device;
+          if (owner && owner !== this.state.f.sn) return fail('This SIM is already assigned to ' + owner + '.');
+          const sim = this.state.sims.find(x => x.iccid === v);
+          this.setState({ scanDlg: null, f: Object.assign({}, this.state.f, { iccid: v, sim: sim ? v : '', msisdn: sim ? sim.msisdn : '', checks: Object.assign({}, this.state.f.checks, { sim: true }) }), toast: { text: sim ? 'ICCID scanned · matched ' + sim.msisdn : 'ICCID scanned · not in the SIM pool, MSISDN left blank', link: false } });
+          return;
+        }
+        if (cur.field === 'sn') { this.setState({ scanDlg: null, f: Object.assign({}, this.state.f, { sn: v }) }); return; }
+        const hit = devs.find(d => d.sn.toLowerCase() === v.toLowerCase());
+        if (hit) { this.setState({ scanDlg: null, q: '', open: true, sel: hit.sn, scanning: false, f: this.formFor(hit, freeSims, tel, ipN) }); return; }
+        this.setState({ scanDlg: null, q: v, toast: { text: 'No device with serial ' + v + ' — showing the filter instead', link: false } });
+      },
+      hasToast: !!st.toast, toastText: st.toast ? st.toast.text : '', toastLink: !!(st.toast && st.toast.link),
+      dismissToast: () => this.setState({ toast: null })
+    };
+  }
+}
+</script>
+</body>
+</html>

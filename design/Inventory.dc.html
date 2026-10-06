@@ -1,0 +1,846 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>All inventory · MRD Inventory</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F6F8;color:#0E1726;font-family:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#0B7A6B;text-decoration:none}a:hover{color:#075C51}
+h1,h2,h3,h4,p{margin:0}
+.mono{font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;letter-spacing:-.01em}
+.muted{color:#5E6B7D}
+.side{flex:0 0 248px;background:#0C1424;padding:18px 12px 16px;display:flex;flex-direction:column;gap:1px}
+.nav{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:8px;color:#B3BDCB;font-size:13.5px}
+.nav:hover{background:#152036;color:#fff}
+.nav.on{background:#1C2A42;color:#fff;box-shadow:inset 2px 0 0 #2BC4A8}
+.nav svg{flex:0 0 16px;width:16px;height:16px}
+.nav .ct{margin-left:auto;font-size:11px;font-weight:600;background:#2BC4A8;color:#04211C;border-radius:999px;padding:1px 7px}
+.sec{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#7F8CA0;padding:16px 10px 6px;font-weight:500}
+.mtop{display:none}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 32px;background:#fff;border-bottom:1px solid #E3E7EC}
+.srch{flex:1 1 320px;max-width:560px;display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border:1px solid #DCE1E8;border-radius:10px;background:#F8FAFB;color:#5E6B7D;font-size:13.5px}
+.srch:hover{border-color:#B9C2CE;color:#3B4758}
+.kbd{margin-left:auto;font-family:'Geist Mono',monospace;font-size:11px;border:1px solid #DCE1E8;border-radius:5px;padding:1px 6px;background:#fff;color:#5E6B7D}
+.main{padding:28px 32px 48px;max-width:1400px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+.card{background:#fff;border:1px solid #E3E7EC;border-radius:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 14px;border-radius:9px;border:1px solid #D5DBE3;background:#fff;color:#1B2638;font:inherit;font-size:13.5px;font-weight:500;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#F4F6F8;color:#0E1726}
+.btn.p{background:#0B7A6B;border-color:#0B7A6B;color:#fff}.btn.p:hover{background:#08695C;color:#fff}
+.btn.sm{height:32px;padding:0 10px;font-size:12.5px;border-radius:8px}
+.btn.ic{width:40px;padding:0}
+.btn svg{width:16px;height:16px}
+.b{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;background:#EEF1F5;color:#3E4A5C}
+.b::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.s-unconf{background:#EEF1F5;color:#3E4A5C}.s-prep{background:#FFF3DC;color:#8A4B00}.s-ready{background:#E6EEFF;color:#1D4FB8}.s-reserved{background:#F0EAFE;color:#5B32B4}.s-deployed{background:#E1F4EC;color:#0A6648}.s-stock{background:#E3F2F6;color:#0E5E73}.s-maint{background:#FFEDE3;color:#9A3D0B}.s-damaged{background:#FDEBEA;color:#A3201F}.s-transit{background:#E9EDFC;color:#3346A8}.s-returned{background:#F1EEE8;color:#5E554A}.s-retired{background:#EFF0F2;color:#646C79}
+.g-insp{background:#EEF1F5;color:#3E4A5C}.g-bms{background:#E3F2F6;color:#0E5E73}.g-poc{background:#F0EAFE;color:#5B32B4}.g-study{background:#FFF3DC;color:#8A4B00}.g-cpend{background:#E6EEFF;color:#1D4FB8}.g-contract{background:#E1F4EC;color:#0A6648}.g-ops{background:#0B7A6B;color:#fff}.g-done{background:#EFF0F2;color:#646C79}.g-hold{background:#FDEBEA;color:#A3201F}
+.t{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:6px;font-size:11.5px;font-weight:600;letter-spacing:.02em;border:1px solid}
+.t-poc{color:#5B32B4;border-color:#D7C8FA;background:#FAF7FF}.t-con{color:#0A6648;border-color:#BFE3D3;background:#F4FBF8}.t-rep{color:#8A4B00;border-color:#F3D9A6;background:#FFFBF2}.t-add{color:#1D4FB8;border-color:#C8D8FA;background:#F6F9FF}
+.tw{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-weight:500;color:#5E6B7D;font-size:12px;padding:10px 14px;border-bottom:1px solid #E3E7EC;background:#F8FAFB;white-space:nowrap}
+.tbl td{padding:11px 14px;border-bottom:1px solid #EEF1F4;white-space:nowrap;vertical-align:middle}
+.tbl tr:hover td{background:#F8FAFB}
+.tbl tr:last-child td{border-bottom:0}
+.ov{font-size:12px;font-weight:500;color:#5E6B7D;text-transform:uppercase;letter-spacing:.06em}
+.kpi{padding:16px 18px;display:flex;flex-direction:column;gap:6px;color:#0E1726}
+.kpi:hover{border-color:#B9C2CE;color:#0E1726}
+.kpi .n{font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
+.seg{display:flex;gap:2px;height:8px;border-radius:4px;overflow:hidden}
+.seg span{display:block;height:100%}
+.row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-top:1px solid #EEF1F4;color:#0E1726}
+.row:hover{background:#F8FAFB;color:#0E1726}
+.chip{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;border:0;background:transparent;font:inherit;font-size:13px;color:#3B4758;cursor:pointer}
+.chip.on{background:#fff;color:#0E1726;box-shadow:0 1px 2px rgba(14,23,38,.12)}
+.cb{width:18px;height:18px;flex:0 0 18px;border-radius:5px;border:1.5px solid #B9C2CE;background:#fff;display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer;color:transparent}
+.cb.on{background:#0B7A6B;border-color:#0B7A6B;color:#fff}
+.cb svg{width:12px;height:12px}
+.tbl tr.sel td{background:#F1FAF7}
+.fchip{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 12px;border-radius:999px;border:1px solid #DCE1E8;background:#fff;font:inherit;font-size:13px;color:#3B4758;cursor:pointer;white-space:nowrap}
+.fchip:hover{border-color:#B9C2CE}
+.fchip.on{border-color:#0B7A6B;background:#ECF7F4;color:#075C51;box-shadow:inset 0 0 0 1px #0B7A6B}
+.fchip strong{font-weight:600;color:#0E1726}
+.ctab{display:inline-flex;align-items:center;gap:6px;height:46px;padding:0 2px;border:0;border-bottom:2px solid transparent;background:none;font:inherit;font-size:13.5px;color:#5E6B7D;cursor:pointer;white-space:nowrap}
+.ctab:hover{color:#0E1726}
+.ctab.on{color:#0E1726;border-bottom-color:#0B7A6B;font-weight:500}
+.ctab .n{font-size:11.5px;background:#EEF1F5;color:#3E4A5C;border-radius:999px;padding:0 7px;line-height:18px}
+.inp{height:40px;border:1px solid #DCE1E8;border-radius:9px;padding:0 12px 0 36px;font:inherit;font-size:13.5px;width:100%;background:#fff;color:#0E1726}
+.inp:focus{outline:2px solid rgba(11,122,107,.25);border-color:#0B7A6B}
+.dd svg{width:14px;height:14px;color:#5E6B7D}
+.vt{display:inline-flex;align-items:center;justify-content:center;width:34px;height:32px;border:0;border-radius:7px;background:transparent;color:#5E6B7D;cursor:pointer}
+.vt.on{background:#fff;color:#0E1726;box-shadow:0 1px 2px rgba(14,23,38,.12)}
+.vt svg{width:16px;height:16px}
+.gcard{padding:16px;display:flex;flex-direction:column;gap:12px}
+.gcard.sel{border-color:#0B7A6B;box-shadow:inset 0 0 0 1px #0B7A6B}
+.tile{width:44px;height:44px;flex:0 0 44px;border-radius:10px;background:#E9EEF2;display:flex;align-items:center;justify-content:center;color:#3B4758}
+.kv{display:grid;grid-template-columns:78px 1fr;gap:5px 10px;font-size:12.5px}
+.kv dt{color:#5E6B7D}.kv dd{margin:0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pg{display:inline-flex;align-items:center;justify-content:center;min-width:32px;height:32px;padding:0 8px;border-radius:8px;border:1px solid transparent;background:none;font:inherit;font-size:13px;color:#3B4758;cursor:pointer}
+.pg.on{border-color:#D5DBE3;background:#fff;color:#0E1726;font-weight:600}
+.sel-s{height:32px;border:1px solid #D5DBE3;border-radius:8px;padding:0 8px;font:inherit;font-size:13px;background:#fff;color:#0E1726}
+.low{display:inline-flex;align-items:center;height:18px;padding:0 6px;border-radius:5px;background:#FDEBEA;color:#A3201F;font-size:11px;font-weight:600;margin-left:6px}
+.dd .dv,.dv{color:#0B7A6B}
+.dd.act{border-color:#0B7A6B;background:#E6F4F1;color:#075C51}
+.scrim{position:fixed;inset:0;z-index:20;background:transparent;border:0;padding:0;cursor:default}
+.menu{position:absolute;top:calc(100% + 6px);z-index:31;width:264px;max-width:calc(100vw - 32px);max-height:360px;overflow:auto;background:#fff;border:1px solid #DCE1E8;border-radius:12px;box-shadow:0 12px 32px rgba(14,23,38,.16);padding:6px;display:flex;flex-direction:column}
+.mh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:8px 10px 6px;font-size:12px;font-weight:600;color:#3B4758;text-transform:uppercase;letter-spacing:.05em}
+.mh span{font-weight:400;text-transform:none;letter-spacing:0;color:#5E6B7D}
+.mi{display:flex;align-items:center;gap:10px;width:100%;min-height:36px;padding:0 10px;border:0;border-radius:8px;background:none;font:inherit;font-size:13.5px;color:#0E1726;text-align:left;cursor:pointer}
+.mi:hover{background:#F4F6F8}
+.mi.dim{color:#5E6B7D}
+.mi .ml{flex:1}
+.mi .mc{font-size:12px;color:#5E6B7D;font-variant-numeric:tabular-nums}
+.bx,.rd{width:16px;height:16px;flex:0 0 16px;border:1.5px solid #B9C2CE;display:flex;align-items:center;justify-content:center;color:transparent;box-sizing:border-box}
+.bx{border-radius:4px}.bx svg{width:12px;height:12px}
+.bx.on{background:#0B7A6B;border-color:#0B7A6B;color:#fff}
+.rd{border-radius:50%}.rd svg{display:none}
+.rd.on{border:5px solid #0B7A6B}
+.mf{display:flex;justify-content:space-between;gap:8px;padding:8px 4px 2px;border-top:1px solid #EEF1F4;margin-top:6px}
+.pill{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 4px 0 10px;border-radius:999px;background:#E6F4F1;color:#075C51;font-size:12.5px;font-weight:500}
+.pill button{width:22px;height:22px;border:0;border-radius:50%;background:transparent;color:#075C51;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.pill button:hover{background:#CDEFE7}
+.btn:disabled{opacity:.5;cursor:not-allowed}.btn.p:disabled:hover{background:#0B7A6B}.opt:disabled{opacity:.5;cursor:not-allowed}
+.pg:hover{background:#F4F6F8}
+.pg:disabled{opacity:.4;cursor:not-allowed;background:none}
+.toast{position:fixed;right:24px;bottom:24px;z-index:60;display:flex;align-items:center;gap:12px;max-width:min(520px,calc(100vw - 32px));padding:12px 12px 12px 16px;border-radius:12px;background:#0E1726;color:#fff;font-size:13.5px;box-shadow:0 12px 32px rgba(14,23,38,.3)}
+.toast .tx{width:32px;height:32px;border:0;border-radius:8px;background:transparent;color:#B3BDCB;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.toast .tx:hover{background:#1C2A42;color:#fff}
+.mdl{position:relative;width:min(640px,100%);max-height:100%;overflow-y:auto;background:#fff;border-radius:14px;box-shadow:0 24px 48px rgba(14,23,38,.2);display:flex;flex-direction:column}
+.mdl .mhd{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:20px 22px 0}
+.mdl .mbd{padding:18px 22px;display:flex;flex-direction:column;gap:16px}
+.mdl .mft{display:flex;justify-content:flex-end;gap:10px;padding:14px 22px;border-top:1px solid #E3E7EC}
+.fsel{width:100%;height:40px;border:1px solid #D5DBE3;border-radius:9px;padding:0 10px;font:inherit;font-size:14px;color:#0E1726;background:#fff}
+.ta{width:100%;min-height:120px;border:1px solid #D5DBE3;border-radius:9px;padding:10px 12px;font-family:'Geist Mono',ui-monospace,monospace;font-size:12px;line-height:1.55;color:#0E1726;background:#fff;resize:vertical}
+.ta[readonly]{background:#F8FAFB}
+.ilist{border:1px solid #E3E7EC;border-radius:10px;max-height:220px;overflow:auto}
+.irow{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) auto minmax(0,1.2fr);gap:10px;align-items:center;padding:9px 12px;border-top:1px solid #EEF1F4;font-size:12.5px}
+.irow:first-child{border-top:0}
+.irow .to{font-weight:500;color:#0E1726}.irow .to.skip{font-weight:400;color:#9A3D0B}
+.og{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.opt{display:flex;align-items:center;gap:8px;min-height:40px;padding:0 12px;border:1px solid #D5DBE3;border-radius:9px;background:#fff;font:inherit;font-size:13px;color:#0E1726;cursor:pointer;text-align:left}
+.opt:hover{border-color:#B9C2CE}
+.opt.on{border-color:#0B7A6B;box-shadow:inset 0 0 0 1px #0B7A6B;background:#F4FBF8}
+.note{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:10px;font-size:12.5px;line-height:1.45}
+.note.warn{background:#FFF8EB;color:#6B3D00}.note.bad{background:#FDEBEA;color:#8A1C1B}.note.info{background:#F4F6F8;color:#3B4758}
+.itbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.itbl th{text-align:left;font-weight:500;color:#5E6B7D;padding:8px 10px;background:#F8FAFB;border-bottom:1px solid #E3E7EC}
+.itbl td{padding:8px 10px;border-bottom:1px solid #EEF1F4}
+.ok{color:#0A6648;font-weight:500}.er{color:#A3201F;font-weight:500}
+@media (max-width:900px){.side{display:none}.mtop{display:flex}.main{padding:20px 16px 40px}.top{padding:12px 16px}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh; background: #F4F6F8">
+<nav class="side" aria-label="Primary">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 2px 8px 14px; color: #fff">
+<span style="width: 32px; height: 32px; border-radius: 9px; background: #0B7A6B; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4a8 8 0 1 0 4 11.5A6.5 6.5 0 0 1 16 4z"></path><path d="M6 18l2.5-2.5"></path></svg></span>
+<span style="display: flex; flex-direction: column; line-height: 1.15"><span style="font-weight: 600; font-size: 14px">Moonrock R&amp;D</span><span style="font-size: 11.5px; color: #8D99AC">Inventory × Exergio</span></span>
+</a>
+<a class="nav" href="Main.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>Dashboard</a>
+<div class="sec">Inventory</div>
+<a class="nav on" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"></path><path d="M3 8v8l9 5 9-5V8"></path><path d="M12 13v8"></path></svg>All inventory</a>
+<a class="nav" href="Products.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg>Products</a>
+<a class="nav" href="Batches.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l10 5-10 5L2 7l10-5z"></path><path d="M2 12l10 5 10-5"></path><path d="M2 17l10 5 10-5"></path></svg>Batches</a>
+<a class="nav" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive stock</a>
+<div class="sec">Devices</div>
+<a class="nav" href="DevicePrep.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg>Device preparation<span class="ct">15</span></a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="18" height="7" rx="2"></rect><path d="M7 16.5h.01M11 16.5h.01"></path><path d="M17 13V5"></path><path d="M14 7.5a4 4 0 0 1 6 0"></path></svg>Teltonika</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h11a3 3 0 1 0-3-3"></path><path d="M3 12h16a3 3 0 1 1-3 3"></path><path d="M3 16h7"></path></svg>CO₂ sensors</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"></circle><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7M5.6 5.6a9 9 0 0 0 0 12.8M18.4 5.6a9 9 0 0 1 0 12.8"></path></svg>LoRaWAN gateways</a>
+<a class="nav" href="SimInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"></path><rect x="8.5" y="11" width="7" height="6" rx="1"></rect></svg>SIM cards</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"></rect><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"></path></svg>Other equipment</a>
+<div class="sec">Facilities &amp; projects</div>
+<a class="nav" href="Facilities.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"></rect><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1"></path></svg>Facilities</a>
+<a class="nav" href="PocManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6L4.5 18.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3"></path><path d="M7 15h10"></path></svg>POC projects</a>
+<a class="nav" href="ContractManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path><path d="M9 13h6M9 17h4"></path></svg>Contracts</a>
+<div class="sec">Deployments</div>
+<a class="nav" href="Deployments.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3z"></path><path d="M14 10h4l3 3v3h-7"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>Deployments</a>
+<a class="nav" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>New deployment</a>
+<div class="sec">Insights &amp; admin</div>
+<a class="nav" href="Reports.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M10 20V5M16 20v-6M21 20H3"></path></svg>Reports</a>
+<a class="nav" href="AuditLog.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l3 2"></path></svg>Audit log</a>
+<a class="nav" href="Users.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20a6.5 6.5 0 0 1 13 0"></path><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"></path></svg>Users &amp; roles</a>
+<a class="nav" href="Settings.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Settings</a>
+<div style="margin-top: auto; padding: 16px 8px 0; display: flex; align-items: center; gap: 10px; border-top: 1px solid #1C2A42">
+<span style="width: 32px; height: 32px; border-radius: 50%; background: #2BC4A8; color: #04211C; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600">CH</span>
+<span style="display: flex; flex-direction: column; line-height: 1.2"><span style="color: #fff; font-size: 13px; font-weight: 500">Chetan</span><span style="color: #8D99AC; font-size: 11.5px">Admin · MRD Office</span></span>
+</div>
+</nav>
+
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+<div class="mtop" style="align-items: center; justify-content: space-between; padding: 12px 16px; background: #0C1424; color: #fff">
+<span style="font-weight: 600">Moonrock R&amp;D</span>
+<button class="btn sm" aria-label="Open menu" aria-expanded="{{shell.menuExp}}" onClick="{{shell.toggleMenu}}" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
+</div>
+<header class="top">
+<a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
+<span style="flex: 1"></span>
+<span class="b s-prep" title="All records shown are sample data">Sample data</span>
+<span class="b {{shell.syncCls}}" title="{{shell.syncTip}}">{{shell.syncLabel}}</span>
+<a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
+<a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
+<div style="position: relative; z-index: {{shell.bellZ}}">
+<button class="btn ic" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="{{shell.bellExp}}" onClick="{{shell.toggleBell}}" style="position: relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg><sc-if value="{{shell.hasUnread}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #DC3B3A; color: #fff; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #fff">{{shell.unread}}</span></sc-if></button>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="Notifications" style="position: absolute; right: 0; top: calc(100% + 8px); z-index: 41; width: 360px; max-width: calc(100vw - 32px); background: #fff; border: 1px solid #DCE1E8; border-radius: 12px; box-shadow: 0 16px 40px rgba(14,23,38,.18); overflow: hidden; text-align: left">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #EEF1F4"><span style="font-weight: 600; font-size: 14px; color: #0E1726">Notifications</span><button onClick="{{shell.markRead}}" style="border: 0; background: none; padding: 4px; font: inherit; font-size: 12.5px; color: #0B7A6B; cursor: pointer">Mark all as read</button></div>
+<div style="max-height: 380px; overflow-y: auto">
+<sc-for list="{{shell.notes}}" as="n" hint-placeholder-count="4">
+<a href="{{n.href}}" style="display: flex; gap: 10px; padding: 11px 14px; border-bottom: 1px solid #F1F4F7; color: #0E1726; background: {{n.bg}}">
+<span style="width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: 0 0 8px; background: {{n.dot}}"></span>
+<span style="flex: 1; min-width: 0; font-size: 13px; line-height: 1.4"><span style="display: block">{{n.text}}</span><span style="display: block; font-size: 12px; color: #5E6B7D">{{n.when}}</span></span>
+</a>
+</sc-for>
+</div>
+<a href="AuditLog.dc.html" style="display: block; padding: 10px 14px; font-size: 13px; font-weight: 500; text-align: center; border-top: 1px solid #EEF1F4">Open audit log</a>
+</div>
+</sc-if>
+</div>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}"><button aria-label="Close notifications" onClick="{{shell.closeAll}}" style="position: fixed; inset: 0; z-index: 30; background: transparent; border: 0; padding: 0; cursor: default"></button></sc-if>
+</header>
+
+<main class="main">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<nav aria-label="Breadcrumb" class="muted" style="font-size: 13px; display: flex; gap: 6px; flex-wrap: wrap"><a href="Main.dc.html">Dashboard</a><span aria-hidden="true">/</span><span>Inventory</span><span aria-hidden="true">/</span><span style="color: #0E1726">All inventory</span></nav>
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="font-size: 26px; font-weight: 600; letter-spacing: -.02em">All inventory</h1>
+<p class="muted" style="font-size: 14px">1,284 items across 18 products · 244 serialised units, 1,040 quantity-tracked pieces</p>
+</div>
+<div style="display: flex; gap: 10px; flex-wrap: wrap">
+<button class="btn" onClick="{{openImport}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path><path d="M12 18v-6M9 15l3-3 3 3"></path></svg>Import CSV</button>
+<button class="btn" onClick="{{openExportAll}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"></path></svg>Export</button>
+<a class="btn p" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive stock</a>
+</div>
+</div>
+</div>
+
+<!-- Status summary -->
+<section class="card" aria-label="Filter by status" style="padding: 16px 18px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap">
+<span class="ov">By status</span>
+<span class="muted" style="font-size: 12px">Click a status to filter the list below</span>
+</div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<sc-for list="{{statusChips}}" as="c" hint-placeholder-count="9">
+<button class="{{c.cls}}" aria-pressed="{{c.pressed}}" onClick="{{c.pick}}"><span style="width: 8px; height: 8px; border-radius: 50%; background: {{c.dot}}"></span>{{c.label}}<strong>{{c.n}}</strong></button>
+</sc-for>
+</div>
+</section>
+
+<!-- List card -->
+<section class="card" style="min-width: 0">
+<div role="tablist" aria-label="Category" style="display: flex; gap: 22px; padding: 0 18px; border-bottom: 1px solid #E3E7EC; overflow-x: auto">
+<sc-for list="{{catTabs}}" as="t" hint-placeholder-count="8">
+<button class="{{t.cls}}" role="tab" aria-selected="{{t.pressed}}" onClick="{{t.pick}}">{{t.label}}<span class="n">{{t.n}}</span></button>
+</sc-for>
+</div>
+
+<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 14px 18px">
+<div style="position: relative; flex: 1 1 280px; max-width: 380px">
+<label for="inv-q" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search inventory</label>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5E6B7D" stroke-width="2" stroke-linecap="round" style="position: absolute; left: 12px; top: 12px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input id="inv-q" class="inp" type="search" placeholder="Filter by product, serial, batch, facility…" value="{{q}}" onChange="{{onQ}}">
+</div>
+<sc-if value="{{anyOpen}}" hint-placeholder-val="{{ false }}"><button class="scrim" aria-label="Close menu" onClick="{{closeMenu}}"></button></sc-if>
+<sc-for list="{{dropdowns}}" as="d" hint-placeholder-count="6">
+<div style="position: relative; z-index: {{d.z}}">
+<button class="{{d.btnCls}}" aria-haspopup="menu" aria-expanded="{{d.exp}}" onClick="{{d.toggle}}">{{d.label}}<span class="dv">{{d.val}}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+<sc-if value="{{d.open}}" hint-placeholder-val="{{ false }}">
+<div class="menu" role="menu" aria-label="{{d.label}}" style="left: 0">
+<div class="mh">{{d.label}}<span>{{d.hint}}</span></div>
+<sc-for list="{{d.opts}}" as="o" hint-placeholder-count="5">
+<button class="{{o.cls}}" role="{{o.role}}" aria-checked="{{o.aria}}" onClick="{{o.pick}}"><span class="{{o.box}}" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span><span class="ml">{{o.label}}</span><span class="mc">{{o.n}}</span></button>
+</sc-for>
+<div class="mf"><button class="btn sm" onClick="{{d.clear}}">Clear</button><button class="btn sm p" onClick="{{d.close}}">Done</button></div>
+</div>
+</sc-if>
+</div>
+</sc-for>
+<span style="flex: 1"></span>
+<button class="btn sm" onClick="{{flipSort}}" aria-label="Toggle sort order"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v16M3 16l4 4 4-4"></path><path d="M14 6h7M14 11h5M14 16h3"></path></svg>Last updated · {{sortLabel}}</button>
+<div style="position: relative; z-index: {{colZ}}">
+<button class="{{colBtn}}" aria-haspopup="menu" aria-expanded="{{colExp}}" onClick="{{toggleCols}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M9 4v16M15 4v16"></path></svg>Columns<span class="dv">{{colVal}}</span></button>
+<sc-if value="{{colOpen}}" hint-placeholder-val="{{ false }}">
+<div class="menu" role="menu" aria-label="Visible columns" style="right: 0">
+<div class="mh">Columns<span>Product is always shown</span></div>
+<sc-for list="{{colOpts}}" as="o" hint-placeholder-count="9">
+<button class="mi" role="menuitemcheckbox" aria-checked="{{o.aria}}" onClick="{{o.pick}}"><span class="{{o.box}}" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span><span class="ml">{{o.label}}</span></button>
+</sc-for>
+<div class="mf"><button class="btn sm" onClick="{{resetCols}}">Show all</button><button class="btn sm p" onClick="{{closeMenu}}">Done</button></div>
+</div>
+</sc-if>
+</div>
+<div role="group" aria-label="View" style="display: flex; gap: 2px; padding: 3px; background: #E9EDF1; border-radius: 9px">
+<button class="{{tableBtn}}" aria-label="Table view" aria-pressed="{{tablePressed}}" onClick="{{toTable}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+<button class="{{gridBtn}}" aria-label="Grid view" aria-pressed="{{gridPressed}}" onClick="{{toGrid}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="1.5"></rect><rect x="13" y="4" width="7" height="7" rx="1.5"></rect><rect x="4" y="13" width="7" height="7" rx="1.5"></rect><rect x="13" y="13" width="7" height="7" rx="1.5"></rect></svg></button>
+</div>
+</div>
+
+<sc-if value="{{hasFilter}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 0 18px 12px; font-size: 12.5px">
+<sc-for list="{{pills}}" as="p" hint-placeholder-count="2">
+<span class="pill">{{p.label}}<button aria-label="Remove filter {{p.label}}" onClick="{{p.remove}}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></span>
+</sc-for>
+<span class="muted" style="margin-left: 4px">{{filterText}}</span>
+<button class="btn sm" onClick="{{clearFilters}}" style="height: 28px">Clear all</button>
+</div>
+</sc-if>
+
+<sc-if value="{{hasSel}}" hint-placeholder-val="{{ false }}">
+<div role="region" aria-label="Bulk actions" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0 18px 12px; padding: 8px 10px 8px 14px; border-radius: 10px; background: #0C1424; color: #fff">
+<span style="font-size: 13px; font-weight: 500">{{selCount}} selected</span>
+<span style="flex: 1"></span>
+<a class="btn sm" href="CreateDeployment.dc.html" style="background: #1C2A42; border-color: #2A3A56; color: #fff">Assign to facility</a>
+<button class="btn sm" onClick="{{openMove}}" style="background: #1C2A42; border-color: #2A3A56; color: #fff">Move location</button>
+<button class="btn sm" onClick="{{openStatus}}" style="background: #1C2A42; border-color: #2A3A56; color: #fff">Change status</button>
+<button class="btn sm" onClick="{{openExportSel}}" style="background: #1C2A42; border-color: #2A3A56; color: #fff">Export</button>
+<button class="btn sm" onClick="{{clearSel}}" style="background: transparent; border-color: transparent; color: #B3BDCB">Clear</button>
+</div>
+</sc-if>
+
+<sc-if value="{{showTable}}" hint-placeholder-val="{{ true }}">
+<div class="tw" style="border-top: 1px solid #E3E7EC">
+<table class="tbl">
+<thead><tr>
+<th style="width: 44px"><button class="{{allCb}}" role="checkbox" aria-checked="{{allAria}}" aria-label="Select all rows" onClick="{{toggleAll}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></button></th>
+<th>Product</th><sc-if value="{{cols.brand}}" hint-placeholder-val="{{ true }}"><th>Brand / model</th></sc-if><sc-if value="{{cols.batch}}" hint-placeholder-val="{{ true }}"><th>Batch</th></sc-if><sc-if value="{{cols.ident}}" hint-placeholder-val="{{ true }}"><th>Serial / qty</th></sc-if><sc-if value="{{cols.status}}" hint-placeholder-val="{{ true }}"><th>Status</th></sc-if><sc-if value="{{cols.loc}}" hint-placeholder-val="{{ true }}"><th>Location</th></sc-if><sc-if value="{{cols.fac}}" hint-placeholder-val="{{ true }}"><th>Facility</th></sc-if><sc-if value="{{cols.type}}" hint-placeholder-val="{{ true }}"><th>Type</th></sc-if><sc-if value="{{cols.recv}}" hint-placeholder-val="{{ true }}"><th>Received</th></sc-if>
+<sc-if value="{{cols.upd}}" hint-placeholder-val="{{ true }}"><th><button onClick="{{flipSort}}" style="border: 0; background: none; padding: 0; font: inherit; color: #0E1726; cursor: pointer; display: inline-flex; align-items: center; gap: 4px">Last updated <span aria-hidden="true">{{sortArrow}}</span></button></th></sc-if>
+</tr></thead>
+<tbody>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="14">
+<tr class="{{r.trCls}}">
+<td><button class="{{r.cbCls}}" role="checkbox" aria-checked="{{r.aria}}" aria-label="Select {{r.name}} {{r.ident}}" onClick="{{r.toggle}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></button></td>
+<td><a href="ProductDetail.dc.html" style="color: #0E1726; font-weight: 500">{{r.name}}</a><div class="muted" style="font-size: 12px">{{r.catLabel}} · {{r.track}}</div></td>
+<sc-if value="{{r.c.brand}}" hint-placeholder-val="{{ true }}"><td><span>{{r.brand}}</span><div class="muted" style="font-size: 12px">{{r.model}}</div></td></sc-if>
+<sc-if value="{{r.c.batch}}" hint-placeholder-val="{{ true }}"><td><a class="mono" href="BatchDetail.dc.html">{{r.batch}}</a></td></sc-if>
+<sc-if value="{{r.c.ident}}" hint-placeholder-val="{{ true }}"><td><a class="mono" href="{{r.href}}" style="color: #0E1726; font-weight: 500">{{r.ident}}</a><sc-if value="{{r.low}}" hint-placeholder-val="{{ false }}"><span class="low">Low</span></sc-if><div class="muted mono" style="font-size: 11.5px">{{r.sub}}</div></td></sc-if>
+<sc-if value="{{r.c.status}}" hint-placeholder-val="{{ true }}"><td><span class="b {{r.stc}}">{{r.stl}}</span></td></sc-if>
+<sc-if value="{{r.c.loc}}" hint-placeholder-val="{{ true }}"><td><span>{{r.loc}}</span><div class="muted" style="font-size: 12px">{{r.loc2}}</div></td></sc-if>
+<sc-if value="{{r.c.fac}}" hint-placeholder-val="{{ true }}"><td><sc-if value="{{r.hasFac}}" hint-placeholder-val="{{ true }}"><a href="FacilityDetail.dc.html" style="color: #0E1726">{{r.fac}}</a></sc-if><sc-if value="{{r.noFac}}" hint-placeholder-val="{{ false }}"><span class="muted">—</span></sc-if></td></sc-if>
+<sc-if value="{{r.c.type}}" hint-placeholder-val="{{ true }}"><td><sc-if value="{{r.hasType}}" hint-placeholder-val="{{ true }}"><span class="t {{r.tcls}}">{{r.type}}</span></sc-if><sc-if value="{{r.noType}}" hint-placeholder-val="{{ false }}"><span class="muted">—</span></sc-if></td></sc-if>
+<sc-if value="{{r.c.recv}}" hint-placeholder-val="{{ true }}"><td class="muted">{{r.recv}}</td></sc-if>
+<sc-if value="{{r.c.upd}}" hint-placeholder-val="{{ true }}"><td class="muted">{{r.upd}}</td></sc-if>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+</sc-if>
+
+<sc-if value="{{showGrid}}" hint-placeholder-val="{{ false }}">
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; padding: 4px 18px 18px">
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="8">
+<article class="card gcard {{r.gSel}}">
+<div style="display: flex; gap: 12px; align-items: flex-start">
+<span class="tile" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"></path><path d="M3 8v8l9 5 9-5V8"></path><path d="M12 13v8"></path></svg></span>
+<div style="flex: 1; min-width: 0"><a href="{{r.href}}" style="display: block; color: #0E1726; font-weight: 600; font-size: 14px">{{r.name}}</a><span class="muted" style="font-size: 12px">{{r.catLabel}} · {{r.track}}</span></div>
+<button class="{{r.cbCls}}" role="checkbox" aria-checked="{{r.aria}}" aria-label="Select {{r.name}} {{r.ident}}" onClick="{{r.toggle}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></button>
+</div>
+<div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap"><span class="b {{r.stc}}">{{r.stl}}</span><sc-if value="{{r.hasType}}" hint-placeholder-val="{{ false }}"><span class="t {{r.tcls}}">{{r.type}}</span></sc-if><sc-if value="{{r.low}}" hint-placeholder-val="{{ false }}"><span class="low" style="margin-left: 0">Low stock</span></sc-if></div>
+<dl class="kv" style="margin: 0">
+<dt>{{r.identLabel}}</dt><dd class="mono">{{r.ident}}</dd>
+<dt>Batch</dt><dd><a class="mono" href="BatchDetail.dc.html">{{r.batch}}</a></dd>
+<dt>Location</dt><dd>{{r.loc}}</dd>
+<dt>Facility</dt><dd>{{r.facText}}</dd>
+</dl>
+<div style="display: flex; justify-content: space-between; font-size: 12px; border-top: 1px solid #EEF1F4; padding-top: 10px" class="muted"><span>Received {{r.recv}}</span><span>{{r.upd}}</span></div>
+</article>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{isEmpty}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 56px 18px; text-align: center; border-top: 1px solid #E3E7EC">
+<span class="tile" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg></span>
+<span style="font-weight: 600">No items match these filters</span>
+<span class="muted" style="font-size: 13px">Try another serial, batch or facility, or clear the filters.</span>
+<button class="btn p sm" onClick="{{clearFilters}}">Clear filters</button>
+</div>
+</sc-if>
+
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 12px 18px; border-top: 1px solid #E3E7EC; font-size: 13px">
+<span class="muted">{{footer}}</span>
+<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+<label for="inv-size" class="muted">Rows per page</label>
+<select id="inv-size" class="sel-s" value="{{size}}" onChange="{{onSize}}"><option value="5">5</option><option value="10">10</option><option value="25">25</option></select>
+<span style="width: 8px"></span>
+<button class="pg" aria-label="Previous page" disabled="{{noPrev}}" onClick="{{prevPage}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg></button>
+<sc-for list="{{pages}}" as="g" hint-placeholder-count="2"><button class="{{g.cls}}" aria-current="{{g.cur}}" aria-label="Page {{g.n}}" onClick="{{g.pick}}">{{g.n}}</button></sc-for>
+<button class="pg" aria-label="Next page" disabled="{{noNext}}" onClick="{{nextPage}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></button>
+</div>
+</div>
+</section>
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
+<div class="toast" role="status"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2BC4A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg><span style="flex: 1">{{toast}}</span><button class="tx" aria-label="Dismiss" onClick="{{hideToast}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+</sc-if>
+
+<sc-if value="{{mOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 16px">
+<div onClick="{{closeModal}}" aria-hidden="true" style="position: absolute; inset: 0; background: rgba(14,23,38,.45)"></div>
+<div class="mdl" role="dialog" aria-modal="true" aria-labelledby="mdt">
+<div class="mhd"><div><h2 id="mdt" style="font-size: 18px; font-weight: 600">{{mTitle}}</h2><p class="muted" style="font-size: 13px; margin-top: 2px">{{mDesc}}</p></div><button class="btn sm ic" style="width: 32px" aria-label="Close" onClick="{{closeModal}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<div class="mbd">
+
+<sc-if value="{{isMove}}" hint-placeholder-val="{{ false }}">
+<div><label class="lbl" for="mv-dest" style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px">Move to</label><select id="mv-dest" class="fsel" value="{{mvDest}}" onChange="{{onMvDest}}"><sc-for list="{{destOpts}}" as="o" hint-placeholder-count="6"><option value="{{o.v}}">{{o.v}}</option></sc-for></select></div>
+<div class="ilist"><sc-for list="{{mvRows}}" as="r" hint-placeholder-count="2"><div class="irow"><span class="mono">{{r.ident}}</span><span class="muted">{{r.from}}</span><span aria-hidden="true" class="muted">→</span><span class="{{r.toCls}}">{{r.to}}</span></div></sc-for></div>
+<sc-if value="{{mvHasSkip}}" hint-placeholder-val="{{ false }}"><p class="note warn">{{mvSkipText}}</p></sc-if>
+</sc-if>
+
+<sc-if value="{{isStatus}}" hint-placeholder-val="{{ false }}">
+<div><span style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px" id="st-l">New status</span><div class="og" role="radiogroup" aria-labelledby="st-l"><sc-for list="{{stChoices}}" as="o" hint-placeholder-count="10"><button class="{{o.cls}}" role="radio" aria-checked="{{o.aria}}" onClick="{{o.pick}}"><span class="b {{o.bcls}}">{{o.label}}</span></button></sc-for></div></div>
+<div class="ilist"><sc-for list="{{stRows}}" as="r" hint-placeholder-count="2"><div class="irow"><span class="mono">{{r.ident}}</span><span class="muted">{{r.from}}</span><span aria-hidden="true" class="muted">→</span><span class="{{r.toCls}}">{{r.to}}</span></div></sc-for></div>
+<sc-if value="{{stDanger}}" hint-placeholder-val="{{ false }}"><p class="note bad">{{stDangerText}}</p></sc-if>
+<div><label for="st-reason" style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px">Reason (recorded in the audit log)</label><textarea id="st-reason" class="ta" style="min-height: 72px; font-family: inherit; font-size: 13.5px" placeholder="e.g. LTE modem fault found during site visit" value="{{stReason}}" onChange="{{onStReason}}"></textarea></div>
+</sc-if>
+
+<sc-if value="{{isExport}}" hint-placeholder-val="{{ false }}">
+<div><span style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px" id="ex-l">Rows</span><div class="og" role="radiogroup" aria-labelledby="ex-l"><sc-for list="{{exScopes}}" as="o" hint-placeholder-count="2"><button class="{{o.cls}}" role="radio" aria-checked="{{o.aria}}" disabled="{{o.off}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+<div><label for="ex-prev" style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 500; margin-bottom: 6px"><span>Preview · <span class="mono">{{exFile}}</span></span><span class="muted" style="font-weight: 400">{{exMeta}}</span></label><textarea id="ex-prev" class="ta" readonly value="{{exCsv}}" style="min-height: 180px"></textarea><p class="muted" style="font-size: 12px; margin-top: 6px">Only the columns currently shown in the table are exported. Opens in Excel or Google Sheets.</p></div>
+</sc-if>
+
+<sc-if value="{{isImport}}" hint-placeholder-val="{{ false }}">
+<div><label for="imp-text" style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 500; margin-bottom: 6px"><span>Paste CSV</span><button onClick="{{resetImport}}" style="border: 0; background: none; padding: 0; font: inherit; font-size: 12.5px; color: #0B7A6B; cursor: pointer">Load sample file</button></label><textarea id="imp-text" class="ta" value="{{impText}}" onChange="{{onImpText}}"></textarea><p class="muted" style="font-size: 12px; margin-top: 6px">Columns: <span class="mono">product, serial, imei, batch, location</span>. Product must match the catalogue; serials must be new.</p></div>
+<div class="ilist" style="max-height: 240px"><table class="itbl"><thead><tr><th>#</th><th>Product</th><th>Serial</th><th>Batch</th><th>Result</th></tr></thead><tbody><sc-for list="{{impRows}}" as="r" hint-placeholder-count="4"><tr><td class="muted">{{r.n}}</td><td>{{r.product}}</td><td class="mono">{{r.serial}}</td><td class="mono">{{r.batch}}</td><td class="{{r.cls}}">{{r.result}}</td></tr></sc-for></tbody></table></div>
+<p class="note info">{{impSummary}}</p>
+</sc-if>
+
+<sc-if value="{{hasMErr}}" hint-placeholder-val="{{ false }}"><p class="note bad" role="alert">{{mErr}}</p></sc-if>
+</div>
+<div class="mft"><button class="btn" onClick="{{closeModal}}">Cancel</button><button class="btn p" disabled="{{mCtaOff}}" onClick="{{mSubmit}}">{{mCta}}</button></div>
+</div>
+</div>
+</sc-if>
+</main>
+</div>
+</div>
+<sc-if value="{{shell.menuOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 70; display: flex">
+<nav aria-label="Mobile navigation" style="width: min(300px, 85vw); height: 100%; overflow-y: auto; background: #0C1424; padding: 16px 12px; display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 8px 14px; color: #fff"><span style="font-weight: 600">Moonrock R&amp;D</span><button onClick="{{shell.closeAll}}" aria-label="Close menu" style="width: 40px; height: 40px; border: 0; border-radius: 8px; background: #1C2A42; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<a href="Main.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Dashboard</a>
+<a href="Search.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Search</a>
+<a href="Inventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">All inventory</a>
+<a href="Products.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Products</a>
+<a href="Batches.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Batches</a>
+<a href="ReceiveInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Receive stock</a>
+<a href="DevicePrep.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Device preparation</a>
+<a href="SimInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">SIM cards</a>
+<a href="Facilities.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Facilities</a>
+<a href="PocManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">POC projects</a>
+<a href="ContractManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Contracts</a>
+<a href="Deployments.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Deployments</a>
+<a href="CreateDeployment.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">New deployment</a>
+<a href="Reports.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Reports</a>
+<a href="AuditLog.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Audit log</a>
+<a href="Users.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Users &amp; roles</a>
+<a href="Settings.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Settings</a>
+</nav>
+<button aria-label="Close menu" onClick="{{shell.closeAll}}" style="flex: 1; border: 0; padding: 0; background: rgba(14,23,38,.5); cursor: default"></button>
+</div>
+</sc-if>
+<sc-if value="{{shell.blocked}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 80; display: flex; align-items: center; gap: 12px; max-width: min(560px, calc(100vw - 32px)); padding: 12px 12px 12px 16px; border-radius: 12px; background: #7A1F1E; color: #fff; font-size: 13.5px; box-shadow: 0 12px 32px rgba(14,23,38,.3)">
+<span style="flex: 1">You have view access to this canvas, so that change wasn't saved. Ask the owner for edit access to change shared data.</span>
+<button onClick="{{shell.unblock}}" style="height: 32px; padding: 0 12px; border: 1px solid rgba(255,255,255,.4); border-radius: 8px; background: transparent; color: #fff; font: inherit; font-size: 12.5px; cursor: pointer">OK</button>
+</div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1560}}'>
+class Component extends DCLogic {
+  // Prototype persistence: this screen's data survives reloads and is shared by every screen in this browser.
+  componentDidMount() {
+    this._init = JSON.parse(JSON.stringify(this.state));
+    this._onStore = e => { if (!e || !e.key || e.key === 'mrd-proto:store') this.forceUpdate(); };
+    try { window.addEventListener('storage', this._onStore); } catch (e) {}
+    this._sharedInit();
+    try { const raw = window.localStorage.getItem('mrd-proto:v1:Inventory'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
+  }
+  // Shared prototype store: one record in browser storage that every screen reads and writes (key mrd-proto:store).
+  readStore() {
+    const empty = { v: 1, units: {}, added: [], deployments: [], events: [], catalog: {} };
+    try { const s = JSON.parse(window.localStorage.getItem('mrd-proto:store') || 'null'); return Object.assign(empty, s || {}); } catch (e) { return empty; }
+  }
+  writeStore(mutate) {
+    const s = this.readStore();
+    if (this._shared && this._shared.mode === 'live' && !this._shared.canEdit) { const t = JSON.parse(JSON.stringify(s)); mutate(t); const strip = o => { const c = Object.assign({}, o); delete c.ui; return JSON.stringify(c); }; if (strip(t) !== strip(s)) this.setState({ _blocked: true }); s.ui = t.ui || s.ui; try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {} this.forceUpdate(); return s; }
+    mutate(s); s.events = s.events.slice(0, 200);
+    try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {}
+    this._pushShared(s);
+    this.forceUpdate(); return s;
+  }
+  // Shared across viewers: the store is mirrored to one document in this artifact's database (mrd_prototype/store).
+  // Browser storage stays as the local cache; everyone who opens the canvas sees the same data, editors can change it.
+  _host() {
+    let w = window;
+    for (let i = 0; i < 8; i++) {
+      try { if (w.claude && typeof w.claude.use === 'function') return w.claude; } catch (e) { return null; }
+      let p = null; try { p = w.parent; } catch (e) { return null; }
+      if (!p || p === w) return null; w = p;
+    }
+    return null;
+  }
+  async _sharedInit() {
+    const host = this._host();
+    if (!host) { this._shared = { mode: 'local' }; this.forceUpdate(); return; }
+    let db = null; try { db = await host.use('db'); } catch (e) { db = null; }
+    if (!db) { this._shared = { mode: 'local' }; this.forceUpdate(); return; }
+    let canEdit = false; try { const u = await host.use('user'); canEdit = u ? !!(await u.canEdit()) : false; } catch (e) { canEdit = false; }
+    this._shared = { mode: 'live', canEdit, db };
+    try {
+      this._unsubShared = db.doc('mrd_prototype/store').onSnapshot(snap => {
+        const local = this.readStore();
+        let next = null;
+        if (snap && snap.exists) { const d = snap.data() || {}; if (typeof d.json === 'string') { try { next = JSON.parse(d.json); } catch (e) { next = null; } } }
+        if (!next) {
+          if (snap && !snap.exists) {
+            let seen = false; try { seen = !!window.localStorage.getItem('mrd-proto:shared-seen'); } catch (e) {}
+            const hasLocal = local.events.length || Object.keys(local.units).length || local.added.length;
+            if (!seen && canEdit && hasLocal) this._pushShared(local);
+            else if (seen || !canEdit) { try { window.localStorage.setItem('mrd-proto:store', JSON.stringify({ v: 1, units: {}, added: [], deployments: [], events: [], catalog: {}, ui: local.ui || {} })); } catch (e) {} this.forceUpdate(); }
+          }
+          return;
+        }
+        next.ui = local.ui || {};
+        try { window.localStorage.setItem('mrd-proto:shared-seen', '1'); } catch (e) {}
+        try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(next)); } catch (e) {}
+        this.forceUpdate();
+      }, err => { this._shared = { mode: 'local', err: err && err.code }; this.forceUpdate(); });
+    } catch (e) { this._shared = { mode: 'local' }; }
+    this.forceUpdate();
+  }
+  _pushShared(s) {
+    const sh = this._shared;
+    if (!sh || sh.mode !== 'live' || !sh.canEdit) return;
+    const out = Object.assign({}, s); delete out.ui;
+    let json = JSON.stringify(out);
+    if (json.length > 240000) { out.events = (out.events || []).slice(0, 40); json = JSON.stringify(out); }
+    sh.db.doc('mrd_prototype/store').set({ json, savedAt: Date.now() }).catch(err => { this._shared = Object.assign({}, sh, { lastErr: (err && err.code) || 'unavailable' }); this.forceUpdate(); });
+  }
+  _clearShared() {
+    const sh = this._shared;
+    if (sh && sh.mode === 'live' && sh.canEdit) { try { sh.db.doc('mrd_prototype/store').delete().catch(() => {}); } catch (e) {} }
+  }
+  syncInfo() {
+    const sh = this._shared;
+    if (!sh) return { label: 'Connecting…', cls: 's-unconf', tip: 'Connecting to the shared store', readOnly: false };
+    if (sh.mode === 'live' && sh.lastErr) return { label: 'Not saved', cls: 's-damaged', tip: 'The last change could not be saved to the shared store (' + sh.lastErr + ')', readOnly: false };
+    if (sh.mode === 'live' && sh.canEdit) return { label: 'Shared · live', cls: 's-deployed', tip: 'Changes are saved for everyone who opens this canvas', readOnly: false };
+    if (sh.mode === 'live') return { label: 'View only', cls: 's-ready', tip: 'You can see shared changes live; only people with edit access can change data', readOnly: true };
+    return { label: 'This browser only', cls: 's-prep', tip: 'The shared store is not available here, so changes stay in this browser', readOnly: false };
+  }
+  nowLabel() { const d = new Date(); return 'Today, ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  patchUnit(s, ident, patch, prevSt) {
+    const cur = s.units[ident] || {};
+    s.units[ident] = Object.assign({}, cur, patch, { st0: cur.st0 !== undefined ? cur.st0 : (prevSt || ''), upd: this.nowLabel() });
+  }
+  logEvent(s, ev) {
+    const d = new Date();
+    s.events.unshift(Object.assign({ id: 'e' + d.getTime() + Math.random().toString(36).slice(2, 6), at: d.getTime(), when: this.nowLabel(), who: 'Chetan', ini: 'CH', role: 'Admin', source: 'Web' }, ev));
+  }
+  componentWillUnmount() { try { if (this._unsubShared) this._unsubShared(); } catch (e) {} try { window.removeEventListener('storage', this._onStore); } catch (e) {} }
+  componentDidUpdate() {
+    try { const keep = Object.assign({}, this.state); delete keep._shell; delete keep._blocked; ["toast", "modal", "mErr", "open"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:Inventory', JSON.stringify(keep)); } catch (e) {}
+  }
+  constructor(props) { super(props); this.state = { q: '', status: 'all', cat: 'all', view: 'table', sel: { r1: true, r6: true }, desc: true, size: '10', page: 1, toast: '', modal: '', mErr: '', mvDest: 'MRD Office · Shelf A1', stNew: 'maint', stReason: '', exScope: 'sel', impText: null, edits: {}, added: [], open: '', f: { brand: [], loc: [], fac: [], batch: [] }, date: 'any', cols: { brand: true, batch: true, ident: true, status: true, loc: true, fac: true, type: true, recv: true, upd: true } }; }
+  // Shared shell: notifications bell (fed by the shared store) and the mobile navigation drawer.
+  shellVals() {
+    const S = this.state, st = this.readStore();
+    const seen = (st.ui && st.ui.seenAt) || 0;
+    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Stage changed': 'moved the stage of', 'POC decision': 'recorded a POC decision for', 'Contract ended': 'ended the contract for', 'Issue reported': 'reported an issue on', 'Reserved': 'reserved', 'Labels printed': 'printed labels for', 'File attached': 'attached a file to', 'File removed': 'removed a file from', 'User updated': 'updated user', 'Product edited': 'edited', 'Invite resent': 'resent the invite to', 'Document uploaded': 'uploaded a document to', 'Document removed': 'removed a document from', 'Contact added': 'added a contact to', 'Contact removed': 'removed a contact from', 'Contract updated': 'updated the contract for', 'Batch updated': 'updated batch', 'Batch archived': 'archived batch', 'Batch restored': 'restored batch', 'Facility updated': 'updated facility', 'Facility restored': 'restored facility', 'Report exported': 'exported', 'Record corrected': 'corrected', 'Note added': 'added a note to', 'Settings changed': 'updated settings ·', 'User invited': 'invited', 'Role changed': 'changed the role of', 'Verified on site': 'verified on site', 'Deployment cancelled': 'cancelled', 'Deployment updated': 'updated deployment' };
+    const fromStore = st.events.slice(0, 8).map(e => ({ text: (e.who || 'Chetan') + ' ' + (VERB[e.action] || String(e.action || '').toLowerCase()) + ' ' + e.item + (e.to && e.to !== '—' && e.action !== 'Imported' ? ' → ' + e.to : ''), when: e.when, href: e.itemHref || 'AuditLog.dc.html', unread: (e.at || 0) > seen }));
+    const alerts = [
+      { text: '14 Teltonika RUT956 units are waiting for preparation', when: 'Batch TEL-2026-004', href: 'DevicePrep.dc.html', alert: true },
+      { text: 'Cat6 patch cable 1 m is below its minimum level', when: 'Low stock · 18 of 25', href: 'InventoryItem.dc.html', alert: true },
+      { text: 'Qatar Foundation: 2 CO₂ sensors scheduled to install on 08 Oct', when: 'Upcoming deployment', href: 'Deployments.dc.html', alert: true }
+    ].map(a => Object.assign(a, { unread: !seen }));
+    const all = fromStore.concat(alerts);
+    const unread = all.filter(n => n.unread).length;
+    const SY = this.syncInfo();
+    return {
+      syncLabel: SY.label, syncCls: SY.cls, syncTip: SY.tip, blocked: !!S._blocked, unblock: () => this.setState({ _blocked: false }),
+      bellOpen: S._shell === 'bell', bellExp: S._shell === 'bell' ? 'true' : 'false', bellZ: S._shell === 'bell' ? '40' : 'auto',
+      menuOpen: S._shell === 'menu', menuExp: S._shell === 'menu' ? 'true' : 'false',
+      unread: unread > 9 ? '9+' : String(unread), hasUnread: unread > 0,
+      notes: all.map(n => ({ text: n.text, when: n.when, href: n.href, bg: n.unread ? '#F4FBF8' : '#fff', dot: n.alert ? '#E08A00' : (n.unread ? '#0B7A6B' : '#D5DBE3') })),
+      toggleBell: () => this.setState({ _shell: this.state._shell === 'bell' ? '' : 'bell' }),
+      toggleMenu: () => this.setState({ _shell: this.state._shell === 'menu' ? '' : 'menu' }),
+      closeAll: () => this.setState({ _shell: '' }),
+      markRead: () => { const st = this.readStore(); st.ui = Object.assign({}, st.ui || {}, { seenAt: Date.now() }); try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(st)); } catch (e) {} this.forceUpdate(); }
+    };
+  }
+  renderVals() { return Object.assign(this._screenVals(), { shell: this.shellVals() }); }
+  _screenVals() {
+    const S = this.state;
+    const ST = { unconf: ['Unconfigured', 's-unconf', '#8A96A8'], prep: ['In preparation', 's-prep', '#E08A00'], ready: ['Ready for deployment', 's-ready', '#2F6FE4'], reserved: ['Reserved', 's-reserved', '#7C4DDB'], stock: ['In stock', 's-stock', '#1A8FAD'], deployed: ['Deployed', 's-deployed', '#12A374'], maint: ['Under maintenance', 's-maint', '#E86A1C'], transit: ['In transit', 's-transit', '#5468E0'], returned: ['Returned', 's-returned', '#9C8F7E'], damaged: ['Damaged', 's-damaged', '#DC3B3A'], retired: ['Retired', 's-retired', '#A2A9B4'] };
+    const TT = { POC: 't-poc', Contract: 't-con', Replacement: 't-rep', Additional: 't-add' };
+    const base = [
+      { id: 'r1', name: 'Teltonika RUT956', cat: 'tel', catLabel: 'Teltonika Devices', track: 'Serialised', brand: 'Teltonika', model: 'RUT956', batch: 'TEL-2026-004', ident: '1108675309', identLabel: 'S/N', sub: 'IMEI 860548043912877', st: 'ready', loc: 'MRD Office', loc2: 'Shelf A2', fac: '', type: '', recv: '22 Sep 2026', upd: 'Today, 09:42', href: 'DeviceDetail.dc.html' },
+      { id: 'r2', name: 'Omantel M2M SIM', cat: 'sim', catLabel: 'M2M SIM Cards', track: 'Serialised', brand: 'Omantel', model: 'M2M Pooled 5 GB', batch: 'SIM-2026-005', ident: '8996802026093001427', identLabel: 'ICCID', sub: '+968 7912 3045 · 10.64.12.37', st: 'ready', loc: 'In RUT956', loc2: '1108675309 · Shelf A2', fac: '', type: '', recv: '30 Sep 2026', upd: 'Today, 09:38', href: 'SimInventory.dc.html' },
+      { id: 'r3', name: 'Teltonika RUT956', cat: 'tel', catLabel: 'Teltonika Devices', track: 'Serialised', brand: 'Teltonika', model: 'RUT956', batch: 'TEL-2026-003', ident: '1107442109', identLabel: 'S/N', sub: 'IMEI 860548043912947', st: 'prep', loc: 'MRD Office', loc2: 'Prep bench · awaiting SIM', fac: '', type: '', recv: '12 Aug 2026', upd: 'Today, 08:15', href: 'DeviceDetail.dc.html' },
+      { id: 'r4', name: 'Cat6 patch cable 1 m', cat: 'cab', catLabel: 'Cables & Accessories', track: 'Quantity', brand: 'Generic', model: 'Cat6 U/UTP · 1 m', batch: 'CAB-2026-004', ident: '18 pcs', identLabel: 'Qty', sub: 'min 25 · 4 reserved', st: 'stock', loc: 'MRD Office', loc2: 'Shelf C1 · 4 with Rahul', fac: '', type: '', recv: '12 Aug 2026', upd: 'Today, 08:55', href: 'InventoryItem.dc.html', low: true },
+      { id: 'r5', name: 'Milesight EM500-CO2', cat: 'co2', catLabel: 'CO₂ Sensors', track: 'Hybrid', brand: 'Milesight', model: 'EM500-CO2', batch: 'CO2-2026-002', ident: '× 2 units', identLabel: 'Qty', sub: 'install 08 Oct', st: 'reserved', loc: 'MRD Office', loc2: 'Shelf B2', fac: 'Qatar Foundation', type: 'POC', recv: '03 Sep 2026', upd: '04 Oct 2026', href: 'BatchDetail.dc.html' },
+      { id: 'r6', name: 'Milesight EM500-CO2', cat: 'co2', catLabel: 'CO₂ Sensors', track: 'Hybrid', brand: 'Milesight', model: 'EM500-CO2', batch: 'CO2-2026-002', ident: '× 7 units', identLabel: 'Qty', sub: 'join-key provisioning', st: 'prep', loc: 'MRD Office', loc2: 'Prep bench', fac: '', type: '', recv: '03 Sep 2026', upd: '04 Oct 2026', href: 'DevicePrep.dc.html' },
+      { id: 'r7', name: 'Milesight EM500-CO2', cat: 'co2', catLabel: 'CO₂ Sensors', track: 'Hybrid', brand: 'Milesight', model: 'EM500-CO2', batch: 'CO2-2026-002', ident: '× 23 units', identLabel: 'Qty', sub: 'not yet serialised', st: 'stock', loc: 'MRD Office', loc2: 'Shelf B2', fac: '', type: '', recv: '03 Sep 2026', upd: '03 Oct 2026', href: 'BatchDetail.dc.html' },
+      { id: 'r8', name: 'Teltonika RUT956', cat: 'tel', catLabel: 'Teltonika Devices', track: 'Serialised', brand: 'Teltonika', model: 'RUT956', batch: 'TEL-2026-004', ident: '1108675311', identLabel: 'S/N', sub: 'IP 10.64.12.41', st: 'deployed', loc: 'Plant room B1', loc2: 'BMS panel', fac: 'Qatar Foundation', type: 'POC', recv: '22 Sep 2026', upd: '01 Oct 2026', href: 'DeviceDetail.dc.html' },
+      { id: 'r9', name: 'Cat6 patch cable 3 m', cat: 'cab', catLabel: 'Cables & Accessories', track: 'Quantity', brand: 'Generic', model: 'Cat6 U/UTP · 3 m', batch: 'CAB-2026-007', ident: '600 pcs', identLabel: 'Qty', sub: '+200 on 01 Oct', st: 'stock', loc: 'MRD Office', loc2: 'Shelf C1', fac: '', type: '', recv: '01 Oct 2026', upd: '01 Oct 2026', href: 'InventoryItem.dc.html' },
+      { id: 'r10', name: 'Teltonika RUT956', cat: 'tel', catLabel: 'Teltonika Devices', track: 'Serialised', brand: 'Teltonika', model: 'RUT956', batch: 'TEL-2026-004', ident: '1108675302', identLabel: 'S/N', sub: 'IP 10.64.12.33', st: 'deployed', loc: 'Floor 4', loc2: 'Comms room', fac: 'Bank Muscat Head Office', type: 'Additional', recv: '22 Sep 2026', upd: '28 Sep 2026', href: 'DeviceDetail.dc.html' },
+      { id: 'r11', name: 'Milesight EM500-CO2', cat: 'co2', catLabel: 'CO₂ Sensors', track: 'Hybrid', brand: 'Milesight', model: 'EM500-CO2', batch: 'CO2-2026-001', ident: '× 12 units', identLabel: 'Qty', sub: '12 serialised', st: 'deployed', loc: 'Floors 1–6', loc2: 'Open office zones', fac: 'Bank Muscat Head Office', type: 'Contract', recv: '10 Jun 2026', upd: '24 Sep 2026', href: 'BatchDetail.dc.html' },
+      { id: 'r12', name: 'ABB ACS580 VFD', cat: 'vfd', catLabel: 'VFDs', track: 'Serialised', brand: 'ABB', model: 'ACS580-01 · 7.5 kW', batch: 'VFD-2026-001', ident: '3AXD50000731121', identLabel: 'S/N', sub: 'for AHU-3 · 27 Oct', st: 'reserved', loc: 'MRD Office', loc2: 'Shelf C3', fac: 'Bank Muscat Head Office', type: 'Replacement', recv: '18 Sep 2026', upd: '22 Sep 2026', href: 'DeviceDetail.dc.html' },
+      { id: 'r13', name: 'Milesight UG65', cat: 'gw', catLabel: 'LoRaWAN Gateways', track: 'Serialised', brand: 'Milesight', model: 'UG65', batch: 'GW-2026-001', ident: '6247B1820045', identLabel: 'S/N', sub: 'EUI 24E124FFFEF51A07', st: 'deployed', loc: 'Roof plant', loc2: 'Mast 2', fac: 'Lulu Hypermarket', type: 'POC', recv: '15 Jul 2026', upd: '16 Sep 2026', href: 'DeviceDetail.dc.html' },
+      { id: 'r14', name: 'Teltonika RUT956', cat: 'tel', catLabel: 'Teltonika Devices', track: 'Serialised', brand: 'Teltonika', model: 'RUT956', batch: 'TEL-2026-003', ident: '1107442103', identLabel: 'S/N', sub: 'LTE modem fault', st: 'maint', loc: 'MRD Office', loc2: 'Repair bench', fac: '', type: '', recv: '12 Aug 2026', upd: '14 Sep 2026', href: 'DeviceDetail.dc.html' }
+    ];
+    // Shared store: units added on any screen, plus patches keyed by serial / ICCID (or row id for bulk rows).
+    const ST0 = this.readStore();
+    const CATL = { tel: 'Teltonika Devices', co2: 'CO₂ Sensors', gw: 'LoRaWAN Gateways', sim: 'M2M SIM Cards', net: 'Network Equipment', vfd: 'VFDs', cab: 'Cables & Accessories', bms: 'Controllers & BMS' };
+    const keyOf = r => (r.identLabel === 'S/N' || r.identLabel === 'ICCID') ? r.ident : 'row:' + r.id;
+    const fromStore = ST0.added.slice().reverse().map(u => ({ id: 'add-' + u.ident, name: u.name || 'Unit', cat: u.cat || 'tel', catLabel: CATL[u.cat] || 'Other', track: u.cat === 'cab' ? 'Quantity' : 'Serialised', brand: u.brand || '', model: u.model || '', batch: u.batch || 'Unassigned', ident: u.ident, identLabel: u.cat === 'sim' ? 'ICCID' : 'S/N', sub: u.imei ? 'IMEI ' + u.imei : (u.note || ''), st: u.st || 'unconf', loc: u.loc || 'MRD Office', loc2: u.loc2 || '', fac: u.fac || '', type: u.type || '', recv: u.recv || '05 Oct 2026', upd: u.upd || 'Just now', href: 'DeviceDetail.dc.html', low: false }));
+    // Units changed on other screens that are not among this page's sample rows (e.g. prepared or deployed elsewhere).
+    const knownIdents = {}; fromStore.concat(base).forEach(r => { knownIdents[r.ident] = true; });
+    Object.keys(ST0.units).forEach(k => {
+      const p = ST0.units[k];
+      if (k.indexOf('row:') === 0 || knownIdents[k] || !p.name || p.cat === 'sim' || /^8996/.test(k)) return;
+      fromStore.push({ id: 'st-' + k, name: p.name, cat: p.cat || 'tel', catLabel: CATL[p.cat || 'tel'] || 'Other', track: 'Serialised', brand: p.brand || (p.name.split(' ')[0]), model: p.model || p.name.split(' ').slice(1).join(' '), batch: p.batch || '—', ident: k, identLabel: 'S/N', sub: p.ip ? 'IP ' + p.ip : (p.imei ? 'IMEI ' + p.imei : ''), st: p.st || 'unconf', loc: p.loc || 'MRD Office', loc2: p.loc2 || '', fac: p.fac || '', type: p.type || '', recv: '22 Sep 2026', upd: p.upd || 'Just now', href: 'DeviceDetail.dc.html', low: false });
+    });
+    const data = fromStore.concat(base).map(r => {
+      const p = ST0.units[keyOf(r)]; if (!p) return r;
+      const o = Object.assign({}, r);
+      ['st', 'loc', 'loc2', 'fac', 'type', 'upd'].forEach(k => { if (p[k] !== undefined) o[k] = p[k]; });
+      if (p.ip && r.identLabel === 'S/N') o.sub = 'IP ' + p.ip + (p.sim ? ' · SIM …' + String(p.sim).slice(-4) : '');
+      return o;
+    });
+    const MON = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
+    data.forEach(r => {
+      const p = r.recv.split(' ');
+      r.rd = new Date(+p[2], MON[p[1]], +p[0]);
+      r.locKey = r.st === 'deployed' ? 'At a facility' : ((r.loc2.match(/Shelf [A-Z][0-9]|Prep bench|Repair bench/) || [])[0] || r.loc);
+      r.facKey = r.fac || 'No facility';
+    });
+    const DATES = [['any', 'Any time', null], ['d7', 'Last 7 days', new Date(2026, 8, 28)], ['d30', 'Last 30 days', new Date(2026, 8, 5)], ['d90', 'Last 90 days', new Date(2026, 6, 7)], ['ytd', 'This year', new Date(2026, 0, 1)]];
+    const dateRow = DATES.filter(d => d[0] === S.date)[0] || DATES[0];
+    const F = S.f;
+    const FIELD = { brand: 'brand', loc: 'locKey', fac: 'facKey', batch: 'batch' };
+    const q = S.q.trim().toLowerCase();
+    const pass = (r, skip) => (S.cat === 'all' || r.cat === S.cat)
+      && (skip === 'status' || S.status === 'all' || r.st === S.status)
+      && (!q || [r.name, r.ident, r.sub, r.batch, r.fac, r.loc, r.loc2, r.brand, r.model].join(' ').toLowerCase().indexOf(q) > -1)
+      && Object.keys(FIELD).every(k => skip === k || !F[k].length || F[k].indexOf(r[FIELD[k]]) > -1)
+      && (skip === 'date' || !dateRow[2] || r.rd >= dateRow[2]);
+    let list = data.filter(r => pass(r, ''));
+    if (!S.desc) list = list.slice().reverse();
+    const sel = S.sel;
+    const size = +S.size || 10, total = list.length, pagesN = Math.max(1, Math.ceil(total / size)), page = Math.min(S.page, pagesN);
+    const pageRows = list.slice((page - 1) * size, page * size);
+    const rows = pageRows.map(r => {
+      const on = !!sel[r.id]; const s = ST[r.st];
+      return Object.assign({}, r, {
+        stl: s[0], stc: s[1], tcls: TT[r.type] || '', hasType: !!r.type, noType: !r.type, hasFac: !!r.fac, noFac: !r.fac, facText: r.fac || '—', low: !!r.low,
+        c: S.cols, cbCls: on ? 'cb on' : 'cb', aria: on ? 'true' : 'false', trCls: on ? 'sel' : '', gSel: on ? 'sel' : '',
+        toggle: () => { const n = Object.assign({}, this.state.sel); if (n[r.id]) delete n[r.id]; else n[r.id] = true; this.setState({ sel: n }); }
+      });
+    });
+    const allOn = rows.length > 0 && rows.every(r => sel[r.id]);
+    const toggleAll = () => { const n = Object.assign({}, this.state.sel); if (allOn) rows.forEach(r => { delete n[r.id]; }); else rows.forEach(r => { n[r.id] = true; }); this.setState({ sel: n }); };
+    const counts = [['all', 'All items', '#3B4758', '1,284'], ['unconf', 'Unconfigured', '', '31'], ['prep', 'In preparation', '', '9'], ['ready', 'Ready', '', '46'], ['reserved', 'Reserved', '', '8'], ['stock', 'In stock', '', '624'], ['deployed', 'Deployed', '', '538'], ['maint', 'Under maintenance', '', '7'], ['transit', 'In transit', '', '12']];
+    const statusChips = counts.map(([id, label, dot, n]) => ({ label, n, dot: dot || ST[id][2], cls: 'fchip' + (S.status === id ? ' on' : ''), pressed: S.status === id ? 'true' : 'false', pick: () => this.setState({ status: id }) }));
+    const catTabs = [['all', 'All', '1,284'], ['tel', 'Teltonika', '30'], ['co2', 'CO₂ sensors', '60'], ['gw', 'Gateways', '6'], ['sim', 'SIM cards', '80'], ['net', 'Network', '16'], ['vfd', 'VFDs', '12'], ['cab', 'Cables', '1,040']].map(([id, label, n]) => ({ label, n, cls: 'ctab' + (S.cat === id ? ' on' : ''), pressed: S.cat === id ? 'true' : 'false', pick: () => this.setState({ cat: id }) }));
+    const setF = (key, arr) => { const nf = Object.assign({}, this.state.f); nf[key] = arr; this.setState({ f: nf }); };
+    const menu = (key, label, val, opts, multi, clear, active) => ({
+      label, val, opts: opts.map(o => Object.assign({ role: multi ? 'menuitemcheckbox' : 'menuitemradio' }, o)), role: multi ? 'menuitemcheckbox' : 'menuitemradio', hint: multi ? 'Select any' : 'Choose one',
+      open: S.open === key, exp: S.open === key ? 'true' : 'false', z: S.open === key ? '30' : 'auto',
+      btnCls: 'btn sm dd' + (active ? ' act' : ''),
+      toggle: () => this.setState({ open: this.state.open === key ? '' : key }),
+      close: () => this.setState({ open: '' }), clear
+    });
+    const multi = (key, label) => {
+      const field = FIELD[key], cur = F[key], base = data.filter(r => pass(r, key)), vals = [];
+      data.forEach(r => { if (vals.indexOf(r[field]) < 0) vals.push(r[field]); });
+      vals.sort();
+      const opts = vals.map(v => {
+        const on = cur.indexOf(v) > -1, n = base.filter(r => r[field] === v).length;
+        return { label: v, n, aria: on ? 'true' : 'false', box: on ? 'bx on' : 'bx', cls: (n === 0 && !on) ? 'mi dim' : 'mi',
+          pick: () => { const a = this.state.f[key].slice(), i = a.indexOf(v); if (i > -1) a.splice(i, 1); else a.push(v); setF(key, a); } };
+      });
+      return menu(key, label, cur.length === 1 ? ': ' + cur[0] : (cur.length ? ' · ' + cur.length : ''), opts, true, () => setF(key, []), cur.length > 0);
+    };
+    const stBase = data.filter(r => pass(r, 'status'));
+    const stOpts = [['all', 'All statuses']].concat(Object.keys(ST).map(k => [k, ST[k][0]])).map(([id, label]) => {
+      const on = S.status === id;
+      return { label, n: id === 'all' ? stBase.length : stBase.filter(r => r.st === id).length, aria: on ? 'true' : 'false', box: on ? 'rd on' : 'rd', cls: 'mi', pick: () => this.setState({ status: id }) };
+    });
+    const dBase = data.filter(r => pass(r, 'date'));
+    const dOpts = DATES.map(([id, label, from]) => {
+      const on = S.date === id;
+      return { label, n: dBase.filter(r => !from || r.rd >= from).length, aria: on ? 'true' : 'false', box: on ? 'rd on' : 'rd', cls: 'mi', pick: () => this.setState({ date: id }) };
+    });
+    const dropdowns = [
+      multi('brand', 'Brand'),
+      menu('status', 'Status', S.status === 'all' ? '' : ': ' + ST[S.status][0], stOpts, false, () => this.setState({ status: 'all' }), S.status !== 'all'),
+      multi('loc', 'Location'),
+      multi('fac', 'Facility'),
+      multi('batch', 'Batch'),
+      menu('date', 'Date received', S.date === 'any' ? '' : ': ' + dateRow[1], dOpts, false, () => this.setState({ date: 'any' }), S.date !== 'any')
+    ];
+    const COLS = [['brand', 'Brand / model'], ['batch', 'Batch'], ['ident', 'Serial / qty'], ['status', 'Status'], ['loc', 'Location'], ['fac', 'Facility'], ['type', 'Deployment type'], ['recv', 'Received'], ['upd', 'Last updated']];
+    const colOpts = COLS.map(([id, label]) => {
+      const on = !!S.cols[id];
+      return { label, aria: on ? 'true' : 'false', box: on ? 'bx on' : 'bx', pick: () => { const c = Object.assign({}, this.state.cols); c[id] = !c[id]; this.setState({ cols: c }); } };
+    });
+    const hidden = COLS.filter(([id]) => !S.cols[id]).length;
+    const pills = [];
+    if (S.cat !== 'all') pills.push({ label: 'Category: ' + catTabs.filter(t => t.cls.indexOf(' on') > -1).map(t => t.label)[0], remove: () => this.setState({ cat: 'all' }) });
+    if (S.status !== 'all') pills.push({ label: 'Status: ' + ST[S.status][0], remove: () => this.setState({ status: 'all' }) });
+    [['brand', 'Brand'], ['loc', 'Location'], ['fac', 'Facility'], ['batch', 'Batch']].forEach(([k, l]) => F[k].forEach(v => pills.push({ label: l + ': ' + v, remove: () => setF(k, this.state.f[k].filter(x => x !== v)) })));
+    if (S.date !== 'any') pills.push({ label: 'Received: ' + dateRow[1], remove: () => this.setState({ date: 'any' }) });
+    if (q) pills.push({ label: 'Search: “' + S.q.trim() + '”', remove: () => this.setState({ q: '' }) });
+    const hasFilter = pills.length > 0;
+    const selCount = Object.keys(sel).length;
+    const view = S.view;
+
+    // Pagination
+    const pages = [];
+    for (let i = 1; i <= pagesN; i++) pages.push({ n: i, cls: 'pg' + (i === page ? ' on' : ''), cur: i === page ? 'page' : 'false', pick: (k => () => this.setState({ page: k }))(i) });
+
+    // Bulk actions and dialogs
+    const selRows = data.filter(r => sel[r.id]);
+    const done = (edits, msg, action) => {
+      this.writeStore(st => {
+        Object.keys(edits).forEach(id => {
+          const r = data.filter(x => x.id === id)[0]; if (!r) return;
+          const before = action === 'Moved' ? where(r) : labelOf(r.st);
+          if (r.id.indexOf('add-') === 0) { const u = st.added.filter(x => x.ident === r.ident)[0]; if (u) Object.assign(u, edits[id], { upd: this.nowLabel() }); }
+          else this.patchUnit(st, keyOf(r), edits[id], r.st);
+          const after = action === 'Moved' ? where(Object.assign({}, r, edits[id])) : labelOf(edits[id].st);
+          this.logEvent(st, { action, item: r.name + ' ' + r.ident, itemHref: r.href, from: before, to: after, note: action === 'Status changed' ? this.state.stReason.trim() : '' });
+        });
+      });
+      this.setState({ modal: '', mErr: '', sel: {}, toast: msg });
+    };
+    // Move location
+    const SUBS = ['A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3', 'B4', 'C1', 'C2', 'C3', 'C4'].map(x => 'MRD Office · Shelf ' + x).concat(['MRD Office · Prep bench', 'MRD Office · Repair bench', 'In transit · Courier', 'With technician · Rahul', 'With technician · Saif']);
+    (ST0.catalog.locations || []).forEach(l => { const v = l.kind === 'Logical location' ? l.name : 'MRD Office · ' + l.name; if (SUBS.indexOf(v) < 0) SUBS.push(v); });
+    const destOpts = SUBS.map(v => ({ v }));
+    const where = r => (r.loc === 'MRD Office' ? r.loc2.split(' · ')[0] : r.loc + (r.loc2 ? ' · ' + r.loc2 : ''));
+    const shortDest = S.mvDest.replace('MRD Office · ', '');
+    const mvRows = selRows.map(r => r.st === 'deployed' ? { ident: r.ident, from: where(r), to: 'Skipped · deployed', toCls: 'to skip' } : { ident: r.ident, from: where(r), to: shortDest, toCls: 'to' });
+    const mvOk = selRows.filter(r => r.st !== 'deployed');
+    const mvSkip = selRows.length - mvOk.length;
+    const mvSkipText = mvSkip + (mvSkip === 1 ? ' item is' : ' items are') + ' deployed at a facility. Bring them back with a return or replacement deployment so the facility record stays correct.';
+    // Change status
+    const labelOf = k => ST[k][0];
+    const ruleSkip = (r, t) => r.st === t ? 'Already ' + labelOf(t).toLowerCase()
+      : (r.st === 'deployed' && ['maint', 'damaged', 'returned'].indexOf(t) < 0) ? 'Deployed · use a deployment'
+      : (r.track === 'Quantity' && ['unconf', 'prep', 'ready'].indexOf(t) > -1) ? 'Quantity item · no configuration'
+      : (t === 'ready' && r.st === 'unconf') ? 'Needs preparation first' : '';
+    const stChoices = ['stock', 'unconf', 'prep', 'ready', 'reserved', 'maint', 'transit', 'returned', 'damaged', 'retired'].map(k => ({ label: labelOf(k), bcls: ST[k][1], cls: 'opt' + (S.stNew === k ? ' on' : ''), aria: S.stNew === k ? 'true' : 'false', pick: () => this.setState({ stNew: k, mErr: '' }) }));
+    const stRows = selRows.map(r => { const sk = ruleSkip(r, S.stNew); return { ident: r.ident, from: labelOf(r.st), to: sk ? 'Skipped · ' + sk : labelOf(S.stNew), toCls: sk ? 'to skip' : 'to' }; });
+    const stOk = selRows.filter(r => !ruleSkip(r, S.stNew));
+    const stDanger = (S.stNew === 'damaged' || S.stNew === 'retired') && stOk.length > 0;
+    const stDangerText = stOk.length + (stOk.length === 1 ? ' item leaves' : ' items leave') + ' available stock and drops out of deployment pickers. ' + (S.stNew === 'retired' ? 'Retired records are kept for history and can only be reactivated by an Admin.' : 'You can return them to stock after repair.');
+    // Export
+    const COLDEF = [['brand', 'Brand', r => r.brand], ['brand', 'Model', r => r.model], ['batch', 'Batch', r => r.batch], ['ident', 'Serial / qty', r => r.ident], ['status', 'Status', r => labelOf(r.st)], ['loc', 'Location', r => r.loc + (r.loc2 ? ' · ' + r.loc2 : '')], ['fac', 'Facility', r => r.fac], ['type', 'Deployment type', r => r.type], ['recv', 'Received', r => r.recv], ['upd', 'Last updated', r => r.upd]];
+    const exCols = [['', 'Product', r => r.name]].concat(COLDEF.filter(c => S.cols[c[0]]));
+    const q2 = v => { const t = String(v == null ? '' : v); return /[",\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
+    const exScope = S.exScope === 'sel' && !selRows.length ? 'all' : S.exScope;
+    const exRowsData = exScope === 'sel' ? selRows : list;
+    const exCsv = [exCols.map(c => q2(c[1])).join(',')].concat(exRowsData.map(r => exCols.map(c => q2(c[2](r))).join(','))).join('\n');
+    const exFile = 'mrd-inventory-' + (exScope === 'sel' ? 'selection-' : '') + '2026-10-05.csv';
+    const exMeta = exRowsData.length + (exRowsData.length === 1 ? ' row' : ' rows') + ' · ' + exCols.length + ' columns';
+    const exScopes = [['sel', 'Selected (' + selRows.length + ')', !selRows.length], ['all', 'All matching filters (' + list.length + ')', false]].map(([id, label, off]) => ({ label, off, cls: 'opt' + (exScope === id ? ' on' : ''), aria: exScope === id ? 'true' : 'false', pick: () => this.setState({ exScope: id }) }));
+    const doExport = async () => {
+      let dl = null;
+      try { dl = (window.claude && window.claude.use) ? await window.claude.use('downloads') : null; } catch (e) { dl = null; }
+      if (!dl) { this.setState({ mErr: 'Downloads aren’t available in this preview. Select the CSV above and copy it instead.' }); return; }
+      try {
+        await dl.save({ filename: exFile, data: exCsv });
+        this.writeStore(st => { this.logEvent(st, { action: 'Report exported', item: exFile, itemHref: 'Inventory.dc.html', from: '—', to: 'CSV', note: 'Inventory · ' + exMeta }); });
+        this.setState({ modal: '', mErr: '', toast: exFile + ' saved · ' + exMeta + '.' });
+      }
+      catch (e) { this.setState({ mErr: e && e.code === 'declined' ? 'Download cancelled.' : 'The download didn’t start (' + ((e && e.code) || 'unavailable') + '). Copy the CSV above instead.' }); }
+    };
+    // Import CSV
+    const SAMPLE = 'product,serial,imei,batch,location\nTeltonika RUT956,1108675320,860548043912880,TEL-2026-005,Shelf A3\nTeltonika RUT956,1108675321,860548043912881,TEL-2026-005,Shelf A3\nTeltonika RUT956,1108675309,860548043912877,TEL-2026-005,Shelf A3\nMilesight UG65,6247B1820047,,GW-2026-002,Shelf B1\nTeltonika RUT955,1108675322,,TEL-2026-005,Shelf A3';
+    const impText = S.impText == null ? SAMPLE : S.impText;
+    const protos = {}; base.forEach(b => { if (!protos[b.name]) protos[b.name] = b; });
+    const known = {}; data.forEach(r => { known[r.ident] = true; });
+    const lines = impText.split(/\r?\n/).filter(l => l.trim());
+    const head = (lines[0] || '').split(',').map(h => h.trim().toLowerCase());
+    const ci = k => head.indexOf(k);
+    const headOk = ci('product') > -1 && ci('serial') > -1;
+    const seen = {};
+    const impParsed = headOk ? lines.slice(1).map((l, i) => {
+      const c = l.split(',').map(x => x.trim()); const g = k => (ci(k) > -1 ? c[ci(k)] || '' : '');
+      const product = g('product'), serial = g('serial'), batch = g('batch'), imei = g('imei'), loc = g('location');
+      let err = '';
+      if (!product) err = 'Product missing'; else if (!protos[product]) err = 'Unknown product'; else if (!serial) err = 'Serial missing';
+      else if (known[serial]) err = 'Already in inventory'; else if (seen[serial]) err = 'Duplicate in file';
+      seen[serial] = true;
+      return { n: i + 2, product: product || '—', serial: serial || '—', batch: batch || '—', imei, loc, err, cls: err ? 'er' : 'ok', result: err || 'Ready to import' };
+    }) : [];
+    const impRows = impParsed;
+    const impGood = impParsed.filter(r => !r.err);
+    const impSummary = !headOk ? 'The first line must be a header with at least product and serial columns.'
+      : impGood.length + ' of ' + impParsed.length + ' rows will be imported into MRD Office' + (impParsed.length - impGood.length ? '; ' + (impParsed.length - impGood.length) + ' will be skipped' : '') + '. Units that need configuration start as Unconfigured and join Device preparation.';
+    const doImport = () => {
+      const add = impGood.map(r => { const pr = protos[r.product]; const cfg = ['tel', 'gw', 'co2'].indexOf(pr.cat) > -1;
+        return Object.assign({}, pr, { id: 'imp-' + r.serial, ident: r.serial, identLabel: 'S/N', sub: r.imei ? 'IMEI ' + r.imei : 'Imported from CSV', batch: r.batch === '—' ? 'Unassigned' : r.batch, st: cfg ? 'unconf' : 'stock', loc: 'MRD Office', loc2: r.loc || 'Shelf A3', fac: '', type: '', recv: '05 Oct 2026', upd: 'Just now', low: false }); });
+      this.writeStore(st => {
+        add.forEach(a => { st.added.push({ ident: a.ident, name: a.name, cat: a.cat, brand: a.brand, model: a.model, batch: a.batch, imei: a.sub.indexOf('IMEI ') === 0 ? a.sub.slice(5) : '', st: a.st, loc: a.loc, loc2: a.loc2, recv: a.recv, upd: this.nowLabel() }); });
+        this.logEvent(st, { action: 'Imported', item: add.length + (add.length === 1 ? ' unit' : ' units') + ' from CSV', itemHref: 'Inventory.dc.html', from: '—', to: 'MRD Office', note: add.map(a => a.ident).join(', ') });
+      });
+      this.setState({ modal: '', mErr: '', impText: null, toast: 'Imported ' + add.length + (add.length === 1 ? ' unit' : ' units') + ' into MRD Office' + (impParsed.length - add.length ? ' · ' + (impParsed.length - add.length) + ' rows skipped' : '') + '. Logged to the audit log.' });
+    };
+    const MD = {
+      move: { title: 'Move ' + selRows.length + (selRows.length === 1 ? ' item' : ' items'), desc: 'Changes where items are stored. Each move is recorded with its previous location.', cta: 'Move ' + mvOk.length + (mvOk.length === 1 ? ' item' : ' items'), can: mvOk.length > 0,
+        submit: () => { const parts = S.mvDest.split(' · '); const ed = {}; mvOk.forEach(r => { ed[r.id] = parts[0] === 'MRD Office' ? { loc: 'MRD Office', loc2: parts[1] } : { loc: parts[0], loc2: parts[1] || '' }; }); done(ed, 'Moved ' + mvOk.length + (mvOk.length === 1 ? ' item' : ' items') + ' to ' + shortDest + '. Previous locations kept in the audit log.', 'Moved'); } },
+      status: { title: 'Change status of ' + selRows.length + (selRows.length === 1 ? ' item' : ' items'), desc: 'Only valid changes are applied. Deployment and preparation have their own workflows.', cta: 'Change ' + stOk.length + (stOk.length === 1 ? ' item' : ' items'), can: stOk.length > 0,
+        submit: () => { if (!S.stReason.trim()) { this.setState({ mErr: 'Add a reason so the change is traceable.' }); return; } const ed = {}; stOk.forEach(r => { ed[r.id] = { st: S.stNew }; }); done(ed, stOk.length + (stOk.length === 1 ? ' item' : ' items') + ' set to ' + labelOf(S.stNew) + '. Reason recorded in the audit log.', 'Status changed'); } },
+      export: { title: 'Export inventory', desc: 'A CSV of the rows and columns you choose.', cta: 'Download CSV', can: exRowsData.length > 0, submit: doExport },
+      import: { title: 'Import from CSV', desc: 'Adds serialised units in bulk. To receive a new shipment with supplier and PO details, use Receive stock.', cta: 'Import ' + impGood.length + (impGood.length === 1 ? ' row' : ' rows'), can: impGood.length > 0, submit: doImport }
+    };
+    const M = MD[S.modal] || { title: '', desc: '', cta: '', can: false, submit: () => {} };
+    return {
+      q: S.q, onQ: e => this.setState({ q: e.target.value }),
+      statusChips, catTabs, dropdowns, rows,
+      hasFilter, pills, filterText: rows.length + (rows.length === 1 ? ' item matches' : ' items match') + ' on this page',
+      clearFilters: () => this.setState({ q: '', status: 'all', cat: 'all', date: 'any', open: '', f: { brand: [], loc: [], fac: [], batch: [] } }),
+      anyOpen: !!S.open, closeMenu: () => this.setState({ open: '' }),
+      cols: S.cols, colOpts, colOpen: S.open === 'cols', colExp: S.open === 'cols' ? 'true' : 'false', colZ: S.open === 'cols' ? '30' : 'auto',
+      colBtn: 'btn sm dd' + (hidden ? ' act' : ''), colVal: hidden ? ' · ' + hidden + ' hidden' : '',
+      toggleCols: () => this.setState({ open: this.state.open === 'cols' ? '' : 'cols' }),
+      resetCols: () => { const c = {}; COLS.forEach(([id]) => { c[id] = true; }); this.setState({ cols: c }); },
+      hasSel: selCount > 0, selCount, clearSel: () => this.setState({ sel: {} }),
+      allCb: allOn ? 'cb on' : 'cb', allAria: allOn ? 'true' : 'false', toggleAll,
+      flipSort: () => this.setState({ desc: !this.state.desc }), sortArrow: S.desc ? '↓' : '↑', sortLabel: S.desc ? 'newest first' : 'oldest first',
+      tableBtn: 'vt' + (view === 'table' ? ' on' : ''), gridBtn: 'vt' + (view === 'grid' ? ' on' : ''),
+      tablePressed: view === 'table' ? 'true' : 'false', gridPressed: view === 'grid' ? 'true' : 'false',
+      toTable: () => this.setState({ view: 'table' }), toGrid: () => this.setState({ view: 'grid' }),
+      showTable: view === 'table' && rows.length > 0, showGrid: view === 'grid' && rows.length > 0, isEmpty: rows.length === 0,
+      footer: total ? 'Showing ' + ((page - 1) * size + 1) + '–' + ((page - 1) * size + rows.length) + ' of ' + total + (hasFilter ? ' matching' : '') + ' sample rows · 1,284 items in total' : 'No matching rows · 1,284 items in total',
+      size: S.size, onSize: e => this.setState({ size: e.target.value, page: 1 }),
+      pages, noPrev: page <= 1, noNext: page >= pagesN,
+      prevPage: () => this.setState({ page: Math.max(1, page - 1) }), nextPage: () => this.setState({ page: Math.min(pagesN, page + 1) }),
+      hasToast: !!S.toast, toast: S.toast, hideToast: () => this.setState({ toast: '' }),
+      mOpen: !!S.modal, isMove: S.modal === 'move', isStatus: S.modal === 'status', isExport: S.modal === 'export', isImport: S.modal === 'import',
+      mTitle: M.title, mDesc: M.desc, mCta: M.cta, mCtaOff: !M.can, mSubmit: M.submit, hasMErr: !!S.mErr, mErr: S.mErr,
+      closeModal: () => this.setState({ modal: '', mErr: '' }),
+      openMove: () => this.setState({ modal: 'move', mErr: '', open: '' }), openStatus: () => this.setState({ modal: 'status', stReason: '', mErr: '', open: '' }),
+      openExportSel: () => this.setState({ modal: 'export', exScope: 'sel', mErr: '', open: '' }), openExportAll: () => this.setState({ modal: 'export', exScope: selRows.length ? 'sel' : 'all', mErr: '', open: '' }),
+      openImport: () => this.setState({ modal: 'import', mErr: '', open: '' }),
+      destOpts, mvDest: S.mvDest, onMvDest: e => this.setState({ mvDest: e.target.value }), mvRows, mvHasSkip: mvSkip > 0, mvSkipText,
+      stChoices, stRows, stDanger, stDangerText, stReason: S.stReason, onStReason: e => this.setState({ stReason: e.target.value, mErr: '' }),
+      exScopes, exFile, exMeta, exCsv,
+      impText, onImpText: e => this.setState({ impText: e.target.value, mErr: '' }), resetImport: () => this.setState({ impText: null }), impRows, impSummary
+    };
+  }
+}
+</script>
+</body>
+</html>

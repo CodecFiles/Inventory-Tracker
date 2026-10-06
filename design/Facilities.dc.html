@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Facilities · MRD Inventory</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F6F8;color:#0E1726;font-family:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#0B7A6B;text-decoration:none}a:hover{color:#075C51}
+h1,h2,h3,h4,p{margin:0}
+.mono{font-family:'Geist Mono',ui-monospace,monospace;font-size:12.5px;letter-spacing:-.01em}
+.muted{color:#5E6B7D}
+.side{flex:0 0 248px;background:#0C1424;padding:18px 12px 16px;display:flex;flex-direction:column;gap:1px}
+.nav{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:8px;color:#B3BDCB;font-size:13.5px}
+.nav:hover{background:#152036;color:#fff}
+.nav.on{background:#1C2A42;color:#fff;box-shadow:inset 2px 0 0 #2BC4A8}
+.nav svg{flex:0 0 16px;width:16px;height:16px}
+.nav .ct{margin-left:auto;font-size:11px;font-weight:600;background:#2BC4A8;color:#04211C;border-radius:999px;padding:1px 7px}
+.sec{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#7F8CA0;padding:16px 10px 6px;font-weight:500}
+.mtop{display:none}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 32px;background:#fff;border-bottom:1px solid #E3E7EC}
+.srch{flex:1 1 320px;max-width:560px;display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;border:1px solid #DCE1E8;border-radius:10px;background:#F8FAFB;color:#5E6B7D;font-size:13.5px}
+.srch:hover{border-color:#B9C2CE;color:#3B4758}
+.kbd{margin-left:auto;font-family:'Geist Mono',monospace;font-size:11px;border:1px solid #DCE1E8;border-radius:5px;padding:1px 6px;background:#fff;color:#5E6B7D}
+.main{padding:28px 32px 48px;max-width:1400px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+.card{background:#fff;border:1px solid #E3E7EC;border-radius:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 14px;border-radius:9px;border:1px solid #D5DBE3;background:#fff;color:#1B2638;font:inherit;font-size:13.5px;font-weight:500;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#F4F6F8;color:#0E1726}
+.btn.p{background:#0B7A6B;border-color:#0B7A6B;color:#fff}.btn.p:hover{background:#08695C;color:#fff}
+.btn.sm{height:32px;padding:0 10px;font-size:12.5px;border-radius:8px}
+.btn.ic{width:40px;padding:0}
+.btn svg{width:16px;height:16px}
+.b{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;background:#EEF1F5;color:#3E4A5C}
+.b::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.s-unconf{background:#EEF1F5;color:#3E4A5C}.s-prep{background:#FFF3DC;color:#8A4B00}.s-ready{background:#E6EEFF;color:#1D4FB8}.s-reserved{background:#F0EAFE;color:#5B32B4}.s-deployed{background:#E1F4EC;color:#0A6648}.s-stock{background:#E3F2F6;color:#0E5E73}.s-maint{background:#FFEDE3;color:#9A3D0B}.s-damaged{background:#FDEBEA;color:#A3201F}.s-transit{background:#E9EDFC;color:#3346A8}.s-returned{background:#F1EEE8;color:#5E554A}.s-retired{background:#EFF0F2;color:#646C79}
+.g-insp{background:#EEF1F5;color:#3E4A5C}.g-bms{background:#E3F2F6;color:#0E5E73}.g-poc{background:#F0EAFE;color:#5B32B4}.g-study{background:#FFF3DC;color:#8A4B00}.g-cpend{background:#E6EEFF;color:#1D4FB8}.g-contract{background:#E1F4EC;color:#0A6648}.g-ops{background:#0B7A6B;color:#fff}.g-done{background:#EFF0F2;color:#646C79}.g-hold{background:#FDEBEA;color:#A3201F}
+.t{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:6px;font-size:11.5px;font-weight:600;letter-spacing:.02em;border:1px solid}
+.t-poc{color:#5B32B4;border-color:#D7C8FA;background:#FAF7FF}.t-con{color:#0A6648;border-color:#BFE3D3;background:#F4FBF8}.t-rep{color:#8A4B00;border-color:#F3D9A6;background:#FFFBF2}.t-add{color:#1D4FB8;border-color:#C8D8FA;background:#F6F9FF}
+.tw{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-weight:500;color:#5E6B7D;font-size:12px;padding:10px 14px;border-bottom:1px solid #E3E7EC;background:#F8FAFB;white-space:nowrap}
+.tbl td{padding:11px 14px;border-bottom:1px solid #EEF1F4;white-space:nowrap;vertical-align:middle}
+.tbl tr:hover td{background:#F8FAFB}
+.tbl tr:last-child td{border-bottom:0}
+.ov{font-size:12px;font-weight:500;color:#5E6B7D;text-transform:uppercase;letter-spacing:.06em}
+.kpi{padding:16px 18px;display:flex;flex-direction:column;gap:6px;color:#0E1726}
+.kpi:hover{border-color:#B9C2CE;color:#0E1726}
+.kpi .n{font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
+.seg{display:flex;gap:2px;height:8px;border-radius:4px;overflow:hidden}
+.seg span{display:block;height:100%}
+.row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-top:1px solid #EEF1F4;color:#0E1726}
+.row:hover{background:#F8FAFB;color:#0E1726}
+.chip{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;border:0;background:transparent;font:inherit;font-size:13px;color:#3B4758;cursor:pointer}
+.chip.on{background:#fff;color:#0E1726;box-shadow:0 1px 2px rgba(14,23,38,.12)}
+.crumb{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px;color:#5E6B7D}
+.crumb a{color:#5E6B7D}.crumb a:hover{color:#0E1726}
+.chip .cn{margin-left:6px;font-size:11.5px;color:#5E6B7D;font-weight:500}
+.ph{position:relative;background:#DCE4EA;background-image:linear-gradient(135deg,#E4EAEF 0%,#D4DEE6 100%);display:flex;align-items:center;justify-content:center;color:#8494A6;overflow:hidden}
+.ph .cap{position:absolute;left:12px;bottom:9px;font-size:11.5px;color:#4A5668;display:flex;align-items:center;gap:5px}
+.fcard{display:flex;flex-direction:column;overflow:hidden;color:#0E1726;transition:border-color .15s,box-shadow .15s}
+.fcard:hover{border-color:#B9C2CE;box-shadow:0 6px 20px rgba(14,23,38,.07);color:#0E1726}
+.av{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#0E1726;flex:0 0 28px}
+.mini{display:flex;gap:3px}
+.mini span{flex:1;height:6px;border-radius:3px}
+.t-pre{color:#3E4A5C;border-color:#D5DBE3;background:#F8FAFB}
+.in{width:100%;height:40px;border:1px solid #D5DBE3;border-radius:9px;padding:0 12px;font:inherit;font-size:13.5px;color:#0E1726;background:#fff}
+.in:focus{outline:2px solid rgba(11,122,107,.25);border-color:#0B7A6B}
+.fld{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#1B2638}
+.fld .h{font-size:12px;font-weight:400;color:#5E6B7D}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.fun{display:flex;flex-direction:column;gap:4px;padding:12px 14px 12px 22px;min-height:78px;color:#0E1726}
+@media (max-width:900px){.side{display:none}.mtop{display:flex}.main{padding:20px 16px 40px}.top{padding:12px 16px}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh; background: #F4F6F8">
+<nav class="side" aria-label="Primary">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; padding: 2px 8px 14px; color: #fff">
+<span style="width: 32px; height: 32px; border-radius: 9px; background: #0B7A6B; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4a8 8 0 1 0 4 11.5A6.5 6.5 0 0 1 16 4z"></path><path d="M6 18l2.5-2.5"></path></svg></span>
+<span style="display: flex; flex-direction: column; line-height: 1.15"><span style="font-weight: 600; font-size: 14px">Moonrock R&amp;D</span><span style="font-size: 11.5px; color: #8D99AC">Inventory × Exergio</span></span>
+</a>
+<a class="nav" href="Main.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>Dashboard</a>
+<div class="sec">Inventory</div>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"></path><path d="M3 8v8l9 5 9-5V8"></path><path d="M12 13v8"></path></svg>All inventory</a>
+<a class="nav" href="Products.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg>Products</a>
+<a class="nav" href="Batches.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l10 5-10 5L2 7l10-5z"></path><path d="M2 12l10 5 10-5"></path><path d="M2 17l10 5 10-5"></path></svg>Batches</a>
+<a class="nav" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive stock</a>
+<div class="sec">Devices</div>
+<a class="nav" href="DevicePrep.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"></path></svg>Device preparation<span class="ct">15</span></a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="18" height="7" rx="2"></rect><path d="M7 16.5h.01M11 16.5h.01"></path><path d="M17 13V5"></path><path d="M14 7.5a4 4 0 0 1 6 0"></path></svg>Teltonika</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h11a3 3 0 1 0-3-3"></path><path d="M3 12h16a3 3 0 1 1-3 3"></path><path d="M3 16h7"></path></svg>CO₂ sensors</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"></circle><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7M5.6 5.6a9 9 0 0 0 0 12.8M18.4 5.6a9 9 0 0 1 0 12.8"></path></svg>LoRaWAN gateways</a>
+<a class="nav" href="SimInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"></path><rect x="8.5" y="11" width="7" height="6" rx="1"></rect></svg>SIM cards</a>
+<a class="nav" href="Inventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"></rect><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"></path></svg>Other equipment</a>
+<div class="sec">Facilities &amp; projects</div>
+<a class="nav on" href="Facilities.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"></rect><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1"></path></svg>Facilities</a>
+<a class="nav" href="PocManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6L4.5 18.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3"></path><path d="M7 15h10"></path></svg>POC projects</a>
+<a class="nav" href="ContractManagement.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path><path d="M9 13h6M9 17h4"></path></svg>Contracts</a>
+<div class="sec">Deployments</div>
+<a class="nav" href="Deployments.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3z"></path><path d="M14 10h4l3 3v3h-7"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle></svg>Deployments</a>
+<a class="nav" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>New deployment</a>
+<div class="sec">Insights &amp; admin</div>
+<a class="nav" href="Reports.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M10 20V5M16 20v-6M21 20H3"></path></svg>Reports</a>
+<a class="nav" href="AuditLog.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l3 2"></path></svg>Audit log</a>
+<a class="nav" href="Users.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20a6.5 6.5 0 0 1 13 0"></path><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"></path></svg>Users &amp; roles</a>
+<a class="nav" href="Settings.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Settings</a>
+<div style="margin-top: auto; padding: 16px 8px 0; display: flex; align-items: center; gap: 10px; border-top: 1px solid #1C2A42">
+<span style="width: 32px; height: 32px; border-radius: 50%; background: #2BC4A8; color: #04211C; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600">CH</span>
+<span style="display: flex; flex-direction: column; line-height: 1.2"><span style="color: #fff; font-size: 13px; font-weight: 500">Chetan</span><span style="color: #8D99AC; font-size: 11.5px">Admin · MRD Office</span></span>
+</div>
+</nav>
+
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+<div class="mtop" style="align-items: center; justify-content: space-between; padding: 12px 16px; background: #0C1424; color: #fff">
+<span style="font-weight: 600">Moonrock R&amp;D</span>
+<button class="btn sm" aria-label="Open menu" aria-expanded="{{shell.menuExp}}" onClick="{{shell.toggleMenu}}" style="background: #1C2A42; border-color: #1C2A42; color: #fff">Menu</button>
+</div>
+<header class="top">
+<a class="srch" href="Search.dc.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Search serial, IMEI, MAC, ICCID, IP, batch, facility…<span class="kbd">⌘K</span></a>
+<span style="flex: 1"></span>
+<span class="b s-prep" title="All records shown are sample data">Sample data</span>
+<span class="b {{shell.syncCls}}" title="{{shell.syncTip}}">{{shell.syncLabel}}</span>
+<a class="btn" href="ReceiveInventory.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="M7 10l5 5 5-5"></path><path d="M4 17v3h16v-3"></path></svg>Receive</a>
+<a class="btn p" href="CreateDeployment.dc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New deployment</a>
+<div style="position: relative; z-index: {{shell.bellZ}}">
+<button class="btn ic" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="{{shell.bellExp}}" onClick="{{shell.toggleBell}}" style="position: relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg><sc-if value="{{shell.hasUnread}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #DC3B3A; color: #fff; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #fff">{{shell.unread}}</span></sc-if></button>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}">
+<div role="dialog" aria-label="Notifications" style="position: absolute; right: 0; top: calc(100% + 8px); z-index: 41; width: 360px; max-width: calc(100vw - 32px); background: #fff; border: 1px solid #DCE1E8; border-radius: 12px; box-shadow: 0 16px 40px rgba(14,23,38,.18); overflow: hidden; text-align: left">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #EEF1F4"><span style="font-weight: 600; font-size: 14px; color: #0E1726">Notifications</span><button onClick="{{shell.markRead}}" style="border: 0; background: none; padding: 4px; font: inherit; font-size: 12.5px; color: #0B7A6B; cursor: pointer">Mark all as read</button></div>
+<div style="max-height: 380px; overflow-y: auto">
+<sc-for list="{{shell.notes}}" as="n" hint-placeholder-count="4">
+<a href="{{n.href}}" style="display: flex; gap: 10px; padding: 11px 14px; border-bottom: 1px solid #F1F4F7; color: #0E1726; background: {{n.bg}}">
+<span style="width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: 0 0 8px; background: {{n.dot}}"></span>
+<span style="flex: 1; min-width: 0; font-size: 13px; line-height: 1.4"><span style="display: block">{{n.text}}</span><span style="display: block; font-size: 12px; color: #5E6B7D">{{n.when}}</span></span>
+</a>
+</sc-for>
+</div>
+<a href="AuditLog.dc.html" style="display: block; padding: 10px 14px; font-size: 13px; font-weight: 500; text-align: center; border-top: 1px solid #EEF1F4">Open audit log</a>
+</div>
+</sc-if>
+</div>
+<sc-if value="{{shell.bellOpen}}" hint-placeholder-val="{{ false }}"><button aria-label="Close notifications" onClick="{{shell.closeAll}}" style="position: fixed; inset: 0; z-index: 30; background: transparent; border: 0; padding: 0; cursor: default"></button></sc-if>
+</header>
+
+<main class="main">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<nav class="crumb" aria-label="Breadcrumb"><a href="Main.dc.html">Dashboard</a><span aria-hidden="true">/</span><span style="color: #0E1726">Facilities</span></nav>
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="font-size: 26px; font-weight: 600; letter-spacing: -.02em">Facilities</h1>
+<p class="muted" style="font-size: 13.5px">{{headSub}}</p>
+</div>
+<div style="display: flex; gap: 10px; flex-wrap: wrap">
+<button class="btn" onClick="{{exportList}}" title="CSV of the facilities shown below"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M4 20h16"></path></svg>Export</button>
+<button class="btn p" onClick="{{openAdd}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add facility</button>
+</div>
+</div>
+</div>
+
+<sc-if value="{{hasExMsg}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; border-radius: 10px; background: {{exBg}}; border: 1px solid {{exBd}}; font-size: 13.5px; color: #1B2638">
+<div style="display: flex; align-items: center; gap: 12px"><span style="flex: 1">{{exMsg}}</span><button class="btn sm" onClick="{{clearEx}}" style="background: transparent">Dismiss</button></div>
+<sc-if value="{{exShowCsv}}" hint-placeholder-val="{{ false }}"><label class="sr" for="fexcsv">CSV to copy</label><textarea id="fexcsv" class="in" readonly="readonly" value="{{exCsv}}" style="height: 140px; padding: 10px 12px; font-family: 'Geist Mono', monospace; font-size: 12px"></textarea></sc-if>
+</div>
+</sc-if>
+
+<!-- Lifecycle funnel -->
+<section class="card" aria-label="Facilities by lifecycle stage" style="padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap">
+<div><h2 style="font-size: 15px; font-weight: 600">Project lifecycle</h2><p class="muted" style="font-size: 12.5px; margin-top: 2px">Where each facility sits, from first site visit to live operations</p></div>
+<div style="display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: #3B4758">
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #EEF1F5; border: 1px solid #D5DBE3"></span>Pre-POC</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #F0EAFE; border: 1px solid #D7C8FA"></span>POC phase</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #E1F4EC; border: 1px solid #BFE3D3"></span>Contract phase</span>
+</div>
+</div>
+<div style="display: flex; gap: 12px; align-items: stretch; flex-wrap: wrap">
+<div class="tw" style="flex: 1 1 640px; min-width: 0">
+<ol style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(7, minmax(112px, 1fr)); gap: 0; min-width: 780px">
+<sc-for list="{{funnel}}" as="s" hint-placeholder-count="7">
+<li class="fun" title="{{s.label}}: {{s.v}} facilities" style="background: {{s.bg}}; clip-path: {{s.clip}}; margin-left: {{s.ml}}; padding-left: {{s.pl}}">
+<span style="font-size: 11.5px; font-weight: 500; color: {{s.fg}}">{{s.n}} · {{s.label}}</span>
+<span style="font-size: 22px; font-weight: 600; letter-spacing: -.02em; line-height: 1.1; color: {{s.vc}}">{{s.v}}</span>
+<span style="font-size: 11.5px; color: #4A5668; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{s.who}}</span>
+</li>
+</sc-for>
+</ol>
+</div>
+<div style="flex: 0 0 150px; display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border-radius: 10px; background: #FDF3F2; border: 1px dashed #F1B8B4">
+<span style="font-size: 11.5px; font-weight: 500; color: #A3201F">On hold</span>
+<span style="font-size: 22px; font-weight: 600; line-height: 1.1">{{holdN}}</span>
+<span style="font-size: 11.5px; color: #4A5668">{{holdWho}}</span>
+</div>
+</div>
+</section>
+
+<!-- Toolbar -->
+<div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+<div role="tablist" aria-label="Filter facilities" style="display: flex; gap: 2px; padding: 3px; background: #E9EDF1; border-radius: 10px; flex-wrap: wrap">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="5"><button role="tab" aria-selected="{{t.sel}}" class="{{t.cls}}" onClick="{{t.pick}}">{{t.label}}<span class="cn">{{t.n}}</span></button></sc-for>
+</div>
+<div style="flex: 1 1 240px; max-width: 340px; position: relative">
+<label class="sr" for="fq">Filter facilities</label>
+<svg style="position: absolute; left: 12px; top: 12px; color: #5E6B7D" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input id="fq" class="in" type="search" placeholder="Filter by name, client or city" value="{{q}}" onChange="{{onQ}}" style="padding-left: 36px">
+</div>
+<span style="flex: 1"></span>
+<span class="muted" style="font-size: 12.5px">{{countLabel}}</span>
+<div role="group" aria-label="View" style="display: flex; gap: 2px; padding: 3px; background: #E9EDF1; border-radius: 10px">
+<button class="{{gridCls}}" aria-pressed="{{isGrid}}" onClick="{{toGrid}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>Grid</button>
+<button class="{{tableCls}}" aria-pressed="{{isTable}}" onClick="{{toTable}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px"><path d="M3 6h18M3 12h18M3 18h18"></path></svg>Table</button>
+</div>
+</div>
+
+<!-- Empty state -->
+<sc-if value="{{none}}" hint-placeholder-val="{{ false }}">
+<div class="card" style="padding: 48px 24px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center">
+<span style="width: 48px; height: 48px; border-radius: 12px; background: #F1F4F7; color: #3B4758; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"></rect><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1"></path></svg></span>
+<h2 style="font-size: 15px; font-weight: 600">No facilities match</h2>
+<p class="muted" style="font-size: 13px; max-width: 380px">Try another stage filter or clear the search. New client sites start at Site inspection.</p>
+<div style="display: flex; gap: 8px; margin-top: 6px"><button class="btn sm" onClick="{{clear}}">Clear filters</button><button class="btn sm p" onClick="{{openAdd}}">Add facility</button></div>
+</div>
+</sc-if>
+
+<!-- Grid view -->
+<sc-if value="{{showGrid}}" hint-placeholder-val="{{ true }}">
+<section aria-label="Facilities" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px">
+<sc-for list="{{list}}" as="f" hint-placeholder-count="6">
+<a class="card fcard" href="FacilityDetail.dc.html" onClick="{{f.open}}" aria-label="Open {{f.name}}">
+<div class="ph" style="height: 132px">
+<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"></path><path d="M5 21V7l7-4v18"></path><path d="M12 21V10l7 3v8"></path><path d="M8 9h1M8 12h1M8 15h1M15 15h1M15 18h1"></path></svg>
+<span class="b {{f.cls}}" style="position: absolute; top: 12px; left: 12px; box-shadow: 0 1px 2px rgba(14,23,38,.12)">{{f.stage}}</span>
+<span class="t {{f.tcls}}" style="position: absolute; top: 12px; right: 12px">{{f.tag}}</span>
+<span class="cap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="11" r="2"></circle><path d="M21 16l-5-5-8 8"></path></svg>{{f.photo}}</span>
+</div>
+<div style="padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 12px; flex: 1">
+<div style="display: flex; flex-direction: column; gap: 3px">
+<span style="font-size: 15px; font-weight: 600; letter-spacing: -.01em">{{f.name}}</span>
+<span class="muted" style="font-size: 12.5px">{{f.client}} · {{f.type}}</span>
+<span style="display: flex; align-items: center; gap: 5px; font-size: 12.5px; color: #3B4758"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>{{f.loc}}</span>
+</div>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px 12px; background: #F8FAFB; border-radius: 9px">
+<span style="display: flex; flex-direction: column; gap: 1px"><span class="muted" style="font-size: 11.5px">Devices deployed</span><span style="font-size: 16px; font-weight: 600">{{f.devices}}</span></span>
+<span style="display: flex; flex-direction: column; gap: 1px"><span class="muted" style="font-size: 11.5px">Last deployment</span><span style="font-size: 13.5px; font-weight: 500; padding-top: 2px">{{f.last}}</span></span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div class="mini" role="img" aria-label="{{f.prog}}">
+<sc-for list="{{f.segs}}" as="g" hint-placeholder-count="7"><span style="background: {{g.c}}" title="{{g.t}}"></span></sc-for>
+</div>
+<span style="display: flex; justify-content: space-between; gap: 8px; font-size: 12px"><span style="color: #3B4758; font-weight: 500">{{f.prog}}</span><span class="muted">{{f.note}}</span></span>
+</div>
+<div style="display: flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 12px; border-top: 1px solid #EEF1F4">
+<span class="av" style="background: {{f.abg}}">{{f.ini}}</span>
+<span style="font-size: 12.5px; line-height: 1.2"><span style="display: block; font-weight: 500">{{f.lead}}</span><span class="muted" style="font-size: 11.5px">Project lead</span></span>
+<span style="margin-left: auto; font-size: 12.5px; font-weight: 500; color: #0B7A6B">Open →</span>
+</div>
+</div>
+</a>
+</sc-for>
+<button class="card" onClick="{{openAdd}}" style="border: 1.5px dashed #C3CCD7; background: #FAFBFC; min-height: 380px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; cursor: pointer; font: inherit; color: #3B4758; padding: 24px; text-align: center">
+<span style="width: 48px; height: 48px; border-radius: 50%; background: #E1F4EC; color: #0B7A6B; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></span>
+<span style="font-size: 14.5px; font-weight: 600; color: #0E1726">Add facility</span>
+<span class="muted" style="font-size: 12.5px; max-width: 220px">Register a new client site. It starts at Site inspection and follows the 7-stage lifecycle.</span>
+</button>
+</section>
+</sc-if>
+
+<!-- Table view -->
+<sc-if value="{{showTable}}" hint-placeholder-val="{{ false }}">
+<section class="card" aria-label="Facilities table">
+<div class="tw">
+<table class="tbl">
+<thead><tr><th>Facility</th><th>Client</th><th>Location</th><th>Stage</th><th>Type</th><th style="text-align: right">Devices</th><th>Last deployment</th><th>Progress</th><th>Lead</th><th></th></tr></thead>
+<tbody>
+<sc-for list="{{list}}" as="f" hint-placeholder-count="6">
+<tr>
+<td><a href="FacilityDetail.dc.html" onClick="{{f.open}}" style="color: #0E1726; font-weight: 500">{{f.name}}</a><div class="muted" style="font-size: 12px">{{f.type}}</div></td>
+<td>{{f.client}}</td>
+<td class="muted">{{f.loc}}</td>
+<td><span class="b {{f.cls}}">{{f.stage}}</span></td>
+<td><span class="t {{f.tcls}}">{{f.tag}}</span></td>
+<td style="text-align: right; font-weight: 600">{{f.devices}}</td>
+<td class="muted">{{f.last}}</td>
+<td><div style="display: flex; flex-direction: column; gap: 5px; width: 140px"><div class="mini" role="img" aria-label="{{f.prog}}"><sc-for list="{{f.segs}}" as="g" hint-placeholder-count="7"><span style="background: {{g.c}}"></span></sc-for></div><span class="muted" style="font-size: 11.5px">{{f.short}}</span></div></td>
+<td><span style="display: flex; align-items: center; gap: 8px"><span class="av" style="background: {{f.abg}}; width: 24px; height: 24px; flex-basis: 24px; font-size: 10px">{{f.ini}}</span>{{f.lead}}</span></td>
+<td style="text-align: right"><a class="btn sm" href="FacilityDetail.dc.html" onClick="{{f.open}}">Open</a></td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+</section>
+</sc-if>
+
+<p class="muted" style="font-size: 12px">Stages, facility types and deployment types are configurable in <a href="Settings.dc.html">Settings</a>. Archived facilities keep their full device and deployment history.</p>
+</main>
+</div>
+</div>
+
+<!-- Add facility modal -->
+<sc-if value="{{addOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; background: rgba(14,23,38,.45); display: flex; align-items: flex-start; justify-content: center; padding: 48px 16px; z-index: 50; overflow-y: auto">
+<div class="card" role="dialog" aria-modal="true" aria-labelledby="addT" style="width: 100%; max-width: 660px; box-shadow: 0 24px 64px rgba(14,23,38,.25); display: flex; flex-direction: column">
+<div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 20px 22px 14px; border-bottom: 1px solid #EEF1F4">
+<div><h2 id="addT" style="font-size: 17px; font-weight: 600">Add facility</h2><p class="muted" style="font-size: 13px; margin-top: 2px">A client site where MRD equipment will be installed. You can complete the rest later.</p></div>
+<button class="btn ic sm" aria-label="Close" onClick="{{closeAdd}}" style="width: 32px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<div style="padding: 18px 22px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px 16px">
+<label class="fld">Facility name<input class="in" type="text" value="{{nf.name}}" onChange="{{onNfName}}" placeholder="e.g. Research Complex B"><sc-if value="{{addErr}}" hint-placeholder-val="{{ false }}"><span class="h" style="color: #A3201F">{{addErrMsg}}</span></sc-if></label>
+<label class="fld">Client<select class="in" value="{{nf.client}}" onChange="{{onNfClient}}"><option value="">Select client…</option><option>Qatar Foundation</option><option>Bank Muscat</option><option>Lulu Group</option><option>+ New client</option></select></label>
+<label class="fld">Location<input class="in" type="text" value="{{nf.loc}}" onChange="{{onNfLoc}}" placeholder="Area, city, country"></label>
+<label class="fld">Facility type<select class="in" value="{{nf.type}}" onChange="{{onNfType}}"><option>Corporate HQ</option><option>Education campus</option><option>Retail</option><option>Commercial office</option><option>Warehouse</option><option>Healthcare</option></select></label>
+<label class="fld">Initial stage<select class="in" value="{{nf.stage}}" onChange="{{onNfStage}}"><option value="Site inspection">Site inspection</option><option value="BMS scan">BMS network scan</option><option value="POC">POC</option></select><span class="h">Most facilities start at Site inspection.</span></label>
+<label class="fld">Project lead<select class="in" value="{{nf.lead}}" onChange="{{onNfLead}}"><option value="Aisha">Aisha · Operations</option><option value="Nitin">Nitin · Operations</option><option value="Chetan">Chetan · Admin</option></select></label>
+<label class="fld">Primary contact<input class="in" type="text" value="{{nf.cName}}" onChange="{{onNfCName}}" placeholder="Name, e.g. Omar H."></label>
+<label class="fld">Contact role<input class="in" type="text" value="{{nf.cRole}}" onChange="{{onNfCRole}}" placeholder="e.g. Facilities Manager"></label>
+<label class="fld">Contact phone<input class="in" type="tel" value="{{nf.cPhone}}" onChange="{{onNfCPhone}}" placeholder="+968 …"></label>
+<label class="fld">Contact email<input class="in" type="email" value="{{nf.cEmail}}" onChange="{{onNfCEmail}}" placeholder="name@client.com"></label>
+<div style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 13px; font-weight: 500">Facility photo</span>
+<label style="position: relative; display: flex; align-items: center; gap: 14px; padding: 18px; border: 1.5px dashed #C3CCD7; border-radius: 10px; background: #FAFBFC; cursor: pointer">
+<span style="width: 44px; height: 44px; border-radius: 10px; background: #DCE4EA; color: #4A5668; display: flex; align-items: center; justify-content: center; flex: 0 0 44px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"></path></svg></span>
+<span style="font-size: 13px"><strong style="font-weight: 600; color: #0B7A6B">{{nfPhotoLabel}}</strong><span class="muted" style="display: block; font-size: 12px">{{nfPhotoSub}}</span></span>
+<input type="file" accept="image/*" style="position:absolute;width:1px;height:1px;opacity:0" onChange="{{onNfPhoto}}">
+</label>
+</div>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; padding: 14px 22px; border-top: 1px solid #EEF1F4; background: #F8FAFB; border-radius: 0 0 12px 12px">
+<span class="muted" style="font-size: 12px">Admins and Operations can add facilities.</span>
+<div style="display: flex; gap: 8px"><button class="btn" onClick="{{closeAdd}}">Cancel</button><button class="btn p" onClick="{{createFac}}">Create facility</button></div>
+</div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{shell.menuOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; z-index: 70; display: flex">
+<nav aria-label="Mobile navigation" style="width: min(300px, 85vw); height: 100%; overflow-y: auto; background: #0C1424; padding: 16px 12px; display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 8px 14px; color: #fff"><span style="font-weight: 600">Moonrock R&amp;D</span><button onClick="{{shell.closeAll}}" aria-label="Close menu" style="width: 40px; height: 40px; border: 0; border-radius: 8px; background: #1C2A42; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<a href="Main.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Dashboard</a>
+<a href="Search.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Search</a>
+<a href="Inventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">All inventory</a>
+<a href="Products.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Products</a>
+<a href="Batches.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Batches</a>
+<a href="ReceiveInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Receive stock</a>
+<a href="DevicePrep.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Device preparation</a>
+<a href="SimInventory.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">SIM cards</a>
+<a href="Facilities.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Facilities</a>
+<a href="PocManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">POC projects</a>
+<a href="ContractManagement.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Contracts</a>
+<a href="Deployments.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Deployments</a>
+<a href="CreateDeployment.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">New deployment</a>
+<a href="Reports.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Reports</a>
+<a href="AuditLog.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Audit log</a>
+<a href="Users.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Users &amp; roles</a>
+<a href="Settings.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #D5DCE6; font-size: 14.5px">Settings</a>
+</nav>
+<button aria-label="Close menu" onClick="{{shell.closeAll}}" style="flex: 1; border: 0; padding: 0; background: rgba(14,23,38,.5); cursor: default"></button>
+</div>
+</sc-if>
+<sc-if value="{{shell.blocked}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 80; display: flex; align-items: center; gap: 12px; max-width: min(560px, calc(100vw - 32px)); padding: 12px 12px 12px 16px; border-radius: 12px; background: #7A1F1E; color: #fff; font-size: 13.5px; box-shadow: 0 12px 32px rgba(14,23,38,.3)">
+<span style="flex: 1">You have view access to this canvas, so that change wasn't saved. Ask the owner for edit access to change shared data.</span>
+<button onClick="{{shell.unblock}}" style="height: 32px; padding: 0 12px; border: 1px solid rgba(255,255,255,.4); border-radius: 8px; background: transparent; color: #fff; font: inherit; font-size: 12.5px; cursor: pointer">OK</button>
+</div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1560}}'>
+class Component extends DCLogic {
+  // Prototype persistence: this screen's data survives reloads and is shared by every screen in this browser.
+  componentDidMount() {
+    this._init = JSON.parse(JSON.stringify(this.state));
+    this._onStore = e => { if (!e || !e.key || e.key === 'mrd-proto:store') this.forceUpdate(); };
+    try { window.addEventListener('storage', this._onStore); } catch (e) {}
+    this._sharedInit();
+    try { const raw = window.localStorage.getItem('mrd-proto:v1:Facilities'); const saved = raw ? JSON.parse(raw) : null; if (saved && typeof saved === 'object') this.setState(saved); } catch (e) {}
+  }
+  // Shared prototype store: one record in browser storage that every screen reads and writes (key mrd-proto:store).
+  readStore() {
+    const empty = { v: 1, units: {}, added: [], deployments: [], events: [], catalog: {} };
+    try { const s = JSON.parse(window.localStorage.getItem('mrd-proto:store') || 'null'); return Object.assign(empty, s || {}); } catch (e) { return empty; }
+  }
+  writeStore(mutate) {
+    const s = this.readStore();
+    if (this._shared && this._shared.mode === 'live' && !this._shared.canEdit) { const t = JSON.parse(JSON.stringify(s)); mutate(t); const strip = o => { const c = Object.assign({}, o); delete c.ui; return JSON.stringify(c); }; if (strip(t) !== strip(s)) this.setState({ _blocked: true }); s.ui = t.ui || s.ui; try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {} this.forceUpdate(); return s; }
+    mutate(s); s.events = s.events.slice(0, 200);
+    try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(s)); } catch (e) {}
+    this._pushShared(s);
+    this.forceUpdate(); return s;
+  }
+  // Shared across viewers: the store is mirrored to one document in this artifact's database (mrd_prototype/store).
+  // Browser storage stays as the local cache; everyone who opens the canvas sees the same data, editors can change it.
+  _host() {
+    let w = window;
+    for (let i = 0; i < 8; i++) {
+      try { if (w.claude && typeof w.claude.use === 'function') return w.claude; } catch (e) { return null; }
+      let p = null; try { p = w.parent; } catch (e) { return null; }
+      if (!p || p === w) return null; w = p;
+    }
+    return null;
+  }
+  async _sharedInit() {
+    const host = this._host();
+    if (!host) { this._shared = { mode: 'local' }; this.forceUpdate(); return; }
+    let db = null; try { db = await host.use('db'); } catch (e) { db = null; }
+    if (!db) { this._shared = { mode: 'local' }; this.forceUpdate(); return; }
+    let canEdit = false; try { const u = await host.use('user'); canEdit = u ? !!(await u.canEdit()) : false; } catch (e) { canEdit = false; }
+    this._shared = { mode: 'live', canEdit, db };
+    try {
+      this._unsubShared = db.doc('mrd_prototype/store').onSnapshot(snap => {
+        const local = this.readStore();
+        let next = null;
+        if (snap && snap.exists) { const d = snap.data() || {}; if (typeof d.json === 'string') { try { next = JSON.parse(d.json); } catch (e) { next = null; } } }
+        if (!next) {
+          if (snap && !snap.exists) {
+            let seen = false; try { seen = !!window.localStorage.getItem('mrd-proto:shared-seen'); } catch (e) {}
+            const hasLocal = local.events.length || Object.keys(local.units).length || local.added.length;
+            if (!seen && canEdit && hasLocal) this._pushShared(local);
+            else if (seen || !canEdit) { try { window.localStorage.setItem('mrd-proto:store', JSON.stringify({ v: 1, units: {}, added: [], deployments: [], events: [], catalog: {}, ui: local.ui || {} })); } catch (e) {} this.forceUpdate(); }
+          }
+          return;
+        }
+        next.ui = local.ui || {};
+        try { window.localStorage.setItem('mrd-proto:shared-seen', '1'); } catch (e) {}
+        try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(next)); } catch (e) {}
+        this.forceUpdate();
+      }, err => { this._shared = { mode: 'local', err: err && err.code }; this.forceUpdate(); });
+    } catch (e) { this._shared = { mode: 'local' }; }
+    this.forceUpdate();
+  }
+  _pushShared(s) {
+    const sh = this._shared;
+    if (!sh || sh.mode !== 'live' || !sh.canEdit) return;
+    const out = Object.assign({}, s); delete out.ui;
+    let json = JSON.stringify(out);
+    if (json.length > 240000) { out.events = (out.events || []).slice(0, 40); json = JSON.stringify(out); }
+    sh.db.doc('mrd_prototype/store').set({ json, savedAt: Date.now() }).catch(err => { this._shared = Object.assign({}, sh, { lastErr: (err && err.code) || 'unavailable' }); this.forceUpdate(); });
+  }
+  _clearShared() {
+    const sh = this._shared;
+    if (sh && sh.mode === 'live' && sh.canEdit) { try { sh.db.doc('mrd_prototype/store').delete().catch(() => {}); } catch (e) {} }
+  }
+  syncInfo() {
+    const sh = this._shared;
+    if (!sh) return { label: 'Connecting…', cls: 's-unconf', tip: 'Connecting to the shared store', readOnly: false };
+    if (sh.mode === 'live' && sh.lastErr) return { label: 'Not saved', cls: 's-damaged', tip: 'The last change could not be saved to the shared store (' + sh.lastErr + ')', readOnly: false };
+    if (sh.mode === 'live' && sh.canEdit) return { label: 'Shared · live', cls: 's-deployed', tip: 'Changes are saved for everyone who opens this canvas', readOnly: false };
+    if (sh.mode === 'live') return { label: 'View only', cls: 's-ready', tip: 'You can see shared changes live; only people with edit access can change data', readOnly: true };
+    return { label: 'This browser only', cls: 's-prep', tip: 'The shared store is not available here, so changes stay in this browser', readOnly: false };
+  }
+  nowLabel() { const d = new Date(); return 'Today, ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  patchUnit(s, ident, patch, prevSt) {
+    const cur = s.units[ident] || {};
+    s.units[ident] = Object.assign({}, cur, patch, { st0: cur.st0 !== undefined ? cur.st0 : (prevSt || ''), upd: this.nowLabel() });
+  }
+  logEvent(s, ev) {
+    const d = new Date();
+    s.events.unshift(Object.assign({ id: 'e' + d.getTime() + Math.random().toString(36).slice(2, 6), at: d.getTime(), when: this.nowLabel(), who: 'Chetan', ini: 'CH', role: 'Admin', source: 'Web' }, ev));
+  }
+  componentWillUnmount() { try { window.removeEventListener('storage', this._onStore); } catch (e) {} try { if (this._unsubShared) this._unsubShared(); } catch (e) {} }
+  componentDidUpdate() {
+    try { const keep = Object.assign({}, this.state); delete keep._shell; delete keep._blocked; ["add", "nf", "addErr", "exMsg", "exOk", "exCsv"].forEach(k => { delete keep[k]; }); window.localStorage.setItem('mrd-proto:v1:Facilities', JSON.stringify(keep)); } catch (e) {}
+  }
+  constructor(props) { super(props); this.state = { tab: 'all', view: 'grid', q: '', add: false, nf: this.blankNf(), addErr: '', exMsg: '', exOk: true, exCsv: '' }; }
+  blankNf() { return { name: '', client: '', loc: '', type: 'Corporate HQ', stage: 'Site inspection', lead: 'Aisha', cName: '', cRole: '', cPhone: '', cEmail: '', photo: null }; }
+  stamp() { const M = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']; const d = new Date(); return String(d.getDate()).padStart(2, '0') + ' ' + M[d.getMonth()] + ' ' + d.getFullYear() + ', ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  fmtSize(n) { const b = +n || 0; return b < 1024 ? b + ' B' : b < 1048576 ? Math.round(b / 1024) + ' KB' : (b / 1048576).toFixed(1) + ' MB'; }
+  // Facilities CSV of the rows currently shown, through the downloads capability; inline fallback when unavailable.
+  async exportFacilities(rows) {
+    const q2 = v => { const t = String(v == null ? '' : v); return /[",\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
+    const cols = [['Facility', f => f.name], ['Client', f => f.client], ['Location', f => f.loc], ['Type', f => f.type], ['Stage', f => f.stage], ['Phase', f => f.tag], ['Progress', f => f.short], ['Devices deployed', f => f.devices], ['Last deployment', f => f.last], ['Project lead', f => f.lead], ['Note', f => f.note], ['Archived', f => f.archived ? 'Yes' : 'No']];
+    const csv = [cols.map(c => q2(c[0])).join(',')].concat(rows.map(f => cols.map(c => q2(c[1](f))).join(','))).join('\n');
+    const filename = 'mrd-facilities-' + (this.state.tab === 'all' ? '' : this.state.tab + '-') + '2026-10-05.csv';
+    if (!rows.length) { this.setState({ exMsg: 'No facilities match the current filters, so there is nothing to export.', exOk: false, exCsv: '' }); return; }
+    let dl = null;
+    try { dl = (window.claude && window.claude.use) ? await window.claude.use('downloads') : null; } catch (e) { dl = null; }
+    if (!dl) { this.setState({ exMsg: 'Downloads aren’t available in this preview, so nothing was saved. The CSV of the ' + rows.length + ' facilities shown is below — select it and copy it instead.', exOk: false, exCsv: csv }); return; }
+    try {
+      await dl.save({ filename, data: csv });
+      this.writeStore(s => { s.exports = Array.isArray(s.exports) ? s.exports : []; s.exports.unshift({ file: filename, who: 'Chetan', ini: 'CH', bg: '#CDEFE7', when: this.nowLabel(), fmt: 'CSV', report: 'Facilities', rows: rows.length }); s.exports = s.exports.slice(0, 50); });
+      this.setState({ exMsg: filename + ' saved · ' + rows.length + (rows.length === 1 ? ' facility.' : ' facilities.'), exOk: true, exCsv: '' });
+    } catch (e) {
+      this.setState({ exMsg: e && e.code === 'declined' ? 'Download cancelled.' : 'The download didn’t start (' + ((e && e.code) || 'unavailable') + '). The CSV is below to copy instead.', exOk: false, exCsv: e && e.code === 'declined' ? '' : csv });
+    }
+  }
+  setFac(s, name, patch) {
+    s.facilities = s.facilities || {};
+    s.facilities[name] = Object.assign({}, s.facilities[name] || {}, patch);
+  }
+  // Sample devices identifiable by serial / ICCID per facility (the rest of each sample count is not itemised here).
+  sampleIds() {
+    return {
+      'Qatar Foundation': ['1108675311', '8996802026093001435', '6247B1820041', 'F4E2C6A10B37', '6136D2470112', '6136D2470113', '6136D2470114', '6136D2470115', '6136D2470121', '6136D2470122', '6136D2470123', '6136D2470124'],
+      'Lulu Hypermarket': ['1107442106', '6247B1820045', '8996802026071500822', '6136D2460041', '6136D2460042', '6136D2460043', '6136D2460044', '6136D2460045'],
+      'Bank Muscat Head Office': ['1108675302', '1107442100', '1107442101', '1107442102', '1107442104', '1107442105', '1107442107', '1107442108', '6247B1820038', '6247B1820039', '3AXD50000731102', '3AXD50000731103', 'F4E2C6A10B21', 'F4E2C6A10B22', 'F4E2C6A10B23']
+    };
+  }
+  createFacility() {
+    const nf = Object.assign(this.blankNf(), this.state.nf || {});
+    const name = String(nf.name || '').trim();
+    if (!name) { this.setState({ addErr: 'Enter a facility name.' }); return; }
+    const S = this.readStore();
+    const taken = ['Qatar Foundation', 'Bank Muscat Head Office', 'Lulu Hypermarket', 'Al Khuwair Business Tower', 'Sohar Logistics Hub', 'Ruwi Medical Centre'].concat(Object.keys(S.facilities || {}).filter(n => S.facilities[n] && S.facilities[n].added));
+    if (taken.some(n => n.toLowerCase() === name.toLowerCase())) { this.setState({ addErr: 'A facility with this name already exists.' }); return; }
+    const client = nf.client && nf.client !== '+ New client' ? nf.client : name;
+    const cName = String(nf.cName || '').trim(), cEmail = String(nf.cEmail || '').trim(), cPhone = String(nf.cPhone || '').trim();
+    if (!cName && (cEmail || cPhone || String(nf.cRole || '').trim())) { this.setState({ addErr: 'Add the contact’s name, or clear the contact fields.' }); return; }
+    if (cEmail && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(cEmail)) { this.setState({ addErr: 'The contact email doesn’t look right.' }); return; }
+    const contact = cName ? { id: 'c' + Date.now().toString(36), name: cName, role: String(nf.cRole || '').trim(), phone: cPhone, email: cEmail, by: 'Chetan', when: this.stamp() } : null;
+    this.writeStore(s => {
+      const rec = { added: true, stage: nf.stage || 'Site inspection', client, loc: String(nf.loc || '').trim(), type: nf.type || 'Corporate HQ', lead: nf.lead || 'Aisha', created: this.nowLabel() };
+      if (contact) { rec.contacts = [contact]; rec.primaryContact = contact.id; }
+      if (nf.photo) rec.photo = Object.assign({}, nf.photo, { by: 'Chetan', when: this.stamp() });
+      this.setFac(s, name, rec);
+      s.ui = Object.assign({}, s.ui || {}, { facility: name });
+      this.logEvent(s, { action: 'Facility added', item: name, itemHref: 'FacilityDetail.dc.html', from: '', to: nf.stage || 'Site inspection', note: client + (nf.loc ? ' · ' + String(nf.loc).trim() : '') + ' · ' + (nf.type || '') });
+      if (contact) this.logEvent(s, { action: 'Contact added', item: name, itemHref: 'FacilityDetail.dc.html', from: '', to: cName, note: cName + (contact.role ? ' · ' + contact.role : '') });
+      if (nf.photo) this.logEvent(s, { action: 'Document uploaded', item: name, itemHref: 'FacilityDetail.dc.html', from: '', to: '', note: 'Facility photo · ' + nf.photo.name + ' · ' + this.fmtSize(nf.photo.size) });
+    });
+    this.setState({ add: false, nf: this.blankNf(), addErr: '', tab: 'all', q: '' });
+  }
+  // Shared shell: notifications bell (fed by the shared store) and the mobile navigation drawer.
+  shellVals() {
+    const S = this.state, st = this.readStore();
+    const seen = (st.ui && st.ui.seenAt) || 0;
+    const VERB = { 'Received': 'received', 'Configured': 'configured', 'SIM assigned': 'assigned a SIM to', 'IP assigned': 'assigned an IP to', 'Status changed': 'changed the status of', 'Deployed': 'deployed', 'Moved': 'moved', 'Imported': 'imported', 'Stage changed': 'moved the stage of', 'POC decision': 'recorded a POC decision for', 'Contract ended': 'ended the contract for', 'Issue reported': 'reported an issue on', 'Reserved': 'reserved', 'Labels printed': 'printed labels for', 'File attached': 'attached a file to', 'File removed': 'removed a file from', 'User updated': 'updated user', 'Product edited': 'edited', 'Invite resent': 'resent the invite to', 'Document uploaded': 'uploaded a document to', 'Document removed': 'removed a document from', 'Contact added': 'added a contact to', 'Contact removed': 'removed a contact from', 'Contract updated': 'updated the contract for', 'Batch updated': 'updated batch', 'Batch archived': 'archived batch', 'Batch restored': 'restored batch', 'Facility updated': 'updated facility', 'Facility restored': 'restored facility', 'Report exported': 'exported', 'Record corrected': 'corrected', 'Note added': 'added a note to', 'Settings changed': 'updated settings ·', 'User invited': 'invited', 'Role changed': 'changed the role of', 'Verified on site': 'verified on site', 'Deployment cancelled': 'cancelled', 'Deployment updated': 'updated deployment' };
+    const fromStore = st.events.slice(0, 8).map(e => ({ text: (e.who || 'Chetan') + ' ' + (VERB[e.action] || String(e.action || '').toLowerCase()) + ' ' + e.item + (e.to && e.to !== '—' && e.action !== 'Imported' ? ' → ' + e.to : ''), when: e.when, href: e.itemHref || 'AuditLog.dc.html', unread: (e.at || 0) > seen }));
+    const alerts = [
+      { text: '14 Teltonika RUT956 units are waiting for preparation', when: 'Batch TEL-2026-004', href: 'DevicePrep.dc.html', alert: true },
+      { text: 'Cat6 patch cable 1 m is below its minimum level', when: 'Low stock · 18 of 25', href: 'InventoryItem.dc.html', alert: true },
+      { text: 'Qatar Foundation: 2 CO₂ sensors scheduled to install on 08 Oct', when: 'Upcoming deployment', href: 'Deployments.dc.html', alert: true }
+    ].map(a => Object.assign(a, { unread: !seen }));
+    const all = fromStore.concat(alerts);
+    const unread = all.filter(n => n.unread).length;
+    const SY = this.syncInfo();
+    return {
+      syncLabel: SY.label, syncCls: SY.cls, syncTip: SY.tip, blocked: !!S._blocked, unblock: () => this.setState({ _blocked: false }),
+      bellOpen: S._shell === 'bell', bellExp: S._shell === 'bell' ? 'true' : 'false', bellZ: S._shell === 'bell' ? '40' : 'auto',
+      menuOpen: S._shell === 'menu', menuExp: S._shell === 'menu' ? 'true' : 'false',
+      unread: unread > 9 ? '9+' : String(unread), hasUnread: unread > 0,
+      notes: all.map(n => ({ text: n.text, when: n.when, href: n.href, bg: n.unread ? '#F4FBF8' : '#fff', dot: n.alert ? '#E08A00' : (n.unread ? '#0B7A6B' : '#D5DBE3') })),
+      toggleBell: () => this.setState({ _shell: this.state._shell === 'bell' ? '' : 'bell' }),
+      toggleMenu: () => this.setState({ _shell: this.state._shell === 'menu' ? '' : 'menu' }),
+      closeAll: () => this.setState({ _shell: '' }),
+      markRead: () => { const st = this.readStore(); st.ui = Object.assign({}, st.ui || {}, { seenAt: Date.now() }); try { window.localStorage.setItem('mrd-proto:store', JSON.stringify(st)); } catch (e) {} this.forceUpdate(); }
+    };
+  }
+  renderVals() { return Object.assign(this._screenVals(), { shell: this.shellVals() }); }
+  _screenVals() {
+    const s = this.state;
+    const S = this.readStore();
+    const FS = S.facilities || {};
+    const names = ['Site inspection', 'BMS scan', 'POC', 'POC study', 'Contract', 'Deployment', 'Active operations'];
+    const base = [
+      { name: 'Qatar Foundation', client: 'Qatar Foundation', loc: 'Education City, Doha, Qatar', type: 'Education campus', stage: 'POC', devices: 12, last: '03 Oct 2026', lead: 'Aisha', note: 'Day 5 of 61', photo: 'Facility photo' },
+      { name: 'Bank Muscat Head Office', client: 'Bank Muscat', loc: 'Airport Heights, Muscat', type: 'Corporate HQ', stage: 'Active operations', devices: 35, last: '28 Sep 2026', lead: 'Nitin', note: 'Contract to Jun 2029', photo: 'Facility photo' },
+      { name: 'Lulu Hypermarket', client: 'Lulu Group', loc: 'Bausher, Muscat', type: 'Retail', stage: 'POC study', devices: 8, last: '16 Sep 2026', lead: 'Aisha', note: 'Review due 14 Oct', photo: 'Facility photo' },
+      { name: 'Al Khuwair Business Tower', client: 'Al Khuwair Properties', loc: 'Al Khuwair, Muscat', type: 'Commercial office', stage: 'BMS scan', devices: 0, last: '—', lead: 'Saif', note: 'Scan 07 Oct', photo: 'No photo yet' },
+      { name: 'Sohar Logistics Hub', client: 'Sohar Logistics', loc: 'Sohar', type: 'Warehouse', stage: 'Site inspection', devices: 0, last: '—', lead: 'Rahul', note: 'Visit 12 Oct', photo: 'No photo yet' },
+      { name: 'Ruwi Medical Centre', client: 'Ruwi Medical Centre', loc: 'Ruwi, Muscat', type: 'Healthcare', stage: 'On hold', holdIdx: 2, devices: 0, last: '—', lead: 'Aisha', note: 'Since 15 Sep', photo: 'No photo yet' }
+    ];
+    const baseNames = {};
+    base.forEach(f => { baseNames[f.name] = true; });
+    Object.keys(FS).forEach(n => { const a = FS[n]; if (!baseNames[n] && a && a.added) base.push({ name: n, client: a.client || n, loc: a.loc || '—', type: a.type || 'Facility', stage: a.stage || 'Site inspection', devices: 0, last: '—', lead: a.lead || 'Aisha', note: 'Added ' + String(a.created || 'today').replace(/^Today, .*/, 'today'), photo: 'No photo yet', added: true });
+    });
+    // Device counts: sample minus identifiable sample devices that have left, plus units deployed here through the store.
+    const SU = S.units || {};
+    const addedBy = {};
+    (S.added || []).forEach(a => { if (a && a.ident) addedBy[a.ident] = a; });
+    const unitOf = id => Object.assign({}, addedBy[id] || {}, SU[id] || {});
+    const left = (id, fac) => { const u = SU[id]; if (!u) return false; return (u.st !== undefined && u.st !== '' && u.st !== 'deployed') || (u.fac !== undefined && u.fac !== fac); };
+    const SAMPLE = this.sampleIds();
+    const sampleSn = {};
+    Object.keys(SAMPLE).forEach(f => SAMPLE[f].forEach(id => { sampleSn[id] = true; }));
+    const storeN = {};
+    Object.keys(Object.assign({}, addedBy, SU)).forEach(id => {
+      if (sampleSn[id]) return;
+      const u = unitOf(id);
+      if (!u.fac) return;
+      if (u.cat === 'sim') { const h = unitOf(u.device || ''); if (h.st !== 'deployed' || h.fac !== u.fac || (u.st && u.st !== 'deployed')) return; }
+      else if (u.st !== 'deployed') return;
+      storeN[u.fac] = (storeN[u.fac] || 0) + 1;
+    });
+    const MO = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const dnum = x => { const p = String(x || '').split(' '); return p.length < 3 ? 0 : (+p[2] || 0) * 10000 + (MO.indexOf(p[1]) + 1) * 100 + (+p[0] || 0); };
+    const lastDep = {};
+    (S.deployments || []).forEach(d => { if (d && d.fac && d.status !== 'Cancelled' && dnum(d.date) > dnum(lastDep[d.fac])) lastDep[d.fac] = d.date; });
+    const IDX = { 'Site inspection': 1, 'BMS scan': 2, 'POC': 3, 'POC study': 4, 'Contract pending': 5, 'Contract active': 5, 'Active operations': 7, 'Completed': 8 };
+    const GC = { 'Site inspection': 'g-insp', 'BMS scan': 'g-bms', 'POC': 'g-poc', 'POC study': 'g-study', 'Contract pending': 'g-cpend', 'Contract active': 'g-contract', 'Active operations': 'g-ops', 'Completed': 'g-done', 'On hold': 'g-hold' };
+    const PB = { Aisha: ['AI', '#E6DDFB'], Nitin: ['NI', '#F6E3C4'], Saif: ['SA', '#FBE0DC'], Rahul: ['RA', '#DCE6FB'], Chetan: ['CH', '#CDEFE7'] };
+    const F = base.map(b => {
+      const o = FS[b.name] || {};
+      const stage = o.stage || b.stage;
+      const hold = stage === 'On hold';
+      const idx = hold ? (b.holdIdx || 2) : (IDX[stage] || 1);
+      const ph = stage === 'POC' || stage === 'POC study' ? 'poc' : (idx >= 5 && idx <= 7) ? 'con' : stage === 'Completed' ? 'done' : 'pre';
+      const lead = o.lead || b.lead;
+      const p = PB[lead] || [String(lead).slice(0, 2).toUpperCase(), '#E3E7EC'];
+      const gone = (SAMPLE[b.name] || []).filter(id => left(id, b.name)).length;
+      const devices = Math.max(0, b.devices - gone) + (storeN[b.name] || 0);
+      const last = lastDep[b.name] && dnum(lastDep[b.name]) >= dnum(b.last) ? lastDep[b.name] : b.last;
+      const changed = !!o.stage && o.stage !== b.stage;
+      const note = o.archived ? 'Archived' : !changed ? (b.name === 'Lulu Hypermarket' && o.pocEnd ? 'POC to ' + String(o.pocEnd).slice(0, 6) : b.note)
+        : stage === 'POC' ? (o.pocEnd ? 'POC to ' + String(o.pocEnd).slice(0, 6) : 'POC running')
+        : stage === 'POC study' ? 'Study started' : stage === 'Contract pending' ? (o.decision === 'proceed' ? 'Proceeding to contract' : 'Draft terms')
+        : stage === 'Contract active' ? 'Contract signed' : stage === 'Completed' ? (o.decision === 'remove' ? 'POC equipment returned' : o.contract && o.contract.status === 'Ended' ? 'Contract ended' : 'Closed')
+        : stage === 'On hold' ? 'Paused' : 'Stage updated';
+      const grp = o.archived ? ['archived'] : hold ? ['hold'] : stage === 'Completed' ? ['closed'] : ['active'].concat(ph === 'poc' ? ['poc'] : ph === 'con' ? ['contract'] : []);
+      return Object.assign({}, b, {
+        client: o.client || b.client, loc: o.loc || b.loc, type: o.type || b.type, stage, cls: GC[stage] || 'g-insp', idx, hold, lead, ini: p[0], abg: p[1],
+        tag: ph === 'poc' ? 'POC' : ph === 'con' ? 'Contract' : ph === 'done' ? 'Closed' : 'Pre-POC', tcls: ph === 'poc' ? 't-poc' : ph === 'con' ? 't-con' : 't-pre',
+        devices, last, note, grp, archived: !!o.archived, photo: o.photo && o.photo.name ? 'Photo: ' + o.photo.name : b.photo
+      });
+    });
+    const cur = (i, hold) => hold ? '#DC3B3A' : (i === 3 || i === 4) ? '#7A5AF8' : i >= 5 ? '#12A374' : '#3B4758';
+    const decorate = f => Object.assign({}, f, {
+      open: () => this.writeStore(st => { st.ui = Object.assign({}, st.ui || {}, { facility: f.name }); }),
+      segs: names.map((n, k) => { const i = k + 1; return { t: n, c: i < f.idx ? '#0B7A6B' : i === f.idx ? cur(i, f.hold) : '#E3E7EC' }; }),
+      prog: f.hold ? 'Paused at stage ' + f.idx + ' of 7 · ' + names[f.idx - 1] : f.idx > 7 ? 'Completed · all stages closed' : 'Stage ' + f.idx + ' of 7 · ' + (f.stage === 'Contract pending' ? 'Contract pending' : names[f.idx - 1]),
+      short: f.hold ? 'Paused · ' + f.idx + ' of 7' : f.idx > 7 ? 'Completed' : f.idx + ' of 7 · ' + (f.stage === 'Contract pending' ? 'Contract pending' : names[f.idx - 1])
+    });
+    const q = (s.q || '').trim().toLowerCase();
+    const visibleAll = F.filter(f => !f.archived);
+    const inTab = f => s.tab === 'archived' ? f.archived : (s.tab === 'all' ? !f.archived : f.grp.indexOf(s.tab) > -1);
+    const list = F.filter(f => inTab(f) && (!q || (f.name + ' ' + f.client + ' ' + f.loc).toLowerCase().indexOf(q) > -1)).map(decorate);
+    const tabDefs = [['all', 'All'], ['active', 'Active'], ['poc', 'POC'], ['contract', 'Contract'], ['hold', 'On hold']];
+    if (F.some(f => f.grp.indexOf('closed') > -1)) tabDefs.push(['closed', 'Completed']);
+    if (F.some(f => f.archived)) tabDefs.push(['archived', 'Archived']);
+    const tabs = tabDefs.map(([id, label]) => ({
+      label, n: id === 'all' ? visibleAll.length : id === 'archived' ? F.filter(f => f.archived).length : F.filter(f => f.grp.indexOf(id) > -1).length,
+      sel: s.tab === id ? 'true' : 'false', cls: 'chip' + (s.tab === id ? ' on' : ''), pick: () => this.setState({ tab: id })
+    }));
+    const clip = (i, last) => i === 0 ? 'polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%)' : last ? 'polygon(0 0, 100% 0, 100% 100%, 0 100%, 14px 50%)' : 'polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%, 14px 50%)';
+    const shortN = { 'Al Khuwair Business Tower': 'Al Khuwair Tower', 'Bank Muscat Head Office': 'Bank Muscat HO' };
+    const live = F.filter(f => !f.archived && !f.hold && f.idx <= 7);
+    const phs = ['pre', 'pre', 'poc', 'poc', 'con', 'con', 'con'];
+    const funnel = names.map((label, i) => {
+      const at = live.filter(f => f.idx === i + 1);
+      const ph = phs[i];
+      return { label, v: at.length, who: at.length ? at.map(f => shortN[f.name] || f.name).join(', ') : 'None right now' , ph };
+    }).map(({ label, v, who, ph }, i) => {
+      const bgs = { pre: '#EEF1F5', poc: '#F0EAFE', con: '#E1F4EC' }, fgs = { pre: '#3E4A5C', poc: '#5B32B4', con: '#0A6648' };
+      return { n: i + 1, label, v, who, bg: bgs[ph], fg: fgs[ph], vc: v ? '#0E1726' : '#8A96A8', clip: clip(i, i === names.length - 1), ml: i === 0 ? '0' : '-6px', pl: i === 0 ? '14px' : '24px' };
+    });
+    const holds = F.filter(f => f.hold && !f.archived);
+    const devTotal = visibleAll.reduce((a, f) => a + f.devices, 0);
+    const pocN = visibleAll.filter(f => f.stage === 'POC' || f.stage === 'POC study').length;
+    const isGrid = s.view === 'grid';
+    const nf = Object.assign(this.blankNf(), s.nf || {});
+    const setNf = k => e => this.setState({ nf: Object.assign({}, nf, { [k]: e && e.target ? e.target.value : '' }), addErr: '' });
+    return {
+      tabs, funnel, list, q: s.q,
+      headSub: visibleAll.length + ' client sites across the MRD × Exergio lifecycle · ' + devTotal + ' devices deployed · ' + pocN + ' under POC',
+      holdN: holds.length, holdWho: holds.length ? holds.map(f => f.name).join(', ') : 'None',
+      onQ: e => this.setState({ q: e.target.value }),
+      clear: () => this.setState({ q: '', tab: 'all' }),
+      countLabel: list.length + ' of ' + (s.tab === 'archived' ? F.filter(f => f.archived).length : visibleAll.length) + ' facilities',
+      none: list.length === 0,
+      showGrid: isGrid && list.length > 0, showTable: !isGrid && list.length > 0,
+      isGrid: isGrid ? 'true' : 'false', isTable: isGrid ? 'false' : 'true',
+      gridCls: 'chip' + (isGrid ? ' on' : ''), tableCls: 'chip' + (!isGrid ? ' on' : ''),
+      toGrid: () => this.setState({ view: 'grid' }), toTable: () => this.setState({ view: 'table' }),
+      addOpen: s.add, openAdd: () => this.setState({ add: true, addErr: '' }), closeAdd: () => this.setState({ add: false, addErr: '' }),
+      nf, onNfName: setNf('name'), onNfClient: setNf('client'), onNfLoc: setNf('loc'), onNfType: setNf('type'), onNfStage: setNf('stage'), onNfLead: setNf('lead'),
+      addErr: !!s.addErr, addErrMsg: s.addErr || '', createFac: () => this.createFacility(),
+      onNfCName: setNf('cName'), onNfCRole: setNf('cRole'), onNfCPhone: setNf('cPhone'), onNfCEmail: setNf('cEmail'),
+      onNfPhoto: e => {
+        const input = e && e.target; const f = input && input.files && input.files[0];
+        if (!f) return;
+        if (f.type && !/^image\//.test(f.type)) { this.setState({ addErr: f.name + ' is not an image.' }); return; }
+        this.setState({ nf: Object.assign({}, nf, { photo: { name: f.name, size: f.size || 0, type: f.type || '' } }), addErr: '' });
+      },
+      nfPhotoLabel: nf.photo ? nf.photo.name : 'Upload an image', nfPhotoSub: nf.photo ? this.fmtSize(nf.photo.size) + ' · file name and size are saved; the image itself isn’t stored in this prototype' : 'JPG or PNG, up to 10 MB. Used on facility cards and the detail banner.',
+      exportList: () => this.exportFacilities(list), hasExMsg: !!s.exMsg, exMsg: s.exMsg || '', exBg: s.exOk ? '#E1F4EC' : '#FFF8EB', exBd: s.exOk ? '#BFE3D3' : '#F3D9A6', exShowCsv: !!s.exCsv, exCsv: s.exCsv || '', clearEx: () => this.setState({ exMsg: '', exCsv: '' })
+    };
+  }
+}
+</script>
+</body>
+</html>
