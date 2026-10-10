@@ -1,7 +1,7 @@
-# Architecture — DRAFT (awaiting owner approval)
+# Architecture
 
-_Status: proposed 2026-10-10. Nothing here is final until the owner approves it in
-`PROJECT_STATUS.md`._
+_Status: **approved by owner 2026-10-10** (Option A: Next.js + Supabase PostgreSQL). Changes to this
+document after approval need the owner's agreement and a change-log entry in `PROJECT_STATUS.md`._
 
 ## 1. Confirmed requirements that shape the architecture
 
@@ -66,7 +66,7 @@ If these lived only in the browser, anyone could skip them with the browser's de
 
 ## 4. Options considered
 
-| | **A. Next.js + Supabase (recommended)** | B. Supabase only (browser talks to database directly) | C. Node + MongoDB Atlas |
+| | **A. Next.js + Supabase (chosen)** | B. Supabase only (browser talks to database directly) | C. Node + MongoDB Atlas |
 |---|---|---|---|
 | How it works | Screens + server code in one TypeScript project; Supabase provides Postgres, login, files | No server code; security written as database "row-level security" policies | Separate server; document database |
 | Fit for inventory integrity | **Strong** — relational keys, constraints and transactions | Strong database, but every rule must be an SQL policy | **Weaker** — no foreign keys; relationships and many rules must be hand-coded |
@@ -119,9 +119,64 @@ Supabase's free plan allows two projects per organisation, which covers staging 
   for a company tool. Netlify's free plan reportedly allows commercial use; Render's free web
   services sleep after 15 minutes. Options to be verified on official pages at Stage 8.
 
-## 8. Still open
+## 8. Technology stack (agreed)
 
-- Is a single **User** level enough for v1, or do some users need read-only access? (The design's
-  Users screen shows Admin / Operations / Technician / Viewer; it will be updated to match the
-  agreed roles — a Stage 2 revision under rule 4.)
-- Launch budget: strict $0 with risks above, or a small monthly amount for backups.
+| Layer | Technology | Why | Decided at |
+|-------|------------|-----|-----------|
+| Language | TypeScript | One language for screens and server; catches many mistakes before running | Stage 3 |
+| Web framework | Next.js (App Router) | Screens and server code in one project; server actions keep secrets off the browser | Stage 3 |
+| Database | PostgreSQL (hosted by Supabase) | Relational integrity: foreign keys, unique/check constraints, transactions | Stage 3 |
+| Authentication | Supabase Auth — Google sign-in + email/password | Proven password handling, sessions, reset emails | Stage 3 |
+| Roles & approval | Own tables in PostgreSQL (`users`, `roles`, `permissions`) | Approval flow and Super Admin-granted permissions are MRD-specific | Stage 3 |
+| File storage | Supabase Storage, private bucket, signed URLs | Photos/documents stay private | Stage 3 |
+| Source control | Git + GitHub (`CodecFiles/Inventory-Tracker`) | History, review, rollback | Stage 3 |
+| Migrations & query tooling | To choose | Teaching choice: plain SQL migrations vs an ORM | Stage 4 |
+| Styling | To choose | Must reproduce `design/` faithfully | Stage 6 |
+| Test tools | To choose | Unit / integration / end-to-end | Stage 5–7 |
+| App hosting | To choose (Vercel Hobby excluded: non-commercial only) | Verify official terms and prices then | Stage 8 |
+| Production plan | Paid Supabase plan expected (backups, no pausing) | Owner accepts a small fee at launch | Stage 8 |
+
+Exact versions are pinned in `package.json` when the project is created.
+
+## 9. How the components interact — one request, end to end
+
+Example: an Editor deploys router `1107442106` to Lulu Hypermarket.
+
+```
+1. Browser      Editor clicks "Deploy" → sends {device, facility} to the server
+2. Next.js      Reads session cookie → asks Supabase Auth "who is this?"      → user id
+3. Next.js      Looks up users table: status APPROVED? role has deployments.create?
+                 └─ no → "403 Not allowed", nothing changes
+4. Next.js      Validates input (device exists, facility active, stage allows deployment)
+5. Next.js      Opens ONE database transaction:
+                   • insert deployment
+                   • update device status → Deployed
+                   • insert stock movement (warehouse → Lulu)
+                   • insert audit record (who, what, when, before/after)
+6. PostgreSQL   Constraints check everything again (device not already deployed,
+                 stock ≥ 0). Any failure → whole transaction undone, nothing half-saved
+7. Next.js      Returns the result → browser updates the screen
+```
+
+## 10. Security boundaries
+
+```
+ UNTRUSTED                 │ TRUSTED (our server)              │ TRUSTED (managed by Supabase)
+                           │                                   │
+ Browser, any device ──────┼─► Next.js server code ────────────┼─► PostgreSQL / Storage
+ (can be modified by user) │   • holds secret keys             │   • only accepts our server's key
+                           │   • checks identity + permission  │   • constraints = last defence
+                           │   • validates every input         │   • private file bucket
+```
+
+- All traffic is HTTPS. Secret keys live in server environment variables, never in browser code or Git.
+- The browser never connects to the database with write power; it only talks to our server.
+- Pending, rejected or disabled users are blocked on the server for every request, not just hidden in the UI.
+- Audit records are insert-only (no update/delete permission at the database level).
+- Staging and production use separate Supabase projects and separate keys; real data never goes to development.
+
+## 11. Still open (later stages)
+
+- Design revision (rule 4): Users screen roles and the Microsoft 365 login button must change to
+  the agreed four roles and Google/email sign-in with approval. Do before building those screens.
+- Exact permission list per role — Stage 4 (database) / Stage 5 (backend).
