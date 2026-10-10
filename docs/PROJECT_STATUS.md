@@ -2,10 +2,10 @@
 
 _Last updated: 2026-10-10_
 
-**Current stage:** 3 — Architecture (step 3.1: inspect what exists, answer the decision questions)
+**Current stage:** 3 — Architecture (step 3.2: review draft `docs/ARCHITECTURE.md`)
 
-**Next action:** owner answers the Stage 3 decision questions below; then the assistant drafts
-`docs/ARCHITECTURE.md` with the recommended options for agreement.
+**Next action:** owner approves or questions Option A in `docs/ARCHITECTURE.md` and answers the two
+open items (User levels, launch budget).
 
 ## Stage checklist
 
@@ -13,7 +13,7 @@ _Last updated: 2026-10-10_
 | ----- | ------ | -------- |
 | 1 Requirements | Complete (planning level) | Original project brief; open questions below |
 | 2 UI/UX Design | Complete (design level) | `design/` — 26 screens, live canvas |
-| 3 Architecture | In progress | — |
+| 3 Architecture | In progress | Draft `docs/ARCHITECTURE.md` (not approved) |
 | 4 Database | Not started | — |
 | 5 Backend | Not started | — |
 | 6 Frontend | Not started | — |
@@ -40,18 +40,27 @@ _Last updated: 2026-10-10_
 
 ## Open decisions (Stage 3)
 
-| # | Question | Why it matters | Answer |
-|---|----------|----------------|--------|
-| D1 | Does MRD use Microsoft 365 for staff email/accounts? Can IT register an app in Entra ID? | Decides login (SSO vs own passwords) | — |
-| D2 | Where may company data be hosted? (any cloud region / must stay in Oman or GCC / on-premise only) | Decides hosting options | — |
-| D3 | Rough user numbers (total and at the same time) and monthly hosting budget | Sizing and cost | — |
-| D4 | Who will maintain it after launch — only the owner, or an IT team too? Any language/stack the IT team already supports? | Maintainability | — |
-| D5 | Must field technicians work offline (no signal on site)? | Offline sync is a large architectural cost | — |
-| D6 | Teltonika RMS: integrate in version 1, or manual entry only? | External integration scope | — |
+| # | Question | Status |
+|---|----------|--------|
+| D7 | Approve architecture Option A (Next.js + Supabase Postgres/Auth/Storage)? | Awaiting owner |
+| D8 | One "User" level enough for v1, or also a read-only level? | Awaiting owner |
+| D9 | Launch budget: strict $0 (no automated backups, pausing) or small monthly fee? | Awaiting owner |
 
 ## Decisions made
 
-_None yet._
+| # | Decision | Date |
+|---|----------|------|
+| D1 | No Microsoft 365. Login with any email (company, Gmail, others); Google sign-in wanted | 2026-10-10 |
+| D1b | New sign-ups stay pending until an admin approves | 2026-10-10 |
+| D1c | Roles v1: Super Admin (all), Admin (permissions granted by Super Admin), User (features only) | 2026-10-10 |
+| D2 | No company servers; managed cloud, free or minimum cost, must be safe | 2026-10-10 |
+| D3 | ~15–20 users; minimum budget | 2026-10-10 |
+| D5 | No offline mode — technicians enter work from the office | 2026-10-10 |
+| D6 | No Teltonika RMS integration; routers tracked as inventory | 2026-10-10 |
+
+Stage 2 revision needed (rule 4): the Users/Settings screens show Admin/Operations/Technician/Viewer
+and a "Continue with Microsoft 365" login; these must change to the agreed roles and Google/email
+sign-in with approval.
 
 ## Test results
 
@@ -60,3 +69,4 @@ _None yet._
 ## Change log
 
 - 2026-10-10 — Roadmap and status record added; Stage 3 started with project inspection.
+- 2026-10-10 — Owner answered D1–D6; draft architecture written.
