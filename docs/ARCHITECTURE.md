@@ -10,8 +10,8 @@ _Status: proposed 2026-10-10. Nothing here is final until the owner approves it 
 | Users | ~15–20 people in total |
 | Login | Any email address (`@moonrock.om`, Gmail, others). No Microsoft 365. Google sign-in is wanted. |
 | Access approval | New sign-ups are **pending** until an admin approves them |
-| Roles (v1) | **Super Admin** (all permissions) · **Admin** (only the permissions a Super Admin grants) · **User** (uses app features, no administration) |
-| Hosting | No company servers. Managed cloud, free or as cheap as possible, but safe |
+| Roles (v1) | **Super Admin** (all permissions) · **Admin** (only the permissions a Super Admin grants) · **Editor** (read + edit, no administration) · **Viewer** (read only) |
+| Hosting | No company servers. Managed cloud. Development on free tiers; a small monthly fee is acceptable at launch |
 | Offline | Not needed — technicians enter their work from the office |
 | Teltonika RMS | Not needed. Teltonika routers are tracked like any other inventory |
 

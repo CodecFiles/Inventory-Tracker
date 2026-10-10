@@ -4,8 +4,8 @@ _Last updated: 2026-10-10_
 
 **Current stage:** 3 — Architecture (step 3.2: review draft `docs/ARCHITECTURE.md`)
 
-**Next action:** owner approves or questions Option A in `docs/ARCHITECTURE.md` and answers the two
-open items (User levels, launch budget).
+**Next action:** owner chooses the database (D7): PostgreSQL via Supabase (recommended) or MongoDB
+Atlas. Owner raised MongoDB as "industry standard"; assistant's comparison given 2026-10-10.
 
 ## Stage checklist
 
@@ -42,9 +42,7 @@ open items (User levels, launch budget).
 
 | # | Question | Status |
 |---|----------|--------|
-| D7 | Approve architecture Option A (Next.js + Supabase Postgres/Auth/Storage)? | Awaiting owner |
-| D8 | One "User" level enough for v1, or also a read-only level? | Awaiting owner |
-| D9 | Launch budget: strict $0 (no automated backups, pausing) or small monthly fee? | Awaiting owner |
+| D7 | Database: PostgreSQL/Supabase (Option A) or MongoDB Atlas (Option C)? | Awaiting owner — owner leaning MongoDB, assistant recommends PostgreSQL |
 
 ## Decisions made
 
@@ -57,6 +55,8 @@ open items (User levels, launch budget).
 | D3 | ~15–20 users; minimum budget | 2026-10-10 |
 | D5 | No offline mode — technicians enter work from the office | 2026-10-10 |
 | D6 | No Teltonika RMS integration; routers tracked as inventory | 2026-10-10 |
+| D8 | Roles v1: Super Admin · Admin (permissions granted by Super Admin) · Editor (read + edit) · Viewer (read only). Supersedes D1c | 2026-10-10 |
+| D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
 Stage 2 revision needed (rule 4): the Users/Settings screens show Admin/Operations/Technician/Viewer
 and a "Continue with Microsoft 365" login; these must change to the agreed roles and Google/email
@@ -70,3 +70,4 @@ _None yet._
 
 - 2026-10-10 — Roadmap and status record added; Stage 3 started with project inspection.
 - 2026-10-10 — Owner answered D1–D6; draft architecture written.
+- 2026-10-10 — D8, D9 decided; database choice (D7) under discussion.
