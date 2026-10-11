@@ -2,12 +2,10 @@
 
 _Last updated: 2026-10-11_
 
-**Current stage:** 4 — Database (step 4.13: deploy migrations to Supabase staging via GitHub integration)
+**Current stage:** 5 — Backend (step 5.3: staging site on Vercel being set up)
 
-**Next action:** owner checks the Supabase GitHub integration settings (production branch, Supabase
-directory, "Deploy to production") and approves a PR to `main`; merge applies migrations to the
-staging project; owner confirms tables in the Supabase Table Editor; then lesson on indexes/backups
-and the Stage 4 gate.
+**Next action:** owner says "open PR" → PR #3 merges the app into `main` → Vercel builds staging;
+owner sets Supabase Site URL/redirects, signs up, runs `bootstrap_first_super_admin`.
 
 ## Stage checklist
 
@@ -16,8 +14,8 @@ and the Stage 4 gate.
 | 1 Requirements | Complete (planning level) | Original project brief; open questions below |
 | 2 UI/UX Design | Complete (design level) | `design/` — 26 screens, live canvas |
 | 3 Architecture | Complete | `docs/ARCHITECTURE.md` (approved); gate below |
-| 4 Database | In progress | Schema approved; migrations 0001–0005; 87 tests + concurrency test passing locally |
-| 5 Backend | Not started | — |
+| 4 Database | Complete | Gate below; migrations 0001–0005 on Supabase staging; 87 tests + race test green in CI |
+| 5 Backend | In progress | data-access layer; `receiveDelivery`; login/sign-up/approval; 17 backend tests + 94 DB tests |
 | 6 Frontend | Not started | — |
 | 7 Testing | Not started | — |
 | 8 Hosting and Launch | Not started | — |
@@ -44,7 +42,9 @@ and the Stage 4 gate.
 
 | # | Question | Status |
 |---|----------|--------|
-| S2 | Merge PR #2 into `main` once "Database tests" is green → Supabase deploys migrations; owner checks Table Editor | Awaiting owner |
+| H1 | Production hosting: Vercel Hobby terms may treat internal company use as commercial (secondary sources) — decide at Stage 8 (Vercel Pro, or a host whose free plan allows business use) | Revisit at Stage 8 |
+| M3 | Custom SMTP email sender before colleagues sign up (built-in sender is limited; templates locked without it) | Before inviting colleagues |
+| E1 | `NEXT_PUBLIC_SUPABASE_URL` in the cloud environment lacks `https://` (code tolerates it) | Owner may fix (non-blocking) |
 
 ## Stage 3 completion gate
 
@@ -55,6 +55,17 @@ and the Stage 4 gate.
 | Clear component diagram | Yes | `ARCHITECTURE.md` §2, §10 |
 | Explanation of component interaction | Yes | `ARCHITECTURE.md` §3, §9 |
 | Owner understands it | Yes | Q1 answered correctly. Q2 concept confirmed 2026-10-11 via the cables exercise (owner: first save wins, second is rejected). Verified hands-on 2026-10-11 by `scripts/db-concurrency-test.sh`. Q3 explained by assistant |
+
+## Stage 4 completion gate
+
+| Criterion | Met? | Evidence |
+|-----------|------|----------|
+| Approved schema | Yes | M2; `docs/DATABASE.md` v1.0 |
+| Implemented migrations | Yes | `supabase/migrations/0001–0005`, deployed to Supabase staging (S3) |
+| Reliable database access | Yes for deployment/migrations; app access is built in Stage 5 | CI + GitHub integration |
+| Documented relationships | Yes | `docs/DATABASE.md` (ER diagram, L0–L5, migration notes) |
+| Tests for critical integrity rules | Yes | 87 pgTAP tests + race test; mutation checks |
+| Owner understanding | Partly | Exercises on keys, normalisation, constraints, concurrency answered correctly; index and backup questions explained by assistant (owner could not answer yet) — revisit in Stage 7 (indexes) and Stage 8 (backups) |
 
 ## Decisions made
 
@@ -93,6 +104,11 @@ and the Stage 4 gate.
 | A2 | SIM change → router reconfigured, likely new IP; handled by a new SIM assignment row (design unchanged) | 2026-10-11 |
 | S0 | Supabase staging project created; GitHub repo linked to it (owner) | 2026-10-11 |
 | S1 | Supabase GitHub integration enabled: repo linked, directory `.`, deploy to production from `main` (free plan; preview branches need Pro, not needed) | 2026-10-11 |
+| S2 | PR #2 merged into `main` (merge commit 8c87d17); CI green on `main` | 2026-10-11 |
+| S3 | Supabase staging deploy succeeded — owner sees the tables in Table Editor (free plan "Deploy to production" works) | 2026-10-11 |
+| S4 | Branch rule narrowed to `main` (PR required); working branch pushes normally | 2026-10-11 |
+| B1 | Server talks to PostgreSQL directly (postgres.js, one transaction per action, `app.user_id` set per transaction); Supabase used for Auth/Storage | 2026-10-11 |
+| H0 | Staging site on Vercel (owner's choice; owner considers it personal/non-commercial — assistant flagged the terms risk, see H1) | 2026-10-11 |
 | D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
 Stage 2 revision needed (rule 4): the Users/Settings screens show Admin/Operations/Technician/Viewer
@@ -106,6 +122,11 @@ rules are enforced on the server and again in the database; authentication vs au
 environments; why relational PostgreSQL suits inventory better than MongoDB. Accomplished: approved
 architecture, stack, component and security diagrams, request flow (`docs/ARCHITECTURE.md`).
 
+**Stage 4 — Database (closed 2026-10-11).** Learned: tables, rows, primary/foreign keys, one-to-many
+/ many-to-many / one-at-a-time relationships, normalisation, data types, constraints, triggers,
+transactions, concurrency, migrations, CI, indexes and backups (introduced). Accomplished: approved
+design, 5 migrations live on Supabase staging, 87 integrity tests + race test running on every push.
+
 ## Test results
 
 | Date | Suite | Result | Notes |
@@ -114,7 +135,14 @@ architecture, stack, component and security diagrams, request flow (`docs/ARCHIT
 | 2026-10-11 | `0002_*` (12) + `0003_*` (20) | **First run: fail** → fixed → **50/50 pass** | Tests found a real bug (stock subtraction via upsert rejected valid deployments); fixed in 0003 before commit |
 | 2026-10-11 | `0004_*` (21) + `0005_*` (16) | **87/87 pass** (all suites) | Mutation checks: removing the double-deployment index failed tests 11 and 18; removing the last-Super-Admin rule failed test 14 |
 | 2026-10-11 | GitHub Actions `Database tests` run #1 | **PASS** — 87/87 + race test | Same suite on GitHub's servers; now runs on every push and PR |
+| 2026-10-11 | GitHub Actions on `main` after merge (run #6) | **PASS** | |
 | 2026-10-11 | `scripts/db-concurrency-test.sh` | **PASS** (3 runs) | Two simultaneous 6-cable deployments: 1 succeeds, 1 rejected, office 4. Mutation (no ≥ 0 rule): office −2, site 12 → FAIL as expected |
+
+| 2026-10-11 | `tests/server/receive.test.ts` (Vitest, 8 tests) | **8/8 pass** | Mutation: removing the permission check made "a Viewer is refused" fail |
+
+| 2026-10-11 | Backend (Vitest) 17 tests incl. approval | **17/17 pass** | Test IDs first used invalid UUIDs; the strict input check rejected them (correct) — test data fixed |
+| 2026-10-11 | pgTAP incl. 0006 | **94/94 pass** + race test | |
+| 2026-10-11 | Live smoke test against Supabase staging Auth | **PASS** | `/` and `/admin/users` redirect signed-out visitors to `/login`; login/sign-up pages render; bogus confirmation link rejected by Supabase |
 
 ## Change log
 
@@ -139,3 +167,8 @@ architecture, stack, component and security diagrams, request flow (`docs/ARCHIT
 - 2026-10-11 — Migrations 0004 (deployments, shipments, SIMs) and 0005 (permissions, audit); 87 tests passing.
 - 2026-10-11 — Supabase staging project created and linked to GitHub (owner); CI workflow added, first run green.
 - 2026-10-11 — Supabase integration enabled; PR #2 opened (branch → main).
+- 2026-10-11 — PR #2 merged; CI green on main; Supabase deploy confirmed by owner (tables visible).
+- 2026-10-11 — Stage 4 closed; Stage 5 (Backend) started.
+- 2026-10-11 — B1 = A; data-access layer (`withActor`, `requirePermission`) and `receiveDelivery` with 8 backend tests; backend tests added to CI.
+- 2026-10-11 — 5.3: migration 0006 (auth link, bootstrap), Supabase login/sign-up/confirm/pending pages, approval actions + admin page, proxy; tests and live smoke test pass.
+- 2026-10-11 — H0: Vercel for staging; email template edit not possible without SMTP — confirm route made friendly for the default link.

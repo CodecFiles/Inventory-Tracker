@@ -100,6 +100,22 @@ Permissions are stored individually (e.g. `inventory.receive`, `deployments.crea
 get a subset chosen by a Super Admin. This lets you add roles later (e.g. read-only Viewer) without
 redesigning.
 
+### How it is built (Stage 5.3)
+
+- Sign-up: email + password (min. 10 characters) through Supabase Auth; Supabase sends a
+  confirmation email. Migration 0006 creates the MRD user as **pending** automatically.
+- Sessions live in secure cookies; `src/proxy.ts` refreshes them on every request and sends
+  signed-out visitors to `/login`. Every page and server action checks the user again on the server
+  (`src/server/session.ts`) — the proxy is a convenience, not the security.
+- First Super Admin: after signing up, run once in the Supabase SQL editor
+  `select bootstrap_first_super_admin('owner@email');` — it refuses to run again once a Super Admin exists.
+- Confirmation emails use Supabase's default template (custom templates require custom SMTP). The
+  link confirms the address at Supabase, then returns to `/auth/confirm`; on another device the user
+  is asked to sign in.
+- Supabase's built-in email sender is for testing only (limited recipients and rate); a custom SMTP
+  sender is required before colleagues sign up (Stage 8 checklist, earlier if needed).
+- Google sign-in: same flow, added when Google credentials are configured.
+
 ## 6. Environments
 
 | Environment | Where | Data | Purpose |
@@ -130,9 +146,11 @@ Supabase's free plan allows two projects per organisation, which covers staging 
 | Roles & approval | Own tables in PostgreSQL (`users`, `roles`, `permissions`) | Approval flow and Super Admin-granted permissions are MRD-specific | Stage 3 |
 | File storage | Supabase Storage, private bucket, signed URLs | Photos/documents stay private | Stage 3 |
 | Source control | Git + GitHub (`CodecFiles/Inventory-Tracker`) | History, review, rollback | Stage 3 |
-| Migrations & query tooling | To choose | Teaching choice: plain SQL migrations vs an ORM | Stage 4 |
+| Migrations | Plain SQL migrations + pgTAP tests (T1) | Real SQL, rules tested in the database | Stage 4 |
+| Database access from the server | postgres.js direct connection, one transaction per action (B1) | Keeps transactions, audit actor and permission rules exactly as designed | Stage 5 |
+| Input validation | zod | Checks every input shape on the server before the database | Stage 5 |
 | Styling | To choose | Must reproduce `design/` faithfully | Stage 6 |
-| Test tools | To choose | Unit / integration / end-to-end | Stage 5–7 |
+| Test tools | pgTAP (database), Vitest (backend); end-to-end tool chosen in Stage 7 | | Stage 4–7 |
 | App hosting | To choose (Vercel Hobby excluded: non-commercial only) | Verify official terms and prices then | Stage 8 |
 | Production plan | Paid Supabase plan expected (backups, no pausing) | Owner accepts a small fee at launch | Stage 8 |
 

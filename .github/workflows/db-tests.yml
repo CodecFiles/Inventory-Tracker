@@ -1,6 +1,6 @@
-# Runs every database test on each push and pull request.
-# Builds a throwaway PostgreSQL database from supabase/migrations and runs supabase/tests plus the
-# concurrency test. No secrets needed — it never touches the real Supabase project.
+# Runs every database and backend test on each push and pull request.
+# Builds throwaway PostgreSQL databases from supabase/migrations, runs supabase/tests (pgTAP), the
+# concurrency test and the backend tests (Vitest). No secrets needed — it never touches Supabase.
 name: Database tests
 
 on:
@@ -10,6 +10,8 @@ on:
 jobs:
   db-tests:
     runs-on: ubuntu-24.04
+    env:
+      PGHOST: /var/run/postgresql
     steps:
       - uses: actions/checkout@v5
 
@@ -21,6 +23,14 @@ jobs:
           sudo -u postgres createuser --superuser "$USER"
 
       - name: Run database tests
-        env:
-          PGHOST: /var/run/postgresql
         run: scripts/db-test.sh
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Run backend tests
+        run: |
+          npm ci
+          npm test

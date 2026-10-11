@@ -448,6 +448,7 @@ application code forgets. No updates or deletes allowed, for anyone.
 | 0003 | `20261011000003_stock.sql` | stock_movements (insert-only ledger), stock_levels (balance ≥ 0), movement routes, unit status updates | 20 passing + concurrency test |
 | 0004 | `20261011000004_deployments_shipments_sims.sql` | automatic codes (batches, DEP, SHP), deployments + items, shipments + items, SIM assignments, `complete_deployment`, `ship_shipment` | 21 passing |
 | 0005 | `20261011000005_permissions_audit.sql` | permissions catalogue, role/user permissions, `has_permission`, user-change rules, audit log via triggers | 16 passing |
+| 0006 | `20261011000006_auth_link.sql` | every Supabase Auth sign-up becomes a pending MRD user; one-time `bootstrap_first_super_admin` | 7 passing |
 
 Implementation notes (0001):
 - A unit's product must match its batch line — enforced with a **composite foreign key**

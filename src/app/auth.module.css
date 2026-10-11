@@ -1,0 +1,60 @@
+/* Temporary, plain styling for the login pages. Stage 6 replaces it with the approved design. */
+.page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+.card {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.card label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+}
+.card input,
+.card select {
+  padding: 10px;
+  font: inherit;
+  border: 1px solid #c8ccd2;
+  border-radius: 6px;
+}
+.card button {
+  padding: 10px;
+  font: inherit;
+  border: 0;
+  border-radius: 6px;
+  background: #0b7a6b;
+  color: #fff;
+  cursor: pointer;
+}
+.error {
+  color: #b42318;
+  font-size: 14px;
+}
+.message {
+  color: #0b7a6b;
+  font-size: 14px;
+}
+.table {
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 900px;
+}
+.table td,
+.table th {
+  border-bottom: 1px solid #e3e5e8;
+  padding: 8px;
+  text-align: left;
+}
+.inline {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
