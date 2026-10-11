@@ -1,0 +1,26 @@
+# Runs every database test on each push and pull request.
+# Builds a throwaway PostgreSQL database from supabase/migrations and runs supabase/tests plus the
+# concurrency test. No secrets needed — it never touches the real Supabase project.
+name: Database tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  db-tests:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PostgreSQL 16 and pgTAP
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q postgresql-16 postgresql-16-pgtap libtap-parser-sourcehandler-pgtap-perl
+          sudo systemctl start postgresql
+          sudo -u postgres createuser --superuser "$USER"
+
+      - name: Run database tests
+        env:
+          PGHOST: /var/run/postgresql
+        run: scripts/db-test.sh
