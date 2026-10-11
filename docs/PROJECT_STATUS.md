@@ -44,8 +44,7 @@ and the Stage 4 gate.
 
 | # | Question | Status |
 |---|----------|--------|
-| S1 | Supabase GitHub integration: production branch = `main`? directory = `.`? "Deploy to production" on? Available on the free plan? | Owner to check |
-| S2 | Open a PR to merge the branch into `main` (needed for the integration to deploy) | Awaiting owner approval |
+| S2 | Merge PR #2 into `main` once "Database tests" is green → Supabase deploys migrations; owner checks Table Editor | Awaiting owner |
 
 ## Stage 3 completion gate
 
@@ -93,6 +92,7 @@ and the Stage 4 gate.
 | A7 | ICCID is 18–22 digits | 2026-10-11 |
 | A2 | SIM change → router reconfigured, likely new IP; handled by a new SIM assignment row (design unchanged) | 2026-10-11 |
 | S0 | Supabase staging project created; GitHub repo linked to it (owner) | 2026-10-11 |
+| S1 | Supabase GitHub integration enabled: repo linked, directory `.`, deploy to production from `main` (free plan; preview branches need Pro, not needed) | 2026-10-11 |
 | D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
 Stage 2 revision needed (rule 4): the Users/Settings screens show Admin/Operations/Technician/Viewer
@@ -138,3 +138,4 @@ architecture, stack, component and security diagrams, request flow (`docs/ARCHIT
 - 2026-10-11 — Migrations 0002 (places) and 0003 (stock) with 32 tests + concurrency test; bug found and fixed.
 - 2026-10-11 — Migrations 0004 (deployments, shipments, SIMs) and 0005 (permissions, audit); 87 tests passing.
 - 2026-10-11 — Supabase staging project created and linked to GitHub (owner); CI workflow added, first run green.
+- 2026-10-11 — Supabase integration enabled; PR #2 opened (branch → main).
