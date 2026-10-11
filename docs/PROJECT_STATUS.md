@@ -2,10 +2,10 @@
 
 _Last updated: 2026-10-11_
 
-**Current stage:** 4 — Database (step 4.11: implementation — migrations 0001–0003 done, 0004 next)
+**Current stage:** 4 — Database (step 4.12: all migrations written; next = real Supabase staging project)
 
-**Next action:** owner answers the 0003 reading exercise; then migration 0004 (deployments,
-shipments, SIM assignments) and 0005 (permissions, audit triggers).
+**Next action:** owner creates a free Supabase account + staging project (guided); assistant applies
+migrations there and runs the tests against it; lesson on indexes and backups; then Stage 4 gate.
 
 ## Stage checklist
 
@@ -14,7 +14,7 @@ shipments, SIM assignments) and 0005 (permissions, audit triggers).
 | 1 Requirements | Complete (planning level) | Original project brief; open questions below |
 | 2 UI/UX Design | Complete (design level) | `design/` — 26 screens, live canvas |
 | 3 Architecture | Complete | `docs/ARCHITECTURE.md` (approved); gate below |
-| 4 Database | In progress | Schema approved; migrations 0001–0003; 50 tests + concurrency test passing |
+| 4 Database | In progress | Schema approved; migrations 0001–0005; 87 tests + concurrency test passing locally |
 | 5 Backend | Not started | — |
 | 6 Frontend | Not started | — |
 | 7 Testing | Not started | — |
@@ -108,6 +108,7 @@ architecture, stack, component and security diagrams, request flow (`docs/ARCHIT
 |------|-------|--------|-------|
 | 2026-10-11 | `supabase/tests/0001_*` (18 tests), local PostgreSQL 16 | **18/18 pass** | Mutation check: removing the serial-number unique rule made test 4 fail as expected — the tests detect a missing rule |
 | 2026-10-11 | `0002_*` (12) + `0003_*` (20) | **First run: fail** → fixed → **50/50 pass** | Tests found a real bug (stock subtraction via upsert rejected valid deployments); fixed in 0003 before commit |
+| 2026-10-11 | `0004_*` (21) + `0005_*` (16) | **87/87 pass** (all suites) | Mutation checks: removing the double-deployment index failed tests 11 and 18; removing the last-Super-Admin rule failed test 14 |
 | 2026-10-11 | `scripts/db-concurrency-test.sh` | **PASS** (3 runs) | Two simultaneous 6-cable deployments: 1 succeeds, 1 rejected, office 4. Mutation (no ≥ 0 rule): office −2, site 12 → FAIL as expected |
 
 ## Change log
@@ -130,3 +131,4 @@ architecture, stack, component and security diagrams, request flow (`docs/ARCHIT
 - 2026-10-11 — P1, P2 confirmed; logical design complete (v0.8).
 - 2026-10-11 — Design approved (M2); tooling chosen (T1); migration 0001 + 18 pgTAP tests passing.
 - 2026-10-11 — Migrations 0002 (places) and 0003 (stock) with 32 tests + concurrency test; bug found and fixed.
+- 2026-10-11 — Migrations 0004 (deployments, shipments, SIMs) and 0005 (permissions, audit); 87 tests passing.

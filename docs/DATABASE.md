@@ -446,6 +446,8 @@ application code forgets. No updates or deletes allowed, for anyone.
 | 0001 | `20261011000001_catalogue_and_receiving.sql` | enums, countries, users, categories, suppliers, products, batches, batch_lines, units, sim_details; RLS on all tables | 18 passing |
 | 0002 | `20261011000002_places.sql` | clients, partners, repair companies, facilities (+ stage history, contacts), locations (auto-created per place), `units.location_id` | 12 passing |
 | 0003 | `20261011000003_stock.sql` | stock_movements (insert-only ledger), stock_levels (balance ≥ 0), movement routes, unit status updates | 20 passing + concurrency test |
+| 0004 | `20261011000004_deployments_shipments_sims.sql` | automatic codes (batches, DEP, SHP), deployments + items, shipments + items, SIM assignments, `complete_deployment`, `ship_shipment` | 21 passing |
+| 0005 | `20261011000005_permissions_audit.sql` | permissions catalogue, role/user permissions, `has_permission`, user-change rules, audit log via triggers | 16 passing |
 
 Implementation notes (0001):
 - A unit's product must match its batch line — enforced with a **composite foreign key**
@@ -465,4 +467,13 @@ Implementation notes (0002–0003):
   one succeeds, one is rejected, office = 4. With the `quantity >= 0` rule removed, the same test
   gives office = −2 and site = 12 — proof the rule is what protects the stock.
 - Left for the backend (Stage 5): facility stage order + admin override; `correction` movements
-  restricted to Super Admin; deployments/shipments documents (migration 0004).
+  restricted to Super Admin.
+
+Implementation notes (0004–0005):
+- Completing a deployment or shipment is one function call = one transaction: every item moves,
+  or none does (tested with a deployment that had too many cables — its router stayed in the office).
+- A router's current SIM moves with it on deployment/shipment.
+- The server must run `select set_config('app.user_id', '<uuid>', true)` at the start of each
+  transaction; audit records and user-change rules depend on it.
+- Stage 5 to-do: returning a router should also return its SIM (currently the SIM's movement must
+  be recorded separately); permission checks for `correction` movements.
