@@ -1,4 +1,4 @@
-# Database design — v0.7 (conceptual model approved 2026-10-11; logical design in progress)
+# Database design — v0.8 (conceptual model approved 2026-10-11; logical design in progress)
 
 _Stage 4. Conceptual model only — no SQL yet. Built from the owner's answers on 2026-10-11._
 
@@ -10,6 +10,7 @@ logical design part 1 (products, suppliers, batches, units).
 v0.5: batch codes auto-generated from supplier prefix (Q1); logical design part 2 (locations, movements, stock levels).
 v0.6: repairs by supplier or outside repair companies (Q3); logical design part 3 (clients, facilities, partners, deployments, shipments).
 v0.7: A4–A6 confirmed (MRD based in Oman); logical design part 4 (users, roles, permissions, audit).
+v0.8: P1, P2 confirmed — logical design complete, awaiting final approval.
 
 ## Business facts this model is built on
 
@@ -417,9 +418,7 @@ allowed for users whose role is `admin`.
 Written by **database triggers** on the important tables, so a change is audited even if
 application code forgets. No updates or deletes allowed, for anyone.
 
-## Open questions (part 4)
+## Confirmed (part 4)
 
-- **P1** Can an Admin who has `users.approve` give new people only the Editor/Viewer roles
-  (assumption: yes — only a Super Admin can create Admins)?
-- **P2** Are the Editor permissions above right — may every Editor receive stock, prepare devices,
-  create **and complete** deployments, and change facility stages?
+- **P1** An Admin with `users.approve` can assign only Editor or Viewer; only a Super Admin creates Admins.
+- **P2** Editors may do all operational work, including completing deployments and changing facility stages.

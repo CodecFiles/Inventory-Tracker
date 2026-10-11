@@ -2,10 +2,10 @@
 
 _Last updated: 2026-10-11_
 
-**Current stage:** 4 — Database (step 4.8: logical design part 4 — users, roles, permissions, audit)
+**Current stage:** 4 — Database (step 4.9: final schema approval + migration-tool choice)
 
-**Next action:** owner answers P1 and P2 (`docs/DATABASE.md` §L5); then whole schema approval and
-the migration-tool choice (start of implementation).
+**Next action:** owner gives final approval of the logical design (M2) and chooses migration tooling
+(T1); then implementation starts with the first migration and integrity tests.
 
 ## Stage checklist
 
@@ -43,8 +43,8 @@ the migration-tool choice (start of implementation).
 | # | Question | Status |
 |---|----------|--------|
 | A2 | Confirm with the router configurer that a SIM change means a new IP | Owner to check (non-blocking) |
-| P1 | Admins with `users.approve` can assign only Editor/Viewer; only Super Admin creates Admins? | Awaiting owner |
-| P2 | Editors may receive, prepare, create **and complete** deployments, change facility stages? | Awaiting owner |
+| M2 | Final approval of logical design v0.8 (`docs/DATABASE.md` L0–L5) | Awaiting owner |
+| T1 | Migration tooling: plain SQL migrations (Supabase CLI) + SQL tests (recommended) vs ORM | Awaiting owner |
 
 ## Stage 3 completion gate
 
@@ -85,6 +85,8 @@ the migration-tool choice (start of implementation).
 | A4 | One client can have many facilities | 2026-10-11 |
 | A5 | Final facility stage `closed` when a POC is not converted | 2026-10-11 |
 | A6 | MRD is based in Oman; facilities outside Oman are handled via a partner | 2026-10-11 |
+| P1 | Admin with users.approve assigns only Editor/Viewer; only Super Admin creates Admins | 2026-10-11 |
+| P2 | Editors can do all operational work incl. completing deployments and stage changes | 2026-10-11 |
 | D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
 Stage 2 revision needed (rule 4): the Users/Settings screens show Admin/Operations/Technician/Viewer
@@ -119,3 +121,4 @@ _None yet._
 - 2026-10-11 — Q1 answered; serial exercise answered correctly; logical design part 2 written (v0.5).
 - 2026-10-11 — Q3 answered; concurrency exercise answered correctly; logical design part 3 written (v0.6).
 - 2026-10-11 — A4–A6 confirmed; logical design part 4 written (v0.7).
+- 2026-10-11 — P1, P2 confirmed; logical design complete (v0.8).
