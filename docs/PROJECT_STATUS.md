@@ -2,11 +2,10 @@
 
 _Last updated: 2026-10-11_
 
-**Current stage:** 5 — Backend (step 5.3 built: email login + approval; Google sign-in and a staging site next)
+**Current stage:** 5 — Backend (step 5.3: staging site on Vercel being set up)
 
-**Next action:** owner decides H0 (an early staging website so they can actually sign in and test);
-then Google sign-in setup (guided) and the first Super Admin bootstrap; then remaining backend
-actions (preparation, deployments, shipments, facilities).
+**Next action:** owner says "open PR" → PR #3 merges the app into `main` → Vercel builds staging;
+owner sets Supabase Site URL/redirects, signs up, runs `bootstrap_first_super_admin`.
 
 ## Stage checklist
 
@@ -43,7 +42,8 @@ actions (preparation, deployments, shipments, facilities).
 
 | # | Question | Status |
 |---|----------|--------|
-| H0 | Deploy an early **staging** website (Architecture §6) so the owner can sign up, confirm email and test approval — needs a hosting choice (Stage 8 option check brought forward for staging only) | Awaiting owner |
+| H1 | Production hosting: Vercel Hobby terms may treat internal company use as commercial (secondary sources) — decide at Stage 8 (Vercel Pro, or a host whose free plan allows business use) | Revisit at Stage 8 |
+| M3 | Custom SMTP email sender before colleagues sign up (built-in sender is limited; templates locked without it) | Before inviting colleagues |
 | E1 | `NEXT_PUBLIC_SUPABASE_URL` in the cloud environment lacks `https://` (code tolerates it) | Owner may fix (non-blocking) |
 
 ## Stage 3 completion gate
@@ -108,6 +108,7 @@ actions (preparation, deployments, shipments, facilities).
 | S3 | Supabase staging deploy succeeded — owner sees the tables in Table Editor (free plan "Deploy to production" works) | 2026-10-11 |
 | S4 | Branch rule narrowed to `main` (PR required); working branch pushes normally | 2026-10-11 |
 | B1 | Server talks to PostgreSQL directly (postgres.js, one transaction per action, `app.user_id` set per transaction); Supabase used for Auth/Storage | 2026-10-11 |
+| H0 | Staging site on Vercel (owner's choice; owner considers it personal/non-commercial — assistant flagged the terms risk, see H1) | 2026-10-11 |
 | D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
 Stage 2 revision needed (rule 4): the Users/Settings screens show Admin/Operations/Technician/Viewer
@@ -170,3 +171,4 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 - 2026-10-11 — Stage 4 closed; Stage 5 (Backend) started.
 - 2026-10-11 — B1 = A; data-access layer (`withActor`, `requirePermission`) and `receiveDelivery` with 8 backend tests; backend tests added to CI.
 - 2026-10-11 — 5.3: migration 0006 (auth link, bootstrap), Supabase login/sign-up/confirm/pending pages, approval actions + admin page, proxy; tests and live smoke test pass.
+- 2026-10-11 — H0: Vercel for staging; email template edit not possible without SMTP — confirm route made friendly for the default link.

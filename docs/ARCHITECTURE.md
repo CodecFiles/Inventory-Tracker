@@ -109,6 +109,11 @@ redesigning.
   (`src/server/session.ts`) — the proxy is a convenience, not the security.
 - First Super Admin: after signing up, run once in the Supabase SQL editor
   `select bootstrap_first_super_admin('owner@email');` — it refuses to run again once a Super Admin exists.
+- Confirmation emails use Supabase's default template (custom templates require custom SMTP). The
+  link confirms the address at Supabase, then returns to `/auth/confirm`; on another device the user
+  is asked to sign in.
+- Supabase's built-in email sender is for testing only (limited recipients and rate); a custom SMTP
+  sender is required before colleagues sign up (Stage 8 checklist, earlier if needed).
 - Google sign-in: same flow, added when Google credentials are configured.
 
 ## 6. Environments
