@@ -2,7 +2,7 @@
 
 _Last updated: 2026-10-11_
 
-**Current stage:** 4 — Database (step 4.4: owner reviews model v0.2 and unit lifecycle)
+**Current stage:** 4 — Database (step 4.4: owner reviews model v0.3 and unit lifecycle)
 
 **Next action:** owner checks the unit lifecycle in `docs/DATABASE.md` and approves the conceptual
 model (or lists changes); then the assistant moves to columns, data types and constraints.
@@ -43,7 +43,8 @@ model (or lists changes); then the assistant moves to columns, data types and co
 | # | Question | Status |
 |---|----------|--------|
 | A2 | Confirm with the router configurer that a SIM change means a new IP | Owner to check (non-blocking) |
-| M1 | Approve conceptual model v0.2 and unit lifecycle | Awaiting owner |
+| M1 | Approve conceptual model v0.3 — owner said lifecycle is "almost fully correct"; which part is off? | Awaiting owner |
+| A3 | Can items come back from abroad? | Awaiting owner |
 
 ## Stage 3 completion gate
 
@@ -74,6 +75,8 @@ model (or lists changes); then the assistant moves to columns, data types and co
 | F1 | Single receiving location: MRD Office, no shelves/bins; goods also shipped abroad (any product) | 2026-10-11 |
 | R4 | Abroad: partner companies (per country, 1+ contacts) take ownership; countries also have facilities with deployments/POCs/contracts | 2026-10-11 |
 | R5 | IP assigned at configuration; stored per SIM-in-router assignment (owner unsure; design works either way) | 2026-10-11 |
+| F8 | Any number of countries | 2026-10-11 |
+| F9 | MRD tracks all abroad deployments (items, quantities, facility) | 2026-10-11 |
 | D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
 Stage 2 revision needed (rule 4): the Users/Settings screens show Admin/Operations/Technician/Viewer
@@ -103,3 +106,4 @@ _None yet._
   Roles/Permissions, Facility stage history.
 - 2026-10-11 — R1–R3 answered; draft ER model v0.1 written (`docs/DATABASE.md`).
 - 2026-10-11 — R4, R5 answered; model v0.2 (partners, contacts, shipments, IP per assignment).
+- 2026-10-11 — Model v0.3: countries table, partner stock + abroad deployments, configurable-only step.
