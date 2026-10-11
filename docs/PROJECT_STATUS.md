@@ -5,7 +5,7 @@ _Last updated: 2026-10-11_
 **Current stage:** 4 — Database (step 4.7: logical design part 3 — clients, facilities, deployments, shipments)
 
 **Next action:** owner confirms A4 (one client → many facilities) and A5 (`closed` stage for POC not
-converted); then part 4 (users, roles, permissions, audit) and the migration-tool choice.
+converted) and A6 (facilities outside Oman always via a partner); then part 4 (users, roles, permissions, audit) and the migration-tool choice.
 
 ## Stage checklist
 
@@ -45,6 +45,7 @@ converted); then part 4 (users, roles, permissions, audit) and the migration-too
 | A2 | Confirm with the router configurer that a SIM change means a new IP | Owner to check (non-blocking) |
 | A4 | One client organisation can have many facilities (e.g. Bank Muscat head office + branches)? | Awaiting owner |
 | A5 | Add a final stage `closed` for facilities whose POC is not converted? | Awaiting owner |
+| A6 | MRD's home country is Oman; every facility outside Oman is handled through a partner? | Awaiting owner |
 
 ## Stage 3 completion gate
 
