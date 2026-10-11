@@ -2,11 +2,9 @@
 
 _Last updated: 2026-10-11_
 
-**Current stage:** 4 — Database (step 4.14: confirm Supabase deploy)
+**Current stage:** 4 — Database (step 4.15: indexes & backups lesson, then Stage 4 gate)
 
-**Next action:** owner confirms in Supabase Table Editor that the tables exist (deploy cannot be
-verified from the assistant's environment — Supabase is blocked by its network policy); then lesson
-on indexes and backups, and the Stage 4 completion gate.
+**Next action:** lesson on indexes and backups; Stage 4 completion-gate review and summary.
 
 ## Stage checklist
 
@@ -15,7 +13,7 @@ on indexes and backups, and the Stage 4 completion gate.
 | 1 Requirements | Complete (planning level) | Original project brief; open questions below |
 | 2 UI/UX Design | Complete (design level) | `design/` — 26 screens, live canvas |
 | 3 Architecture | Complete | `docs/ARCHITECTURE.md` (approved); gate below |
-| 4 Database | In progress | Schema approved; migrations 0001–0005; 87 tests + concurrency test passing locally |
+| 4 Database | In progress | Schema approved; migrations 0001–0005 deployed to Supabase staging; 87 tests + race test green in CI |
 | 5 Backend | Not started | — |
 | 6 Frontend | Not started | — |
 | 7 Testing | Not started | — |
@@ -43,7 +41,7 @@ on indexes and backups, and the Stage 4 completion gate.
 
 | # | Question | Status |
 |---|----------|--------|
-| S3 | Supabase staging deploy succeeded? (Table Editor shows tables) | Awaiting owner |
+_None blocking._
 
 ## Stage 3 completion gate
 
@@ -93,6 +91,8 @@ on indexes and backups, and the Stage 4 completion gate.
 | S0 | Supabase staging project created; GitHub repo linked to it (owner) | 2026-10-11 |
 | S1 | Supabase GitHub integration enabled: repo linked, directory `.`, deploy to production from `main` (free plan; preview branches need Pro, not needed) | 2026-10-11 |
 | S2 | PR #2 merged into `main` (merge commit 8c87d17); CI green on `main` | 2026-10-11 |
+| S3 | Supabase staging deploy succeeded — owner sees the tables in Table Editor (free plan "Deploy to production" works) | 2026-10-11 |
+| S4 | Branch rule narrowed to `main` (PR required); working branch pushes normally | 2026-10-11 |
 | D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
 Stage 2 revision needed (rule 4): the Users/Settings screens show Admin/Operations/Technician/Viewer
@@ -140,4 +140,4 @@ architecture, stack, component and security diagrams, request flow (`docs/ARCHIT
 - 2026-10-11 — Migrations 0004 (deployments, shipments, SIMs) and 0005 (permissions, audit); 87 tests passing.
 - 2026-10-11 — Supabase staging project created and linked to GitHub (owner); CI workflow added, first run green.
 - 2026-10-11 — Supabase integration enabled; PR #2 opened (branch → main).
-- 2026-10-11 — PR #2 merged; CI green on main; awaiting Supabase deploy confirmation.
+- 2026-10-11 — PR #2 merged; CI green on main; Supabase deploy confirmed by owner (tables visible).
