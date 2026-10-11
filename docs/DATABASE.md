@@ -1,4 +1,4 @@
-# Database design — v0.4 (conceptual model approved 2026-10-11; logical design in progress)
+# Database design — v0.5 (conceptual model approved 2026-10-11; logical design in progress)
 
 _Stage 4. Conceptual model only — no SQL yet. Built from the owner's answers on 2026-10-11._
 
@@ -7,6 +7,7 @@ v0.3: any number of countries (`countries` table); abroad deployments tracked vi
 non-configurable products skip "Configured".
 v0.4: conceptual model approved; no return path from abroad (F10); SIMs become units (see §L1);
 logical design part 1 (products, suppliers, batches, units).
+v0.5: batch codes auto-generated from supplier prefix (Q1); logical design part 2 (locations, movements, stock levels).
 
 ## Business facts this model is built on
 
@@ -156,6 +157,7 @@ one-to-one. `sim_assignments` now links a SIM unit to a router unit.
 |--------|------|-------|
 | id | bigint | primary key |
 | name | text | required, unique |
+| code_prefix | text | required, unique, 2–5 capital letters (e.g. `TEL`) — used for batch codes |
 | country_id | bigint | → `countries` |
 | email, phone | text | optional |
 | is_active, created_at, updated_at | | conventions |
@@ -164,7 +166,7 @@ one-to-one. `sim_assignments` now links a SIM unit to a router unit.
 | Column | Type | Rules |
 |--------|------|-------|
 | id | bigint | primary key |
-| code | text | required, unique (e.g. `TEL-2026-004`) |
+| code | text | required, unique (e.g. `TEL-2026-004`). **Generated automatically** as supplier prefix – year – next number for that prefix and year. Switching to manual entry later only changes the form; the unique rule stays |
 | supplier_id | bigint | required → `suppliers` |
 | purchase_order | text | optional |
 | invoice_number | text | optional |
@@ -204,5 +206,69 @@ exceed its `quantity_received`.
 | phone_number | text | optional, unique when present |
 | carrier | text | optional |
 
-Next parts: locations & movements (L3), facilities, partners & deployments (L4), users, roles &
+## L3. Part 2 — locations, movements, stock levels
+
+The bank-account model: a bank keeps **every transaction** (never edited) and a **balance**.
+We do the same — `stock_movements` is the transaction list, `stock_levels` is the balance.
+
+### `locations`
+| Column | Type | Rules |
+|--------|------|-------|
+| id | bigint | primary key |
+| type | enum | `office` · `facility` · `partner_stock` · `repair` · `supplier` — required |
+| name | text | required (e.g. "MRD Office", "Lulu Hypermarket") |
+| facility_id | bigint | → `facilities`; **required when type = facility**, otherwise empty |
+| partner_id | bigint | → `partners`; **required when type = partner_stock**, otherwise empty |
+| supplier_id | bigint | → `suppliers`; **required when type = supplier**, otherwise empty |
+
+One location per facility, per partner and per supplier (unique). Exactly one `office` row.
+
+### `stock_movements` — every move ever made (insert-only)
+| Column | Type | Rules |
+|--------|------|-------|
+| id | bigint | primary key |
+| movement_type | enum | `receive` · `serialise` · `deploy` · `ship` · `deploy_abroad` · `return` · `send_repair` · `back_from_repair` · `return_to_supplier` · `write_off` · `correction` |
+| product_id | bigint | required → `products` |
+| unit_id | bigint | → `units`; set for serialised items, empty for quantity items |
+| quantity | integer | required, **> 0**; **must be 1 when unit_id is set** |
+| from_location_id | bigint | → `locations`; empty only for `receive` |
+| to_location_id | bigint | → `locations`; empty only for `write_off`; **must differ from from_location** |
+| batch_id / deployment_id / shipment_id | bigint | the document that caused the move (whichever applies) |
+| performed_by | uuid | required → `users` |
+| moved_at | timestamptz | required, default now |
+| note | text | optional |
+
+- **No updates, no deletes** — enforced by database permissions, not just app code. A mistake is
+  fixed by a new `correction` movement, like a reversing entry in accounting.
+- `deploy_abroad` may only start from a `partner_stock` location (F9); nothing may move *out of*
+  an abroad facility or partner stock except by a Super Admin `correction` (F10).
+
+### `stock_levels` — current balance for counted (quantity / un-serialised hybrid) items
+| Column | Type | Rules |
+|--------|------|-------|
+| location_id | bigint | → `locations` |
+| product_id | bigint | → `products` |
+| quantity | integer | required, **CHECK quantity ≥ 0 — this is the "no negative stock" guarantee** |
+| | | **Primary key = (location_id, product_id)** — one balance row per product per place |
+
+Serialised units don't need a balance row: each unit's `location_id` *is* its position, and
+counts are calculated from `units`.
+
+### How one operation stays consistent (transaction)
+
+Deploying 6 cables from the office to Lulu runs as **one transaction**:
+
+```
+BEGIN
+  1. office balance  : 10 → 4     (row is locked while we change it)
+  2. Lulu balance    :  0 → 6
+  3. insert stock_movement (deploy, 6, office → Lulu)
+  4. insert audit record
+COMMIT   ← all four happen, or none do
+```
+
+If step 1 would make the office balance negative, the CHECK rule fails, the database undoes
+steps 1–4, and the user sees "Only 4 in stock".
+
+Next parts: facilities, partners & deployments (L4), users, roles &
 audit (L5).

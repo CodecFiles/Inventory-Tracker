@@ -2,10 +2,10 @@
 
 _Last updated: 2026-10-11_
 
-**Current stage:** 4 — Database (step 4.5: logical design part 1 — products, suppliers, batches, units)
+**Current stage:** 4 — Database (step 4.6: logical design part 2 — locations, movements, stock levels)
 
-**Next action:** owner reviews `docs/DATABASE.md` §L0–L2 and answers Q1 (batch code format) and Q2
-(serial-number exercise); then part 2 (locations & movements).
+**Next action:** owner reviews `docs/DATABASE.md` §L3, answers Q3 (who does repairs) and the
+concurrency exercise; then part 3 (facilities, partners, deployments, shipments).
 
 ## Stage checklist
 
@@ -43,7 +43,7 @@ _Last updated: 2026-10-11_
 | # | Question | Status |
 |---|----------|--------|
 | A2 | Confirm with the router configurer that a SIM change means a new IP | Owner to check (non-blocking) |
-| Q1 | Batch codes like `TEL-2026-004`: generated automatically (prefix-year-number) or typed by staff? | Awaiting owner |
+| Q3 | Repairs/servicing: done by MRD staff, the supplier, or outside service companies? | Awaiting owner |
 
 ## Stage 3 completion gate
 
@@ -79,6 +79,7 @@ _Last updated: 2026-10-11_
 | M1 | Conceptual model v0.3 and unit lifecycle approved ("fully correct") | 2026-10-11 |
 | F10 | Items never come back from abroad (Super Admin correction only) | 2026-10-11 |
 | L1 | SIMs modelled as units + `sim_details` (assistant design change, explained in DATABASE.md §L1) | 2026-10-11 |
+| Q1 | Batch codes auto-generated (supplier prefix-year-number); manual entry may be allowed later | 2026-10-11 |
 | D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
 Stage 2 revision needed (rule 4): the Users/Settings screens show Admin/Operations/Technician/Viewer
@@ -110,3 +111,4 @@ _None yet._
 - 2026-10-11 — R4, R5 answered; model v0.2 (partners, contacts, shipments, IP per assignment).
 - 2026-10-11 — Model v0.3: countries table, partner stock + abroad deployments, configurable-only step.
 - 2026-10-11 — Conceptual model approved; logical design part 1 written (v0.4).
+- 2026-10-11 — Q1 answered; serial exercise answered correctly; logical design part 2 written (v0.5).
