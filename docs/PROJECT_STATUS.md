@@ -2,10 +2,10 @@
 
 _Last updated: 2026-10-10_
 
-**Current stage:** 4 — Database (step 4.1: concepts — tables, rows, primary keys)
+**Current stage:** 4 — Database (step 4.2: relationships and business-rule questions)
 
-**Next action:** owner does the Stage 4.1 exercise (identify tables and primary keys for the core
-inventory records); assistant reviews it, then introduces foreign keys/relationships.
+**Next action:** owner answers relationship questions R1–R3 (SIMs per router, items per deployment,
+returns/redeployment); assistant then drafts the first entity-relationship diagram.
 
 ## Stage checklist
 
@@ -40,7 +40,11 @@ inventory records); assistant reviews it, then introduces foreign keys/relations
 
 ## Open decisions
 
-_None yet for Stage 4._
+| # | Question | Status |
+|---|----------|--------|
+| R1 | How many SIMs can one router hold at a time in MRD practice? | Awaiting owner |
+| R2 | Can one deployment include several items (routers, sensors, cables) for one facility? | Awaiting owner |
+| R3 | Can equipment come back from a facility (e.g. POC ends, faulty) and be redeployed elsewhere? | Awaiting owner |
 
 ## Stage 3 completion gate
 
@@ -89,3 +93,6 @@ _None yet._
 - 2026-10-10 — D8, D9 decided; database choice (D7) under discussion.
 - 2026-10-10 — D7 decided (PostgreSQL via Supabase); architecture approved and completed (stack, request flow, security boundaries).
 - 2026-10-10 — Stage 3 closed; Stage 4 started.
+- 2026-10-11 — 4.1 exercise: owner listed Products, Batches, Routers, SIMs, Facilities, Deployments,
+  Users (all correct). Added: Units (generalises Routers), Locations, Stock movements, Audit log,
+  Roles/Permissions, Facility stage history.
