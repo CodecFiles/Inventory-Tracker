@@ -1,4 +1,4 @@
-# Database design — v0.8 (conceptual model approved 2026-10-11; logical design in progress)
+# Database design — v1.0 (approved 2026-10-11) (conceptual model approved 2026-10-11; logical design in progress)
 
 _Stage 4. Conceptual model only — no SQL yet. Built from the owner's answers on 2026-10-11._
 
@@ -10,7 +10,8 @@ logical design part 1 (products, suppliers, batches, units).
 v0.5: batch codes auto-generated from supplier prefix (Q1); logical design part 2 (locations, movements, stock levels).
 v0.6: repairs by supplier or outside repair companies (Q3); logical design part 3 (clients, facilities, partners, deployments, shipments).
 v0.7: A4–A6 confirmed (MRD based in Oman); logical design part 4 (users, roles, permissions, audit).
-v0.8: P1, P2 confirmed — logical design complete, awaiting final approval.
+v0.8: P1, P2 confirmed — logical design complete.
+v1.0: owner approved the full logical design; implementation started (plain SQL migrations, T1).
 
 ## Business facts this model is built on
 
@@ -422,3 +423,32 @@ application code forgets. No updates or deletes allowed, for anyone.
 
 - **P1** An Admin with `users.approve` can assign only Editor or Viewer; only a Super Admin creates Admins.
 - **P2** Editors may do all operational work, including completing deployments and changing facility stages.
+
+---
+
+# Implementation
+
+## Tooling (T1, agreed 2026-10-11)
+
+- **Migrations:** plain SQL files in `supabase/migrations/`, named `<timestamp>_<what>.sql`, applied
+  in order. Never edit a migration that has run on staging/production — add a new one.
+- **Tests:** pgTAP SQL tests in `supabase/tests/`. Each test proves a rule is enforced
+  (`throws_ok`) or that valid data is accepted (`lives_ok`).
+- **Run locally:** `scripts/db-test.sh` builds a throwaway database from all migrations and runs
+  every test. Needs PostgreSQL + pgTAP (`PGHOST`, `PGPORT`, `PGUSER` env vars).
+- Supabase runs PostgreSQL 17; local tests currently use PostgreSQL 16. Nothing used so far differs
+  between them; re-run the tests on Supabase staging when it exists (Stage 8 checklist).
+
+## Migration log
+
+| # | File | Contents | Tests |
+|---|------|----------|-------|
+| 0001 | `20261011000001_catalogue_and_receiving.sql` | enums, countries, users, categories, suppliers, products, batches, batch_lines, units, sim_details; RLS on all tables | 18 passing |
+
+Implementation notes (0001):
+- A unit's product must match its batch line — enforced with a **composite foreign key**
+  `(batch_line_id, product_id)`, no extra code needed.
+- "No more units than received" and "no units for quantity products" — enforced by a trigger
+  that locks the batch line, so two people adding units at once are counted correctly.
+- `units.location_id` comes in migration 0002, together with the `locations` table.
+- ICCID format check: 18–22 digits (assumption — confirm against real SIM cards).

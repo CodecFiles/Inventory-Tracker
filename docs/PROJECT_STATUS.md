@@ -2,10 +2,11 @@
 
 _Last updated: 2026-10-11_
 
-**Current stage:** 4 — Database (step 4.9: final schema approval + migration-tool choice)
+**Current stage:** 4 — Database (step 4.10: implementation — migration 0001 done, 0002 next)
 
-**Next action:** owner gives final approval of the logical design (M2) and chooses migration tooling
-(T1); then implementation starts with the first migration and integrity tests.
+**Next action:** owner reads migration 0001 and its tests (walkthrough in chat), then the assistant
+writes migration 0002 (locations, stock movements, stock levels) with the negative-stock and
+concurrency tests.
 
 ## Stage checklist
 
@@ -14,7 +15,7 @@ _Last updated: 2026-10-11_
 | 1 Requirements | Complete (planning level) | Original project brief; open questions below |
 | 2 UI/UX Design | Complete (design level) | `design/` — 26 screens, live canvas |
 | 3 Architecture | Complete | `docs/ARCHITECTURE.md` (approved); gate below |
-| 4 Database | In progress | — |
+| 4 Database | In progress | Schema approved; migration 0001 + 18 tests passing |
 | 5 Backend | Not started | — |
 | 6 Frontend | Not started | — |
 | 7 Testing | Not started | — |
@@ -43,8 +44,7 @@ _Last updated: 2026-10-11_
 | # | Question | Status |
 |---|----------|--------|
 | A2 | Confirm with the router configurer that a SIM change means a new IP | Owner to check (non-blocking) |
-| M2 | Final approval of logical design v0.8 (`docs/DATABASE.md` L0–L5) | Awaiting owner |
-| T1 | Migration tooling: plain SQL migrations (Supabase CLI) + SQL tests (recommended) vs ORM | Awaiting owner |
+| A7 | ICCID format: 18–22 digits — confirm against a real SIM card | Owner to check (non-blocking) |
 
 ## Stage 3 completion gate
 
@@ -87,6 +87,8 @@ _Last updated: 2026-10-11_
 | A6 | MRD is based in Oman; facilities outside Oman are handled via a partner | 2026-10-11 |
 | P1 | Admin with users.approve assigns only Editor/Viewer; only Super Admin creates Admins | 2026-10-11 |
 | P2 | Editors can do all operational work incl. completing deployments and stage changes | 2026-10-11 |
+| M2 | Full logical design approved (`docs/DATABASE.md` v1.0) | 2026-10-11 |
+| T1 | Plain SQL migrations (Supabase CLI layout) + pgTAP tests | 2026-10-11 |
 | D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
 Stage 2 revision needed (rule 4): the Users/Settings screens show Admin/Operations/Technician/Viewer
@@ -102,7 +104,9 @@ architecture, stack, component and security diagrams, request flow (`docs/ARCHIT
 
 ## Test results
 
-_None yet._
+| Date | Suite | Result | Notes |
+|------|-------|--------|-------|
+| 2026-10-11 | `supabase/tests/0001_*` (18 tests), local PostgreSQL 16 | **18/18 pass** | Mutation check: removing the serial-number unique rule made test 4 fail as expected — the tests detect a missing rule |
 
 ## Change log
 
@@ -122,3 +126,4 @@ _None yet._
 - 2026-10-11 — Q3 answered; concurrency exercise answered correctly; logical design part 3 written (v0.6).
 - 2026-10-11 — A4–A6 confirmed; logical design part 4 written (v0.7).
 - 2026-10-11 — P1, P2 confirmed; logical design complete (v0.8).
+- 2026-10-11 — Design approved (M2); tooling chosen (T1); migration 0001 + 18 pgTAP tests passing.
