@@ -2,10 +2,10 @@
 
 _Last updated: 2026-10-10_
 
-**Current stage:** 4 — Database (step 4.2: relationships and business-rule questions)
+**Current stage:** 4 — Database (step 4.3: review draft ER model `docs/DATABASE.md`)
 
-**Next action:** owner answers relationship questions R1–R3 (SIMs per router, items per deployment,
-returns/redeployment); assistant then drafts the first entity-relationship diagram.
+**Next action:** owner answers R4 (shipments abroad) and R5 (IP belongs to SIM or router) and
+reviews the draft model in `docs/DATABASE.md`.
 
 ## Stage checklist
 
@@ -42,9 +42,8 @@ returns/redeployment); assistant then drafts the first entity-relationship diagr
 
 | # | Question | Status |
 |---|----------|--------|
-| R1 | How many SIMs can one router hold at a time in MRD practice? | Awaiting owner |
-| R2 | Can one deployment include several items (routers, sensors, cables) for one facility? | Awaiting owner |
-| R3 | Can equipment come back from a facility (e.g. POC ends, faulty) and be redeployed elsewhere? | Awaiting owner |
+| R4 | Shipments abroad: managed facility or partner taking ownership? Do items come back? | Awaiting owner |
+| R5 | Does the IP address belong to the SIM or to the router configuration? | Awaiting owner |
 
 ## Stage 3 completion gate
 
@@ -69,6 +68,10 @@ returns/redeployment); assistant then drafts the first entity-relationship diagr
 | D6 | No Teltonika RMS integration; routers tracked as inventory | 2026-10-10 |
 | D8 | Roles v1: Super Admin · Admin (permissions granted by Super Admin) · Editor (read + edit) · Viewer (read only). Supersedes D1c | 2026-10-10 |
 | D7 | Architecture Option A approved: Next.js + Supabase (PostgreSQL, Auth, Storage). MongoDB considered and rejected for integrity reasons | 2026-10-10 |
+| R1 | One TRB router uses one SIM at a time; SIM gets an IP after configuration | 2026-10-11 |
+| R2 | One deployment can contain many products | 2026-10-11 |
+| R3 | Items can return (POC not converted, fault) → office, repair/servicing/reconfiguration, or supplier (warranty); may be redeployed | 2026-10-11 |
+| F1 | Single receiving location: MRD Office, no shelves/bins; goods also shipped abroad (any product) | 2026-10-11 |
 | D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
 Stage 2 revision needed (rule 4): the Users/Settings screens show Admin/Operations/Technician/Viewer
@@ -96,3 +99,4 @@ _None yet._
 - 2026-10-11 — 4.1 exercise: owner listed Products, Batches, Routers, SIMs, Facilities, Deployments,
   Users (all correct). Added: Units (generalises Routers), Locations, Stock movements, Audit log,
   Roles/Permissions, Facility stage history.
+- 2026-10-11 — R1–R3 answered; draft ER model v0.1 written (`docs/DATABASE.md`).
