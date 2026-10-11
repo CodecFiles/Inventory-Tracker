@@ -2,10 +2,10 @@
 
 _Last updated: 2026-10-11_
 
-**Current stage:** 4 — Database (step 4.6: logical design part 2 — locations, movements, stock levels)
+**Current stage:** 4 — Database (step 4.7: logical design part 3 — clients, facilities, deployments, shipments)
 
-**Next action:** owner reviews `docs/DATABASE.md` §L3, answers Q3 (who does repairs) and the
-concurrency exercise; then part 3 (facilities, partners, deployments, shipments).
+**Next action:** owner confirms A4 (one client → many facilities) and A5 (`closed` stage for POC not
+converted); then part 4 (users, roles, permissions, audit) and the migration-tool choice.
 
 ## Stage checklist
 
@@ -43,7 +43,8 @@ concurrency exercise; then part 3 (facilities, partners, deployments, shipments)
 | # | Question | Status |
 |---|----------|--------|
 | A2 | Confirm with the router configurer that a SIM change means a new IP | Owner to check (non-blocking) |
-| Q3 | Repairs/servicing: done by MRD staff, the supplier, or outside service companies? | Awaiting owner |
+| A4 | One client organisation can have many facilities (e.g. Bank Muscat head office + branches)? | Awaiting owner |
+| A5 | Add a final stage `closed` for facilities whose POC is not converted? | Awaiting owner |
 
 ## Stage 3 completion gate
 
@@ -53,7 +54,7 @@ concurrency exercise; then part 3 (facilities, partners, deployments, shipments)
 | Documented technology stack | Yes (later-stage choices listed with their stage) | `ARCHITECTURE.md` §8 |
 | Clear component diagram | Yes | `ARCHITECTURE.md` §2, §10 |
 | Explanation of component interaction | Yes | `ARCHITECTURE.md` §3, §9 |
-| Owner understands it | Yes, partly verified | Q1 answered correctly (server-side permission check). Q2 (database uniqueness + transactions) and Q3 (secret key exposure) explained by assistant; to be verified hands-on in Stage 4 with a test that rejects a duplicate deployment |
+| Owner understands it | Yes | Q1 answered correctly. Q2 concept confirmed 2026-10-11 via the cables exercise (owner: first save wins, second is rejected). Hands-on test of the rejection still planned in Stage 4. Q3 explained by assistant |
 
 ## Decisions made
 
@@ -80,6 +81,7 @@ concurrency exercise; then part 3 (facilities, partners, deployments, shipments)
 | F10 | Items never come back from abroad (Super Admin correction only) | 2026-10-11 |
 | L1 | SIMs modelled as units + `sim_details` (assistant design change, explained in DATABASE.md §L1) | 2026-10-11 |
 | Q1 | Batch codes auto-generated (supplier prefix-year-number); manual entry may be allowed later | 2026-10-11 |
+| Q3 | Repairs done by the supplier or outside repair companies | 2026-10-11 |
 | D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
 Stage 2 revision needed (rule 4): the Users/Settings screens show Admin/Operations/Technician/Viewer
@@ -112,3 +114,4 @@ _None yet._
 - 2026-10-11 — Model v0.3: countries table, partner stock + abroad deployments, configurable-only step.
 - 2026-10-11 — Conceptual model approved; logical design part 1 written (v0.4).
 - 2026-10-11 — Q1 answered; serial exercise answered correctly; logical design part 2 written (v0.5).
+- 2026-10-11 — Q3 answered; concurrency exercise answered correctly; logical design part 3 written (v0.6).

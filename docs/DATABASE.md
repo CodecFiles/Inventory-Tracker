@@ -1,4 +1,4 @@
-# Database design — v0.5 (conceptual model approved 2026-10-11; logical design in progress)
+# Database design — v0.6 (conceptual model approved 2026-10-11; logical design in progress)
 
 _Stage 4. Conceptual model only — no SQL yet. Built from the owner's answers on 2026-10-11._
 
@@ -8,6 +8,7 @@ non-configurable products skip "Configured".
 v0.4: conceptual model approved; no return path from abroad (F10); SIMs become units (see §L1);
 logical design part 1 (products, suppliers, batches, units).
 v0.5: batch codes auto-generated from supplier prefix (Q1); logical design part 2 (locations, movements, stock levels).
+v0.6: repairs by supplier or outside repair companies (Q3); logical design part 3 (clients, facilities, partners, deployments, shipments).
 
 ## Business facts this model is built on
 
@@ -215,11 +216,12 @@ We do the same — `stock_movements` is the transaction list, `stock_levels` is 
 | Column | Type | Rules |
 |--------|------|-------|
 | id | bigint | primary key |
-| type | enum | `office` · `facility` · `partner_stock` · `repair` · `supplier` — required |
+| type | enum | `office` · `facility` · `partner_stock` · `repair_company` · `supplier` — required |
 | name | text | required (e.g. "MRD Office", "Lulu Hypermarket") |
 | facility_id | bigint | → `facilities`; **required when type = facility**, otherwise empty |
 | partner_id | bigint | → `partners`; **required when type = partner_stock**, otherwise empty |
 | supplier_id | bigint | → `suppliers`; **required when type = supplier**, otherwise empty |
+| repair_company_id | bigint | → `repair_companies`; **required when type = repair_company**, otherwise empty |
 
 One location per facility, per partner and per supplier (unique). Exactly one `office` row.
 
@@ -240,6 +242,8 @@ One location per facility, per partner and per supplier (unique). Exactly one `o
 
 - **No updates, no deletes** — enforced by database permissions, not just app code. A mistake is
   fixed by a new `correction` movement, like a reversing entry in accounting.
+- `send_repair` may only go to a `supplier` or `repair_company` location (Q3); `back_from_repair`
+  only comes from one.
 - `deploy_abroad` may only start from a `partner_stock` location (F9); nothing may move *out of*
   an abroad facility or partner stock except by a Super Admin `correction` (F10).
 
@@ -270,5 +274,91 @@ COMMIT   ← all four happen, or none do
 If step 1 would make the office balance negative, the CHECK rule fails, the database undoes
 steps 1–4, and the user sees "Only 4 in stock".
 
-Next parts: facilities, partners & deployments (L4), users, roles &
+## L4. Part 3 — clients, facilities, partners, deployments, shipments
+
+### `repair_companies` (Q3)
+| Column | Type | Rules |
+|--------|------|-------|
+| id | bigint | primary key |
+| name | text | required, unique |
+| country_id | bigint | → `countries` |
+| email, phone, is_active | | optional / convention |
+
+### `clients` — the organisation a facility belongs to (assumption A4)
+| Column | Type | Rules |
+|--------|------|-------|
+| id | bigint | primary key |
+| name | text | required, unique (Qatar Foundation, Bank Muscat, Lulu …) |
+| is_active, created_at | | convention |
+
+### `facilities`
+| Column | Type | Rules |
+|--------|------|-------|
+| id | bigint | primary key |
+| name | text | required (e.g. "Bank Muscat Head Office") |
+| client_id | bigint | required → `clients` |
+| facility_type | text | optional (office, hypermarket, campus …) |
+| country_id | bigint | required → `countries` |
+| city / address | text | optional |
+| partner_id | bigint | → `partners`; **required when the country is not Oman** (abroad facilities are handled via a partner) |
+| stage | enum | `site_inspection` · `bms_scan` · `poc` · `poc_study` · `contract` · `deployment` · `active_operations` · `closed` |
+| project_lead | uuid | → `users` |
+| is_active, created_at, updated_at | | convention |
+
+`facility_stage_history` (insert-only): facility_id, from_stage, to_stage, changed_by, changed_at,
+note. Stage changes must follow the order unless an admin overrides; `closed` = POC not converted.
+
+### `facility_contacts` / `partner_contacts` (same shape)
+| Column | Type | Rules |
+|--------|------|-------|
+| id | bigint | primary key |
+| facility_id / partner_id | bigint | required → owner row |
+| name | text | required |
+| role, email, phone | text | optional |
+| is_primary | boolean | **at most one primary contact per facility / partner** |
+
+### `partners`
+| Column | Type | Rules |
+|--------|------|-------|
+| id | bigint | primary key |
+| name | text | required; **unique per country** |
+| country_id | bigint | required → `countries` |
+| is_active, created_at | | convention |
+
+### `deployments` — one dispatch to one facility
+| Column | Type | Rules |
+|--------|------|-------|
+| id | bigint | primary key |
+| code | text | required, unique, generated (e.g. `DEP-2026-031`) |
+| facility_id | bigint | required → `facilities` |
+| deployment_type | enum | `poc` · `contract` |
+| from_location_id | bigint | required → `locations`: MRD Office, or the partner's stock for abroad facilities |
+| status | enum | `draft` · `scheduled` · `completed` · `cancelled` |
+| deployment_date | date | required when completed |
+| created_by / completed_by | uuid | → `users` |
+| notes | text | optional |
+
+**Stock only moves when a deployment is completed** — drafts and scheduled deployments don't
+reduce stock, and the stock check happens at completion.
+
+### `deployment_items`
+| Column | Type | Rules |
+|--------|------|-------|
+| id | bigint | primary key |
+| deployment_id | bigint | required → `deployments` |
+| product_id | bigint | required → `products` |
+| unit_id | bigint | → `units`; required for serialised products, empty for quantity products |
+| quantity | integer | > 0; must be 1 when unit_id is set |
+| building, position | text | optional ("Placement at facility" in the design) |
+| removed_at | timestamptz | set when the item is returned/removed |
+
+**The double-deployment rule (from Stage 3 Q2):** a unit may appear in only one deployment item
+that is not removed and whose deployment isn't cancelled — a *partial unique index* on `unit_id`.
+
+### `shipments` / `shipment_items` — MRD Office → partner stock
+Same shape as deployments/items, with `partner_id` instead of facility, plus `courier`,
+`tracking_number`, `shipped_on`; status `draft` · `shipped` · `received_by_partner` · `cancelled`.
+Stock moves to the partner's stock location when status becomes `shipped`.
+
+Next part: users, roles &
 audit (L5).
