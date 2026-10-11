@@ -1,6 +1,8 @@
-# Database design — DRAFT v0.1 (not approved)
+# Database design — DRAFT v0.2 (not approved)
 
 _Stage 4. Conceptual model only — no SQL yet. Built from the owner's answers on 2026-10-11._
+
+v0.2: added partner companies abroad, partner contacts, shipments; IP stored per SIM assignment.
 
 ## Business facts this model is built on
 
@@ -10,6 +12,8 @@ _Stage 4. Conceptual model only — no SQL yet. Built from the owner's answers o
 | F2 | Goods go from the office to **facilities**, or are **shipped abroad** (e.g. Saudi Arabia, Qatar) — any product, not only routers/SIMs | Destinations include facilities and foreign recipients |
 | F3 | A Teltonika TRB router uses **one SIM at a time**; the SIM has an IP after configuration | SIM ↔ router is one-to-one *at a time*, with history |
 | F4 | One deployment to a facility can contain **many products** | Deployment → many deployment items |
+| F6 | Goods sent abroad go to a **partner company** in that country, which takes ownership. Each partner has a company name and **one or more contact people**. Countries also have **facilities** with deployments, POCs and contracts | `partners`, `partner_contacts`, `shipments`; facilities get a country and an optional partner |
+| F7 | IP is assigned **at configuration**; a SIM change means reconfiguration and probably a new IP (owner not certain) | IP stored on the **SIM-in-router assignment**, not on the SIM or router alone — correct in either case |
 | F5 | Equipment can **come back** (POC not converted, fault) and go to **repair/servicing/reconfiguration** or **back to the supplier** under warranty, then possibly be redeployed | Units have a lifecycle and a full movement history |
 
 Note: the design's sample data uses the RUT956 model; MRD's real router is the TRB series. Product
@@ -32,6 +36,11 @@ erDiagram
     UNITS ||--o{ STOCK_MOVEMENTS : "history"
     LOCATIONS ||--o{ STOCK_MOVEMENTS : "from / to"
     FACILITIES ||--o{ FACILITY_STAGE_HISTORY : "lifecycle"
+    PARTNERS ||--|{ PARTNER_CONTACTS : "has"
+    PARTNERS ||--o{ FACILITIES : "manages (abroad)"
+    PARTNERS ||--o{ SHIPMENTS : "receives"
+    SHIPMENTS ||--|{ SHIPMENT_ITEMS : "contains"
+    UNITS ||--o{ SHIPMENT_ITEMS : "shipped as"
     USERS ||--o{ AUDIT_LOG : "performed"
 ```
 
@@ -46,9 +55,13 @@ erDiagram
 | `batches` | One delivery received at MRD Office | Belongs to one supplier |
 | `units` | One physical serialised item | Unique serial; belongs to one product and one batch; has a current status and location |
 | `sims` | One SIM card | Unique ICCID; holds its number and IP |
-| `sim_assignments` | "This SIM was in this router from… to…" | **Only one open assignment per router and per SIM** |
+| `sim_assignments` | "This SIM was in this router from… to…, configured with IP …" | **Only one open assignment per router and per SIM**; an IP can't be on two open assignments |
 | `locations` | A place goods can be: MRD Office, each facility, a foreign destination, repair/service, supplier | Single office; no shelves |
-| `facilities` | A client site (Qatar Foundation, Lulu…) | Has a current stage |
+| `facilities` | A client site (Qatar Foundation, Lulu…) in any country | Has a country, a current stage, and optionally the partner that manages it |
+| `partners` | A partner company abroad (one or more per country) | Company name, country |
+| `partner_contacts` | One contact person at a partner | A partner has one or more |
+| `shipments` | One consignment from MRD Office to a partner | Has many items; ownership passes to the partner |
+| `shipment_items` | One line of a shipment: a unit, or a product + quantity | A unit can't be in two open shipments |
 | `facility_stage_history` | "Facility moved to stage X on date Y by Z" | Insert-only |
 | `deployments` | One dispatch to a facility (POC or contract) | Has many items |
 | `deployment_items` | One line of a deployment: a unit, or a product + quantity | A unit can't be in two active deployments |
@@ -70,9 +83,8 @@ In office / In repair ─► Returned to supplier (warranty) ─► (replacement
 Any ─► Retired (written off)
 ```
 
-## Open questions (affect the schema)
+## Assumptions to confirm (do not block the design)
 
-- **R4** Shipments abroad: is the recipient a facility MRD manages (tracked like local facilities),
-  or a partner/company that takes ownership? Do items ever come back from abroad?
-- **R5** IP address: does the IP belong to the **SIM** (stays with the SIM if moved to another
-  router) or to the **router configuration**?
+- **A1** After a shipment, MRD may optionally record which facility abroad an item ends up in;
+  the model allows it but doesn't require it.
+- **A2** IP-per-assignment (F7): confirm with whoever configures the routers.
