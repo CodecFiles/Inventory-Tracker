@@ -22,3 +22,5 @@ for migration in supabase/migrations/*.sql; do
 done
 
 pg_prove -d "$DB" supabase/tests/*.sql
+
+scripts/db-concurrency-test.sh

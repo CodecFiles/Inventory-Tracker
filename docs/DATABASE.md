@@ -444,6 +444,8 @@ application code forgets. No updates or deletes allowed, for anyone.
 | # | File | Contents | Tests |
 |---|------|----------|-------|
 | 0001 | `20261011000001_catalogue_and_receiving.sql` | enums, countries, users, categories, suppliers, products, batches, batch_lines, units, sim_details; RLS on all tables | 18 passing |
+| 0002 | `20261011000002_places.sql` | clients, partners, repair companies, facilities (+ stage history, contacts), locations (auto-created per place), `units.location_id` | 12 passing |
+| 0003 | `20261011000003_stock.sql` | stock_movements (insert-only ledger), stock_levels (balance ≥ 0), movement routes, unit status updates | 20 passing + concurrency test |
 
 Implementation notes (0001):
 - A unit's product must match its batch line — enforced with a **composite foreign key**
@@ -451,4 +453,16 @@ Implementation notes (0001):
 - "No more units than received" and "no units for quantity products" — enforced by a trigger
   that locks the batch line, so two people adding units at once are counted correctly.
 - `units.location_id` comes in migration 0002, together with the `locations` table.
-- ICCID format check: 18–22 digits (assumption — confirm against real SIM cards).
+- ICCID format check: 18–22 digits (confirmed by owner, A7).
+
+Implementation notes (0002–0003):
+- The application only **inserts movements**; a trigger applies them to balances and units in the
+  same transaction.
+- Allowed routes per movement type live in one function, `check_movement_route`.
+- Bug found by the tests: subtracting stock with an "upsert" failed even when stock existed
+  (PostgreSQL checks the would-be new row of −6 first). Fixed with a plain `UPDATE`.
+- `scripts/db-concurrency-test.sh` runs two real connections deploying 6 of 10 cables at once:
+  one succeeds, one is rejected, office = 4. With the `quantity >= 0` rule removed, the same test
+  gives office = −2 and site = 12 — proof the rule is what protects the stock.
+- Left for the backend (Stage 5): facility stage order + admin override; `correction` movements
+  restricted to Super Admin; deployments/shipments documents (migration 0004).

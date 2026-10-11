@@ -2,11 +2,10 @@
 
 _Last updated: 2026-10-11_
 
-**Current stage:** 4 — Database (step 4.10: implementation — migration 0001 done, 0002 next)
+**Current stage:** 4 — Database (step 4.11: implementation — migrations 0001–0003 done, 0004 next)
 
-**Next action:** owner reads migration 0001 and its tests (walkthrough in chat), then the assistant
-writes migration 0002 (locations, stock movements, stock levels) with the negative-stock and
-concurrency tests.
+**Next action:** owner answers the 0003 reading exercise; then migration 0004 (deployments,
+shipments, SIM assignments) and 0005 (permissions, audit triggers).
 
 ## Stage checklist
 
@@ -15,7 +14,7 @@ concurrency tests.
 | 1 Requirements | Complete (planning level) | Original project brief; open questions below |
 | 2 UI/UX Design | Complete (design level) | `design/` — 26 screens, live canvas |
 | 3 Architecture | Complete | `docs/ARCHITECTURE.md` (approved); gate below |
-| 4 Database | In progress | Schema approved; migration 0001 + 18 tests passing |
+| 4 Database | In progress | Schema approved; migrations 0001–0003; 50 tests + concurrency test passing |
 | 5 Backend | Not started | — |
 | 6 Frontend | Not started | — |
 | 7 Testing | Not started | — |
@@ -43,8 +42,7 @@ concurrency tests.
 
 | # | Question | Status |
 |---|----------|--------|
-| A2 | Confirm with the router configurer that a SIM change means a new IP | Owner to check (non-blocking) |
-| A7 | ICCID format: 18–22 digits — confirm against a real SIM card | Owner to check (non-blocking) |
+_None blocking._
 
 ## Stage 3 completion gate
 
@@ -54,7 +52,7 @@ concurrency tests.
 | Documented technology stack | Yes (later-stage choices listed with their stage) | `ARCHITECTURE.md` §8 |
 | Clear component diagram | Yes | `ARCHITECTURE.md` §2, §10 |
 | Explanation of component interaction | Yes | `ARCHITECTURE.md` §3, §9 |
-| Owner understands it | Yes | Q1 answered correctly. Q2 concept confirmed 2026-10-11 via the cables exercise (owner: first save wins, second is rejected). Hands-on test of the rejection still planned in Stage 4. Q3 explained by assistant |
+| Owner understands it | Yes | Q1 answered correctly. Q2 concept confirmed 2026-10-11 via the cables exercise (owner: first save wins, second is rejected). Verified hands-on 2026-10-11 by `scripts/db-concurrency-test.sh`. Q3 explained by assistant |
 
 ## Decisions made
 
@@ -89,6 +87,8 @@ concurrency tests.
 | P2 | Editors can do all operational work incl. completing deployments and stage changes | 2026-10-11 |
 | M2 | Full logical design approved (`docs/DATABASE.md` v1.0) | 2026-10-11 |
 | T1 | Plain SQL migrations (Supabase CLI layout) + pgTAP tests | 2026-10-11 |
+| A7 | ICCID is 18–22 digits | 2026-10-11 |
+| A2 | SIM change → router reconfigured, likely new IP; handled by a new SIM assignment row (design unchanged) | 2026-10-11 |
 | D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
 Stage 2 revision needed (rule 4): the Users/Settings screens show Admin/Operations/Technician/Viewer
@@ -107,6 +107,8 @@ architecture, stack, component and security diagrams, request flow (`docs/ARCHIT
 | Date | Suite | Result | Notes |
 |------|-------|--------|-------|
 | 2026-10-11 | `supabase/tests/0001_*` (18 tests), local PostgreSQL 16 | **18/18 pass** | Mutation check: removing the serial-number unique rule made test 4 fail as expected — the tests detect a missing rule |
+| 2026-10-11 | `0002_*` (12) + `0003_*` (20) | **First run: fail** → fixed → **50/50 pass** | Tests found a real bug (stock subtraction via upsert rejected valid deployments); fixed in 0003 before commit |
+| 2026-10-11 | `scripts/db-concurrency-test.sh` | **PASS** (3 runs) | Two simultaneous 6-cable deployments: 1 succeeds, 1 rejected, office 4. Mutation (no ≥ 0 rule): office −2, site 12 → FAIL as expected |
 
 ## Change log
 
@@ -127,3 +129,4 @@ architecture, stack, component and security diagrams, request flow (`docs/ARCHIT
 - 2026-10-11 — A4–A6 confirmed; logical design part 4 written (v0.7).
 - 2026-10-11 — P1, P2 confirmed; logical design complete (v0.8).
 - 2026-10-11 — Design approved (M2); tooling chosen (T1); migration 0001 + 18 pgTAP tests passing.
+- 2026-10-11 — Migrations 0002 (places) and 0003 (stock) with 32 tests + concurrency test; bug found and fixed.
