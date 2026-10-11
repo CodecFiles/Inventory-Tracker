@@ -2,12 +2,11 @@
 
 _Last updated: 2026-10-11_
 
-**Current stage:** 4 — Database (step 4.13: deploy migrations to Supabase staging via GitHub integration)
+**Current stage:** 4 — Database (step 4.14: confirm Supabase deploy)
 
-**Next action:** owner checks the Supabase GitHub integration settings (production branch, Supabase
-directory, "Deploy to production") and approves a PR to `main`; merge applies migrations to the
-staging project; owner confirms tables in the Supabase Table Editor; then lesson on indexes/backups
-and the Stage 4 gate.
+**Next action:** owner confirms in Supabase Table Editor that the tables exist (deploy cannot be
+verified from the assistant's environment — Supabase is blocked by its network policy); then lesson
+on indexes and backups, and the Stage 4 completion gate.
 
 ## Stage checklist
 
@@ -44,7 +43,7 @@ and the Stage 4 gate.
 
 | # | Question | Status |
 |---|----------|--------|
-| S2 | Merge PR #2 into `main` once "Database tests" is green → Supabase deploys migrations; owner checks Table Editor | Awaiting owner |
+| S3 | Supabase staging deploy succeeded? (Table Editor shows tables) | Awaiting owner |
 
 ## Stage 3 completion gate
 
@@ -93,6 +92,7 @@ and the Stage 4 gate.
 | A2 | SIM change → router reconfigured, likely new IP; handled by a new SIM assignment row (design unchanged) | 2026-10-11 |
 | S0 | Supabase staging project created; GitHub repo linked to it (owner) | 2026-10-11 |
 | S1 | Supabase GitHub integration enabled: repo linked, directory `.`, deploy to production from `main` (free plan; preview branches need Pro, not needed) | 2026-10-11 |
+| S2 | PR #2 merged into `main` (merge commit 8c87d17); CI green on `main` | 2026-10-11 |
 | D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
 Stage 2 revision needed (rule 4): the Users/Settings screens show Admin/Operations/Technician/Viewer
@@ -114,6 +114,7 @@ architecture, stack, component and security diagrams, request flow (`docs/ARCHIT
 | 2026-10-11 | `0002_*` (12) + `0003_*` (20) | **First run: fail** → fixed → **50/50 pass** | Tests found a real bug (stock subtraction via upsert rejected valid deployments); fixed in 0003 before commit |
 | 2026-10-11 | `0004_*` (21) + `0005_*` (16) | **87/87 pass** (all suites) | Mutation checks: removing the double-deployment index failed tests 11 and 18; removing the last-Super-Admin rule failed test 14 |
 | 2026-10-11 | GitHub Actions `Database tests` run #1 | **PASS** — 87/87 + race test | Same suite on GitHub's servers; now runs on every push and PR |
+| 2026-10-11 | GitHub Actions on `main` after merge (run #6) | **PASS** | |
 | 2026-10-11 | `scripts/db-concurrency-test.sh` | **PASS** (3 runs) | Two simultaneous 6-cable deployments: 1 succeeds, 1 rejected, office 4. Mutation (no ≥ 0 rule): office −2, site 12 → FAIL as expected |
 
 ## Change log
@@ -139,3 +140,4 @@ architecture, stack, component and security diagrams, request flow (`docs/ARCHIT
 - 2026-10-11 — Migrations 0004 (deployments, shipments, SIMs) and 0005 (permissions, audit); 87 tests passing.
 - 2026-10-11 — Supabase staging project created and linked to GitHub (owner); CI workflow added, first run green.
 - 2026-10-11 — Supabase integration enabled; PR #2 opened (branch → main).
+- 2026-10-11 — PR #2 merged; CI green on main; awaiting Supabase deploy confirmation.
