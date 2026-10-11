@@ -2,9 +2,10 @@
 
 _Last updated: 2026-10-11_
 
-**Current stage:** 4 — Database (step 4.15: indexes & backups lesson, then Stage 4 gate)
+**Current stage:** 5 — Backend (step 5.1: project skeleton + database-access decision)
 
-**Next action:** lesson on indexes and backups; Stage 4 completion-gate review and summary.
+**Next action:** owner decides B1 (how the server talks to the database); assistant scaffolds the
+Next.js project and the database-access layer with tests.
 
 ## Stage checklist
 
@@ -13,8 +14,8 @@ _Last updated: 2026-10-11_
 | 1 Requirements | Complete (planning level) | Original project brief; open questions below |
 | 2 UI/UX Design | Complete (design level) | `design/` — 26 screens, live canvas |
 | 3 Architecture | Complete | `docs/ARCHITECTURE.md` (approved); gate below |
-| 4 Database | In progress | Schema approved; migrations 0001–0005 deployed to Supabase staging; 87 tests + race test green in CI |
-| 5 Backend | Not started | — |
+| 4 Database | Complete | Gate below; migrations 0001–0005 on Supabase staging; 87 tests + race test green in CI |
+| 5 Backend | In progress | — |
 | 6 Frontend | Not started | — |
 | 7 Testing | Not started | — |
 | 8 Hosting and Launch | Not started | — |
@@ -52,6 +53,17 @@ _None blocking._
 | Clear component diagram | Yes | `ARCHITECTURE.md` §2, §10 |
 | Explanation of component interaction | Yes | `ARCHITECTURE.md` §3, §9 |
 | Owner understands it | Yes | Q1 answered correctly. Q2 concept confirmed 2026-10-11 via the cables exercise (owner: first save wins, second is rejected). Verified hands-on 2026-10-11 by `scripts/db-concurrency-test.sh`. Q3 explained by assistant |
+
+## Stage 4 completion gate
+
+| Criterion | Met? | Evidence |
+|-----------|------|----------|
+| Approved schema | Yes | M2; `docs/DATABASE.md` v1.0 |
+| Implemented migrations | Yes | `supabase/migrations/0001–0005`, deployed to Supabase staging (S3) |
+| Reliable database access | Yes for deployment/migrations; app access is built in Stage 5 | CI + GitHub integration |
+| Documented relationships | Yes | `docs/DATABASE.md` (ER diagram, L0–L5, migration notes) |
+| Tests for critical integrity rules | Yes | 87 pgTAP tests + race test; mutation checks |
+| Owner understanding | Partly | Exercises on keys, normalisation, constraints, concurrency answered correctly; index and backup questions explained by assistant (owner could not answer yet) — revisit in Stage 7 (indexes) and Stage 8 (backups) |
 
 ## Decisions made
 
@@ -106,6 +118,11 @@ rules are enforced on the server and again in the database; authentication vs au
 environments; why relational PostgreSQL suits inventory better than MongoDB. Accomplished: approved
 architecture, stack, component and security diagrams, request flow (`docs/ARCHITECTURE.md`).
 
+**Stage 4 — Database (closed 2026-10-11).** Learned: tables, rows, primary/foreign keys, one-to-many
+/ many-to-many / one-at-a-time relationships, normalisation, data types, constraints, triggers,
+transactions, concurrency, migrations, CI, indexes and backups (introduced). Accomplished: approved
+design, 5 migrations live on Supabase staging, 87 integrity tests + race test running on every push.
+
 ## Test results
 
 | Date | Suite | Result | Notes |
@@ -141,3 +158,4 @@ architecture, stack, component and security diagrams, request flow (`docs/ARCHIT
 - 2026-10-11 — Supabase staging project created and linked to GitHub (owner); CI workflow added, first run green.
 - 2026-10-11 — Supabase integration enabled; PR #2 opened (branch → main).
 - 2026-10-11 — PR #2 merged; CI green on main; Supabase deploy confirmed by owner (tables visible).
+- 2026-10-11 — Stage 4 closed; Stage 5 (Backend) started.

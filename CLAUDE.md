@@ -1,3 +1,5 @@
+@AGENTS.md
+
 # MRD Inventory & Device Deployment System
 
 The owner is a beginner learning full-stack development through this project. Teach as you build.
