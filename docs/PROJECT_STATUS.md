@@ -2,10 +2,10 @@
 
 _Last updated: 2026-10-11_
 
-**Current stage:** 4 — Database (step 4.7: logical design part 3 — clients, facilities, deployments, shipments)
+**Current stage:** 4 — Database (step 4.8: logical design part 4 — users, roles, permissions, audit)
 
-**Next action:** owner confirms A4 (one client → many facilities) and A5 (`closed` stage for POC not
-converted) and A6 (facilities outside Oman always via a partner); then part 4 (users, roles, permissions, audit) and the migration-tool choice.
+**Next action:** owner answers P1 and P2 (`docs/DATABASE.md` §L5); then whole schema approval and
+the migration-tool choice (start of implementation).
 
 ## Stage checklist
 
@@ -43,9 +43,8 @@ converted) and A6 (facilities outside Oman always via a partner); then part 4 (u
 | # | Question | Status |
 |---|----------|--------|
 | A2 | Confirm with the router configurer that a SIM change means a new IP | Owner to check (non-blocking) |
-| A4 | One client organisation can have many facilities (e.g. Bank Muscat head office + branches)? | Awaiting owner |
-| A5 | Add a final stage `closed` for facilities whose POC is not converted? | Awaiting owner |
-| A6 | MRD's home country is Oman; every facility outside Oman is handled through a partner? | Awaiting owner |
+| P1 | Admins with `users.approve` can assign only Editor/Viewer; only Super Admin creates Admins? | Awaiting owner |
+| P2 | Editors may receive, prepare, create **and complete** deployments, change facility stages? | Awaiting owner |
 
 ## Stage 3 completion gate
 
@@ -83,6 +82,9 @@ converted) and A6 (facilities outside Oman always via a partner); then part 4 (u
 | L1 | SIMs modelled as units + `sim_details` (assistant design change, explained in DATABASE.md §L1) | 2026-10-11 |
 | Q1 | Batch codes auto-generated (supplier prefix-year-number); manual entry may be allowed later | 2026-10-11 |
 | Q3 | Repairs done by the supplier or outside repair companies | 2026-10-11 |
+| A4 | One client can have many facilities | 2026-10-11 |
+| A5 | Final facility stage `closed` when a POC is not converted | 2026-10-11 |
+| A6 | MRD is based in Oman; facilities outside Oman are handled via a partner | 2026-10-11 |
 | D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
 Stage 2 revision needed (rule 4): the Users/Settings screens show Admin/Operations/Technician/Viewer
@@ -116,3 +118,4 @@ _None yet._
 - 2026-10-11 — Conceptual model approved; logical design part 1 written (v0.4).
 - 2026-10-11 — Q1 answered; serial exercise answered correctly; logical design part 2 written (v0.5).
 - 2026-10-11 — Q3 answered; concurrency exercise answered correctly; logical design part 3 written (v0.6).
+- 2026-10-11 — A4–A6 confirmed; logical design part 4 written (v0.7).

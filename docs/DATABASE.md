@@ -1,4 +1,4 @@
-# Database design — v0.6 (conceptual model approved 2026-10-11; logical design in progress)
+# Database design — v0.7 (conceptual model approved 2026-10-11; logical design in progress)
 
 _Stage 4. Conceptual model only — no SQL yet. Built from the owner's answers on 2026-10-11._
 
@@ -9,6 +9,7 @@ v0.4: conceptual model approved; no return path from abroad (F10); SIMs become u
 logical design part 1 (products, suppliers, batches, units).
 v0.5: batch codes auto-generated from supplier prefix (Q1); logical design part 2 (locations, movements, stock levels).
 v0.6: repairs by supplier or outside repair companies (Q3); logical design part 3 (clients, facilities, partners, deployments, shipments).
+v0.7: A4–A6 confirmed (MRD based in Oman); logical design part 4 (users, roles, permissions, audit).
 
 ## Business facts this model is built on
 
@@ -284,7 +285,7 @@ steps 1–4, and the user sees "Only 4 in stock".
 | country_id | bigint | → `countries` |
 | email, phone, is_active | | optional / convention |
 
-### `clients` — the organisation a facility belongs to (assumption A4)
+### `clients` — the organisation a facility belongs to (A4 confirmed: one client → many facilities)
 | Column | Type | Rules |
 |--------|------|-------|
 | id | bigint | primary key |
@@ -300,7 +301,7 @@ steps 1–4, and the user sees "Only 4 in stock".
 | facility_type | text | optional (office, hypermarket, campus …) |
 | country_id | bigint | required → `countries` |
 | city / address | text | optional |
-| partner_id | bigint | → `partners`; **required when the country is not Oman** (abroad facilities are handled via a partner) |
+| partner_id | bigint | → `partners`; **required when the country is not Oman** — MRD is based in Oman (A6 confirmed) |
 | stage | enum | `site_inspection` · `bms_scan` · `poc` · `poc_study` · `contract` · `deployment` · `active_operations` · `closed` |
 | project_lead | uuid | → `users` |
 | is_active, created_at, updated_at | | convention |
@@ -360,5 +361,65 @@ Same shape as deployments/items, with `partner_id` instead of facility, plus `co
 `tracking_number`, `shipped_on`; status `draft` · `shipped` · `received_by_partner` · `cancelled`.
 Stock moves to the partner's stock location when status becomes `shipped`.
 
-Next part: users, roles &
-audit (L5).
+## L5. Part 4 — users, roles, permissions, audit
+
+### `users` — one row per person (linked to their Supabase login)
+| Column | Type | Rules |
+|--------|------|-------|
+| id | uuid | primary key **and** → Supabase Auth user (one-to-one) |
+| email | text | required, unique (any domain) |
+| full_name | text | required |
+| role | enum | `super_admin` · `admin` · `editor` · `viewer`; empty while pending |
+| status | enum | `pending` · `approved` · `rejected` · `disabled` — default `pending` |
+| approved_by / approved_at | uuid / timestamptz | set on approval |
+| created_at, last_login_at | timestamptz | |
+
+Rules:
+- Only `approved` users can read or change anything (checked on every request, server-side).
+- **There must always be at least one approved Super Admin** — the last one can't be demoted or disabled.
+- Nobody can change their own role or permissions.
+- Leavers are `disabled`, never deleted — their name stays on the history they created.
+
+### `permissions` — the catalogue of things that can be allowed
+`key` (primary key, e.g. `inventory.receive`) and `description`. Initial list:
+
+| Area | Permission keys |
+|------|-----------------|
+| Inventory | `inventory.receive` · `inventory.prepare` (configure, SIM/IP) · `inventory.move` (repair, return, write-off) |
+| Deployments | `deployments.create` · `deployments.complete` · `shipments.manage` |
+| Facilities | `facilities.manage` · `facilities.change_stage` |
+| Catalogue | `products.manage` · `suppliers.manage` · `partners.manage` |
+| Reports | `reports.view` · `reports.export` · `audit.view` |
+| Administration | `users.approve` · `users.manage` · `settings.manage` |
+
+### Who gets what
+| Role | Permissions |
+|------|-------------|
+| **Super Admin** | Everything, always. Only role that can grant/revoke Admin permissions and create Admins |
+| **Admin** | Exactly the permissions a Super Admin ticked for that person (`user_permissions`) |
+| **Editor** | Fixed set (`role_permissions`): all Inventory, Deployments and Facilities actions + `reports.view` |
+| **Viewer** | Fixed set: read-only screens + `reports.view` |
+
+### `role_permissions` (role, permission_key) and `user_permissions` (user_id, permission_key, granted_by, granted_at)
+Composite primary keys — the same permission can't be granted twice. `user_permissions` is only
+allowed for users whose role is `admin`.
+
+### `audit_log` — insert-only
+| Column | Type | Rules |
+|--------|------|-------|
+| id | bigint | primary key |
+| occurred_at | timestamptz | required, default now |
+| actor_id | uuid | → `users` (who) |
+| action | text | e.g. `deployment.completed`, `user.approved`, `unit.updated` |
+| entity_type / entity_id | text / bigint | what was changed |
+| before / after | jsonb | the values before and after the change |
+
+Written by **database triggers** on the important tables, so a change is audited even if
+application code forgets. No updates or deletes allowed, for anyone.
+
+## Open questions (part 4)
+
+- **P1** Can an Admin who has `users.approve` give new people only the Editor/Viewer roles
+  (assumption: yes — only a Super Admin can create Admins)?
+- **P2** Are the Editor permissions above right — may every Editor receive stock, prepare devices,
+  create **and complete** deployments, and change facility stages?
