@@ -2,10 +2,11 @@
 
 _Last updated: 2026-10-11_
 
-**Current stage:** 5 — Backend (step 5.1: project skeleton + database-access decision)
+**Current stage:** 5 — Backend (step 5.2 done: database access + first action; next 5.3 login & approval)
 
-**Next action:** owner decides B1 (how the server talks to the database); assistant scaffolds the
-Next.js project and the database-access layer with tests.
+**Next action:** step 5.3 — login (Google + email/password via Supabase Auth), sign-up creates a
+pending user, approval flow. Needs the owner to create Google sign-in credentials (guided) and to
+add server secrets for local development.
 
 ## Stage checklist
 
@@ -15,7 +16,7 @@ Next.js project and the database-access layer with tests.
 | 2 UI/UX Design | Complete (design level) | `design/` — 26 screens, live canvas |
 | 3 Architecture | Complete | `docs/ARCHITECTURE.md` (approved); gate below |
 | 4 Database | Complete | Gate below; migrations 0001–0005 on Supabase staging; 87 tests + race test green in CI |
-| 5 Backend | In progress | — |
+| 5 Backend | In progress | `src/server/` data-access layer; `receiveDelivery` + 8 backend tests |
 | 6 Frontend | Not started | — |
 | 7 Testing | Not started | — |
 | 8 Hosting and Launch | Not started | — |
@@ -105,6 +106,7 @@ _None blocking._
 | S2 | PR #2 merged into `main` (merge commit 8c87d17); CI green on `main` | 2026-10-11 |
 | S3 | Supabase staging deploy succeeded — owner sees the tables in Table Editor (free plan "Deploy to production" works) | 2026-10-11 |
 | S4 | Branch rule narrowed to `main` (PR required); working branch pushes normally | 2026-10-11 |
+| B1 | Server talks to PostgreSQL directly (postgres.js, one transaction per action, `app.user_id` set per transaction); Supabase used for Auth/Storage | 2026-10-11 |
 | D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
 Stage 2 revision needed (rule 4): the Users/Settings screens show Admin/Operations/Technician/Viewer
@@ -134,6 +136,8 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 | 2026-10-11 | GitHub Actions on `main` after merge (run #6) | **PASS** | |
 | 2026-10-11 | `scripts/db-concurrency-test.sh` | **PASS** (3 runs) | Two simultaneous 6-cable deployments: 1 succeeds, 1 rejected, office 4. Mutation (no ≥ 0 rule): office −2, site 12 → FAIL as expected |
 
+| 2026-10-11 | `tests/server/receive.test.ts` (Vitest, 8 tests) | **8/8 pass** | Mutation: removing the permission check made "a Viewer is refused" fail |
+
 ## Change log
 
 - 2026-10-10 — Roadmap and status record added; Stage 3 started with project inspection.
@@ -159,3 +163,4 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 - 2026-10-11 — Supabase integration enabled; PR #2 opened (branch → main).
 - 2026-10-11 — PR #2 merged; CI green on main; Supabase deploy confirmed by owner (tables visible).
 - 2026-10-11 — Stage 4 closed; Stage 5 (Backend) started.
+- 2026-10-11 — B1 = A; data-access layer (`withActor`, `requirePermission`) and `receiveDelivery` with 8 backend tests; backend tests added to CI.
