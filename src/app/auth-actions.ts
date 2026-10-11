@@ -40,15 +40,31 @@ export async function signUp(formData: FormData) {
     redirect("/signup?error=" + encodeURIComponent(parsed.error.issues.map((i) => i.message).join("; ")));
   }
 
-  const origin = (await headers()).get("origin") ?? "";
+  const origin = await siteOrigin();
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
-    options: { data: { full_name: parsed.data.fullName }, emailRedirectTo: `${origin}/auth/confirm` },
+    options: {
+      data: { full_name: parsed.data.fullName },
+      // Must be a full address (https://…). A relative path would send people to a page on
+      // Supabase's own domain ("requested path is invalid"). Without one, Supabase uses its Site URL.
+      ...(origin ? { emailRedirectTo: `${origin}/auth/confirm` } : {}),
+    },
   });
   if (error) redirect("/signup?error=" + encodeURIComponent(error.message));
   redirect("/login?message=" + encodeURIComponent("Check your email to confirm your address. An admin must then approve your account."));
+}
+
+// The public address of this site, e.g. https://inventory-tracker.vercel.app
+// SITE_URL wins when set; otherwise it is worked out from the request (Vercel sends x-forwarded-*).
+async function siteOrigin(): Promise<string | null> {
+  if (process.env.SITE_URL) return process.env.SITE_URL.replace(/\/$/, "");
+  const h = await headers();
+  const host = h.get("x-forwarded-host") ?? h.get("host");
+  if (host) return `${h.get("x-forwarded-proto") ?? "https"}://${host}`;
+  const origin = h.get("origin");
+  return origin && origin.startsWith("http") ? origin : null;
 }
 
 export async function signOut() {
