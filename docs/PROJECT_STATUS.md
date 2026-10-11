@@ -2,11 +2,11 @@
 
 _Last updated: 2026-10-11_
 
-**Current stage:** 5 — Backend (step 5.2 done: database access + first action; next 5.3 login & approval)
+**Current stage:** 5 — Backend (step 5.3 built: email login + approval; Google sign-in and a staging site next)
 
-**Next action:** step 5.3 — login (Google + email/password via Supabase Auth), sign-up creates a
-pending user, approval flow. Needs the owner to create Google sign-in credentials (guided) and to
-add server secrets for local development.
+**Next action:** owner decides H0 (an early staging website so they can actually sign in and test);
+then Google sign-in setup (guided) and the first Super Admin bootstrap; then remaining backend
+actions (preparation, deployments, shipments, facilities).
 
 ## Stage checklist
 
@@ -16,7 +16,7 @@ add server secrets for local development.
 | 2 UI/UX Design | Complete (design level) | `design/` — 26 screens, live canvas |
 | 3 Architecture | Complete | `docs/ARCHITECTURE.md` (approved); gate below |
 | 4 Database | Complete | Gate below; migrations 0001–0005 on Supabase staging; 87 tests + race test green in CI |
-| 5 Backend | In progress | `src/server/` data-access layer; `receiveDelivery` + 8 backend tests |
+| 5 Backend | In progress | data-access layer; `receiveDelivery`; login/sign-up/approval; 17 backend tests + 94 DB tests |
 | 6 Frontend | Not started | — |
 | 7 Testing | Not started | — |
 | 8 Hosting and Launch | Not started | — |
@@ -43,7 +43,8 @@ add server secrets for local development.
 
 | # | Question | Status |
 |---|----------|--------|
-_None blocking._
+| H0 | Deploy an early **staging** website (Architecture §6) so the owner can sign up, confirm email and test approval — needs a hosting choice (Stage 8 option check brought forward for staging only) | Awaiting owner |
+| E1 | `NEXT_PUBLIC_SUPABASE_URL` in the cloud environment lacks `https://` (code tolerates it) | Owner may fix (non-blocking) |
 
 ## Stage 3 completion gate
 
@@ -138,6 +139,10 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 
 | 2026-10-11 | `tests/server/receive.test.ts` (Vitest, 8 tests) | **8/8 pass** | Mutation: removing the permission check made "a Viewer is refused" fail |
 
+| 2026-10-11 | Backend (Vitest) 17 tests incl. approval | **17/17 pass** | Test IDs first used invalid UUIDs; the strict input check rejected them (correct) — test data fixed |
+| 2026-10-11 | pgTAP incl. 0006 | **94/94 pass** + race test | |
+| 2026-10-11 | Live smoke test against Supabase staging Auth | **PASS** | `/` and `/admin/users` redirect signed-out visitors to `/login`; login/sign-up pages render; bogus confirmation link rejected by Supabase |
+
 ## Change log
 
 - 2026-10-10 — Roadmap and status record added; Stage 3 started with project inspection.
@@ -164,3 +169,4 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 - 2026-10-11 — PR #2 merged; CI green on main; Supabase deploy confirmed by owner (tables visible).
 - 2026-10-11 — Stage 4 closed; Stage 5 (Backend) started.
 - 2026-10-11 — B1 = A; data-access layer (`withActor`, `requirePermission`) and `receiveDelivery` with 8 backend tests; backend tests added to CI.
+- 2026-10-11 — 5.3: migration 0006 (auth link, bootstrap), Supabase login/sign-up/confirm/pending pages, approval actions + admin page, proxy; tests and live smoke test pass.

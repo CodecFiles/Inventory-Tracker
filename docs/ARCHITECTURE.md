@@ -100,6 +100,17 @@ Permissions are stored individually (e.g. `inventory.receive`, `deployments.crea
 get a subset chosen by a Super Admin. This lets you add roles later (e.g. read-only Viewer) without
 redesigning.
 
+### How it is built (Stage 5.3)
+
+- Sign-up: email + password (min. 10 characters) through Supabase Auth; Supabase sends a
+  confirmation email. Migration 0006 creates the MRD user as **pending** automatically.
+- Sessions live in secure cookies; `src/proxy.ts` refreshes them on every request and sends
+  signed-out visitors to `/login`. Every page and server action checks the user again on the server
+  (`src/server/session.ts`) — the proxy is a convenience, not the security.
+- First Super Admin: after signing up, run once in the Supabase SQL editor
+  `select bootstrap_first_super_admin('owner@email');` — it refuses to run again once a Super Admin exists.
+- Google sign-in: same flow, added when Google credentials are configured.
+
 ## 6. Environments
 
 | Environment | Where | Data | Purpose |

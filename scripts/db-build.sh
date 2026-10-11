@@ -10,7 +10,7 @@ DB="${1:?database name required}"
 psql -q -d postgres -c "drop database if exists $DB with (force)" -c "create database $DB"
 psql -q -v ON_ERROR_STOP=1 -d "$DB" <<'SQL'
 create schema if not exists auth;
-create table if not exists auth.users (id uuid primary key);
+create table if not exists auth.users (id uuid primary key, email text, raw_user_meta_data jsonb default '{}');
 SQL
 
 for migration in supabase/migrations/*.sql; do
