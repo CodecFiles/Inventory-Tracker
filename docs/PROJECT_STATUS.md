@@ -2,10 +2,10 @@
 
 _Last updated: 2026-10-11_
 
-**Current stage:** 4 — Database (step 4.4: owner reviews model v0.3 and unit lifecycle)
+**Current stage:** 4 — Database (step 4.5: logical design part 1 — products, suppliers, batches, units)
 
-**Next action:** owner checks the unit lifecycle in `docs/DATABASE.md` and approves the conceptual
-model (or lists changes); then the assistant moves to columns, data types and constraints.
+**Next action:** owner reviews `docs/DATABASE.md` §L0–L2 and answers Q1 (batch code format) and Q2
+(serial-number exercise); then part 2 (locations & movements).
 
 ## Stage checklist
 
@@ -43,8 +43,7 @@ model (or lists changes); then the assistant moves to columns, data types and co
 | # | Question | Status |
 |---|----------|--------|
 | A2 | Confirm with the router configurer that a SIM change means a new IP | Owner to check (non-blocking) |
-| M1 | Approve conceptual model v0.3 — owner said lifecycle is "almost fully correct"; which part is off? | Awaiting owner |
-| A3 | Can items come back from abroad? | Awaiting owner |
+| Q1 | Batch codes like `TEL-2026-004`: generated automatically (prefix-year-number) or typed by staff? | Awaiting owner |
 
 ## Stage 3 completion gate
 
@@ -77,6 +76,9 @@ model (or lists changes); then the assistant moves to columns, data types and co
 | R5 | IP assigned at configuration; stored per SIM-in-router assignment (owner unsure; design works either way) | 2026-10-11 |
 | F8 | Any number of countries | 2026-10-11 |
 | F9 | MRD tracks all abroad deployments (items, quantities, facility) | 2026-10-11 |
+| M1 | Conceptual model v0.3 and unit lifecycle approved ("fully correct") | 2026-10-11 |
+| F10 | Items never come back from abroad (Super Admin correction only) | 2026-10-11 |
+| L1 | SIMs modelled as units + `sim_details` (assistant design change, explained in DATABASE.md §L1) | 2026-10-11 |
 | D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
 Stage 2 revision needed (rule 4): the Users/Settings screens show Admin/Operations/Technician/Viewer
@@ -107,3 +109,4 @@ _None yet._
 - 2026-10-11 — R1–R3 answered; draft ER model v0.1 written (`docs/DATABASE.md`).
 - 2026-10-11 — R4, R5 answered; model v0.2 (partners, contacts, shipments, IP per assignment).
 - 2026-10-11 — Model v0.3: countries table, partner stock + abroad deployments, configurable-only step.
+- 2026-10-11 — Conceptual model approved; logical design part 1 written (v0.4).

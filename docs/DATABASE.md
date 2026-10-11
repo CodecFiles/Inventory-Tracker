@@ -1,10 +1,12 @@
-# Database design — DRAFT v0.3 (not approved)
+# Database design — v0.4 (conceptual model approved 2026-10-11; logical design in progress)
 
 _Stage 4. Conceptual model only — no SQL yet. Built from the owner's answers on 2026-10-11._
 
 v0.2: added partner companies abroad, partner contacts, shipments; IP stored per SIM assignment.
 v0.3: any number of countries (`countries` table); abroad deployments tracked via partner stock;
 non-configurable products skip "Configured".
+v0.4: conceptual model approved; no return path from abroad (F10); SIMs become units (see §L1);
+logical design part 1 (products, suppliers, batches, units).
 
 ## Business facts this model is built on
 
@@ -18,6 +20,8 @@ non-configurable products skip "Configured".
 | F7 | IP is assigned **at configuration**; a SIM change means reconfiguration and probably a new IP (owner not certain) | IP stored on the **SIM-in-router assignment**, not on the SIM or router alone — correct in either case |
 | F8 | **Any number of countries**, not only Qatar/Saudi | `countries` reference table |
 | F9 | MRD must track **all abroad deployments** — which items, how many, to which facility | Shipped items sit in the partner's stock until an abroad deployment is recorded |
+| F10 | Items **never come back from abroad** | No return path from partner stock/abroad facilities in normal workflow; a Super Admin correction is the only exception |
+| F11 | **Hybrid** products (e.g. CO₂ sensors) arrive as a counted quantity and get serials during preparation (from design) | Batch records the counted quantity; units are created when serials are assigned |
 | F5 | Equipment can **come back** (POC not converted, fault) and go to **repair/servicing/reconfiguration** or **back to the supplier** under warranty, then possibly be redeployed | Units have a lifecycle and a full movement history |
 
 Note: the design's sample data uses the RUT956 model; MRD's real router is the TRB series. Product
@@ -98,5 +102,107 @@ partner's stock too long is visible.
 ## Assumptions to confirm (do not block the design)
 
 - **A1** (resolved → F9) Abroad deployments are tracked.
-- **A3** Can items come back from abroad (repair, warranty, unused)? Model allows it if yes.
+- **A3** (resolved → F10) Items do not come back from abroad.
 - **A2** IP-per-assignment (F7): confirm with whoever configures the routers.
+
+---
+
+# Logical design (columns, types, rules)
+
+## L0. Conventions used in every table
+
+| Convention | Meaning | Why |
+|------------|---------|-----|
+| `id bigint` identity primary key | Internal number, assigned by the database, never changes | Stable links between tables |
+| `created_at`, `updated_at timestamptz` | When the row was made / last changed, with time zone | Oman, Qatar, Saudi users see correct local times |
+| `is_active boolean` instead of deleting | "Archived" rather than removed | Deleting a product would break the history of every unit that used it |
+| Foreign keys use `ON DELETE RESTRICT` | The database refuses to delete a row others still point to | History can't be destroyed by accident |
+| Status values are a fixed list (enum) | e.g. `in_office`, `configured`, `deployed` | A typo like `deplyed` is rejected |
+
+## L1. Design change: SIMs are units
+
+In v0.3 SIMs had their own table. But a SIM is received in a batch, sits in the office, moves to a
+facility inside a router — exactly what `units` already tracks. Keeping them separate would mean
+building receiving, movements and history twice. So: **a SIM is a unit of a SIM product**, and its
+SIM-only fields (ICCID, phone number, carrier) live in a small side table `sim_details` linked
+one-to-one. `sim_assignments` now links a SIM unit to a router unit.
+
+## L2. Part 1 — products, suppliers, batches, units
+
+### `categories`
+| Column | Type | Rules |
+|--------|------|-------|
+| id | bigint | primary key |
+| name | text | required, unique (Routers, SIM cards, Sensors, Cables & Accessories …) |
+| is_active | boolean | default true |
+
+### `products`
+| Column | Type | Rules |
+|--------|------|-------|
+| id | bigint | primary key |
+| name | text | required |
+| brand | text | required (Teltonika …) |
+| model | text | required (TRB…) ; **unique together with brand** |
+| category_id | bigint | required → `categories` |
+| tracking_type | enum | `serialised` · `quantity` · `hybrid` — required |
+| requires_configuration | boolean | default false (true for routers) |
+| min_stock_level | integer | required, default 0, **must be ≥ 0** |
+| description | text | optional |
+| specifications | jsonb | optional free-form key/values (varies per product) |
+| is_active, created_at, updated_at | | conventions |
+
+### `suppliers`
+| Column | Type | Rules |
+|--------|------|-------|
+| id | bigint | primary key |
+| name | text | required, unique |
+| country_id | bigint | → `countries` |
+| email, phone | text | optional |
+| is_active, created_at, updated_at | | conventions |
+
+### `batches` — one delivery received at MRD Office
+| Column | Type | Rules |
+|--------|------|-------|
+| id | bigint | primary key |
+| code | text | required, unique (e.g. `TEL-2026-004`) |
+| supplier_id | bigint | required → `suppliers` |
+| purchase_order | text | optional |
+| invoice_number | text | optional |
+| received_on | date | required, not in the future |
+| received_by | uuid | required → `users` |
+| notes | text | optional |
+| created_at | timestamptz | convention |
+
+### `batch_lines` — what a delivery contained
+| Column | Type | Rules |
+|--------|------|-------|
+| id | bigint | primary key |
+| batch_id | bigint | required → `batches` |
+| product_id | bigint | required → `products`; **one line per product per batch** |
+| quantity_received | integer | required, **must be > 0** |
+
+### `units` — one physical serialised item (routers, SIMs, serialised sensors)
+| Column | Type | Rules |
+|--------|------|-------|
+| id | bigint | primary key |
+| product_id | bigint | required → `products` (must be serialised or hybrid) |
+| batch_line_id | bigint | required → `batch_lines` (where it came from) |
+| serial_number | text | required; **unique per product** |
+| imei | text | optional; unique when present |
+| status | enum | required, default `in_office` (lifecycle values) |
+| location_id | bigint | required → `locations` (where it is now) |
+| created_at, updated_at | | conventions |
+
+Rule enforced in a transaction, not a simple column check: units created for a batch line can never
+exceed its `quantity_received`.
+
+### `sim_details` — extra fields for SIM units (one-to-one)
+| Column | Type | Rules |
+|--------|------|-------|
+| unit_id | bigint | primary key **and** → `units` (that's what makes it one-to-one) |
+| iccid | text | required, unique |
+| phone_number | text | optional, unique when present |
+| carrier | text | optional |
+
+Next parts: locations & movements (L3), facilities, partners & deployments (L4), users, roles &
+audit (L5).
