@@ -2,10 +2,12 @@
 
 _Last updated: 2026-10-11_
 
-**Current stage:** 4 — Database (step 4.12: all migrations written; next = real Supabase staging project)
+**Current stage:** 4 — Database (step 4.13: deploy migrations to Supabase staging via GitHub integration)
 
-**Next action:** owner creates a free Supabase account + staging project (guided); assistant applies
-migrations there and runs the tests against it; lesson on indexes and backups; then Stage 4 gate.
+**Next action:** owner checks the Supabase GitHub integration settings (production branch, Supabase
+directory, "Deploy to production") and approves a PR to `main`; merge applies migrations to the
+staging project; owner confirms tables in the Supabase Table Editor; then lesson on indexes/backups
+and the Stage 4 gate.
 
 ## Stage checklist
 
@@ -42,7 +44,8 @@ migrations there and runs the tests against it; lesson on indexes and backups; t
 
 | # | Question | Status |
 |---|----------|--------|
-_None blocking._
+| S1 | Supabase GitHub integration: production branch = `main`? directory = `.`? "Deploy to production" on? Available on the free plan? | Owner to check |
+| S2 | Open a PR to merge the branch into `main` (needed for the integration to deploy) | Awaiting owner approval |
 
 ## Stage 3 completion gate
 
@@ -89,6 +92,7 @@ _None blocking._
 | T1 | Plain SQL migrations (Supabase CLI layout) + pgTAP tests | 2026-10-11 |
 | A7 | ICCID is 18–22 digits | 2026-10-11 |
 | A2 | SIM change → router reconfigured, likely new IP; handled by a new SIM assignment row (design unchanged) | 2026-10-11 |
+| S0 | Supabase staging project created; GitHub repo linked to it (owner) | 2026-10-11 |
 | D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
 Stage 2 revision needed (rule 4): the Users/Settings screens show Admin/Operations/Technician/Viewer
@@ -109,6 +113,7 @@ architecture, stack, component and security diagrams, request flow (`docs/ARCHIT
 | 2026-10-11 | `supabase/tests/0001_*` (18 tests), local PostgreSQL 16 | **18/18 pass** | Mutation check: removing the serial-number unique rule made test 4 fail as expected — the tests detect a missing rule |
 | 2026-10-11 | `0002_*` (12) + `0003_*` (20) | **First run: fail** → fixed → **50/50 pass** | Tests found a real bug (stock subtraction via upsert rejected valid deployments); fixed in 0003 before commit |
 | 2026-10-11 | `0004_*` (21) + `0005_*` (16) | **87/87 pass** (all suites) | Mutation checks: removing the double-deployment index failed tests 11 and 18; removing the last-Super-Admin rule failed test 14 |
+| 2026-10-11 | GitHub Actions `Database tests` run #1 | **PASS** — 87/87 + race test | Same suite on GitHub's servers; now runs on every push and PR |
 | 2026-10-11 | `scripts/db-concurrency-test.sh` | **PASS** (3 runs) | Two simultaneous 6-cable deployments: 1 succeeds, 1 rejected, office 4. Mutation (no ≥ 0 rule): office −2, site 12 → FAIL as expected |
 
 ## Change log
@@ -132,3 +137,4 @@ architecture, stack, component and security diagrams, request flow (`docs/ARCHIT
 - 2026-10-11 — Design approved (M2); tooling chosen (T1); migration 0001 + 18 pgTAP tests passing.
 - 2026-10-11 — Migrations 0002 (places) and 0003 (stock) with 32 tests + concurrency test; bug found and fixed.
 - 2026-10-11 — Migrations 0004 (deployments, shipments, SIMs) and 0005 (permissions, audit); 87 tests passing.
+- 2026-10-11 — Supabase staging project created and linked to GitHub (owner); CI workflow added, first run green.
