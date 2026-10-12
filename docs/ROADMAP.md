@@ -8,10 +8,10 @@ decisions, and helping complete each stage properly.
 | ----- | ---- | ------ |
 | 1 | Requirements — what the application must do and who will use it | Complete (planning level) |
 | 2 | UI/UX Design — screens, layouts, and navigation | Complete (design level) |
-| 3 | Architecture — how the frontend, backend, database, and other services fit together | In progress |
-| 4 | Database — how application data is structured, stored, related, and protected | Not started |
-| 5 | Backend — business rules, APIs, permissions, and data processing | Not started |
-| 6 | Frontend — connecting the designed screens to real application functionality | Not started |
+| 3 | Architecture — how the frontend, backend, database, and other services fit together | Complete |
+| 4 | Database — how application data is structured, stored, related, and protected | Complete |
+| 5 | Backend — business rules, APIs, permissions, and data processing | Complete |
+| 6 | Frontend — connecting the designed screens to real application functionality | In progress |
 | 7 | Testing — verifying functionality, security, and reliability | Not started |
 | 8 | Hosting and Launch — deploying the application for organisation-wide access | Not started |
 | 9 | Operations — backups, monitoring, updates, troubleshooting, and maintenance | Not started |

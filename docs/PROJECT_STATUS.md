@@ -2,9 +2,11 @@
 
 _Last updated: 2026-10-12_
 
-**Current stage:** 5 — Backend (step 5.3 done: staging site live end-to-end)
+**Current stage:** 6 — Frontend (step 6.1: app shell, design tokens, sign-in pages)
 
-**Next action:** merge the canonical-address PR; then the Stage 5 completion gate (review + exercise).
+**Next action:** 6.1 — app shell (sidebar, top bar with search, permission-aware navigation) and the
+design system's tokens; restyle sign-in/sign-up/pending to the approved design with Google instead
+of Microsoft 365 (Stage 2 revision).
 Google sign-in and custom SMTP (M3) before colleagues sign up.
 
 Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment-specific
@@ -18,8 +20,8 @@ Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment
 | 2 UI/UX Design | Complete (design level) | `design/` — 26 screens, live canvas |
 | 3 Architecture | Complete | `docs/ARCHITECTURE.md` (approved); gate below |
 | 4 Database | Complete | Gate below; migrations 0001–0005 on Supabase staging; 87 tests + race test green in CI |
-| 5 Backend | In progress | data-access layer; receiving; device preparation; deployments; shipments; abroad configuration; returns/repairs/write-offs; facility stages; corrections; catalogue management; read queries for every screen; login/sign-up/approval; 111 backend tests + 131 DB tests |
-| 6 Frontend | Not started | — |
+| 5 Backend | Complete (2026-10-12) | Gate below; PRs #6–#7; CI green on `main` (131 DB + 111 backend tests); migrations 0007–0012 on staging (owner confirmed `products.is_sim`) |
+| 6 Frontend | In progress | — |
 | 7 Testing | Not started | — |
 | 8 Hosting and Launch | Not started | — |
 | 9 Operations | Not started | — |
@@ -70,6 +72,15 @@ Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment
 | Documented relationships | Yes | `docs/DATABASE.md` (ER diagram, L0–L5, migration notes) |
 | Tests for critical integrity rules | Yes | 87 pgTAP tests + race test; mutation checks |
 | Owner understanding | Partly | Exercises on keys, normalisation, constraints, concurrency answered correctly; index and backup questions explained by assistant (owner could not answer yet) — revisit in Stage 7 (indexes) and Stage 8 (backups) |
+
+## Stage 5 completion gate
+
+| Criterion | Met? | Evidence |
+|-----------|------|----------|
+| Core operations work against the real database | Yes | Every action tested against PostgreSQL built from the same migrations; staging verified for sign-up, sign-in (email + Google), approval, DB connection. Inventory actions get their first staging use through the Stage 6 screens |
+| Enforce the appropriate permissions | Yes | Permission tests for every action (Viewer/Editor/Admin refusals); key rules repeated in the database (0007–0012) |
+| Pass their relevant tests | Yes | GitHub Actions on `main` after PR #6 and #7: Database tests ✓, App checks ✓ |
+| Owner understanding | Yes (partly) | Exercise "attacker skips the screens": owner named server permission checks (correct); "attacker won't know stock levels" corrected — security must not depend on secrecy; database rules and audit trail explained |
 
 ## Decisions made
 
@@ -127,9 +138,15 @@ Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment
 | O1 | `/api/health/db` restricted to the Super Admin (was: any signed-in user) | 2026-10-12 |
 | D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
-Stage 2 revision needed (rule 4): the Users/Settings screens show Admin/Operations/Technician/Viewer
-and a "Continue with Microsoft 365" login; these must change to the agreed roles and Google/email
-sign-in with approval.
+Stage 2 revision needed (rule 4), handled during Stage 6:
+- Users/Settings show Admin/Operations/Technician/Viewer and a "Continue with Microsoft 365" login →
+  agreed roles (D8) and Google/email sign-in with approval.
+- No Shipments screen in the design (shipments to partners came later, R4/R10) → new screen built
+  from the design system's list/detail patterns; owner reviews it.
+- Design statuses differ from the database's unit lifecycle → shown with the design's badges:
+  in office = "In stock", configured = "Ready", deployed / deployed abroad = "Deployed",
+  shipped to partner = "In transit", in repair = "Maintenance", returned to supplier = "Returned",
+  retired = "Retired" (the design's "Reserved" = on a draft/scheduled deployment, derived).
 
 ## Stage summaries
 
@@ -137,6 +154,15 @@ sign-in with approval.
 rules are enforced on the server and again in the database; authentication vs authorisation;
 environments; why relational PostgreSQL suits inventory better than MongoDB. Accomplished: approved
 architecture, stack, component and security diagrams, request flow (`docs/ARCHITECTURE.md`).
+
+**Stage 5 — Backend (closed 2026-10-12).** Learned: server actions and why the server never trusts
+the browser; authentication (Supabase, Google) vs authorisation (permissions); transactions and
+all-or-nothing operations; defence in depth (server checks + database rules + audit trail); input
+validation; insert-only history and corrections; mutation testing ("a test that can't fail proves
+nothing"); environments, secrets and deployment on Vercel. Accomplished: staging site live with
+email + Google sign-in and approvals; receiving, preparation (office + partner), deployments,
+shipments, returns/repairs/write-offs, facility stages, corrections, catalogue, read queries;
+migrations 0006–0012; 131 database + 111 backend tests in CI; tests found and fixed 3 real bugs.
 
 **Stage 4 — Database (closed 2026-10-11).** Learned: tables, rows, primary/foreign keys, one-to-many
 / many-to-many / one-at-a-time relationships, normalisation, data types, constraints, triggers,
@@ -216,3 +242,4 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 - 2026-10-12 — 5.10: read queries (stock overview + low stock, item lists, item history, search, deployments/shipments/batches, facilities, lookups, audit log).
 - 2026-10-12 — 5.11: Google sign-in button + clearer confirm-route errors; health page Super Admin only (O1).
 - 2026-10-12 — PR #6 merged (5.4–5.11, migrations 0007–0012). Canonical-address redirect + clearer sign-in error after the first Google test failed.
+- 2026-10-12 — PR #7 merged. Stage 5 closed (gate above); Stage 6 started.
