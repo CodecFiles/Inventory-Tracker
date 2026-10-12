@@ -4,7 +4,7 @@ _Last updated: 2026-10-12_
 
 **Current stage:** 5 — Backend (step 5.3 done: staging site live end-to-end)
 
-**Next action:** step 5.5 — deployments (create draft, add items, complete) with tests.
+**Next action:** step 5.6 — shipments to partners (create, add items, ship) with tests; then returns/repairs.
 Google sign-in and custom SMTP (M3) before colleagues sign up.
 
 Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment-specific
@@ -18,7 +18,7 @@ Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment
 | 2 UI/UX Design | Complete (design level) | `design/` — 26 screens, live canvas |
 | 3 Architecture | Complete | `docs/ARCHITECTURE.md` (approved); gate below |
 | 4 Database | Complete | Gate below; migrations 0001–0005 on Supabase staging; 87 tests + race test green in CI |
-| 5 Backend | In progress | data-access layer; receiving; device preparation; login/sign-up/approval; 30 backend tests + 102 DB tests |
+| 5 Backend | In progress | data-access layer; receiving; device preparation; deployments; login/sign-up/approval; 44 backend tests + 102 DB tests |
 | 6 Frontend | Not started | — |
 | 7 Testing | Not started | — |
 | 8 Hosting and Launch | Not started | — |
@@ -118,6 +118,7 @@ Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment
 | S5 | First Super Admin bootstrapped on staging (owner's account) via `bootstrap_first_super_admin` | 2026-10-12 |
 | R7 | SIMs: a product is marked once as "is a SIM"; ICCIDs entered at receiving; Configure window picks a free SIM by ICCID from a dropdown | 2026-10-12 |
 | R8 | When a router's SIM is swapped, the person chooses: old SIM back as a spare, or retired (option C) | 2026-10-12 |
+| R9 | Routers must be configured (have a SIM) before an Oman deployment (from lifecycle M1; owner may relax). SIMs are never deployment lines on their own — they travel inside their router | 2026-10-12 |
 | D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
 Stage 2 revision needed (rule 4): the Users/Settings screens show Admin/Operations/Technician/Viewer
@@ -155,6 +156,7 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 | 2026-10-12 | Staging DB connection (`/api/health/db`) | **First: fail** → fixed → **PASS** | 28P01: brackets left around the password in `DATABASE_URL`; then ECONNREFUSED when unset. Fixed by PR #5 (use `POSTGRES_URL`) |
 | 2026-10-12 | Approval on staging (owner) | **PASS** | Second account approved as Editor, reaches home page |
 | 2026-10-12 | 5.4 preparation: pgTAP 0007 (8) + Vitest `prepare.test.ts` (13) | **102/102 + 30/30 pass** | Mutation: removing the "SIM must be free" rule failed 1 backend + 4 DB tests. Older receive test narrowed to its own products (shared test DB) |
+| 2026-10-12 | 5.5 deployments: Vitest `deployments.test.ts` (14) | **44/44 pass** | Mutation: removing the "router must be configured" rule failed 5 tests (the completion check caught it a second time) |
 | 2026-10-12 | Staging end-to-end (owner) | **PASS** | Sign-up → email confirm → sign-in → pending page → bootstrap → home shows role `super_admin` |
 
 ## Change log
@@ -188,3 +190,4 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 - 2026-10-11 — PRs #3 (app), #4 (confirm/redirect fixes, health page) merged; Vercel staging live; sign-up and email confirmation working.
 - 2026-10-12 — PR #5 merged (H2); database connection works on staging; owner bootstrapped as Super Admin (S5). Step 5.3 complete.
 - 2026-10-12 — 5.4: migration 0007 (SIM products, preparation rules); SIM ICCIDs at receiving; configureRouter, changeRouterSim, listFreeSims, serialiseItems with tests (R7, R8).
+- 2026-10-12 — 5.5: deployment actions (create, add/remove item, schedule, cancel, complete) with friendly stock/configuration checks; shared `parseInput`; clear "not enough stock" message (R9).

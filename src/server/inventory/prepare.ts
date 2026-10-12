@@ -1,7 +1,7 @@
 import "server-only";
 import { z } from "zod";
 import { requirePermission, withActor } from "../actor";
-import { ValidationError } from "../errors";
+import { parseInput as parse, ValidationError } from "../errors";
 
 // Device preparation ("Device preparation" screen in design/), all in MRD Office:
 //   configureRouter  — put a free SIM into a router and record its IP; both become "configured"
@@ -13,14 +13,6 @@ import { ValidationError } from "../errors";
 
 const unitId = z.number().int().positive();
 const ipAddress = z.union([z.ipv4(), z.ipv6()], { error: "Enter a valid IP address" });
-
-function parse<T>(schema: z.ZodType<T>, raw: unknown): T {
-  const parsed = schema.safeParse(raw);
-  if (!parsed.success) {
-    throw new ValidationError(parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; "));
-  }
-  return parsed.data;
-}
 
 export type FreeSim = { unitId: number; iccid: string; phoneNumber: string | null; carrier: string | null; product: string };
 
