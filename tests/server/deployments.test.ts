@@ -90,9 +90,9 @@ describe("drafting a deployment", () => {
     await expect(addDeploymentItem(EDITOR, { deploymentId, unitId: unit["DEP-R2"] })).rejects.toThrow(/not configured/);
   });
 
-  it("a SIM cannot be added on its own — it travels inside its router", async () => {
+  it("a SIM inside a router cannot be added on its own — it travels with the router", async () => {
     await expect(addDeploymentItem(EDITOR, { deploymentId, unitId: unit["8996800000000000201"] }))
-      .rejects.toThrow(/travels inside its router/);
+      .rejects.toThrow(/inside router DEP-R1/);
   });
 
   it("a configured router and 6 cables are added; nothing moves yet", async () => {

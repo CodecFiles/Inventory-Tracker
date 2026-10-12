@@ -455,6 +455,8 @@ application code forgets. No updates or deletes allowed, for anyone.
 | 0005 | `20261011000005_permissions_audit.sql` | permissions catalogue, role/user permissions, `has_permission`, user-change rules, audit log via triggers | 16 passing |
 | 0006 | `20261011000006_auth_link.sql` | every Supabase Auth sign-up becomes a pending MRD user; one-time `bootstrap_first_super_admin` | 7 passing |
 | 0007 | `20261012000007_sim_products.sql` | `products.is_sim`; SIM details only for SIM units; SIM assignment needs a free SIM (`in_office`) and a router that is `in_office`/`configured` | 8 passing (0004 test 6 now refused by the status rule) |
+| 0008 | `20261012000008_retired_units.sql` | a retired unit can't be moved again (except a Super Admin `correction`); trigger named `0_…` so it runs before `stock_movements_apply` | 3 passing; renaming it to run second broke valid write-offs (order proven) |
+| 0009 | `20261012000009_fix_shipment_cancel.sql` | **bug fix**: cancelling a shipment always failed (0004 compared a shipment status with `scheduled`) | 3 passing; fail without the fix |
 
 Implementation notes (0001):
 - A unit's product must match its batch line — enforced with a **composite foreign key**

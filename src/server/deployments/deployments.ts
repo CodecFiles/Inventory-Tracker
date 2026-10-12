@@ -3,6 +3,7 @@ import { z } from "zod";
 import { requirePermission, withActor } from "../actor";
 import type { Tx } from "../db";
 import { parseInput, ValidationError } from "../errors";
+import { assertEnoughStock, assertSimNotInRouter } from "../inventory/stock";
 
 // Deployments ("Create deployment" / "Deployments" screens in design/).
 //
@@ -76,13 +77,17 @@ export async function addDeploymentItem(userId: string, rawInput: unknown): Prom
                u.location_id::int as "locationId", p.requires_configuration as "needsConfig", p.is_sim as "isSim"
         from units u join products p on p.id = u.product_id where u.id = ${input.unitId}`;
       if (!unit) throw new ValidationError("That unit does not exist");
-      if (unit.isSim) throw new ValidationError(`SIM ${unit.serial} travels inside its router — add the router instead`);
+      if (unit.isSim) await assertSimNotInRouter(tx, input.unitId, unit.serial);
       if (unit.locationId !== source.fromLocationId) {
         throw new ValidationError(source.abroad
           ? `${unit.serial} is not in the partner's stock — ship it to the partner first`
           : `${unit.serial} is not in MRD Office`);
       }
-      // Oman: routers must be configured first (lifecycle M1). Abroad: units arrive already prepared.
+      const usable = source.abroad ? ["shipped_to_partner"] : ["in_office", "configured"];
+      if (!usable.includes(unit.status)) {
+        throw new ValidationError(`${unit.serial} is ${unit.status.replaceAll("_", " ")} and cannot be deployed`);
+      }
+      // Oman: routers must be configured first (lifecycle M1). Abroad: the partner configures them (R10).
       if (!source.abroad && unit.needsConfig && unit.status !== "configured") {
         throw new ValidationError(`Router ${unit.serial} is not configured yet — give it a SIM first`);
       }
@@ -154,16 +159,11 @@ export async function completeDeployment(userId: string, rawInput: unknown): Pro
         throw new ValidationError(`Not configured: ${notReady.map((r) => r.serial).join(", ")} — give them a SIM first`);
       }
     }
-    const short = await tx<{ name: string; needed: number; available: number }[]>`
-      select p.name, sum(i.quantity)::int as needed, coalesce(max(s.quantity), 0)::int as available
-      from deployment_items i join products p on p.id = i.product_id
-      left join stock_levels s on s.product_id = i.product_id and s.location_id = ${source.fromLocationId}
-      where i.deployment_id = ${input.deploymentId} and i.removed_at is null and i.unit_id is null
-      group by p.name having sum(i.quantity) > coalesce(max(s.quantity), 0)`;
-    if (short.length) {
-      throw new ValidationError("Not enough stock: " +
-        short.map((r) => `${r.name} (need ${r.needed}, have ${r.available})`).join("; "));
-    }
+    const counted = await tx<{ name: string; productId: number; quantity: number }[]>`
+      select p.name, i.product_id::int as "productId", i.quantity from deployment_items i
+      join products p on p.id = i.product_id
+      where i.deployment_id = ${input.deploymentId} and i.removed_at is null and i.unit_id is null`;
+    await assertEnoughStock(tx, source.fromLocationId, counted);
 
     await tx`select complete_deployment(${input.deploymentId}, ${userId}, ${input.date ?? null})`;
   });
