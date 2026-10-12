@@ -2,10 +2,10 @@
 
 _Last updated: 2026-10-12_
 
-**Current stage:** 6 — Frontend (step 6.1 done: app shell, design tokens, sign-in pages)
+**Current stage:** 6 — Frontend (step 6.2 done: Dashboard, inventory list, item detail)
 
-**Next action:** owner reviews 6.1 on staging after the PR (sign-in pages, sidebar, approvals page,
-search); then 6.2 — Dashboard and inventory screens.
+**Next action:** PR for 6.2 (+ migration 0013); then 6.3 — Receive stock, batches, device
+preparation and SIM cards (the first screens that change data).
 Google sign-in and custom SMTP (M3) before colleagues sign up.
 
 Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment-specific
@@ -200,6 +200,8 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 | 2026-10-12 | PR #6 merged; Google sign-in on staging (owner) | **First try: fail** | Back on /login with the "code" message: Google worked, the code exchange failed — most likely started on a deployment address (cookie on another host). Fix: the live site now redirects every address to SITE_URL (308); the message shows the exact reason code. Local check: 308 with VERCEL_ENV=production, 200 without |
 | 2026-10-12 | Google sign-in retest from the main address (owner) | **PASS** | Signed in with Google as nitin@moonrock.om → linked to the existing Super Admin account (same email); confirms the address-mismatch cause |
 | 2026-10-12 | 6.1 shell: screenshots (desktop + phone) in local preview mode; Vitest incl. `dev-preview.test.ts` | **PASS** — 113/113 | Sign-in pages match design/Login; phone: brand strip overflowed → fixed; Menu opens/closes; Viewer sees no "Users & roles" and is refused at /admin/users |
+| 2026-10-12 | 6.1 on staging (owner) | **PASS** | "merged, checked, looks good" |
+| 2026-10-12 | 6.2 screens in local preview (desktop + phone) + pgTAP 0013 (2) | **PASS** — 133 DB, 113 backend | Found and fixed: facility device count included SIMs; phone tiles one per row; table header alignment; SIM notes named the router by internal id → migration 0013 (notes use the serial number; tests fail without it) |
 | 2026-10-12 | Staging end-to-end (owner) | **PASS** | Sign-up → email confirm → sign-in → pending page → bootstrap → home shows role `super_admin` |
 
 ## Change log
@@ -245,3 +247,4 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 - 2026-10-12 — PR #6 merged (5.4–5.11, migrations 0007–0012). Canonical-address redirect + clearer sign-in error after the first Google test failed.
 - 2026-10-12 — PR #7 merged. Stage 5 closed (gate above); Stage 6 started.
 - 2026-10-12 — 6.1: design system CSS, app frame (sidebar, mobile menu, search), sign-in pages in the design with Google, approvals and search pages; local preview mode + demo data.
+- 2026-10-12 — 6.2: Dashboard (summary tiles, where everything is, facility pipeline, needs preparation, recent deployments, low stock), All inventory (status chips, filters, pagination, counted stock), item detail (connectivity, identity, SIM/router history, movement history); migration 0013.

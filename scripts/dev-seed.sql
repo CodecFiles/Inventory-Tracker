@@ -23,7 +23,7 @@ insert into products (name, brand, model, category_id, tracking_type, requires_c
 insert into products (name, brand, model, category_id, tracking_type, is_sim)
   select 'Omantel Data SIM', 'Omantel', 'SIM-DATA', id, 'serialised', true from categories where name = 'SIM cards';
 insert into products (name, brand, model, category_id, tracking_type, min_stock_level)
-  select 'CO₂ sensor', 'Milesight', 'AM103', id, 'hybrid', 10 from categories where name = 'Sensors';
+  select 'CO₂ sensor', 'Milesight', 'AM103', id, 'hybrid', 30 from categories where name = 'Sensors';
 insert into products (name, brand, model, category_id, tracking_type, min_stock_level)
   select 'Cat6 cable 3 m', 'Generic', 'CAT6-3M', id, 'quantity', 20 from categories where name = 'Cables';
 

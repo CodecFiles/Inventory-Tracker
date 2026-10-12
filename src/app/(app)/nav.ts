@@ -6,6 +6,9 @@ type Item = NavSection["items"][number] & { permission: string };
 
 const NAV: { title?: string; items: Item[] }[] = [
   { items: [{ href: "/", label: "Dashboard", icon: "dashboard", permission: "reports.view" }] },
+  { title: "Inventory", items: [
+    { href: "/inventory", label: "All inventory", icon: "inventory", permission: "reports.view" },
+  ] },
   { title: "Insights & admin", items: [
     { href: "/admin/users", label: "Users & roles", icon: "users", permission: "users.approve" },
   ] },

@@ -79,7 +79,7 @@ select.fld{padding-right:8px}
 .lnk{border:0;background:transparent;padding:0;font:inherit;font-size:13px;font-weight:500;color:#0B7A6B;cursor:pointer}
 .lnk:hover{color:#075C51;text-decoration:underline}
 .btn.dg{color:#A3201F;border-color:#F1C4C2}.btn.dg:hover{background:#FDEBEA;color:#8A1A19}
-.num{text-align:right}
+.num,.tbl th.num{text-align:right}
 
 /* Messages */
 .alert{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:10px;font-size:13px}
@@ -117,3 +117,17 @@ select.fld{padding-right:8px}
 .or{display:flex;align-items:center;gap:12px;color:#8A96A8;font-size:12px}
 .or::before,.or::after{content:"";flex:1;height:1px;background:#E3E7EC}
 @media (max-width:900px){.brand{padding:24px 20px;gap:18px;flex-basis:100%}.brand h1{font-size:24px !important}.brand .hide-sm{display:none !important}}
+
+/* Item detail (design/DeviceDetail.dc.html) */
+.fact{display:flex;align-items:center;gap:8px;font-size:13px;color:#3B4758}
+.ans{padding:14px 16px;display:flex;flex-direction:column;gap:4px;border-right:1px solid #EEF1F4;border-bottom:1px solid #EEF1F4;min-width:0}
+.ans .q{font-size:12px;color:#5E6B7D}
+.ans .a{font-size:13.5px;font-weight:500;color:#0E1726;overflow-wrap:anywhere}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 18px 12px}
+.hd h2{font-size:15px;font-weight:600}
+.kv{display:grid;grid-template-columns:140px minmax(0,1fr);align-items:center;gap:12px;padding:10px 18px;border-top:1px solid #EEF1F4;font-size:13px}
+.kv .k{color:#5E6B7D}
+.ev{display:grid;grid-template-columns:32px minmax(0,1fr);gap:14px;position:relative;padding-bottom:14px}
+.ev .ic{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;z-index:1;font-size:13px;font-weight:600}
+.ev .rail{position:absolute;left:15px;top:32px;bottom:0;width:2px;background:#EEF1F4}
+.ev:last-child .rail{display:none}
