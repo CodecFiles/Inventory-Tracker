@@ -1,5 +1,6 @@
 import "server-only";
 import { redirect } from "next/navigation";
+import { devPreviewUserId } from "@/lib/dev-preview";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getSql } from "./db";
 
@@ -15,10 +16,13 @@ export type SessionUser = {
 };
 
 export async function getSessionUser(): Promise<SessionUser | null> {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.auth.getClaims();
-  const userId = data?.claims?.sub;
-  if (error || !userId) return null;
+  let userId = devPreviewUserId();
+  if (!userId) {
+    const supabase = await createSupabaseServerClient();
+    const { data, error } = await supabase.auth.getClaims();
+    if (error || !data?.claims?.sub) return null;
+    userId = data.claims.sub;
+  }
 
   const [row] = await getSql()<SessionUser[]>`
     select id, email, full_name as "fullName", role::text as role, status::text as status
@@ -33,3 +37,15 @@ export async function requireApprovedUser(): Promise<SessionUser> {
   if (user.status !== "approved") redirect("/pending");
   return user;
 }
+
+// The permissions of the signed-in user, so screens can hide what they cannot use.
+// Hiding is only for convenience: every action checks the permission again on the server.
+export async function getPermissions(userId: string): Promise<Set<string>> {
+  const rows = await getSql()<{ key: string }[]>`
+    select key from permissions where has_permission(${userId}, key)`;
+  return new Set(rows.map((r) => r.key));
+}
+
+export const ROLE_LABEL: Record<string, string> = {
+  super_admin: "Super Admin", admin: "Admin", editor: "Editor", viewer: "Viewer",
+};
