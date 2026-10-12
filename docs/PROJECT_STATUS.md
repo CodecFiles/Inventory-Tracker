@@ -5,7 +5,7 @@ _Last updated: 2026-10-12_
 **Current stage:** 6 — Frontend (step 6.1 done: app shell, design tokens, sign-in pages)
 
 **Next action:** owner reviews 6.1 on staging after the PR (sign-in pages, sidebar, approvals page,
-search) and confirms the local preview mode (P1-dev); then 6.2 — Dashboard and inventory screens.
+search); then 6.2 — Dashboard and inventory screens.
 Google sign-in and custom SMTP (M3) before colleagues sign up.
 
 Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment-specific
@@ -49,7 +49,6 @@ Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment
 | H1 | Production hosting: Vercel Hobby terms may treat internal company use as commercial (secondary sources) — decide at Stage 8 (Vercel Pro, or a host whose free plan allows business use) | Revisit at Stage 8 |
 | M3 | Custom SMTP email sender before colleagues sign up (Google sign-in now works and avoids email for Google users) (built-in sender is limited; templates locked without it) | Before inviting colleagues |
 | E1 | `NEXT_PUBLIC_SUPABASE_URL` in the cloud environment lacks `https://` (code tolerates it) | Owner may fix (non-blocking) |
-| P1-dev | Local preview mode: `next dev` with `MRD_DEV_USER_ID` acts as a demo user on the local demo database (`scripts/dev-preview.sh`), so screens can be checked without a Supabase login. Ignored in production builds and on Vercel (tested) | Assistant added 2026-10-12 — owner to confirm |
 | R6 | Supabase region is Tokyo; consider a region closer to Oman | Revisit at Stage 8 |
 
 ## Stage 3 completion gate
@@ -136,6 +135,7 @@ Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment
 | A9 | A facility can have many configured routers over time. A closed facility may re-open for a new POC or contract; it must be re-opened (stage moved, with a reason) before anything is deployed to it — new or returned office routers can then go out | 2026-10-12 |
 | C1 | Catalogue records are archived, never deleted (contacts may be removed); a received product's kind is locked; a facility's country is locked once stock moved there; places holding stock cannot be archived; archived suppliers cannot be used for receiving | 2026-10-12 |
 | O1 | `/api/health/db` restricted to the Super Admin (was: any signed-in user) | 2026-10-12 |
+| P1-dev | Local preview mode: `next dev` with `MRD_DEV_USER_ID` acts as a demo user on the local demo database (`scripts/dev-preview.sh`), so screens can be checked without a Supabase login. Ignored in production builds and on Vercel (tested) | 2026-10-12 (owner: keep it) |
 | D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
 Stage 2 revision needed (rule 4), handled during Stage 6:
