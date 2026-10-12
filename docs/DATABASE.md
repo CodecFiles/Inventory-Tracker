@@ -210,6 +210,11 @@ exceed its `quantity_received`.
 | phone_number | text | optional, unique when present |
 | carrier | text | optional |
 
+Added in 0007 (R7, 2026-10-12): `products.is_sim` (yes/no, set **once per product** in the catalogue,
+e.g. "Omantel Data SIM"). A SIM product must be serialised. When a SIM product is received, each
+serial number is the SIM's ICCID and a `sim_details` row is created; `sim_details` is refused for
+units of non-SIM products.
+
 ## L3. Part 2 — locations, movements, stock levels
 
 The bank-account model: a bank keeps **every transaction** (never edited) and a **balance**.
@@ -449,6 +454,7 @@ application code forgets. No updates or deletes allowed, for anyone.
 | 0004 | `20261011000004_deployments_shipments_sims.sql` | automatic codes (batches, DEP, SHP), deployments + items, shipments + items, SIM assignments, `complete_deployment`, `ship_shipment` | 21 passing |
 | 0005 | `20261011000005_permissions_audit.sql` | permissions catalogue, role/user permissions, `has_permission`, user-change rules, audit log via triggers | 16 passing |
 | 0006 | `20261011000006_auth_link.sql` | every Supabase Auth sign-up becomes a pending MRD user; one-time `bootstrap_first_super_admin` | 7 passing |
+| 0007 | `20261012000007_sim_products.sql` | `products.is_sim`; SIM details only for SIM units; SIM assignment needs a free SIM (`in_office`) and a router that is `in_office`/`configured` | 8 passing (0004 test 6 now refused by the status rule) |
 
 Implementation notes (0001):
 - A unit's product must match its batch line — enforced with a **composite foreign key**

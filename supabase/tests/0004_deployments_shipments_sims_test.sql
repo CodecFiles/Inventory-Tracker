@@ -12,8 +12,8 @@ insert into categories (name) values ('Routers'), ('SIM cards'), ('Cables');
 insert into suppliers (name, code_prefix) values ('Teltonika Distributor', 'TEL');
 insert into products (name, brand, model, category_id, tracking_type, requires_configuration)
   select 'TRB router', 'Teltonika', 'TRB140', id, 'serialised', true from categories where name = 'Routers';
-insert into products (name, brand, model, category_id, tracking_type)
-  select 'Data SIM', 'Omantel', 'SIM-DATA', id, 'serialised' from categories where name = 'SIM cards';
+insert into products (name, brand, model, category_id, tracking_type, is_sim)
+  select 'Data SIM', 'Omantel', 'SIM-DATA', id, 'serialised', true from categories where name = 'SIM cards';
 insert into products (name, brand, model, category_id, tracking_type)
   select 'Cat6 cable', 'Generic', 'CAT6-1M', id, 'quantity' from categories where name = 'Cables';
 
@@ -65,7 +65,7 @@ select throws_ok(
   '23505', null, 'a router cannot hold two SIMs at the same time (R1)');
 select throws_ok(
   $$ insert into sim_assignments (router_unit_id, sim_unit_id, assigned_by) select r2, s1, me from u $$,
-  '23505', null, 'a SIM cannot be in two routers at the same time');
+  '23514', null, 'a SIM cannot be in two routers at the same time (since 0007 refused by the SIM status rule)');
 select throws_ok(
   $$ insert into sim_assignments (router_unit_id, sim_unit_id, ip_address, assigned_by) select r2, s2, '10.0.0.11', me from u $$,
   '23505', null, 'the same IP cannot be in use twice');
