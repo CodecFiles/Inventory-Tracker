@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { devPreviewUserId } from "@/lib/dev-preview";
 import { supabasePublishableKey, supabaseUrl } from "@/lib/supabase/config";
 
 // Runs before every page. It keeps the login session fresh (Supabase tokens expire and are renewed
@@ -23,6 +24,9 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(url, 308);
     }
   }
+
+  // local preview mode (never in production): skip the Supabase session
+  if (devPreviewUserId()) return NextResponse.next({ request });
 
   let response = NextResponse.next({ request });
 
