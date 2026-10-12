@@ -4,8 +4,9 @@ _Last updated: 2026-10-12_
 
 **Current stage:** 5 — Backend (step 5.3 done: staging site live end-to-end)
 
-**Next action:** step 5.11 — Google sign-in, restrict the health page to the Super Admin, and the
-Stage 5 completion gate (owner review + exercise); then PR to deploy migrations 0007–0012 to staging.
+**Next action:** owner sets up the Google OAuth client and enables Google in Supabase (steps in chat
+2026-10-12); PR to bring 5.4–5.11 and migrations 0007–0012 to staging; test Google sign-in there;
+then the Stage 5 completion gate.
 Google sign-in and custom SMTP (M3) before colleagues sign up.
 
 Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment-specific
@@ -50,7 +51,6 @@ Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment
 | M3 | Custom SMTP email sender before colleagues sign up (built-in sender is limited; templates locked without it) | Before inviting colleagues |
 | E1 | `NEXT_PUBLIC_SUPABASE_URL` in the cloud environment lacks `https://` (code tolerates it) | Owner may fix (non-blocking) |
 | R6 | Supabase region is Tokyo; consider a region closer to Oman | Revisit at Stage 8 |
-| O1 | `/api/health/db` diagnostic page (signed-in users only) — remove or restrict to Super Admin | Before colleagues sign up |
 
 ## Stage 3 completion gate
 
@@ -126,6 +126,7 @@ Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment
 | R12 | Facility stages: forward only; an Editor may skip steps with a reason noted on the form; moving back or re-opening a closed facility needs an Admin/Super Admin and a reason (owner re-confirmed: re-opening is Admin/Super Admin only); `closed` from any stage | 2026-10-12 |
 | A9 | A facility can have many configured routers over time. A closed facility may re-open for a new POC or contract; it must be re-opened (stage moved, with a reason) before anything is deployed to it — new or returned office routers can then go out | 2026-10-12 |
 | C1 | Catalogue records are archived, never deleted (contacts may be removed); a received product's kind is locked; a facility's country is locked once stock moved there; places holding stock cannot be archived; archived suppliers cannot be used for receiving | 2026-10-12 |
+| O1 | `/api/health/db` restricted to the Super Admin (was: any signed-in user) | 2026-10-12 |
 | D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
 Stage 2 revision needed (rule 4): the Users/Settings screens show Admin/Operations/Technician/Viewer
@@ -171,6 +172,7 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 | 2026-10-12 | A9 closed-facility rule (1 backend test) | **86/86 pass** | Mutation: without the check at completion, 2 tests fail |
 | 2026-10-12 | 5.9 catalogue: pgTAP 0012 (7) + Vitest `catalogue.test.ts` (13) | **First run: fail** → fixed → **131/131 + 99/99 pass** | Test found a real bug: product details were saved as text, not data (double JSON conversion). Mutation: without the kind lock, 1 test fails |
 | 2026-10-12 | 5.10 read queries: Vitest `queries.test.ts` (12) | **111/111 pass** | Mutations: removing the search escaping failed 1 test; removing the "no SIM" filter first passed unnoticed (weak test data) → added a configured router in the office → now fails as expected |
+| 2026-10-12 | Google button smoke test (local build against staging Supabase) | **Code path OK** | Button sends the browser to Supabase's Google authorize address; Supabase answers "provider is not enabled" until the owner configures Google |
 | 2026-10-12 | Staging end-to-end (owner) | **PASS** | Sign-up → email confirm → sign-in → pending page → bootstrap → home shows role `super_admin` |
 
 ## Change log
@@ -212,3 +214,4 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 - 2026-10-12 — A9: deployments to a closed facility are refused until it is re-opened.
 - 2026-10-12 — 5.9: catalogue management (create/update/archive/restore for 7 lists, contacts); migration 0012; C1.
 - 2026-10-12 — 5.10: read queries (stock overview + low stock, item lists, item history, search, deployments/shipments/batches, facilities, lookups, audit log).
+- 2026-10-12 — 5.11: Google sign-in button + clearer confirm-route errors; health page Super Admin only (O1).

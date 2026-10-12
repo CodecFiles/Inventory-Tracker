@@ -1,16 +1,26 @@
 import { NextResponse } from "next/server";
 import postgres from "postgres";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { databaseUrl } from "@/server/db";
+import { databaseUrl, getSql } from "@/server/db";
 
 // Diagnostic for the database connection, for staging set-up. It shows the NON-secret parts of
-// the database address (DATABASE_URL or POSTGRES_URL) (user, host, port, database), only the *length* of the password, common mistakes,
-// and the database's answer to a test query. Only signed-in users can open it.
+// the database address (DATABASE_URL or POSTGRES_URL): user, host, port, database, only the *length*
+// of the password, common mistakes, and the database's answer to a test query. Only the Super Admin can open it: it describes how the
+// server reaches the database, which nobody else needs to know.
 // Visit: /api/health/db
 export async function GET() {
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase.auth.getClaims();
-  if (!data?.claims?.sub) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
+  const userId = data?.claims?.sub;
+  if (!userId) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
+
+  // Checking the role needs the database. If that fails, say only that — no connection details.
+  try {
+    const [me] = await getSql()`select role::text from users where id = ${userId} and status = 'approved'`;
+    if (me?.role !== "super_admin") return NextResponse.json({ error: "Super Admin only" }, { status: 403 });
+  } catch (e) {
+    return NextResponse.json({ ok: false, problem: "The database cannot be reached", code: (e as { code?: string }).code }, { status: 503 });
+  }
 
   const source = process.env.DATABASE_URL ? "DATABASE_URL" : process.env.POSTGRES_URL ? "POSTGRES_URL" : null;
   const raw = databaseUrl();
