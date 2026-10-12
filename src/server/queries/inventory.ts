@@ -61,7 +61,8 @@ export const ListUnitsInput = Page.extend({
 export type UnitRow = {
   unitId: number; serial: string; imei: string | null; product: string; productId: number; status: string;
   place: string; location: string; iccid: string | null; phoneNumber: string | null;
-  simIccid: string | null; ipAddress: string | null; inRouter: string | null; total: number;
+  simIccid: string | null; ipAddress: string | null; inRouter: string | null; batchCode: string; batchId: number;
+  total: number;
 };
 
 export async function listUnits(userId: string, rawInput: unknown = {}): Promise<{ rows: UnitRow[]; total: number }> {
@@ -72,11 +73,13 @@ export async function listUnits(userId: string, rawInput: unknown = {}): Promise
              u.status::text as status, l.type::text as place, l.name as location,
              d.iccid, d.phone_number as "phoneNumber",
              rs.serial_number as "simIccid", host(ra.ip_address) as "ipAddress",
-             sr.serial_number as "inRouter",
+             sr.serial_number as "inRouter", b.code as "batchCode", b.id::int as "batchId",
              count(*) over ()::int as total
       from units u
       join products p on p.id = u.product_id
       join locations l on l.id = u.location_id
+      join batch_lines bl on bl.id = u.batch_line_id
+      join batches b on b.id = bl.batch_id
       left join sim_details d on d.unit_id = u.id
       left join sim_assignments ra on ra.router_unit_id = u.id and ra.ended_at is null
       left join units rs on rs.id = ra.sim_unit_id
@@ -103,10 +106,25 @@ export async function listUnits(userId: string, rawInput: unknown = {}): Promise
 // ---------------------------------------------------------------------------------------------
 // One item's full story (Device detail): what it is, where it is, every movement, its SIM history.
 // ---------------------------------------------------------------------------------------------
-export async function unitDetail(userId: string, rawInput: unknown) {
+export type UnitInfo = {
+  unitId: number; serial: string; imei: string | null; status: string; createdAt: Date;
+  productId: number; product: string; brand: string; model: string; isSim: boolean; needsConfiguration: boolean;
+  place: string; location: string; batchCode: string; supplier: string; receivedOn: Date;
+  iccid: string | null; phoneNumber: string | null; carrier: string | null;
+};
+export type Movement = {
+  id: number; type: string; movedAt: Date; note: string | null; from: string | null; to: string | null;
+  by: string; document: string | null;
+};
+export type SimLink = {
+  otherUnitId: number; otherSerial: string; ipAddress: string | null; assignedAt: Date; endedAt: Date | null;
+  assignedBy: string; endedBy: string | null;
+};
+
+export async function unitDetail(userId: string, rawInput: unknown): Promise<UnitInfo & { movements: Movement[]; simHistory: SimLink[] }> {
   const { unitId } = parseInput(z.object({ unitId: z.number().int().positive() }), rawInput);
   return read(userId, async (tx) => {
-    const [unit] = await tx`
+    const [unit] = await tx<UnitInfo[]>`
       select u.id::int as "unitId", u.serial_number as serial, u.imei, u.status::text as status, u.created_at as "createdAt",
              p.id::int as "productId", p.name as product, p.brand, p.model, p.is_sim as "isSim",
              p.requires_configuration as "needsConfiguration",
@@ -123,7 +141,7 @@ export async function unitDetail(userId: string, rawInput: unknown) {
       where u.id = ${unitId}`;
     if (!unit) throw new ValidationError("That item does not exist");
 
-    const movements = await tx`
+    const movements = await tx<Movement[]>`
       select m.id::int, m.movement_type::text as type, m.moved_at as "movedAt", m.note,
              fl.name as "from", tl.name as "to", us.full_name as "by",
              coalesce(dp.code, sh.code, bt.code) as document
@@ -138,8 +156,9 @@ export async function unitDetail(userId: string, rawInput: unknown) {
       order by m.moved_at, m.id`;
 
     // SIM history: for a router, the SIMs it held; for a SIM, the routers it was in
-    const simHistory = await tx`
-      select case when a.router_unit_id = ${unitId} then s.serial_number else r.serial_number end as "otherSerial",
+    const simHistory = await tx<SimLink[]>`
+      select case when a.router_unit_id = ${unitId} then s.id else r.id end::int as "otherUnitId",
+             case when a.router_unit_id = ${unitId} then s.serial_number else r.serial_number end as "otherSerial",
              host(a.ip_address) as "ipAddress", a.assigned_at as "assignedAt", a.ended_at as "endedAt",
              ab.full_name as "assignedBy", eb.full_name as "endedBy"
       from sim_assignments a
@@ -183,4 +202,44 @@ export async function search(userId: string, rawInput: unknown): Promise<SearchH
      from batches b join suppliers s on s.id = b.supplier_id
      where b.code ilike ${like} or b.invoice_number ilike ${like} or b.purchase_order ilike ${like}
      order by b.id desc limit 5)`);
+}
+
+// ---------------------------------------------------------------------------------------------
+// How many units have each status (Inventory screen's status chips), optionally for one product.
+// ---------------------------------------------------------------------------------------------
+export async function unitStatusCounts(userId: string, rawInput: unknown = {}): Promise<Record<string, number>> {
+  const { productId } = parseInput(z.object({ productId: optionalId }), rawInput);
+  return read(userId, async (tx) => {
+    const rows = await tx<{ status: string; n: number }[]>`
+      select status::text, count(*)::int as n from units
+      where true ${productId ? tx`and product_id = ${productId}` : tx``}
+      group by 1`;
+    return Object.fromEntries(rows.map((r) => [r.status, r.n]));
+  });
+}
+
+// ---------------------------------------------------------------------------------------------
+// Dashboard totals: where the units are, facilities per stage, and people waiting for approval.
+// ---------------------------------------------------------------------------------------------
+export async function dashboardSummary(userId: string) {
+  return read(userId, async (tx) => {
+    const [where] = await tx<{ office: number; facilities: number; partners: number; repair: number; total: number }[]>`
+      select count(*) filter (where l.type = 'office')::int as office,
+             count(*) filter (where l.type = 'facility')::int as facilities,
+             count(*) filter (where l.type = 'partner_stock')::int as partners,
+             count(*) filter (where u.status = 'in_repair')::int as repair,
+             count(*)::int as total
+      from units u join locations l on l.id = u.location_id
+      where u.status not in ('retired', 'returned_to_supplier')`;
+    const stages = await tx<{ stage: string; n: number }[]>`
+      select stage::text, count(*)::int as n from facilities where is_active group by 1`;
+    const [{ routersWithoutSim }] = await tx<{ routersWithoutSim: number }[]>`
+      select count(*)::int as "routersWithoutSim" from units u join products p on p.id = u.product_id
+      where p.requires_configuration and u.location_id = office_location_id() and u.status in ('in_office', 'configured')
+        and not exists (select 1 from sim_assignments a where a.router_unit_id = u.id and a.ended_at is null)`;
+    const [{ pendingUsers }] = await tx<{ pendingUsers: number }[]>`
+      select count(*)::int as "pendingUsers" from users where status = 'pending'`;
+    return { where, stages: Object.fromEntries(stages.map((r) => [r.stage, r.n])) as Record<string, number>,
+             routersWithoutSim, pendingUsers };
+  });
 }

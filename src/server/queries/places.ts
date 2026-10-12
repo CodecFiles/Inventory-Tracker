@@ -17,7 +17,8 @@ export async function listFacilities(userId: string, rawInput: unknown = {}) {
   return read(userId, (tx) => tx`
     select f.id::int, f.name, f.city, f.stage::text as stage, f.is_active as "isActive",
            cl.name as client, c.name as country, p.name as partner,
-           (select count(*)::int from units u where u.location_id = l.id and u.status <> 'retired') as units
+           (select count(*)::int from units u join products pr on pr.id = u.product_id
+            where u.location_id = l.id and u.status <> 'retired' and not pr.is_sim) as units
     from facilities f join clients cl on cl.id = f.client_id join countries c on c.id = f.country_id
     join locations l on l.facility_id = f.id left join partners p on p.id = f.partner_id
     where true

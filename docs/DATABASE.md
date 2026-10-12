@@ -460,6 +460,7 @@ application code forgets. No updates or deletes allowed, for anyone.
 | 0010 | `20261012000010_configure_at_partner.sql` | a router can get its SIM at a partner abroad (both in that partner's stock), as well as in MRD Office (A8) | 5 passing; removing the partner rule fails 2 backend tests |
 | 0011 | `20261012000011_stage_rules_corrections.sql` | facility stages forward only (skip needs a reason; back/re-open only Admin/Super Admin with a reason; `closed` any time); reason kept in stage history via `app.stage_note`; `correction` movements only by a Super Admin, with a reason | 11 passing; 0002 test now gives a reason for its skip |
 | 0012 | `20261012000012_catalogue_rules.sql` | a received product's kind (tracking, configuration, SIM) is locked; a facility's country is locked once stock moved there; a facility/partner holding stock cannot be archived | 7 passing; removing the kind lock fails 1 backend test |
+| 0013 | `20261012000013_sim_note_serial.sql` | movement notes for a SIM travelling inside its router name the router's serial number (was its internal id) | 2 passing; fail without the fix |
 
 Implementation notes (0001):
 - A unit's product must match its batch line — enforced with a **composite foreign key**

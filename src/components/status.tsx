@@ -12,6 +12,9 @@ const UNIT: Record<string, [string, string]> = {
   retired: ["Retired", "s-retired"],
 };
 
+// in the order of a unit's life, for filters
+export const UNIT_STATUSES = Object.entries(UNIT).map(([key, [label]]) => [key, label] as const);
+
 export function UnitStatus({ status }: { status: string }) {
   const [label, cls] = UNIT[status] ?? [status, ""];
   return <span className={`b ${cls}`}>{label}</span>;
