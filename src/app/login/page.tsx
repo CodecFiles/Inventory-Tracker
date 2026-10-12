@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { signIn } from "../auth-actions";
+import { signIn, signInWithGoogle } from "../auth-actions";
 import styles from "../auth.module.css";
 
 export default async function LoginPage({ searchParams }: PageProps<"/login">) {
@@ -22,6 +22,9 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
         <p>
           New here? <Link href="/signup">Request an account</Link>
         </p>
+      </form>
+      <form action={signInWithGoogle} className={styles.card}>
+        <button type="submit" className={styles.secondary}>Continue with Google</button>
       </form>
     </main>
   );

@@ -1,11 +1,16 @@
 # Project status
 
-_Last updated: 2026-10-11_
+_Last updated: 2026-10-12_
 
-**Current stage:** 5 — Backend (step 5.3: staging site on Vercel being set up)
+**Current stage:** 5 — Backend (step 5.3 done: staging site live end-to-end)
 
-**Next action:** owner says "open PR" → PR #3 merges the app into `main` → Vercel builds staging;
-owner sets Supabase Site URL/redirects, signs up, runs `bootstrap_first_super_admin`.
+**Next action:** owner sets up the Google OAuth client and enables Google in Supabase (steps in chat
+2026-10-12); PR to bring 5.4–5.11 and migrations 0007–0012 to staging; test Google sign-in there;
+then the Stage 5 completion gate.
+Google sign-in and custom SMTP (M3) before colleagues sign up.
+
+Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment-specific
+`inventory-<random>-mrd23.vercel.app` addresses change on every deploy).
 
 ## Stage checklist
 
@@ -15,7 +20,7 @@ owner sets Supabase Site URL/redirects, signs up, runs `bootstrap_first_super_ad
 | 2 UI/UX Design | Complete (design level) | `design/` — 26 screens, live canvas |
 | 3 Architecture | Complete | `docs/ARCHITECTURE.md` (approved); gate below |
 | 4 Database | Complete | Gate below; migrations 0001–0005 on Supabase staging; 87 tests + race test green in CI |
-| 5 Backend | In progress | data-access layer; `receiveDelivery`; login/sign-up/approval; 17 backend tests + 94 DB tests |
+| 5 Backend | In progress | data-access layer; receiving; device preparation; deployments; shipments; abroad configuration; returns/repairs/write-offs; facility stages; corrections; catalogue management; read queries for every screen; login/sign-up/approval; 111 backend tests + 131 DB tests |
 | 6 Frontend | Not started | — |
 | 7 Testing | Not started | — |
 | 8 Hosting and Launch | Not started | — |
@@ -45,6 +50,7 @@ owner sets Supabase Site URL/redirects, signs up, runs `bootstrap_first_super_ad
 | H1 | Production hosting: Vercel Hobby terms may treat internal company use as commercial (secondary sources) — decide at Stage 8 (Vercel Pro, or a host whose free plan allows business use) | Revisit at Stage 8 |
 | M3 | Custom SMTP email sender before colleagues sign up (built-in sender is limited; templates locked without it) | Before inviting colleagues |
 | E1 | `NEXT_PUBLIC_SUPABASE_URL` in the cloud environment lacks `https://` (code tolerates it) | Owner may fix (non-blocking) |
+| R6 | Supabase region is Tokyo; consider a region closer to Oman | Revisit at Stage 8 |
 
 ## Stage 3 completion gate
 
@@ -109,6 +115,18 @@ owner sets Supabase Site URL/redirects, signs up, runs `bootstrap_first_super_ad
 | S4 | Branch rule narrowed to `main` (PR required); working branch pushes normally | 2026-10-11 |
 | B1 | Server talks to PostgreSQL directly (postgres.js, one transaction per action, `app.user_id` set per transaction); Supabase used for Auth/Storage | 2026-10-11 |
 | H0 | Staging site on Vercel (owner's choice; owner considers it personal/non-commercial — assistant flagged the terms risk, see H1) | 2026-10-11 |
+| H2 | Vercel uses the Supabase integration's `POSTGRES_URL` (transaction pooler) when `DATABASE_URL` is absent; old manual `DATABASE_URL` removed (PR #5) | 2026-10-12 |
+| S5 | First Super Admin bootstrapped on staging (owner's account) via `bootstrap_first_super_admin` | 2026-10-12 |
+| R7 | SIMs: a product is marked once as "is a SIM"; ICCIDs entered at receiving; Configure window picks a free SIM by ICCID from a dropdown | 2026-10-12 |
+| R8 | When a router's SIM is swapped, the person chooses: old SIM back as a spare, or retired (option C) | 2026-10-12 |
+| R9 | Routers must be configured (have a SIM) before an Oman deployment (from lifecycle M1; owner may relax). SIMs are never deployment lines on their own — they travel inside their router | 2026-10-12 |
+| R10 | Routers may be shipped abroad unconfigured, with loose SIMs, for the partner to configure; the "configured first" rule (R9) applies to Oman deployments only. A SIM inside a router is never its own line; a loose SIM can be | 2026-10-12 |
+| A8 | Everything abroad is tracked: serials shipped, SIMs, which SIM + IP is in which router (recorded by MRD for the partner), and international deployments | 2026-10-12 |
+| R11 | A router returned from an Oman site brings its SIM back and stays configured (ready to redeploy). For repair, supplier return or write-off of a router with a SIM, the person chooses: SIM kept as spare (brought back to the office) or retired (owner confirmed 2026-10-12: returned routers are usually reused as-is, without reconfiguration) | 2026-10-12 |
+| R12 | Facility stages: forward only; an Editor may skip steps with a reason noted on the form; moving back or re-opening a closed facility needs an Admin/Super Admin and a reason (owner re-confirmed: re-opening is Admin/Super Admin only); `closed` from any stage | 2026-10-12 |
+| A9 | A facility can have many configured routers over time. A closed facility may re-open for a new POC or contract; it must be re-opened (stage moved, with a reason) before anything is deployed to it — new or returned office routers can then go out | 2026-10-12 |
+| C1 | Catalogue records are archived, never deleted (contacts may be removed); a received product's kind is locked; a facility's country is locked once stock moved there; places holding stock cannot be archived; archived suppliers cannot be used for receiving | 2026-10-12 |
+| O1 | `/api/health/db` restricted to the Super Admin (was: any signed-in user) | 2026-10-12 |
 | D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
 Stage 2 revision needed (rule 4): the Users/Settings screens show Admin/Operations/Technician/Viewer
@@ -143,6 +161,19 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 | 2026-10-11 | Backend (Vitest) 17 tests incl. approval | **17/17 pass** | Test IDs first used invalid UUIDs; the strict input check rejected them (correct) — test data fixed |
 | 2026-10-11 | pgTAP incl. 0006 | **94/94 pass** + race test | |
 | 2026-10-11 | Live smoke test against Supabase staging Auth | **PASS** | `/` and `/admin/users` redirect signed-out visitors to `/login`; login/sign-up pages render; bogus confirmation link rejected by Supabase |
+| 2026-10-12 | Staging DB connection (`/api/health/db`) | **First: fail** → fixed → **PASS** | 28P01: brackets left around the password in `DATABASE_URL`; then ECONNREFUSED when unset. Fixed by PR #5 (use `POSTGRES_URL`) |
+| 2026-10-12 | Approval on staging (owner) | **PASS** | Second account approved as Editor, reaches home page |
+| 2026-10-12 | 5.4 preparation: pgTAP 0007 (8) + Vitest `prepare.test.ts` (13) | **102/102 + 30/30 pass** | Mutation: removing the "SIM must be free" rule failed 1 backend + 4 DB tests. Older receive test narrowed to its own products (shared test DB) |
+| 2026-10-12 | 5.5 deployments: Vitest `deployments.test.ts` (14) | **44/44 pass** | Mutation: removing the "router must be configured" rule failed 5 tests (the completion check caught it a second time) |
+| 2026-10-12 | 5.6 shipments: Vitest `shipments.test.ts` (11) + pgTAP 0008 (3), 0009 (3) | **First run: fail** → fixed → **55/55 + 108/108 pass** | Tests found a real Stage 4 bug: shipments could never be cancelled (0009). Also closed a gap: retired units could be moved again (0008) |
+| 2026-10-12 | A8 configure at partner: pgTAP 0010 (5) + 2 backend tests | **113/113 + 57/57 pass** | Mutation: without the partner rule, 2 backend tests fail |
+| 2026-10-12 | 5.7 returns/repairs/write-offs: Vitest `movements.test.ts` (15) | **72/72 pass** | Mutation: without the "choose what happens to the SIM" rule, 2 tests fail. `changeRouterSim` now shares `takeSimOut`. Prepare test narrowed to its own SIMs (shared test DB) |
+| 2026-10-12 | 5.8 stages + corrections: pgTAP 0011 (11) + Vitest `stages-corrections.test.ts` (13) | **124/124 + 85/85 pass** | Mutation: without the database "only Admins move back" rule, 3 backend tests fail (the server relies on the database for that rule) |
+| 2026-10-12 | A9 closed-facility rule (1 backend test) | **86/86 pass** | Mutation: without the check at completion, 2 tests fail |
+| 2026-10-12 | 5.9 catalogue: pgTAP 0012 (7) + Vitest `catalogue.test.ts` (13) | **First run: fail** → fixed → **131/131 + 99/99 pass** | Test found a real bug: product details were saved as text, not data (double JSON conversion). Mutation: without the kind lock, 1 test fails |
+| 2026-10-12 | 5.10 read queries: Vitest `queries.test.ts` (12) | **111/111 pass** | Mutations: removing the search escaping failed 1 test; removing the "no SIM" filter first passed unnoticed (weak test data) → added a configured router in the office → now fails as expected |
+| 2026-10-12 | Google button smoke test (local build against staging Supabase) | **Code path OK** | Button sends the browser to Supabase's Google authorize address; Supabase answers "provider is not enabled" until the owner configures Google |
+| 2026-10-12 | Staging end-to-end (owner) | **PASS** | Sign-up → email confirm → sign-in → pending page → bootstrap → home shows role `super_admin` |
 
 ## Change log
 
@@ -172,3 +203,15 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 - 2026-10-11 — B1 = A; data-access layer (`withActor`, `requirePermission`) and `receiveDelivery` with 8 backend tests; backend tests added to CI.
 - 2026-10-11 — 5.3: migration 0006 (auth link, bootstrap), Supabase login/sign-up/confirm/pending pages, approval actions + admin page, proxy; tests and live smoke test pass.
 - 2026-10-11 — H0: Vercel for staging; email template edit not possible without SMTP — confirm route made friendly for the default link.
+- 2026-10-11 — PRs #3 (app), #4 (confirm/redirect fixes, health page) merged; Vercel staging live; sign-up and email confirmation working.
+- 2026-10-12 — PR #5 merged (H2); database connection works on staging; owner bootstrapped as Super Admin (S5). Step 5.3 complete.
+- 2026-10-12 — 5.4: migration 0007 (SIM products, preparation rules); SIM ICCIDs at receiving; configureRouter, changeRouterSim, listFreeSims, serialiseItems with tests (R7, R8).
+- 2026-10-12 — 5.5: deployment actions (create, add/remove item, schedule, cancel, complete) with friendly stock/configuration checks; shared `parseInput`; clear "not enough stock" message (R9).
+- 2026-10-12 — 5.6: shipment actions (create, add/remove item, cancel, ship, mark received); migrations 0008 (retired units stay retired) and 0009 (shipment cancel bug fix); R10 recorded; A8 asked.
+- 2026-10-12 — A8 answered (track everything abroad); migration 0010: configure routers at a partner; SIM dropdown per partner.
+- 2026-10-12 — 5.7: returnFromFacility, sendForRepair, backFromRepair, returnToSupplier, writeOff (units and counted items) with SIM handling (R11).
+- 2026-10-12 — 5.8: R12 decided; migration 0011 (stage rules, Super Admin corrections); changeFacilityStage, correctStock, correctUnit; A9 asked.
+- 2026-10-12 — A9: deployments to a closed facility are refused until it is re-opened.
+- 2026-10-12 — 5.9: catalogue management (create/update/archive/restore for 7 lists, contacts); migration 0012; C1.
+- 2026-10-12 — 5.10: read queries (stock overview + low stock, item lists, item history, search, deployments/shipments/batches, facilities, lookups, audit log).
+- 2026-10-12 — 5.11: Google sign-in button + clearer confirm-route errors; health page Super Admin only (O1).

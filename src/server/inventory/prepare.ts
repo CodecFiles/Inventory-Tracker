@@ -1,0 +1,122 @@
+import "server-only";
+import { z } from "zod";
+import { requirePermission, withActor } from "../actor";
+import { parseInput as parse, ValidationError } from "../errors";
+import { takeSimOut } from "./movements";
+
+// Device preparation ("Device preparation" screen in design/), in MRD Office or — for routers shipped
+// unconfigured — at a partner abroad (A8; MRD staff record what the partner did):
+//   configureRouter  — put a free SIM into a router and record its IP; both become "configured"
+//   changeRouterSim  — swap a router's SIM; the old SIM becomes a spare or is retired (owner's choice, R8)
+//   listFreeSims     — the SIMs that can be chosen in the Configure window's dropdown (office or a partner)
+//   serialiseItems   — give serial numbers to counted (hybrid) items such as CO2 sensors
+// The database refuses anything unsafe on its own (migrations 0004, 0007, 0010); these actions add
+// permission checks and clear messages.
+
+const unitId = z.number().int().positive();
+const ipAddress = z.union([z.ipv4(), z.ipv6()], { error: "Enter a valid IP address" });
+
+export type FreeSim = { unitId: number; iccid: string; phoneNumber: string | null; carrier: string | null; product: string };
+
+// Free = not inside any router, and available where the router is: in MRD Office (in_office) or in
+// the given partner's stock (shipped_to_partner).
+export async function listFreeSims(userId: string, rawInput: unknown = {}): Promise<FreeSim[]> {
+  const { partnerId } = parse(z.object({ partnerId: z.number().int().positive().optional() }), rawInput);
+  return withActor(userId, async (tx) => {
+    await requirePermission(tx, userId, "inventory.prepare");
+    const place = partnerId
+      ? tx`u.status = 'shipped_to_partner' and u.location_id = (select id from locations where partner_id = ${partnerId})`
+      : tx`u.status = 'in_office' and u.location_id = office_location_id()`;
+    return tx<FreeSim[]>`
+      select u.id::int as "unitId", d.iccid, d.phone_number as "phoneNumber", d.carrier, p.name as product
+      from units u
+      join products p on p.id = u.product_id and p.is_sim
+      join sim_details d on d.unit_id = u.id
+      where ${place}
+        and not exists (select 1 from sim_assignments a where a.sim_unit_id = u.id and a.ended_at is null)
+      order by d.iccid`;
+  });
+}
+
+export const ConfigureRouterInput = z.object({
+  routerUnitId: unitId,
+  simUnitId: unitId,
+  ipAddress: ipAddress.optional(),
+});
+
+export async function configureRouter(userId: string, rawInput: unknown): Promise<{ assignmentId: number }> {
+  const input = parse(ConfigureRouterInput, rawInput);
+  return withActor(userId, async (tx) => {
+    await requirePermission(tx, userId, "inventory.prepare");
+
+    const [current] = await tx`select id from sim_assignments where router_unit_id = ${input.routerUnitId} and ended_at is null`;
+    if (current) throw new ValidationError("This router already has a SIM — use Change SIM instead");
+
+    const [row] = await tx<{ id: number }[]>`
+      insert into sim_assignments (router_unit_id, sim_unit_id, ip_address, assigned_by)
+      values (${input.routerUnitId}, ${input.simUnitId}, ${input.ipAddress ?? null}, ${userId})
+      returning id::int`;
+    return { assignmentId: row.id };
+  });
+}
+
+export const ChangeRouterSimInput = z.object({
+  routerUnitId: unitId,
+  newSimUnitId: unitId,
+  ipAddress: ipAddress.optional(),
+  // what happens to the SIM taken out (R8): back to the office as a spare, or retired
+  oldSim: z.enum(["spare", "retire"]),
+});
+
+export async function changeRouterSim(userId: string, rawInput: unknown): Promise<{ assignmentId: number }> {
+  const input = parse(ChangeRouterSimInput, rawInput);
+  return withActor(userId, async (tx) => {
+    await requirePermission(tx, userId, "inventory.prepare");
+    // ends the current assignment and makes the old SIM a spare or retires it (needs inventory.move)
+    if (!(await takeSimOut(tx, userId, input.routerUnitId, input.oldSim))) {
+      throw new ValidationError("This router has no SIM yet — use Configure instead");
+    }
+
+    const [row] = await tx<{ id: number }[]>`
+      insert into sim_assignments (router_unit_id, sim_unit_id, ip_address, assigned_by)
+      values (${input.routerUnitId}, ${input.newSimUnitId}, ${input.ipAddress ?? null}, ${userId})
+      returning id::int`;
+    return { assignmentId: row.id };
+  });
+}
+
+export const SerialiseItemsInput = z.object({
+  batchLineId: z.number().int().positive(),
+  serials: z.array(z.string().trim().min(1).max(100)).min(1).max(1000),
+});
+
+export async function serialiseItems(userId: string, rawInput: unknown): Promise<{ unitsCreated: number }> {
+  const input = parse(SerialiseItemsInput, rawInput);
+  if (new Set(input.serials).size !== input.serials.length) {
+    throw new ValidationError("The same serial number is entered twice");
+  }
+  return withActor(userId, async (tx) => {
+    await requirePermission(tx, userId, "inventory.prepare");
+
+    const [line] = await tx<{ productId: number; batchId: number; tracking: string; name: string }[]>`
+      select bl.product_id::int as "productId", bl.batch_id::int as "batchId", p.tracking_type::text as tracking, p.name
+      from batch_lines bl join products p on p.id = bl.product_id where bl.id = ${input.batchLineId}`;
+    if (!line) throw new ValidationError("That batch line does not exist");
+    if (line.tracking !== "hybrid") {
+      throw new ValidationError(`${line.name}: only counted items that get serials later (hybrid) can be serialised`);
+    }
+
+    // Each serial becomes a unit and takes one item out of the office's counted balance.
+    // The database refuses more units than were received, or more than are left in the office.
+    for (const serial of input.serials) {
+      const [unit] = await tx<{ id: number }[]>`
+        insert into units (product_id, batch_line_id, serial_number)
+        values (${line.productId}, ${input.batchLineId}, ${serial})
+        returning id::int`;
+      await tx`
+        insert into stock_movements (movement_type, product_id, unit_id, quantity, from_location_id, batch_id, performed_by)
+        values ('serialise', ${line.productId}, ${unit.id}, 1, office_location_id(), ${line.batchId}, ${userId})`;
+    }
+    return { unitsCreated: input.serials.length };
+  });
+}

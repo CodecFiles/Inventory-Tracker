@@ -2,7 +2,9 @@
 .page {
   min-height: 100vh;
   display: grid;
-  place-items: center;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
   padding: 16px;
 }
 .card {
@@ -33,6 +35,11 @@
   background: #0b7a6b;
   color: #fff;
   cursor: pointer;
+}
+.card button.secondary {
+  background: #fff;
+  color: #1b2638;
+  border: 1px solid #c8ccd2;
 }
 .error {
   color: #b42318;

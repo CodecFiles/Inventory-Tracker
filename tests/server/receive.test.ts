@@ -57,14 +57,15 @@ describe("receiveDelivery", () => {
     expect(result.unitsCreated).toBe(2);
 
     const units = await sql`select serial_number, status::text, location_id = office_location_id() as in_office
-                            from units order by serial_number`;
+                            from units where product_id = ${routerId} order by serial_number`;
     expect(units).toEqual([
       { serial_number: "1107442106", status: "in_office", in_office: true },
       { serial_number: "1108675311", status: "in_office", in_office: true },
     ]);
 
     const stock = await sql`select product_id::int, quantity from stock_levels
-                            where location_id = office_location_id() order by product_id`;
+                            where location_id = office_location_id() and product_id in ${sql([cableId, sensorId])}
+                            order by product_id`;
     expect(stock).toEqual([
       { product_id: cableId, quantity: 50 },
       { product_id: sensorId, quantity: 10 },

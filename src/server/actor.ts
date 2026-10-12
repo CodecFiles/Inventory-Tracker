@@ -31,3 +31,9 @@ export async function requirePermission(tx: Tx, userId: string, permission: stri
     throw new ForbiddenError(`You do not have permission: ${permission}`);
   }
 }
+
+// Corrections can move anything anywhere, so they are for the Super Admin alone (not delegable).
+export async function requireSuperAdmin(tx: Tx, userId: string): Promise<void> {
+  const [row] = await tx`select role from users where id = ${userId} and status = 'approved'`;
+  if (row?.role !== "super_admin") throw new ForbiddenError("Only a Super Admin can do this");
+}

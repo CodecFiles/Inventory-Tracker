@@ -53,6 +53,8 @@ select is(
   (select count(*)::int from locations where type = 'partner_stock'),
   1, 'the partner automatically got a stock location');
 
+-- skips bms_scan, so a reason is needed (since migration 0011)
+select set_config('app.stage_note', 'BMS scan not needed for this site', true);
 update facilities set stage = 'poc' where name = 'Head Office';
 select is(
   (select array_agg(h.to_stage::text order by h.id) from facility_stage_history h

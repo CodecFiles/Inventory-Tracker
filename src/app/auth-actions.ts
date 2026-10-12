@@ -67,6 +67,21 @@ async function siteOrigin(): Promise<string | null> {
   return origin && origin.startsWith("http") ? origin : null;
 }
 
+// Google sign-in: Supabase sends the person to Google, Google sends them back to /auth/confirm.
+// A first Google sign-in creates a pending account, exactly like an email sign-up (D1b).
+export async function signInWithGoogle() {
+  const origin = await siteOrigin();
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: origin ? { redirectTo: `${origin}/auth/confirm` } : {},
+  });
+  if (error || !data.url) {
+    redirect("/login?error=" + encodeURIComponent("Google sign-in is not available right now — use your email and password"));
+  }
+  redirect(data.url);
+}
+
 export async function signOut() {
   const supabase = await createSupabaseServerClient();
   await supabase.auth.signOut();
