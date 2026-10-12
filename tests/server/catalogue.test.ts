@@ -52,7 +52,7 @@ describe("products and categories", () => {
 
   it("the same brand + model twice is refused", async () => {
     await expect(createRecord(ADMIN, "product", { name: "Copy", brand: "Teltonika", model: "TRB140-CAT", categoryId, trackingType: "serialised" }))
-      .rejects.toThrow(/Already exists/);
+      .rejects.toThrow(/is already used/);
   });
 
   it("only the fields sent are changed", async () => {

@@ -134,7 +134,7 @@ describe("receiveDelivery", () => {
           { productId: routerId, quantity: 1, serials: ["1107442106"] }, // already received above
         ],
       }),
-    ).rejects.toThrow(/Already exists/);
+    ).rejects.toThrow(/is already used/);
 
     expect(await batchCount()).toBe(before);
     const [{ q: cablesAfter }] = await sql`select quantity as q from stock_levels
