@@ -4,7 +4,8 @@ _Last updated: 2026-10-12_
 
 **Current stage:** 5 — Backend (step 5.3 done: staging site live end-to-end)
 
-**Next action:** step 5.7 — returns, repairs and write-offs with tests.
+**Next action:** step 5.8 — Super Admin corrections and facility stage changes with tests; then
+catalogue management (products, suppliers, facilities, partners).
 Google sign-in and custom SMTP (M3) before colleagues sign up.
 
 Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment-specific
@@ -18,7 +19,7 @@ Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment
 | 2 UI/UX Design | Complete (design level) | `design/` — 26 screens, live canvas |
 | 3 Architecture | Complete | `docs/ARCHITECTURE.md` (approved); gate below |
 | 4 Database | Complete | Gate below; migrations 0001–0005 on Supabase staging; 87 tests + race test green in CI |
-| 5 Backend | In progress | data-access layer; receiving; device preparation; deployments; shipments; abroad configuration; login/sign-up/approval; 57 backend tests + 113 DB tests |
+| 5 Backend | In progress | data-access layer; receiving; device preparation; deployments; shipments; abroad configuration; returns/repairs/write-offs; login/sign-up/approval; 72 backend tests + 113 DB tests |
 | 6 Frontend | Not started | — |
 | 7 Testing | Not started | — |
 | 8 Hosting and Launch | Not started | — |
@@ -121,6 +122,7 @@ Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment
 | R9 | Routers must be configured (have a SIM) before an Oman deployment (from lifecycle M1; owner may relax). SIMs are never deployment lines on their own — they travel inside their router | 2026-10-12 |
 | R10 | Routers may be shipped abroad unconfigured, with loose SIMs, for the partner to configure; the "configured first" rule (R9) applies to Oman deployments only. A SIM inside a router is never its own line; a loose SIM can be | 2026-10-12 |
 | A8 | Everything abroad is tracked: serials shipped, SIMs, which SIM + IP is in which router (recorded by MRD for the partner), and international deployments | 2026-10-12 |
+| R11 | A router returned from an Oman site brings its SIM back and stays configured (ready to redeploy). For repair, supplier return or write-off of a router with a SIM, the person chooses: SIM kept as spare (brought back to the office) or retired (assistant assumption following R8; owner may change) | 2026-10-12 |
 | D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
 Stage 2 revision needed (rule 4): the Users/Settings screens show Admin/Operations/Technician/Viewer
@@ -161,6 +163,7 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 | 2026-10-12 | 5.5 deployments: Vitest `deployments.test.ts` (14) | **44/44 pass** | Mutation: removing the "router must be configured" rule failed 5 tests (the completion check caught it a second time) |
 | 2026-10-12 | 5.6 shipments: Vitest `shipments.test.ts` (11) + pgTAP 0008 (3), 0009 (3) | **First run: fail** → fixed → **55/55 + 108/108 pass** | Tests found a real Stage 4 bug: shipments could never be cancelled (0009). Also closed a gap: retired units could be moved again (0008) |
 | 2026-10-12 | A8 configure at partner: pgTAP 0010 (5) + 2 backend tests | **113/113 + 57/57 pass** | Mutation: without the partner rule, 2 backend tests fail |
+| 2026-10-12 | 5.7 returns/repairs/write-offs: Vitest `movements.test.ts` (15) | **72/72 pass** | Mutation: without the "choose what happens to the SIM" rule, 2 tests fail. `changeRouterSim` now shares `takeSimOut`. Prepare test narrowed to its own SIMs (shared test DB) |
 | 2026-10-12 | Staging end-to-end (owner) | **PASS** | Sign-up → email confirm → sign-in → pending page → bootstrap → home shows role `super_admin` |
 
 ## Change log
@@ -197,3 +200,4 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 - 2026-10-12 — 5.5: deployment actions (create, add/remove item, schedule, cancel, complete) with friendly stock/configuration checks; shared `parseInput`; clear "not enough stock" message (R9).
 - 2026-10-12 — 5.6: shipment actions (create, add/remove item, cancel, ship, mark received); migrations 0008 (retired units stay retired) and 0009 (shipment cancel bug fix); R10 recorded; A8 asked.
 - 2026-10-12 — A8 answered (track everything abroad); migration 0010: configure routers at a partner; SIM dropdown per partner.
+- 2026-10-12 — 5.7: returnFromFacility, sendForRepair, backFromRepair, returnToSupplier, writeOff (units and counted items) with SIM handling (R11).

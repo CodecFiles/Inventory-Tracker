@@ -2,6 +2,7 @@ import "server-only";
 import { z } from "zod";
 import { requirePermission, withActor } from "../actor";
 import { parseInput as parse, ValidationError } from "../errors";
+import { takeSimOut } from "./movements";
 
 // Device preparation ("Device preparation" screen in design/), in MRD Office or — for routers shipped
 // unconfigured — at a partner abroad (A8; MRD staff record what the partner did):
@@ -71,24 +72,9 @@ export async function changeRouterSim(userId: string, rawInput: unknown): Promis
   const input = parse(ChangeRouterSimInput, rawInput);
   return withActor(userId, async (tx) => {
     await requirePermission(tx, userId, "inventory.prepare");
-    // retiring is a write-off, which needs its own permission
-    if (input.oldSim === "retire") await requirePermission(tx, userId, "inventory.move");
-
-    // lock the current assignment so two people can't swap the same router's SIM at once
-    const [current] = await tx<{ id: number; simUnitId: number }[]>`
-      select id::int, sim_unit_id::int as "simUnitId" from sim_assignments
-      where router_unit_id = ${input.routerUnitId} and ended_at is null for update`;
-    if (!current) throw new ValidationError("This router has no SIM yet — use Configure instead");
-
-    await tx`update sim_assignments set ended_at = now(), ended_by = ${userId} where id = ${current.id}`;
-
-    if (input.oldSim === "spare") {
-      await tx`update units set status = 'in_office' where id = ${current.simUnitId} and status = 'configured'`;
-    } else {
-      await tx`
-        insert into stock_movements (movement_type, product_id, unit_id, quantity, from_location_id, performed_by, note)
-        select 'write_off', product_id, id, 1, location_id, ${userId}, 'SIM retired when swapped out of router'
-        from units where id = ${current.simUnitId}`;
+    // ends the current assignment and makes the old SIM a spare or retires it (needs inventory.move)
+    if (!(await takeSimOut(tx, userId, input.routerUnitId, input.oldSim))) {
+      throw new ValidationError("This router has no SIM yet — use Configure instead");
     }
 
     const [row] = await tx<{ id: number }[]>`

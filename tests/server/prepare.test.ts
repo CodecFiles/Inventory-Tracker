@@ -20,6 +20,8 @@ const unit: Record<string, number> = {};
 let sensorLine: number;
 
 const today = new Date().toISOString().slice(0, 10);
+// the test database is shared with other test files, so only look at this file's SIMs
+const freeOurs = async () => (await listFreeSims(EDITOR)).map((s) => s.iccid).filter((i) => ICCID.includes(i));
 const status = async (id: number) => (await sql`select status::text from units where id = ${id}`)[0].status as string;
 
 beforeAll(async () => {
@@ -79,8 +81,7 @@ describe("receiving SIM cards", () => {
 
 describe("configuring a router", () => {
   it("the dropdown lists the free SIMs", async () => {
-    const sims = await listFreeSims(EDITOR);
-    expect(sims.map((s) => s.iccid)).toEqual(ICCID);
+    expect(await freeOurs()).toEqual(ICCID);
   });
 
   it("a Viewer cannot configure routers", async () => {
@@ -97,7 +98,7 @@ describe("configuring a router", () => {
     await configureRouter(EDITOR, { routerUnitId: unit["PREP-R1"], simUnitId: unit[ICCID[0]], ipAddress: "10.20.0.1" });
     expect(await status(unit["PREP-R1"])).toBe("configured");
     expect(await status(unit[ICCID[0]])).toBe("configured");
-    expect((await listFreeSims(EDITOR)).map((s) => s.iccid)).toEqual([ICCID[1], ICCID[2]]);
+    expect(await freeOurs()).toEqual([ICCID[1], ICCID[2]]);
   });
 
   it("a router that already has a SIM must use Change SIM", async () => {
@@ -111,7 +112,7 @@ describe("changing a router's SIM", () => {
     await changeRouterSim(EDITOR, { routerUnitId: unit["PREP-R1"], newSimUnitId: unit[ICCID[1]], ipAddress: "10.20.0.2", oldSim: "spare" });
     expect(await status(unit[ICCID[0]])).toBe("in_office");
     expect(await status(unit[ICCID[1]])).toBe("configured");
-    expect((await listFreeSims(EDITOR)).map((s) => s.iccid)).toEqual([ICCID[0], ICCID[2]]);
+    expect(await freeOurs()).toEqual([ICCID[0], ICCID[2]]);
     const history = await sql`select host(ip_address) as ip, ended_at is not null as ended from sim_assignments
                               where router_unit_id = ${unit["PREP-R1"]} order by id`;
     expect(history).toEqual([{ ip: "10.20.0.1", ended: true }, { ip: "10.20.0.2", ended: false }]);
@@ -120,7 +121,7 @@ describe("changing a router's SIM", () => {
   it("old SIM retired: it is written off and never offered again", async () => {
     await changeRouterSim(EDITOR, { routerUnitId: unit["PREP-R1"], newSimUnitId: unit[ICCID[2]], oldSim: "retire" });
     expect(await status(unit[ICCID[1]])).toBe("retired");
-    expect((await listFreeSims(EDITOR)).map((s) => s.iccid)).toEqual([ICCID[0]]);
+    expect(await freeOurs()).toEqual([ICCID[0]]);
   });
 
   it("if the new SIM is not free, nothing changes (all or nothing)", async () => {
