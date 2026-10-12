@@ -458,6 +458,7 @@ application code forgets. No updates or deletes allowed, for anyone.
 | 0008 | `20261012000008_retired_units.sql` | a retired unit can't be moved again (except a Super Admin `correction`); trigger named `0_…` so it runs before `stock_movements_apply` | 3 passing; renaming it to run second broke valid write-offs (order proven) |
 | 0009 | `20261012000009_fix_shipment_cancel.sql` | **bug fix**: cancelling a shipment always failed (0004 compared a shipment status with `scheduled`) | 3 passing; fail without the fix |
 | 0010 | `20261012000010_configure_at_partner.sql` | a router can get its SIM at a partner abroad (both in that partner's stock), as well as in MRD Office (A8) | 5 passing; removing the partner rule fails 2 backend tests |
+| 0011 | `20261012000011_stage_rules_corrections.sql` | facility stages forward only (skip needs a reason; back/re-open only Admin/Super Admin with a reason; `closed` any time); reason kept in stage history via `app.stage_note`; `correction` movements only by a Super Admin, with a reason | 11 passing; 0002 test now gives a reason for its skip |
 
 Implementation notes (0001):
 - A unit's product must match its batch line — enforced with a **composite foreign key**
@@ -476,7 +477,7 @@ Implementation notes (0002–0003):
 - `scripts/db-concurrency-test.sh` runs two real connections deploying 6 of 10 cables at once:
   one succeeds, one is rejected, office = 4. With the `quantity >= 0` rule removed, the same test
   gives office = −2 and site = 12 — proof the rule is what protects the stock.
-- Left for the backend (Stage 5): facility stage order + admin override; `correction` movements
+- Done in Stage 5.8 (0011): facility stage order + admin override; `correction` movements
   restricted to Super Admin.
 
 Implementation notes (0004–0005):
@@ -485,5 +486,5 @@ Implementation notes (0004–0005):
 - A router's current SIM moves with it on deployment/shipment.
 - The server must run `select set_config('app.user_id', '<uuid>', true)` at the start of each
   transaction; audit records and user-change rules depend on it.
-- Done in Stage 5.7: returning a router also returns its SIM (`returnFromFacility`). Still to do:
-  permission checks for `correction` movements (5.8).
+- Done in Stage 5.7: returning a router also returns its SIM (`returnFromFacility`). Done in 5.8:
+  `correction` movements are Super Admin only (server + database, 0011).
