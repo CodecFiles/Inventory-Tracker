@@ -4,8 +4,8 @@ _Last updated: 2026-10-12_
 
 **Current stage:** 5 — Backend (step 5.3 done: staging site live end-to-end)
 
-**Next action:** step 5.10 — read queries for the screens (lists, item history, search, stock
-overview / low stock); then Google sign-in and protecting the health page, and the Stage 5 gate.
+**Next action:** step 5.11 — Google sign-in, restrict the health page to the Super Admin, and the
+Stage 5 completion gate (owner review + exercise); then PR to deploy migrations 0007–0012 to staging.
 Google sign-in and custom SMTP (M3) before colleagues sign up.
 
 Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment-specific
@@ -19,7 +19,7 @@ Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment
 | 2 UI/UX Design | Complete (design level) | `design/` — 26 screens, live canvas |
 | 3 Architecture | Complete | `docs/ARCHITECTURE.md` (approved); gate below |
 | 4 Database | Complete | Gate below; migrations 0001–0005 on Supabase staging; 87 tests + race test green in CI |
-| 5 Backend | In progress | data-access layer; receiving; device preparation; deployments; shipments; abroad configuration; returns/repairs/write-offs; facility stages; corrections; catalogue management; login/sign-up/approval; 99 backend tests + 131 DB tests |
+| 5 Backend | In progress | data-access layer; receiving; device preparation; deployments; shipments; abroad configuration; returns/repairs/write-offs; facility stages; corrections; catalogue management; read queries for every screen; login/sign-up/approval; 111 backend tests + 131 DB tests |
 | 6 Frontend | Not started | — |
 | 7 Testing | Not started | — |
 | 8 Hosting and Launch | Not started | — |
@@ -170,6 +170,7 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 | 2026-10-12 | 5.8 stages + corrections: pgTAP 0011 (11) + Vitest `stages-corrections.test.ts` (13) | **124/124 + 85/85 pass** | Mutation: without the database "only Admins move back" rule, 3 backend tests fail (the server relies on the database for that rule) |
 | 2026-10-12 | A9 closed-facility rule (1 backend test) | **86/86 pass** | Mutation: without the check at completion, 2 tests fail |
 | 2026-10-12 | 5.9 catalogue: pgTAP 0012 (7) + Vitest `catalogue.test.ts` (13) | **First run: fail** → fixed → **131/131 + 99/99 pass** | Test found a real bug: product details were saved as text, not data (double JSON conversion). Mutation: without the kind lock, 1 test fails |
+| 2026-10-12 | 5.10 read queries: Vitest `queries.test.ts` (12) | **111/111 pass** | Mutations: removing the search escaping failed 1 test; removing the "no SIM" filter first passed unnoticed (weak test data) → added a configured router in the office → now fails as expected |
 | 2026-10-12 | Staging end-to-end (owner) | **PASS** | Sign-up → email confirm → sign-in → pending page → bootstrap → home shows role `super_admin` |
 
 ## Change log
@@ -210,3 +211,4 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 - 2026-10-12 — 5.8: R12 decided; migration 0011 (stage rules, Super Admin corrections); changeFacilityStage, correctStock, correctUnit; A9 asked.
 - 2026-10-12 — A9: deployments to a closed facility are refused until it is re-opened.
 - 2026-10-12 — 5.9: catalogue management (create/update/archive/restore for 7 lists, contacts); migration 0012; C1.
+- 2026-10-12 — 5.10: read queries (stock overview + low stock, item lists, item history, search, deployments/shipments/batches, facilities, lookups, audit log).
