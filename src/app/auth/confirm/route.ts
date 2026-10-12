@@ -29,9 +29,11 @@ export async function GET(request: NextRequest) {
     // With Supabase's default email, the address is already confirmed before the user lands here.
     // Signing in automatically only works in the browser used for sign-up, so on another device we
     // simply ask them to sign in.
+    // the short code (e.g. "bad_code_verifier") says exactly what went wrong, without exposing anything
+    const reason = (error as { code?: string }).code ? ` [${(error as { code?: string }).code}]` : "";
     const message = code
-      ? "Please sign in. (If you just confirmed your email, that worked; if you used Google, try again.)"
-      : "That link is invalid or has expired";
+      ? `Please sign in. (If you just confirmed your email, that worked; if you used Google, try again from ${origin}/login.)${reason}`
+      : `That link is invalid or has expired${reason}`;
     return NextResponse.redirect(`${origin}/login?message=${encodeURIComponent(message)}`);
   }
   return NextResponse.redirect(`${origin}/`);

@@ -4,9 +4,7 @@ _Last updated: 2026-10-12_
 
 **Current stage:** 5 — Backend (step 5.3 done: staging site live end-to-end)
 
-**Next action:** owner sets up the Google OAuth client and enables Google in Supabase (steps in chat
-2026-10-12); PR to bring 5.4–5.11 and migrations 0007–0012 to staging; test Google sign-in there;
-then the Stage 5 completion gate.
+**Next action:** merge the canonical-address PR; then the Stage 5 completion gate (review + exercise).
 Google sign-in and custom SMTP (M3) before colleagues sign up.
 
 Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment-specific
@@ -48,7 +46,7 @@ Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment
 | # | Question | Status |
 |---|----------|--------|
 | H1 | Production hosting: Vercel Hobby terms may treat internal company use as commercial (secondary sources) — decide at Stage 8 (Vercel Pro, or a host whose free plan allows business use) | Revisit at Stage 8 |
-| M3 | Custom SMTP email sender before colleagues sign up (built-in sender is limited; templates locked without it) | Before inviting colleagues |
+| M3 | Custom SMTP email sender before colleagues sign up (Google sign-in now works and avoids email for Google users) (built-in sender is limited; templates locked without it) | Before inviting colleagues |
 | E1 | `NEXT_PUBLIC_SUPABASE_URL` in the cloud environment lacks `https://` (code tolerates it) | Owner may fix (non-blocking) |
 | R6 | Supabase region is Tokyo; consider a region closer to Oman | Revisit at Stage 8 |
 
@@ -173,6 +171,8 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 | 2026-10-12 | 5.9 catalogue: pgTAP 0012 (7) + Vitest `catalogue.test.ts` (13) | **First run: fail** → fixed → **131/131 + 99/99 pass** | Test found a real bug: product details were saved as text, not data (double JSON conversion). Mutation: without the kind lock, 1 test fails |
 | 2026-10-12 | 5.10 read queries: Vitest `queries.test.ts` (12) | **111/111 pass** | Mutations: removing the search escaping failed 1 test; removing the "no SIM" filter first passed unnoticed (weak test data) → added a configured router in the office → now fails as expected |
 | 2026-10-12 | Google button smoke test (local build against staging Supabase) | **Code path OK** | Button sends the browser to Supabase's Google authorize address; Supabase answers "provider is not enabled" until the owner configures Google |
+| 2026-10-12 | PR #6 merged; Google sign-in on staging (owner) | **First try: fail** | Back on /login with the "code" message: Google worked, the code exchange failed — most likely started on a deployment address (cookie on another host). Fix: the live site now redirects every address to SITE_URL (308); the message shows the exact reason code. Local check: 308 with VERCEL_ENV=production, 200 without |
+| 2026-10-12 | Google sign-in retest from the main address (owner) | **PASS** | Signed in with Google as nitin@moonrock.om → linked to the existing Super Admin account (same email); confirms the address-mismatch cause |
 | 2026-10-12 | Staging end-to-end (owner) | **PASS** | Sign-up → email confirm → sign-in → pending page → bootstrap → home shows role `super_admin` |
 
 ## Change log
@@ -215,3 +215,4 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 - 2026-10-12 — 5.9: catalogue management (create/update/archive/restore for 7 lists, contacts); migration 0012; C1.
 - 2026-10-12 — 5.10: read queries (stock overview + low stock, item lists, item history, search, deployments/shipments/batches, facilities, lookups, audit log).
 - 2026-10-12 — 5.11: Google sign-in button + clearer confirm-route errors; health page Super Admin only (O1).
+- 2026-10-12 — PR #6 merged (5.4–5.11, migrations 0007–0012). Canonical-address redirect + clearer sign-in error after the first Google test failed.
