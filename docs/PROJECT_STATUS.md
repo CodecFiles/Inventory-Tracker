@@ -1,11 +1,14 @@
 # Project status
 
-_Last updated: 2026-10-11_
+_Last updated: 2026-10-12_
 
-**Current stage:** 5 — Backend (step 5.3: staging site on Vercel being set up)
+**Current stage:** 5 — Backend (step 5.3 done: staging site live end-to-end)
 
-**Next action:** owner says "open PR" → PR #3 merges the app into `main` → Vercel builds staging;
-owner sets Supabase Site URL/redirects, signs up, runs `bootstrap_first_super_admin`.
+**Next action:** step 5.4 — next backend actions with tests (preparation / SIM assignment, then
+deployments). Google sign-in and custom SMTP (M3) before colleagues sign up.
+
+Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment-specific
+`inventory-<random>-mrd23.vercel.app` addresses change on every deploy).
 
 ## Stage checklist
 
@@ -45,6 +48,8 @@ owner sets Supabase Site URL/redirects, signs up, runs `bootstrap_first_super_ad
 | H1 | Production hosting: Vercel Hobby terms may treat internal company use as commercial (secondary sources) — decide at Stage 8 (Vercel Pro, or a host whose free plan allows business use) | Revisit at Stage 8 |
 | M3 | Custom SMTP email sender before colleagues sign up (built-in sender is limited; templates locked without it) | Before inviting colleagues |
 | E1 | `NEXT_PUBLIC_SUPABASE_URL` in the cloud environment lacks `https://` (code tolerates it) | Owner may fix (non-blocking) |
+| R6 | Supabase region is Tokyo; consider a region closer to Oman | Revisit at Stage 8 |
+| O1 | `/api/health/db` diagnostic page (signed-in users only) — remove or restrict to Super Admin | Before colleagues sign up |
 
 ## Stage 3 completion gate
 
@@ -109,6 +114,8 @@ owner sets Supabase Site URL/redirects, signs up, runs `bootstrap_first_super_ad
 | S4 | Branch rule narrowed to `main` (PR required); working branch pushes normally | 2026-10-11 |
 | B1 | Server talks to PostgreSQL directly (postgres.js, one transaction per action, `app.user_id` set per transaction); Supabase used for Auth/Storage | 2026-10-11 |
 | H0 | Staging site on Vercel (owner's choice; owner considers it personal/non-commercial — assistant flagged the terms risk, see H1) | 2026-10-11 |
+| H2 | Vercel uses the Supabase integration's `POSTGRES_URL` (transaction pooler) when `DATABASE_URL` is absent; old manual `DATABASE_URL` removed (PR #5) | 2026-10-12 |
+| S5 | First Super Admin bootstrapped on staging (owner's account) via `bootstrap_first_super_admin` | 2026-10-12 |
 | D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
 Stage 2 revision needed (rule 4): the Users/Settings screens show Admin/Operations/Technician/Viewer
@@ -143,6 +150,8 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 | 2026-10-11 | Backend (Vitest) 17 tests incl. approval | **17/17 pass** | Test IDs first used invalid UUIDs; the strict input check rejected them (correct) — test data fixed |
 | 2026-10-11 | pgTAP incl. 0006 | **94/94 pass** + race test | |
 | 2026-10-11 | Live smoke test against Supabase staging Auth | **PASS** | `/` and `/admin/users` redirect signed-out visitors to `/login`; login/sign-up pages render; bogus confirmation link rejected by Supabase |
+| 2026-10-12 | Staging DB connection (`/api/health/db`) | **First: fail** → fixed → **PASS** | 28P01: brackets left around the password in `DATABASE_URL`; then ECONNREFUSED when unset. Fixed by PR #5 (use `POSTGRES_URL`) |
+| 2026-10-12 | Staging end-to-end (owner) | **PASS** | Sign-up → email confirm → sign-in → pending page → bootstrap → home shows role `super_admin` |
 
 ## Change log
 
@@ -172,3 +181,5 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 - 2026-10-11 — B1 = A; data-access layer (`withActor`, `requirePermission`) and `receiveDelivery` with 8 backend tests; backend tests added to CI.
 - 2026-10-11 — 5.3: migration 0006 (auth link, bootstrap), Supabase login/sign-up/confirm/pending pages, approval actions + admin page, proxy; tests and live smoke test pass.
 - 2026-10-11 — H0: Vercel for staging; email template edit not possible without SMTP — confirm route made friendly for the default link.
+- 2026-10-11 — PRs #3 (app), #4 (confirm/redirect fixes, health page) merged; Vercel staging live; sign-up and email confirmation working.
+- 2026-10-12 — PR #5 merged (H2); database connection works on staging; owner bootstrapped as Super Admin (S5). Step 5.3 complete.
