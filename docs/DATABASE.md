@@ -485,5 +485,5 @@ Implementation notes (0004–0005):
 - A router's current SIM moves with it on deployment/shipment.
 - The server must run `select set_config('app.user_id', '<uuid>', true)` at the start of each
   transaction; audit records and user-change rules depend on it.
-- Stage 5 to-do: returning a router should also return its SIM (currently the SIM's movement must
-  be recorded separately); permission checks for `correction` movements.
+- Done in Stage 5.7: returning a router also returns its SIM (`returnFromFacility`). Still to do:
+  permission checks for `correction` movements (5.8).
