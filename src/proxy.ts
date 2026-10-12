@@ -9,6 +9,21 @@ import { supabasePublishableKey, supabaseUrl } from "@/lib/supabase/config";
 const PUBLIC_PATHS = ["/login", "/signup", "/auth"];
 
 export async function proxy(request: NextRequest) {
+  // One address for the live site. Vercel also serves each deployment on its own address
+  // (inventory-xxxx-mrd23.vercel.app); signing in there breaks, because the login cookies belong to
+  // whichever address you started on, while Google and email links always return to SITE_URL.
+  const site = process.env.SITE_URL;
+  if (site && process.env.VERCEL_ENV === "production") {
+    const canonical = new URL(site);
+    if (request.nextUrl.host !== canonical.host) {
+      const url = request.nextUrl.clone();
+      url.protocol = canonical.protocol;
+      url.host = canonical.host;
+      url.port = "";
+      return NextResponse.redirect(url, 308);
+    }
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(supabaseUrl(), supabasePublishableKey(), {
