@@ -3,12 +3,13 @@ import { z } from "zod";
 import { requirePermission, withActor } from "../actor";
 import { parseInput as parse, ValidationError } from "../errors";
 
-// Device preparation ("Device preparation" screen in design/), all in MRD Office:
+// Device preparation ("Device preparation" screen in design/), in MRD Office or — for routers shipped
+// unconfigured — at a partner abroad (A8; MRD staff record what the partner did):
 //   configureRouter  — put a free SIM into a router and record its IP; both become "configured"
 //   changeRouterSim  — swap a router's SIM; the old SIM becomes a spare or is retired (owner's choice, R8)
-//   listFreeSims     — the SIMs that can be chosen in the Configure window's dropdown
+//   listFreeSims     — the SIMs that can be chosen in the Configure window's dropdown (office or a partner)
 //   serialiseItems   — give serial numbers to counted (hybrid) items such as CO2 sensors
-// The database refuses anything unsafe on its own (migrations 0004, 0007); these actions add
+// The database refuses anything unsafe on its own (migrations 0004, 0007, 0010); these actions add
 // permission checks and clear messages.
 
 const unitId = z.number().int().positive();
@@ -16,15 +17,22 @@ const ipAddress = z.union([z.ipv4(), z.ipv6()], { error: "Enter a valid IP addre
 
 export type FreeSim = { unitId: number; iccid: string; phoneNumber: string | null; carrier: string | null; product: string };
 
-export async function listFreeSims(userId: string): Promise<FreeSim[]> {
+// Free = not inside any router, and available where the router is: in MRD Office (in_office) or in
+// the given partner's stock (shipped_to_partner).
+export async function listFreeSims(userId: string, rawInput: unknown = {}): Promise<FreeSim[]> {
+  const { partnerId } = parse(z.object({ partnerId: z.number().int().positive().optional() }), rawInput);
   return withActor(userId, async (tx) => {
     await requirePermission(tx, userId, "inventory.prepare");
+    const place = partnerId
+      ? tx`u.status = 'shipped_to_partner' and u.location_id = (select id from locations where partner_id = ${partnerId})`
+      : tx`u.status = 'in_office' and u.location_id = office_location_id()`;
     return tx<FreeSim[]>`
       select u.id::int as "unitId", d.iccid, d.phone_number as "phoneNumber", d.carrier, p.name as product
       from units u
       join products p on p.id = u.product_id and p.is_sim
       join sim_details d on d.unit_id = u.id
-      where u.status = 'in_office' and u.location_id = office_location_id()
+      where ${place}
+        and not exists (select 1 from sim_assignments a where a.sim_unit_id = u.id and a.ended_at is null)
       order by d.iccid`;
   });
 }

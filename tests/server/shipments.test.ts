@@ -5,7 +5,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { getSql } from "@/server/db";
 import { ForbiddenError } from "@/server/errors";
 import { addDeploymentItem, completeDeployment, createDeployment } from "@/server/deployments/deployments";
-import { configureRouter } from "@/server/inventory/prepare";
+import { configureRouter, listFreeSims } from "@/server/inventory/prepare";
 import { receiveDelivery } from "@/server/inventory/receive";
 import {
   addShipmentItem, cancelShipment, createShipment, markShipmentReceived, removeShipmentItem, shipShipment,
@@ -137,11 +137,21 @@ describe("shipping", () => {
   });
 });
 
-describe("abroad deployment after shipping", () => {
-  it("the partner deploys the unconfigured router and the loose SIM from their stock", async () => {
+describe("configuring at the partner and deploying abroad (A8)", () => {
+  it("the partner's dropdown shows only the loose SIM shipped to them", async () => {
+    expect((await listFreeSims(EDITOR, { partnerId: partner })).map((s) => s.iccid)).toEqual([SIM[1]]);
+  });
+
+  it("MRD records the partner putting the loose SIM into the unconfigured router", async () => {
+    await configureRouter(EDITOR, { routerUnitId: unit["SHP-R2"], simUnitId: unit[SIM[1]], ipAddress: "10.40.0.2" });
+    expect(await listFreeSims(EDITOR, { partnerId: partner })).toEqual([]);
+    expect(await where("SHP-R2")).toEqual({ type: "partner_stock", status: "shipped_to_partner" });
+  });
+
+  it("the abroad deployment takes the router from the partner's stock, and its SIM goes along", async () => {
     const { deploymentId } = await createDeployment(EDITOR, { facilityId: doha, type: "poc" });
     await addDeploymentItem(EDITOR, { deploymentId, unitId: unit["SHP-R2"] });
-    await addDeploymentItem(EDITOR, { deploymentId, unitId: unit[SIM[1]] });
+    await expect(addDeploymentItem(EDITOR, { deploymentId, unitId: unit[SIM[1]] })).rejects.toThrow(/inside router SHP-R2/);
     await addDeploymentItem(EDITOR, { deploymentId, productId: cable, quantity: 2 });
     await completeDeployment(EDITOR, { deploymentId });
     expect(await where("SHP-R2")).toEqual({ type: "facility", status: "deployed_abroad" });

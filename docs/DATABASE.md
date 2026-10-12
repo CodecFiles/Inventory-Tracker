@@ -457,6 +457,7 @@ application code forgets. No updates or deletes allowed, for anyone.
 | 0007 | `20261012000007_sim_products.sql` | `products.is_sim`; SIM details only for SIM units; SIM assignment needs a free SIM (`in_office`) and a router that is `in_office`/`configured` | 8 passing (0004 test 6 now refused by the status rule) |
 | 0008 | `20261012000008_retired_units.sql` | a retired unit can't be moved again (except a Super Admin `correction`); trigger named `0_…` so it runs before `stock_movements_apply` | 3 passing; renaming it to run second broke valid write-offs (order proven) |
 | 0009 | `20261012000009_fix_shipment_cancel.sql` | **bug fix**: cancelling a shipment always failed (0004 compared a shipment status with `scheduled`) | 3 passing; fail without the fix |
+| 0010 | `20261012000010_configure_at_partner.sql` | a router can get its SIM at a partner abroad (both in that partner's stock), as well as in MRD Office (A8) | 5 passing; removing the partner rule fails 2 backend tests |
 
 Implementation notes (0001):
 - A unit's product must match its batch line — enforced with a **composite foreign key**
