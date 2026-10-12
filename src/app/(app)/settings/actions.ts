@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { runAction, type ActionState } from "@/server/action-state";
-import { archiveRecord, createRecord, restoreRecord, updateRecord, type CatalogueEntity } from "@/server/catalogue/catalogue";
+import { addContact, archiveRecord, createRecord, removeContact, restoreRecord, updateRecord, type CatalogueEntity } from "@/server/catalogue/catalogue";
 import { checked, num, text } from "@/server/form-values";
 import { requireApprovedUser } from "@/server/session";
 
@@ -54,6 +54,33 @@ export async function setArchived(kind: CatalogueEntity, id: number, archived: b
   const result = await runAction(
     () => (archived ? archiveRecord(user.id, kind, { id }) : restoreRecord(user.id, kind, { id })),
     archived ? "Archived" : "Restored");
+  if (result?.ok) revalidatePath("/settings");
+  return result;
+}
+
+export async function addClient(_: ActionState, f: FormData) {
+  return save("client", { name: text(f, "name") }, "Client added");
+}
+export async function renameClient(id: number, _: ActionState, f: FormData) {
+  return save("client", { name: text(f, "name") }, "Client renamed", id);
+}
+export async function addPartner(_: ActionState, f: FormData) {
+  return save("partner", { name: text(f, "name"), countryId: num(f, "countryId") }, "Partner added");
+}
+
+// Partner contacts (facility contacts live on the facility page)
+export async function addPartnerContact(partnerId: number, _: ActionState, f: FormData): Promise<ActionState> {
+  const user = await requireApprovedUser();
+  const result = await runAction(() => addContact(user.id, "partner", {
+    ownerId: partnerId, name: text(f, "name"), role: text(f, "role"), email: text(f, "email"), phone: text(f, "phone"),
+    isPrimary: checked(f, "isPrimary"),
+  }), "Contact added");
+  if (result?.ok) revalidatePath("/settings");
+  return result;
+}
+export async function removePartnerContact(id: number): Promise<ActionState> {
+  const user = await requireApprovedUser();
+  const result = await runAction(() => removeContact(user.id, "partner", { id }), "Contact removed");
   if (result?.ok) revalidatePath("/settings");
   return result;
 }

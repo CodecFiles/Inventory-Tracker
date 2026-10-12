@@ -11,6 +11,8 @@ export type ProductRow = {
 };
 export type NamedRow = { id: number; name: string; isActive: boolean; used: number };
 export type SupplierRow = NamedRow & { codePrefix: string; email: string | null; phone: string | null };
+export type PartnerRow = NamedRow & { countryId: number; country: string; locationId: number;
+  contacts: { id: number; name: string; role: string | null; email: string | null; phone: string | null; isPrimary: boolean }[] };
 
 export async function catalogue(userId: string) {
   return read(userId, async (tx) => ({
@@ -29,6 +31,18 @@ export async function catalogue(userId: string) {
       select s.id::int, s.name, s.code_prefix as "codePrefix", s.email, s.phone, s.is_active as "isActive",
              (select count(*)::int from batches b where b.supplier_id = s.id) as used
       from suppliers s order by s.is_active desc, s.name`,
+    clients: await tx<NamedRow[]>`
+      select c.id::int, c.name, c.is_active as "isActive",
+             (select count(*)::int from facilities f where f.client_id = c.id) as used
+      from clients c order by c.is_active desc, c.name`,
+    partners: await tx<PartnerRow[]>`
+      select p.id::int, p.name, p.is_active as "isActive", p.country_id::int as "countryId", c.name as country,
+             (select l.id::int from locations l where l.partner_id = p.id) as "locationId",
+             (select count(*)::int from facilities f where f.partner_id = p.id) as used,
+             coalesce((select json_agg(json_build_object('id', pc.id, 'name', pc.name, 'role', pc.role, 'email', pc.email,
+                                                         'phone', pc.phone, 'isPrimary', pc.is_primary) order by pc.is_primary desc, pc.name)
+                       from partner_contacts pc where pc.partner_id = p.id), '[]') as contacts
+      from partners p join countries c on c.id = p.country_id order by p.is_active desc, p.name`,
     repairCompanies: await tx<NamedRow[]>`
       select r.id::int, r.name, r.is_active as "isActive", 0 as used
       from repair_companies r order by r.is_active desc, r.name`,

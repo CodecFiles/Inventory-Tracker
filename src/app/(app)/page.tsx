@@ -116,7 +116,7 @@ export default async function Dashboard() {
                 <tbody>
                   {facilities.map((f) => (
                     <tr key={f.id}>
-                      <td><span style={{ fontWeight: 500 }}>{f.name}</span><div className="muted" style={{ fontSize: 12 }}>{f.client} · {f.city ?? f.country}</div></td>
+                      <td><Link href={`/facilities/${f.id}`} style={{ fontWeight: 500 }}>{f.name}</Link><div className="muted" style={{ fontSize: 12 }}>{f.client} · {f.city ?? f.country}</div></td>
                       <td><StageBadge stage={f.stage} /></td>
                       <td>{f.units}</td>
                     </tr>
@@ -164,7 +164,7 @@ export default async function Dashboard() {
                 <tbody>
                   {deployments.map((d) => (
                     <tr key={d.id}>
-                      <td className="mono">{d.code}</td>
+                      <td className="mono"><Link href={`/deployments/${d.id}`}>{d.code}</Link></td>
                       <td className="muted">{d.date ? new Date(d.date).toISOString().slice(0, 10) : "—"}</td>
                       <td>{d.facility}<div className="muted" style={{ fontSize: 12 }}>{d.country}</div></td>
                       <td>{d.items}</td>

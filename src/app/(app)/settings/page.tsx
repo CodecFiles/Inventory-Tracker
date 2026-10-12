@@ -3,8 +3,10 @@ import { ActionForm } from "@/components/action-form";
 import { catalogue, type ProductRow } from "@/server/queries/catalogue";
 import { getPermissions, requireApprovedUser } from "@/server/session";
 import {
-  addCategory, addProduct, addRepairCompany, addSupplier, editProduct, editSupplier, renameCategory, setArchived,
+  addCategory, addClient, addPartner, addPartnerContact, addProduct, addRepairCompany, addSupplier, editProduct,
+  editSupplier, removePartnerContact, renameCategory, renameClient, setArchived,
 } from "./actions";
+import { lookups } from "@/server/queries/places";
 
 // Settings (design/Settings.dc.html): the catalogue every other screen uses. Facilities, clients and
 // partners join in step 6.4. Records are archived, never deleted (C1).
@@ -14,6 +16,8 @@ const TABS = [
   { key: "categories", label: "Categories", permission: "products.manage" },
   { key: "suppliers", label: "Suppliers", permission: "suppliers.manage" },
   { key: "repair", label: "Repair companies", permission: "suppliers.manage" },
+  { key: "clients", label: "Clients", permission: "facilities.manage" },
+  { key: "partners", label: "Partners abroad", permission: "partners.manage" },
 ] as const;
 
 const TRACKING_SHORT: Record<string, string> = { serialised: "Serial numbers", quantity: "Counted", hybrid: "Counted → serials" };
@@ -27,7 +31,7 @@ function Archived({ active }: { active: boolean }) {
   return active ? null : <span className="b s-retired" style={{ marginLeft: 8 }}>Archived</span>;
 }
 
-function ArchiveButton({ kind, id, active }: { kind: "product" | "category" | "supplier" | "repairCompany"; id: number; active: boolean }) {
+function ArchiveButton({ kind, id, active }: { kind: "product" | "category" | "supplier" | "repairCompany" | "client" | "partner"; id: number; active: boolean }) {
   return (
     <ActionForm action={setArchived.bind(null, kind, id, active)} submit={active ? "Archive" : "Restore"} danger={active}
                 confirm={active ? "Archive this? It will be hidden from new work; its history stays." : undefined} />
@@ -78,7 +82,7 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
   }
   const { tab } = await searchParams;
   const current = tabs.find((t) => t.key === tab) ?? tabs[0];
-  const data = await catalogue(user.id);
+  const [data, lists] = await Promise.all([catalogue(user.id), lookups(user.id)]);
 
   return (
     <main className="main">
@@ -93,8 +97,11 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
           <nav className="snav" aria-label="Settings sections">
             <span className="sgrp">Catalogue</span>
             {tabs.map((t) => (
+              <span key={t.key} style={{ display: "contents" }}>
+              {t.key === "clients" && <span className="sgrp">Places</span>}
               <Link key={t.key} href={`/settings?tab=${t.key}`} className={t.key === current.key ? "sbtn on" : "sbtn"}
                     aria-current={t.key === current.key ? "page" : undefined}>{t.label}</Link>
+              </span>
             ))}
           </nav>
         </aside>
@@ -217,6 +224,72 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
                 <div key={r.id} className="row">
                   <span style={{ flex: 1, fontWeight: 500 }}>{r.name}<Archived active={r.isActive} /></span>
                   <ArchiveButton kind="repairCompany" id={r.id} active={r.isActive} />
+                </div>
+              ))}
+            </section>
+          )}
+          {current.key === "clients" && (
+            <section className="card">
+              <div className="sh"><div><h2>Clients</h2><p>The organisation a facility belongs to, e.g. Lulu Hypermarket. One client can have many facilities.</p></div></div>
+              <div style={{ padding: "0 18px 18px" }}>
+                <ActionForm action={addClient} submit="Add client" className="formrow">
+                  <label className="fl">New client<input className="fld" name="name" required /></label>
+                </ActionForm>
+              </div>
+              {data.clients.map((c) => (
+                <div key={c.id} className="row" style={{ flexWrap: "wrap" }}>
+                  <details className="edit" style={{ flex: 1 }}>
+                    <summary><span style={{ fontWeight: 500 }}>{c.name}</span><Archived active={c.isActive} />
+                      <span className="muted" style={{ fontSize: 12, marginLeft: 8 }}>{c.used} facilities · <span className="lnk">Rename</span></span>
+                    </summary>
+                    <ActionForm action={renameClient.bind(null, c.id)} submit="Save" className="formrow" style={{ paddingTop: 10 }}>
+                      <label className="fl">Name<input className="fld" name="name" defaultValue={c.name} required /></label>
+                    </ActionForm>
+                  </details>
+                  <ArchiveButton kind="client" id={c.id} active={c.isActive} />
+                </div>
+              ))}
+            </section>
+          )}
+
+          {current.key === "partners" && (
+            <section className="card">
+              <div className="sh"><div><h2>Partners abroad</h2><p>A partner company handles MRD&apos;s facilities in its country (A6). Items shipped to it sit in its stock until deployed.</p></div></div>
+              <div style={{ padding: "0 18px 18px" }}>
+                <ActionForm action={addPartner} submit="Add partner" className="formrow">
+                  <label className="fl">Name<input className="fld" name="name" required /></label>
+                  <label className="fl">Country
+                    <select className="fld" name="countryId" required defaultValue="">
+                      <option value="" disabled>Choose…</option>
+                      {lists.countries.filter((c) => c.isoCode !== "OM").map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    </select>
+                  </label>
+                </ActionForm>
+              </div>
+              {data.partners.map((p) => (
+                <div key={p.id} className="row" style={{ flexWrap: "wrap", alignItems: "flex-start" }}>
+                  <details className="edit" style={{ flex: 1 }}>
+                    <summary><span style={{ fontWeight: 500 }}>{p.name}</span> <span className="muted">· {p.country}</span><Archived active={p.isActive} />
+                      <span className="muted" style={{ fontSize: 12, marginLeft: 8 }}>{p.used} facilities · {p.contacts.length} contacts · <span className="lnk">Contacts</span></span>
+                    </summary>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8, paddingTop: 10 }}>
+                      {p.contacts.map((c) => (
+                        <div key={c.id} style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", fontSize: 13 }}>
+                          <span style={{ fontWeight: 500 }}>{c.name}</span>{c.isPrimary && <span className="b s-deployed">Primary</span>}
+                          <span className="muted">{[c.role, c.email, c.phone].filter(Boolean).join(" · ")}</span>
+                          <ActionForm action={removePartnerContact.bind(null, c.id)} submit="Remove" danger confirm={`Remove ${c.name}?`} />
+                        </div>
+                      ))}
+                      <ActionForm action={addPartnerContact.bind(null, p.id)} submit="Add contact" className="formrow">
+                        <label className="fl">Name<input className="fld" name="name" required /></label>
+                        <label className="fl">Role<input className="fld" name="role" /></label>
+                        <label className="fl">Email<input className="fld" name="email" type="email" /></label>
+                        <label className="fl">Phone<input className="fld" name="phone" /></label>
+                        <label className="fl" style={{ flexDirection: "row", alignItems: "center", gap: 8 }}><input type="checkbox" name="isPrimary" /> Primary</label>
+                      </ActionForm>
+                    </div>
+                  </details>
+                  <ArchiveButton kind="partner" id={p.id} active={p.isActive} />
                 </div>
               ))}
             </section>
