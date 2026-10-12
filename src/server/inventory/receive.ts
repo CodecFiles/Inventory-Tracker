@@ -52,6 +52,8 @@ export async function receiveDelivery(userId: string, rawInput: unknown): Promis
   // 2. Everything below is one transaction: if any line fails, nothing from this delivery is saved.
   return withActor(userId, async (tx) => {
     await requirePermission(tx, userId, "inventory.receive");
+    const [supplier] = await tx`select is_active from suppliers where id = ${input.supplierId}`;
+    if (!supplier?.is_active) throw new ValidationError("That supplier does not exist or is archived");
 
     const products = await tx<{ id: number; name: string; tracking_type: string; is_sim: boolean }[]>`
       select id::int, name, tracking_type::text, is_sim from products

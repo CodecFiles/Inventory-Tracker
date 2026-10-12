@@ -4,9 +4,8 @@ _Last updated: 2026-10-12_
 
 **Current stage:** 5 — Backend (step 5.3 done: staging site live end-to-end)
 
-**Next action:** owner confirms who may re-open a closed facility (R12 says Admin/Super Admin);
-then step 5.9 — catalogue management (products, categories, suppliers, repair companies, clients,
-facilities, partners, contacts).
+**Next action:** step 5.10 — read queries for the screens (lists, item history, search, stock
+overview / low stock); then Google sign-in and protecting the health page, and the Stage 5 gate.
 Google sign-in and custom SMTP (M3) before colleagues sign up.
 
 Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment-specific
@@ -20,7 +19,7 @@ Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment
 | 2 UI/UX Design | Complete (design level) | `design/` — 26 screens, live canvas |
 | 3 Architecture | Complete | `docs/ARCHITECTURE.md` (approved); gate below |
 | 4 Database | Complete | Gate below; migrations 0001–0005 on Supabase staging; 87 tests + race test green in CI |
-| 5 Backend | In progress | data-access layer; receiving; device preparation; deployments; shipments; abroad configuration; returns/repairs/write-offs; facility stages; corrections; login/sign-up/approval; 86 backend tests + 124 DB tests |
+| 5 Backend | In progress | data-access layer; receiving; device preparation; deployments; shipments; abroad configuration; returns/repairs/write-offs; facility stages; corrections; catalogue management; login/sign-up/approval; 99 backend tests + 131 DB tests |
 | 6 Frontend | Not started | — |
 | 7 Testing | Not started | — |
 | 8 Hosting and Launch | Not started | — |
@@ -124,8 +123,9 @@ Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment
 | R10 | Routers may be shipped abroad unconfigured, with loose SIMs, for the partner to configure; the "configured first" rule (R9) applies to Oman deployments only. A SIM inside a router is never its own line; a loose SIM can be | 2026-10-12 |
 | A8 | Everything abroad is tracked: serials shipped, SIMs, which SIM + IP is in which router (recorded by MRD for the partner), and international deployments | 2026-10-12 |
 | R11 | A router returned from an Oman site brings its SIM back and stays configured (ready to redeploy). For repair, supplier return or write-off of a router with a SIM, the person chooses: SIM kept as spare (brought back to the office) or retired (owner confirmed 2026-10-12: returned routers are usually reused as-is, without reconfiguration) | 2026-10-12 |
-| R12 | Facility stages: forward only; an Editor may skip steps with a reason noted on the form; moving back or re-opening a closed facility needs an Admin/Super Admin and a reason; `closed` from any stage | 2026-10-12 |
+| R12 | Facility stages: forward only; an Editor may skip steps with a reason noted on the form; moving back or re-opening a closed facility needs an Admin/Super Admin and a reason (owner re-confirmed: re-opening is Admin/Super Admin only); `closed` from any stage | 2026-10-12 |
 | A9 | A facility can have many configured routers over time. A closed facility may re-open for a new POC or contract; it must be re-opened (stage moved, with a reason) before anything is deployed to it — new or returned office routers can then go out | 2026-10-12 |
+| C1 | Catalogue records are archived, never deleted (contacts may be removed); a received product's kind is locked; a facility's country is locked once stock moved there; places holding stock cannot be archived; archived suppliers cannot be used for receiving | 2026-10-12 |
 | D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
 Stage 2 revision needed (rule 4): the Users/Settings screens show Admin/Operations/Technician/Viewer
@@ -169,6 +169,7 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 | 2026-10-12 | 5.7 returns/repairs/write-offs: Vitest `movements.test.ts` (15) | **72/72 pass** | Mutation: without the "choose what happens to the SIM" rule, 2 tests fail. `changeRouterSim` now shares `takeSimOut`. Prepare test narrowed to its own SIMs (shared test DB) |
 | 2026-10-12 | 5.8 stages + corrections: pgTAP 0011 (11) + Vitest `stages-corrections.test.ts` (13) | **124/124 + 85/85 pass** | Mutation: without the database "only Admins move back" rule, 3 backend tests fail (the server relies on the database for that rule) |
 | 2026-10-12 | A9 closed-facility rule (1 backend test) | **86/86 pass** | Mutation: without the check at completion, 2 tests fail |
+| 2026-10-12 | 5.9 catalogue: pgTAP 0012 (7) + Vitest `catalogue.test.ts` (13) | **First run: fail** → fixed → **131/131 + 99/99 pass** | Test found a real bug: product details were saved as text, not data (double JSON conversion). Mutation: without the kind lock, 1 test fails |
 | 2026-10-12 | Staging end-to-end (owner) | **PASS** | Sign-up → email confirm → sign-in → pending page → bootstrap → home shows role `super_admin` |
 
 ## Change log
@@ -208,3 +209,4 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 - 2026-10-12 — 5.7: returnFromFacility, sendForRepair, backFromRepair, returnToSupplier, writeOff (units and counted items) with SIM handling (R11).
 - 2026-10-12 — 5.8: R12 decided; migration 0011 (stage rules, Super Admin corrections); changeFacilityStage, correctStock, correctUnit; A9 asked.
 - 2026-10-12 — A9: deployments to a closed facility are refused until it is re-opened.
+- 2026-10-12 — 5.9: catalogue management (create/update/archive/restore for 7 lists, contacts); migration 0012; C1.
