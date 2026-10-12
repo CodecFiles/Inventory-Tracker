@@ -16,6 +16,7 @@ import { assertEnoughStock, assertSimNotInRouter } from "../inventory/stock";
 //   facility abroad      -> from the partner's stock (items shipped to the partner earlier)
 
 const id = z.number().int().positive();
+const CLOSED = "This facility is closed — re-open it (move it to POC or Contract) before deploying to it";
 const date = z.iso.date();
 
 export const CreateDeploymentInput = z.object({
@@ -29,8 +30,9 @@ export async function createDeployment(userId: string, rawInput: unknown): Promi
   const input = parseInput(CreateDeploymentInput, rawInput);
   return withActor(userId, async (tx) => {
     await requirePermission(tx, userId, "deployments.create");
-    const [facility] = await tx`select is_active from facilities where id = ${input.facilityId}`;
+    const [facility] = await tx`select is_active, stage::text from facilities where id = ${input.facilityId}`;
     if (!facility?.is_active) throw new ValidationError("That facility does not exist or is archived");
+    if (facility.stage === "closed") throw new ValidationError(CLOSED);
 
     const [row] = await tx<{ id: number; code: string }[]>`
       insert into deployments (facility_id, deployment_type, deployment_date, created_by, notes)
@@ -147,6 +149,11 @@ export async function completeDeployment(userId: string, rawInput: unknown): Pro
   await withActor(userId, async (tx) => {
     await requirePermission(tx, userId, "deployments.complete");
     const source = await deploymentSource(tx, input.deploymentId);
+
+    // a draft made before the facility was closed must wait until it is re-opened (A9)
+    const [{ stage }] = await tx<{ stage: string }[]>`
+      select f.stage::text from deployments d join facilities f on f.id = d.facility_id where d.id = ${input.deploymentId}`;
+    if (stage === "closed") throw new ValidationError(CLOSED);
 
     // Friendly checks first; the database repeats them inside complete_deployment and has the final say.
     if (!source.abroad) {

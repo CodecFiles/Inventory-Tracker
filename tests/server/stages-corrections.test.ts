@@ -117,6 +117,19 @@ describe("facility stages (R12)", () => {
       .rejects.toThrow(ForbiddenError);
     await expect(changeFacilityStage(EDITOR, { facilityId: site, toStage: "closed" })).rejects.toThrow(/already at closed/);
   });
+
+  it("a closed facility takes no deployments until it is re-opened (A9)", async () => {
+    await expect(createDeployment(EDITOR, { facilityId: site, type: "poc" })).rejects.toThrow(/re-open it/);
+    await changeFacilityStage(ADMIN, { facilityId: site, toStage: "poc", reason: "Client asked for a new POC" });
+    const { deploymentId } = await createDeployment(EDITOR, { facilityId: site, type: "poc" });
+
+    // a draft made before the facility closed waits until it is re-opened
+    await addDeploymentItem(EDITOR, { deploymentId, productId: cable, quantity: 1 });
+    await changeFacilityStage(EDITOR, { facilityId: site, toStage: "closed" });
+    await expect(completeDeployment(EDITOR, { deploymentId })).rejects.toThrow(/re-open it/);
+    await changeFacilityStage(ADMIN, { facilityId: site, toStage: "contract", reason: "Contract signed" });
+    await completeDeployment(EDITOR, { deploymentId });
+  });
 });
 
 describe("corrections (Super Admin only)", () => {
@@ -129,10 +142,10 @@ describe("corrections (Super Admin only)", () => {
 
   it("a recount adds 2 cables; removing more than exist is refused", async () => {
     await correctStock(SUPER, { productId: cable, locationId: officeId, change: 2, reason: "Recount found 2 more" });
-    expect(await officeCables()).toBe(12);
+    expect(await officeCables()).toBe(11);
     await expect(correctStock(SUPER, { productId: cable, locationId: officeId, change: -50, reason: "Recount" }))
       .rejects.toThrow(/Not enough stock/);
-    expect(await officeCables()).toBe(12);
+    expect(await officeCables()).toBe(11);
   });
 
   it("needs a reason", async () => {
