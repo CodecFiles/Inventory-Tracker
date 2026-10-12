@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { Icon, type IconName } from "@/components/icons";
+import { Toaster } from "@/components/toast";
 import { signOut } from "../auth-actions";
 
 // The app's frame from the design: dark sidebar on the left, page on the right. On phones the
@@ -75,6 +76,7 @@ export function Frame({ sections, user, topbar, children }: {
         {topbar}
         {children}
       </div>
+      <Toaster />
     </div>
   );
 }

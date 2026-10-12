@@ -5,6 +5,16 @@ import { likePattern, optionalId, Page, read } from "./read";
 
 // Facilities (list + detail), the dropdown lists every form needs, and the audit log.
 
+export type FacilityRow = {
+  id: number; name: string; city: string | null; stage: string; isActive: boolean; client: string; country: string;
+  partner: string | null; units: number;
+};
+export type LookupProduct = {
+  id: number; name: string; brand: string; model: string; categoryId: number; tracking: string;
+  needsConfiguration: boolean; isSim: boolean;
+};
+type Named = { id: number; name: string };
+
 export async function listFacilities(userId: string, rawInput: unknown = {}) {
   const f = parseInput(Page.extend({
     stage: z.enum(["site_inspection", "bms_scan", "poc", "poc_study", "contract", "deployment",
@@ -14,7 +24,7 @@ export async function listFacilities(userId: string, rawInput: unknown = {}) {
     q: z.string().trim().max(100).optional(),
     includeArchived: z.boolean().default(false),
   }), rawInput);
-  return read(userId, (tx) => tx`
+  return read(userId, (tx) => tx<FacilityRow[]>`
     select f.id::int, f.name, f.city, f.stage::text as stage, f.is_active as "isActive",
            cl.name as client, c.name as country, p.name as partner,
            (select count(*)::int from units u join products pr on pr.id = u.product_id
@@ -68,15 +78,17 @@ export async function facilityDetail(userId: string, rawInput: unknown) {
 // Everything the forms' dropdowns need, in one call (active records only).
 export async function lookups(userId: string) {
   return read(userId, async (tx) => ({
-    countries: await tx`select id::int, name, iso_code as "isoCode" from countries order by name`,
-    categories: await tx`select id::int, name from categories where is_active order by name`,
-    products: await tx`select id::int, name, brand, model, category_id::int as "categoryId", tracking_type::text as tracking,
+    countries: await tx<(Named & { isoCode: string })[]>`select id::int, name, iso_code as "isoCode" from countries order by name`,
+    categories: await tx<Named[]>`select id::int, name from categories where is_active order by name`,
+    products: await tx<LookupProduct[]>`select id::int, name, brand, model, category_id::int as "categoryId", tracking_type::text as tracking,
                               requires_configuration as "needsConfiguration", is_sim as "isSim"
                        from products where is_active order by name`,
-    suppliers: await tx`select id::int, name, code_prefix as "codePrefix" from suppliers where is_active order by name`,
-    repairCompanies: await tx`select id::int, name from repair_companies where is_active order by name`,
-    clients: await tx`select id::int, name from clients where is_active order by name`,
-    partners: await tx`select p.id::int, p.name, c.name as country from partners p join countries c on c.id = p.country_id
+    suppliers: await tx<(Named & { codePrefix: string })[]>`select id::int, name, code_prefix as "codePrefix" from suppliers where is_active order by name`,
+    repairCompanies: await tx<Named[]>`select id::int, name from repair_companies where is_active order by name`,
+    clients: await tx<Named[]>`select id::int, name from clients where is_active order by name`,
+    partners: await tx<(Named & { country: string; locationId: number })[]>`select p.id::int, p.name, c.name as country,
+                              (select l.id::int from locations l where l.partner_id = p.id) as "locationId"
+                       from partners p join countries c on c.id = p.country_id
                        where p.is_active order by p.name`,
   }));
 }

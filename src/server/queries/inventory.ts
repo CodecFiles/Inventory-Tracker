@@ -55,6 +55,8 @@ export const ListUnitsInput = Page.extend({
   simsOnly: z.boolean().default(false),
   // Device preparation: routers in the office that have no SIM yet
   unconfiguredRouters: z.boolean().default(false),
+  // routers (products that need configuration) with or without a SIM, wherever locationId says
+  routerSim: z.enum(["with", "without"]).optional(),
   q: z.string().trim().max(100).optional(),
 });
 
@@ -95,6 +97,8 @@ export async function listUnits(userId: string, rawInput: unknown = {}): Promise
           ? tx`and p.requires_configuration and u.location_id = office_location_id()
                and u.status in ('in_office', 'configured') and ra.id is null`
           : tx``}
+        ${f.routerSim ? tx`and p.requires_configuration and u.status not in ('retired', 'returned_to_supplier')
+                             and ra.id is ${f.routerSim === "with" ? tx`not null` : tx`null`}` : tx``}
         ${f.q ? tx`and (u.serial_number ilike ${likePattern(f.q)} or u.imei ilike ${likePattern(f.q)}
                         or d.phone_number ilike ${likePattern(f.q)})` : tx``}
       order by p.name, u.serial_number
@@ -242,4 +246,19 @@ export async function dashboardSummary(userId: string) {
     return { where, stages: Object.fromEntries(stages.map((r) => [r.stage, r.n])) as Record<string, number>,
              routersWithoutSim, pendingUsers };
   });
+}
+
+// ---------------------------------------------------------------------------------------------
+// Counted (hybrid) items still waiting for serial numbers, per delivery line (Device preparation).
+// ---------------------------------------------------------------------------------------------
+export type PendingSerialLine = { batchLineId: number; batchCode: string; product: string; received: number; serialised: number };
+
+export async function pendingSerialLines(userId: string): Promise<PendingSerialLine[]> {
+  return read(userId, (tx) => tx<PendingSerialLine[]>`
+    select bl.id::int as "batchLineId", b.code as "batchCode", p.name as product, bl.quantity_received as received,
+           (select count(*)::int from units u where u.batch_line_id = bl.id) as serialised
+    from batch_lines bl join batches b on b.id = bl.batch_id join products p on p.id = bl.product_id
+    where p.tracking_type = 'hybrid'
+      and (select count(*) from units u where u.batch_line_id = bl.id) < bl.quantity_received
+    order by b.received_on, bl.id`);
 }

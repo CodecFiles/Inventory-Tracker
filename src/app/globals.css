@@ -131,3 +131,28 @@ select.fld{padding-right:8px}
 .ev .ic{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;z-index:1;font-size:13px;font-weight:600}
 .ev .rail{position:absolute;left:15px;top:32px;bottom:0;width:2px;background:#EEF1F4}
 .ev:last-child .rail{display:none}
+
+/* Settings (design/Settings.dc.html) */
+.fld.mono{font-family:var(--font-geist-mono),ui-monospace,monospace;font-size:13px}
+.hint{font-size:12px;color:#5E6B7D;margin-top:6px}
+.sside{flex:0 0 236px;max-width:236px}
+.snav{display:flex;flex-direction:column;gap:2px;padding:10px}
+.sbtn{display:flex;align-items:center;gap:8px;min-height:34px;padding:0 10px;border-radius:8px;font-size:13.5px;color:#3B4758;white-space:nowrap}
+.sbtn:hover{background:#F4F6F8;color:#0E1726}
+.sbtn.on{background:#E7F3F0;color:#075C51;font-weight:500}
+.sgrp{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#5E6B7D;padding:12px 10px 4px;font-weight:500}
+.sh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;padding:18px 18px 14px}
+.sh h2{font-size:16px;font-weight:600}
+.sh p{font-size:13px;color:#5E6B7D;margin-top:2px;max-width:620px}
+@media (max-width:900px){.sside{flex-basis:100%;max-width:none}.snav{flex-direction:row;flex-wrap:wrap}}
+
+/* Inline forms: a <details> row that opens an edit form */
+details.edit > summary{list-style:none;cursor:pointer}
+details.edit > summary::-webkit-details-marker{display:none}
+.formrow{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.formrow > *{flex:1 1 180px}
+.formrow > .btn{flex:0 0 auto}
+
+/* Toast: short confirmation in the corner (design/BatchDetail.dc.html) */
+.toast{position:fixed;right:24px;bottom:24px;z-index:60;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;background:#0E1726;color:#fff;font-size:13px;box-shadow:0 10px 30px rgba(14,23,38,.3)}
+@media (max-width:900px){.toast{left:16px;right:16px;bottom:16px}}

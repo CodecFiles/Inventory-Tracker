@@ -2,10 +2,10 @@
 
 _Last updated: 2026-10-12_
 
-**Current stage:** 6 — Frontend (step 6.2 done: Dashboard, inventory list, item detail)
+**Current stage:** 6 — Frontend (step 6.3 done: settings, receive, batches, device preparation, SIM cards)
 
-**Next action:** PR for 6.2 (+ migration 0013); then 6.3 — Receive stock, batches, device
-preparation and SIM cards (the first screens that change data).
+**Next action:** PR for 6.3; owner adds real categories, products and suppliers on staging and
+receives a first delivery; then 6.4 — facilities, deployments, shipments, returns.
 Google sign-in and custom SMTP (M3) before colleagues sign up.
 
 Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment-specific
@@ -202,6 +202,7 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 | 2026-10-12 | 6.1 shell: screenshots (desktop + phone) in local preview mode; Vitest incl. `dev-preview.test.ts` | **PASS** — 113/113 | Sign-in pages match design/Login; phone: brand strip overflowed → fixed; Menu opens/closes; Viewer sees no "Users & roles" and is refused at /admin/users |
 | 2026-10-12 | 6.1 on staging (owner) | **PASS** | "merged, checked, looks good" |
 | 2026-10-12 | 6.2 screens in local preview (desktop + phone) + pgTAP 0013 (2) | **PASS** — 133 DB, 113 backend | Found and fixed: facility device count included SIMs; phone tiles one per row; table header alignment; SIM notes named the router by internal id → migration 0013 (notes use the serial number; tests fail without it) |
+| 2026-10-12 | 6.3 end-to-end through the screens (local preview, Playwright) | **PASS** after fixes | Settings: add category/product, duplicate refused, kind lock shown, archive. Receive: bad ICCID refused with nothing saved, then batch TEL-2026-002 created. Prep: SIM + IP saved; bad IP refused; SIM change keeps old SIM as spare; 2 sensors serialised (29 → 27 counted). DB checked after each run. Fixed: lost confirmation when a row moves lists → corner notice; database wording in duplicate and field errors |
 | 2026-10-12 | Staging end-to-end (owner) | **PASS** | Sign-up → email confirm → sign-in → pending page → bootstrap → home shows role `super_admin` |
 
 ## Change log
@@ -248,3 +249,4 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 - 2026-10-12 — PR #7 merged. Stage 5 closed (gate above); Stage 6 started.
 - 2026-10-12 — 6.1: design system CSS, app frame (sidebar, mobile menu, search), sign-in pages in the design with Google, approvals and search pages; local preview mode + demo data.
 - 2026-10-12 — 6.2: Dashboard (summary tiles, where everything is, facility pipeline, needs preparation, recent deployments, low stock), All inventory (status chips, filters, pagination, counted stock), item detail (connectivity, identity, SIM/router history, movement history); migration 0013.
+- 2026-10-12 — 6.3: Settings (products, categories, suppliers, repair companies), Receive stock, Batches + detail, Device preparation (office and partner), SIM cards; shared form/notice components; readable error messages.

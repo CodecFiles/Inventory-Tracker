@@ -3,7 +3,7 @@ import Link from "next/link";
 import { UNIT_STATUSES, UnitStatus } from "@/components/status";
 import { listUnits, stockOverview, unitStatusCounts } from "@/server/queries/inventory";
 import { lookups } from "@/server/queries/places";
-import { requireApprovedUser } from "@/server/session";
+import { getPermissions, requireApprovedUser } from "@/server/session";
 
 // All inventory (design/Inventory.dc.html). Filters live in the address (?status=…&productId=…),
 // so a filtered list can be bookmarked or shared, and the page needs no browser code.
@@ -26,7 +26,8 @@ export default async function InventoryPage({ searchParams }: PageProps<"/invent
   const q = one(sp.q);
   const page = Math.max(1, Number(one(sp.page) ?? 1) || 1);
 
-  const [data, counts, stock, lists] = await Promise.all([
+  const [permissions, data, counts, stock, lists] = await Promise.all([
+    getPermissions(user.id),
     listUnits(user.id, { productId, status, place, q, limit: PAGE, offset: (page - 1) * PAGE }),
     unitStatusCounts(user.id, { productId }),
     stockOverview(user.id),
@@ -54,6 +55,7 @@ export default async function InventoryPage({ searchParams }: PageProps<"/invent
             <h1 className="h1">All inventory</h1>
             <p className="muted">{totalUnits} serialised units · {counted.reduce((a, s) => a + s.inOffice + s.atFacilities + s.atPartners, 0)} counted pieces</p>
           </div>
+          {permissions.has("inventory.receive") && <Link className="btn p" href="/receive">Receive stock</Link>}
         </div>
       </div>
 
