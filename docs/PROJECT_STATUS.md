@@ -122,7 +122,7 @@ Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment
 | R9 | Routers must be configured (have a SIM) before an Oman deployment (from lifecycle M1; owner may relax). SIMs are never deployment lines on their own — they travel inside their router | 2026-10-12 |
 | R10 | Routers may be shipped abroad unconfigured, with loose SIMs, for the partner to configure; the "configured first" rule (R9) applies to Oman deployments only. A SIM inside a router is never its own line; a loose SIM can be | 2026-10-12 |
 | A8 | Everything abroad is tracked: serials shipped, SIMs, which SIM + IP is in which router (recorded by MRD for the partner), and international deployments | 2026-10-12 |
-| R11 | A router returned from an Oman site brings its SIM back and stays configured (ready to redeploy). For repair, supplier return or write-off of a router with a SIM, the person chooses: SIM kept as spare (brought back to the office) or retired (assistant assumption following R8; owner may change) | 2026-10-12 |
+| R11 | A router returned from an Oman site brings its SIM back and stays configured (ready to redeploy). For repair, supplier return or write-off of a router with a SIM, the person chooses: SIM kept as spare (brought back to the office) or retired (owner confirmed 2026-10-12: returned routers are usually reused as-is, without reconfiguration) | 2026-10-12 |
 | D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
 Stage 2 revision needed (rule 4): the Users/Settings screens show Admin/Operations/Technician/Viewer
