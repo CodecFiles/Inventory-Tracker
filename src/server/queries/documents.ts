@@ -11,7 +11,10 @@ export type DeploymentRow = {
   id: number; code: string; status: string; type: string; date: Date | null; facilityId: number; facility: string;
   country: string; createdBy: string; items: number;
 };
-export type DeploymentInfo = Omit<DeploymentRow, "items"> & { notes: string | null; completedAt: Date | null; completedBy: string | null };
+export type DeploymentInfo = Omit<DeploymentRow, "items"> & {
+  notes: string | null; completedAt: Date | null; completedBy: string | null;
+  abroad: boolean; facilityStage: string; sourceLocationId: number | null; source: string | null;
+};
 export type DocItem = {
   id: number; productId: number; product: string; unitId: number | null; serial: string | null; quantity: number;
   building?: string | null; position?: string | null; removedAt?: Date | null;
@@ -52,9 +55,13 @@ export async function deploymentDetail(userId: string, rawInput: unknown): Promi
     const [d] = await tx<DeploymentInfo[]>`
       select d.id::int, d.code, d.status::text as status, d.deployment_type::text as type, d.deployment_date as "date",
              d.notes, d.completed_at as "completedAt", f.id::int as "facilityId", f.name as facility,
-             c.name as country, cu.full_name as "createdBy", co.full_name as "completedBy"
+             c.name as country, cu.full_name as "createdBy", co.full_name as "completedBy",
+             c.iso_code <> 'OM' as abroad, f.stage::text as "facilityStage",
+             src.id::int as "sourceLocationId", src.name as source
       from deployments d join facilities f on f.id = d.facility_id join countries c on c.id = f.country_id
       join users cu on cu.id = d.created_by left join users co on co.id = d.completed_by
+      left join locations src on src.id = case when c.iso_code = 'OM' then office_location_id()
+                                               else (select l.id from locations l where l.partner_id = f.partner_id) end
       where d.id = ${id}`;
     if (!d) throw new ValidationError("That deployment does not exist");
     const items = await tx<DocItem[]>`

@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ActionForm } from "@/components/action-form";
 import { UnitStatus } from "@/components/status";
 import { unitDetail } from "@/server/queries/inventory";
-import { requireApprovedUser } from "@/server/session";
+import { lookups } from "@/server/queries/places";
+import { getPermissions, requireApprovedUser } from "@/server/session";
+import { backFrom, repair, retire, toSupplier } from "../actions";
 
 // One item's full story (design/DeviceDetail.dc.html): what it is, where it is now, its SIM link,
 // and every movement — who, when, why. Actions (configure, deploy, return…) arrive in 6.3–6.4.
@@ -39,6 +42,22 @@ export default async function ItemPage({ params }: PageProps<"/inventory/[id]">)
     notFound();
   }
   const current = u.simHistory.find((s) => !s.endedAt);
+  const [permissions, lists] = await Promise.all([getPermissions(user.id), lookups(user.id)]);
+  // What can happen to it next, depending on where it is (SIMs inside a router move with the router)
+  const simInRouter = u.isSim && !!current;
+  const canMove = permissions.has("inventory.move") && !simInRouter && !["retired", "returned_to_supplier"].includes(u.status);
+  const inOffice = u.place === "office";
+  const atOmanSite = u.status === "deployed";
+  const inRepair = u.status === "in_repair";
+  const routerSim = !u.isSim && current; // a router with a SIM: ask what happens to the SIM
+  const simChoice = routerSim ? (
+    <label className="fl">Its SIM ({current.otherSerial})
+      <select className="fld" name="sim" required defaultValue="spare">
+        <option value="spare">Keep the SIM as a spare (back to MRD Office)</option>
+        <option value="retire">Retire the SIM</option>
+      </select>
+    </label>
+  ) : null;
   const answers = [
     ["Where is it?", u.location],
     ["Status", <UnitStatus key="s" status={u.status} />],
@@ -81,6 +100,61 @@ export default async function ItemPage({ params }: PageProps<"/inventory/[id]">)
           <div key={q} className="ans"><span className="q">{q}</span><span className="a">{a}</span></div>
         ))}
       </section>
+
+      {canMove && (
+        <section className="card">
+          <div className="sh"><div><h2>Actions</h2><p>{simInRouter ? "" : "Each action is recorded in the history below with your name."}</p></div></div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+            {(inOffice || atOmanSite) && (
+              <details className="edit row" style={{ display: "block" }}>
+                <summary className="lnk">Send for repair</summary>
+                <ActionForm action={repair.bind(null, u.unitId)} submit="Send for repair" className="formrow" style={{ paddingTop: 10 }}>
+                  <label className="fl">To
+                    <select className="fld" name="to" required defaultValue="">
+                      <option value="" disabled>Choose…</option>
+                      {lists.repairCompanies.map((r) => <option key={`r${r.id}`} value={`repair:${r.id}`}>{r.name} (repair company)</option>)}
+                      {lists.suppliers.map((x) => <option key={`s${x.id}`} value={`supplier:${x.id}`}>{x.name} (supplier)</option>)}
+                    </select>
+                  </label>
+                  {simChoice}
+                  <label className="fl">Fault / note<input className="fld" name="note" placeholder="e.g. No power" /></label>
+                </ActionForm>
+              </details>
+            )}
+            {inRepair && (
+              <details className="edit row" style={{ display: "block" }} open>
+                <summary className="lnk">Back from repair</summary>
+                <ActionForm action={backFrom.bind(null, u.unitId)} submit="Back in MRD Office" className="formrow" style={{ paddingTop: 10 }}>
+                  <label className="fl">Note<input className="fld" name="note" placeholder="e.g. Board replaced" /></label>
+                </ActionForm>
+              </details>
+            )}
+            {(inOffice || u.place === "repair_company") && (
+              <details className="edit row" style={{ display: "block" }}>
+                <summary className="lnk">Return to supplier (e.g. warranty)</summary>
+                <ActionForm action={toSupplier.bind(null, u.unitId)} submit="Return to supplier" className="formrow" style={{ paddingTop: 10 }}>
+                  <label className="fl">Supplier
+                    <select className="fld" name="supplierId" required defaultValue="">
+                      <option value="" disabled>Choose…</option>
+                      {lists.suppliers.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}
+                    </select>
+                  </label>
+                  {simChoice}
+                  <label className="fl">Note<input className="fld" name="note" /></label>
+                </ActionForm>
+              </details>
+            )}
+            <details className="edit row" style={{ display: "block" }}>
+              <summary className="lnk" style={{ color: "#A3201F" }}>Write off</summary>
+              <ActionForm action={retire.bind(null, u.unitId)} submit="Write off" className="formrow" style={{ paddingTop: 10 }}
+                          confirm={`Write off ${u.serial}? It can never be used again (a Super Admin can correct a mistake).`}>
+                {simChoice}
+                <label className="fl">Reason<input className="fld" name="reason" required placeholder="e.g. Water damage" /></label>
+              </ActionForm>
+            </details>
+          </div>
+        </section>
+      )}
 
       <section style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "flex-start" }}>
         <div style={{ flex: "1 1 340px", minWidth: 0, display: "flex", flexDirection: "column", gap: 16 }}>

@@ -262,3 +262,43 @@ export async function pendingSerialLines(userId: string): Promise<PendingSerialL
       and (select count(*) from units u where u.batch_line_id = bl.id) < bl.quantity_received
     order by b.received_on, bl.id`);
 }
+
+// ---------------------------------------------------------------------------------------------
+// Units that can be put on a deployment or shipment from a place: really there, usable, not already
+// planned on another open document, and not a SIM inside a router (it travels with the router).
+// ---------------------------------------------------------------------------------------------
+export type AvailableUnit = {
+  unitId: number; serial: string; product: string; status: string; simIccid: string | null; ipAddress: string | null;
+  needsConfiguration: boolean;
+};
+
+export async function availableUnits(userId: string, rawInput: unknown): Promise<AvailableUnit[]> {
+  const { locationId } = parseInput(z.object({ locationId: z.number().int().positive() }), rawInput);
+  return read(userId, (tx) => tx<AvailableUnit[]>`
+    select u.id::int as "unitId", u.serial_number as serial, p.name as product, u.status::text as status,
+           s.serial_number as "simIccid", host(a.ip_address) as "ipAddress",
+           p.requires_configuration as "needsConfiguration"
+    from units u join products p on p.id = u.product_id
+    left join sim_assignments a on a.router_unit_id = u.id and a.ended_at is null
+    left join units s on s.id = a.sim_unit_id
+    where u.location_id = ${locationId}
+      and u.status in ('in_office', 'configured', 'shipped_to_partner')
+      and not exists (select 1 from sim_assignments x where x.sim_unit_id = u.id and x.ended_at is null)
+      and not exists (select 1 from deployment_items i join deployments d on d.id = i.deployment_id
+                      where i.unit_id = u.id and i.removed_at is null and d.status in ('draft', 'scheduled'))
+      and not exists (select 1 from shipment_items i join shipments sh on sh.id = i.shipment_id
+                      where i.unit_id = u.id and i.removed_at is null and sh.status = 'draft')
+    order by p.name, u.serial_number
+    limit 500`);
+}
+
+// Counted stock at one place (for adding cables to a document, or returning them).
+export type CountedStock = { productId: number; product: string; quantity: number };
+
+export async function countedStockAt(userId: string, rawInput: unknown): Promise<CountedStock[]> {
+  const { locationId } = parseInput(z.object({ locationId: z.number().int().positive() }), rawInput);
+  return read(userId, (tx) => tx<CountedStock[]>`
+    select s.product_id::int as "productId", p.name as product, s.quantity
+    from stock_levels s join products p on p.id = s.product_id
+    where s.location_id = ${locationId} and s.quantity > 0 order by p.name`);
+}

@@ -153,7 +153,7 @@ describe("documents and places", () => {
   it("facility detail: what is installed (router with SIM and IP, cables) and its stage history", async () => {
     const f = await facilityDetail(VIEWER, { id: site });
     expect(f.installed.units).toEqual([expect.objectContaining({ serial: "Q-R1", simIccid: SIM[0], ipAddress: "10.50.0.1", position: "Roof" })]);
-    expect(f.installed.counted).toEqual([{ product: "Q cable", quantity: 1 }]);
+    expect(f.installed.counted).toEqual([expect.objectContaining({ product: "Q cable", quantity: 1 })]);
     expect(f.stageHistory.map((h) => h.to)).toEqual(["site_inspection"]);
     expect((await listFacilities(VIEWER, { q: "Salalah" })).map((x) => x.name)).toEqual(["Query Plaza Salalah"]);
   });

@@ -15,9 +15,14 @@ const NAV: { title?: string; items: Item[] }[] = [
     { href: "/prep", label: "Device preparation", icon: "prep", permission: "inventory.prepare" },
     { href: "/sims", label: "SIM cards", icon: "sim", permission: "reports.view" },
   ] },
+  { title: "Facilities & deployments", items: [
+    { href: "/facilities", label: "Facilities", icon: "facility", permission: "reports.view" },
+    { href: "/deployments", label: "Deployments", icon: "deployment", permission: "reports.view" },
+    { href: "/shipments", label: "Shipments", icon: "ship", permission: "reports.view" },
+  ] },
   { title: "Insights & admin", items: [
     { href: "/admin/users", label: "Users & roles", icon: "users", permission: "users.approve" },
-    { href: "/settings", label: "Settings", icon: "settings", permission: ["products.manage", "suppliers.manage"] },
+    { href: "/settings", label: "Settings", icon: "settings", permission: ["products.manage", "suppliers.manage", "facilities.manage", "partners.manage"] },
   ] },
 ];
 
