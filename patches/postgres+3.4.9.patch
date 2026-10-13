@@ -1,0 +1,48 @@
+diff --git a/node_modules/postgres/cf/src/connection.js b/node_modules/postgres/cf/src/connection.js
+index 8e79170..d7f2e82 100644
+--- a/node_modules/postgres/cf/src/connection.js
++++ b/node_modules/postgres/cf/src/connection.js
+@@ -165,6 +165,11 @@ function Connection(options, queues = {}, { onopen = noop, onend = noop, onclose
+     if (q.cancelled)
+       return
+ 
++    // MRD patch: the connection closed (e.g. mid-transaction) and the socket is gone. Fail this
++    // query now instead of writing to a null socket (uncaught TypeError, then the pool hangs).
++    if (!socket)
++      return queryError(q, Errors.connection('CONNECTION_CLOSED', options))
++
+     try {
+       q.state = backend
+       query
+diff --git a/node_modules/postgres/cjs/src/connection.js b/node_modules/postgres/cjs/src/connection.js
+index 07f6716..3503391 100644
+--- a/node_modules/postgres/cjs/src/connection.js
++++ b/node_modules/postgres/cjs/src/connection.js
+@@ -163,6 +163,11 @@ function Connection(options, queues = {}, { onopen = noop, onend = noop, onclose
+     if (q.cancelled)
+       return
+ 
++    // MRD patch: the connection closed (e.g. mid-transaction) and the socket is gone. Fail this
++    // query now instead of writing to a null socket (uncaught TypeError, then the pool hangs).
++    if (!socket)
++      return queryError(q, Errors.connection('CONNECTION_CLOSED', options))
++
+     try {
+       q.state = backend
+       query
+diff --git a/node_modules/postgres/src/connection.js b/node_modules/postgres/src/connection.js
+index 1b1cccd..f9ba4c0 100644
+--- a/node_modules/postgres/src/connection.js
++++ b/node_modules/postgres/src/connection.js
+@@ -163,6 +163,11 @@ function Connection(options, queues = {}, { onopen = noop, onend = noop, onclose
+     if (q.cancelled)
+       return
+ 
++    // MRD patch: the connection closed (e.g. mid-transaction) and the socket is gone. Fail this
++    // query now instead of writing to a null socket (uncaught TypeError, then the pool hangs).
++    if (!socket)
++      return queryError(q, Errors.connection('CONNECTION_CLOSED', options))
++
+     try {
+       q.state = backend
+       query
