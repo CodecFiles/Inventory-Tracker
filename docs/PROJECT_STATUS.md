@@ -4,8 +4,9 @@ _Last updated: 2026-10-12_
 
 **Current stage:** 6 — Frontend (step 6.5 done; Stage 6 gate: owner walkthrough on staging)
 
-**Next action:** PR for 6.5; owner does the Stage 6 walkthrough on staging (checklist in chat
-2026-10-13) and reviews the Shipments screen; then close Stage 6 and start Stage 7 (Testing).
+**Next action:** owner does the Stage 6 walkthrough on staging (checklist in chat 2026-10-13) and
+reviews the Shipments screen — the Stage 6 gate stays open until then. Meanwhile: PR for the
+automated browser tests (first Stage 7 work, also Stage 6 gate evidence).
 Google sign-in and custom SMTP (M3) before colleagues sign up.
 
 Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment-specific
@@ -136,6 +137,7 @@ Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment
 | C1 | Catalogue records are archived, never deleted (contacts may be removed); a received product's kind is locked; a facility's country is locked once stock moved there; places holding stock cannot be archived; archived suppliers cannot be used for receiving | 2026-10-12 |
 | O1 | `/api/health/db` restricted to the Super Admin (was: any signed-in user) | 2026-10-12 |
 | P1-dev | Local preview mode: `next dev` with `MRD_DEV_USER_ID` acts as a demo user on the local demo database (`scripts/dev-preview.sh`), so screens can be checked without a Supabase login. Ignored in production builds and on Vercel (tested) | 2026-10-12 (owner: keep it) |
+| T2 | Browser tests with Playwright on GitHub Actions (`Browser tests` workflow): the app in local preview mode on a throwaway demo database — no secrets, never touches Supabase | 2026-10-13 |
 | D9 | Development on free tiers (best/safest free options); small monthly fee acceptable at launch | 2026-10-10 |
 
 Stage 2 revision needed (rule 4), handled during Stage 6:
@@ -206,6 +208,7 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 | 2026-10-12 | 6.4 end-to-end through the screens (local preview, Playwright) + DB checks | **PASS** after fixes | Facility added; skip without reason refused; DEP-2026-003 drafted; router without SIM shown as blocked; 500 items refused with nothing moved; completed (router + SIM + IP at site); returned (router + SIM back, still configured). SHP-2026-001: unconfigured router + loose SIM + configured router (its SIM along) + 10 cables shipped, then received. Repair → back (SIM kept as spare); write-off needs a reason, actions hidden after. **Bug found and fixed:** after a refused submit React reset the form, silently changing the chosen stage before the retry (ended at BMS scan instead of Contract) → forms now clear only after a successful save; verified. All three earlier flows re-run green |
 | 2026-10-13 | 6.5 backend: Vitest `users-manage.test.ts` (11) | **124/124 pass** | Mutation: without "demoting an Admin removes their permissions", 1 test fails |
 | 2026-10-13 | 6.5 end-to-end through the screens (local preview, Playwright) + DB checks | **PASS** | Approve a sign-up as Editor; own row protected; Viewer → Editor; disable → enable; Editor → Admin with audit.view + reports.view; counted-stock correction (+2, reason); written-off router corrected back to stock; audit log shows "role: viewer → editor" |
+| 2026-10-13 | Browser tests (Playwright, `tests/e2e`, 10 tests) on a fresh demo DB | **10/10 pass, 3 runs in a row** (~35 s); also without Supabase settings (as on GitHub) | Every main workflow through the screens with DB checks: catalogue, receive (bad ICCID → nothing saved), prep, facility + stage rules, deployment (refusal → nothing moved; SIM travels; return), shipment, repair, write-off, users & roles, corrections, audit log, Viewer refused everywhere. Mutation: re-introducing the 6.4 form-reset bug fails the stage test ("expected contract, received bms_scan") |
 | 2026-10-12 | Staging end-to-end (owner) | **PASS** | Sign-up → email confirm → sign-in → pending page → bootstrap → home shows role `super_admin` |
 
 ## Change log
@@ -255,3 +258,4 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 - 2026-10-12 — 6.3: Settings (products, categories, suppliers, repair companies), Receive stock, Batches + detail, Device preparation (office and partner), SIM cards; shared form/notice components; readable error messages.
 - 2026-10-12 — 6.4: Facilities (list, add/edit, contacts, stage change, installed items, returns), Deployments (list, new, detail: add items, schedule, cancel, complete), Shipments (new screen), item actions (repair, back, supplier return, write-off), Settings → Clients and Partners; form-reset bug fixed.
 - 2026-10-13 — 6.5: Users & roles (approve, role change, disable/enable, Admin permissions), Audit log (field-level changes), Corrections (counted stock page; per-item correction on the item page); src/server/users/manage.ts with tests.
+- 2026-10-13 — PR #12 merged. Automated browser tests (10) + GitHub workflow; preview mode can switch demo user by cookie (dev only, tested). Stage 6 gate waits for the owner's staging walkthrough.

@@ -1,0 +1,43 @@
+# Browser tests: a real browser works through every main screen and checks the database after each
+# step (tests/e2e). Runs the app in local preview mode on a throwaway demo database — no secrets,
+# never touches Supabase or the live site.
+name: Browser tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  e2e:
+    runs-on: ubuntu-24.04
+    env:
+      PGHOST: /var/run/postgresql
+      NEXT_TELEMETRY_DISABLED: 1
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install PostgreSQL 16
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q postgresql-16
+          sudo systemctl start postgresql
+          sudo -u postgres createuser --superuser "$USER"
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Install the test browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run browser tests
+        run: npm run e2e
+
+      - name: Keep screenshots and traces of failures
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-failures
+          path: test-results/
+          retention-days: 7

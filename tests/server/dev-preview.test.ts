@@ -10,6 +10,14 @@ describe("local preview mode", () => {
     expect(devPreviewUserId({ NODE_ENV: "development" })).toBeNull();
   });
 
+  it("a test may switch demo user with the cookie — only while preview mode is on", () => {
+    const other = "6f1c2a3e-0000-4000-8000-000000000d03";
+    expect(devPreviewUserId({ NODE_ENV: "development", MRD_DEV_USER_ID: id }, other)).toBe(other);
+    expect(devPreviewUserId({ NODE_ENV: "development", MRD_DEV_USER_ID: id }, "not-a-uuid")).toBe(id);
+    expect(devPreviewUserId({ NODE_ENV: "development" }, other)).toBeNull();
+    expect(devPreviewUserId({ NODE_ENV: "production", MRD_DEV_USER_ID: id }, other)).toBeNull();
+  });
+
   it("is ignored in production builds and on Vercel, even if the setting is present", () => {
     expect(devPreviewUserId({ NODE_ENV: "production", MRD_DEV_USER_ID: id })).toBeNull();
     expect(devPreviewUserId({ NODE_ENV: "test", MRD_DEV_USER_ID: id })).toBeNull();
