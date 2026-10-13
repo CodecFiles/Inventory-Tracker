@@ -63,3 +63,31 @@ export async function withRetry<T>(work: () => Promise<T>, safeToRepeat: (error:
     return work();
   }
 }
+
+// ---------------------------------------------------------------------------------------------
+// One query per connection at a time.
+//
+// When every connection is busy, postgres.js sends the next query down a busy connection without
+// waiting ("pipelining"). Supabase's transaction pooler (Supavisor) can lose the answer to such a
+// query, and the page then waits forever (staging, 2026-10-13; a known Supavisor limitation —
+// Supabase's postgres.js guide warns about it). So every piece of database work waits here for a
+// free slot, with as many slots as the pool has connections, and runs its queries one after another
+// (no Promise.all inside one piece of work): no connection ever has two queries in flight.
+//
+// postgres.js marks a connection free (ReadyForQuery) before the awaiting code resumes, so a slot
+// released here always finds its connection open again.
+type Slots = { active: number; waiting: (() => void)[] };
+const globalForSlots = globalThis as unknown as { mrdSlots?: Slots };
+
+export async function withConnection<T>(work: () => Promise<T>): Promise<T> {
+  const slots = (globalForSlots.mrdSlots ??= { active: 0, waiting: [] });
+  const capacity = getSql().options.max;
+  while (slots.active >= capacity) await new Promise<void>((resolve) => slots.waiting.push(resolve));
+  slots.active++;
+  try {
+    return await work();
+  } finally {
+    slots.active--;
+    slots.waiting.shift()?.();
+  }
+}

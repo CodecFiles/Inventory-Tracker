@@ -1,7 +1,7 @@
 import "server-only";
 import { z } from "zod";
 import { parseInput, ValidationError } from "../errors";
-import { likePattern, optionalId, Page, read } from "./read";
+import { inOrder, likePattern, optionalId, Page, read } from "./read";
 
 // ---------------------------------------------------------------------------------------------
 // Stock overview (Dashboard / Inventory): how many of each product are where, and which are low.
@@ -153,8 +153,8 @@ export type UnitDetail = UnitInfo & {
 export async function unitDetail(userId: string, rawInput: unknown): Promise<UnitDetail> {
   const { unitId } = parseInput(z.object({ unitId: z.number().int().positive() }), rawInput);
   return read(userId, async (tx) => {
-    // the four look-ups do not depend on each other, so they go to the database together
-    const [[unit], movements, simHistory, [deployment], [reservation]] = await Promise.all([tx<UnitInfo[]>`
+    // five look-ups, one after another (a connection must never have two queries in flight)
+    const [[unit], movements, simHistory, [deployment], [reservation]] = await inOrder([() => tx<UnitInfo[]>`
       select u.id::int as "unitId", u.serial_number as serial, u.imei, u.status::text as status, u.created_at as "createdAt",
              p.id::int as "productId", p.name as product, p.brand, p.model, p.is_sim as "isSim",
              p.requires_configuration as "needsConfiguration",
@@ -169,7 +169,7 @@ export async function unitDetail(userId: string, rawInput: unknown): Promise<Uni
       join suppliers s on s.id = b.supplier_id
       left join sim_details d on d.unit_id = u.id
       where u.id = ${unitId}`,
-    tx<Movement[]>`
+    () => tx<Movement[]>`
       select m.id::int, m.movement_type::text as type, m.moved_at as "movedAt", m.note,
              fl.name as "from", tl.name as "to", us.full_name as "by",
              coalesce(dp.code, sh.code, bt.code) as document
@@ -183,7 +183,7 @@ export async function unitDetail(userId: string, rawInput: unknown): Promise<Uni
       where m.unit_id = ${unitId}
       order by m.moved_at, m.id`,
     // SIM history: for a router, the SIMs it held; for a SIM, the routers it was in
-    tx<SimLink[]>`
+    () => tx<SimLink[]>`
       select case when a.router_unit_id = ${unitId} then s.id else r.id end::int as "otherUnitId",
              case when a.router_unit_id = ${unitId} then s.serial_number else r.serial_number end as "otherSerial",
              host(a.ip_address) as "ipAddress", a.assigned_at as "assignedAt", a.ended_at as "endedAt",
@@ -195,7 +195,7 @@ export async function unitDetail(userId: string, rawInput: unknown): Promise<Uni
       left join users eb on eb.id = a.ended_by
       where ${unitId} in (a.router_unit_id, a.sim_unit_id)
       order by a.assigned_at, a.id`,
-    tx<CurrentDeployment[]>`
+    () => tx<CurrentDeployment[]>`
       select d.id::int, d.code, d.deployment_type::text as type, d.deployment_date as date,
              f.id::int as "facilityId", f.name as facility, f.stage::text as stage, i.building, i.position
       from stock_movements m
@@ -206,7 +206,7 @@ export async function unitDetail(userId: string, rawInput: unknown): Promise<Uni
                                      where a.sim_unit_id = m.unit_id and a.ended_at is null), m.unit_id)
       where m.unit_id = ${unitId} and m.movement_type in ('deploy', 'deploy_abroad')
       order by m.moved_at desc, m.id desc limit 1`,
-    tx<Reservation[]>`
+    () => tx<Reservation[]>`
       select 'deployment' as kind, d.id::int, d.code, d.status::text as status, f.name as "to"
       from deployment_items i join deployments d on d.id = i.deployment_id join facilities f on f.id = d.facility_id
       where i.unit_id = ${unitId} and i.removed_at is null and d.status in ('draft', 'scheduled')
@@ -215,7 +215,7 @@ export async function unitDetail(userId: string, rawInput: unknown): Promise<Uni
       from shipment_items i join shipments s on s.id = i.shipment_id join partners p on p.id = s.partner_id
       where i.unit_id = ${unitId} and i.removed_at is null and s.status = 'draft'
       limit 1`,
-    ]);
+    ] as const);
     if (!unit) throw new ValidationError("That item does not exist");
     return { ...unit, movements, simHistory, deployment: deployment ?? null, reservation: reservation ?? null };
   });

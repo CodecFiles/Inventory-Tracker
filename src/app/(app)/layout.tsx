@@ -2,7 +2,7 @@ import Form from "next/form";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Icon } from "@/components/icons";
-import { getSql, withRetry } from "@/server/db";
+import { getSql, withConnection, withRetry } from "@/server/db";
 import { getPermissions, requireApprovedUser, ROLE_LABEL } from "@/server/session";
 import { Frame } from "./frame";
 import { navFor } from "./nav";
@@ -16,10 +16,10 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   // badge on "Device preparation": office routers still without a SIM
   const counts: Record<string, number> = {};
   if (permissions.has("inventory.prepare")) {
-    const [{ n }] = await withRetry(() => getSql()<{ n: number }[]>`
+    const [{ n }] = await withConnection(() => withRetry(() => getSql()<{ n: number }[]>`
       select count(*)::int as n from units u join products p on p.id = u.product_id
       where p.requires_configuration and u.location_id = office_location_id() and u.status in ('in_office', 'configured')
-        and not exists (select 1 from sim_assignments a where a.router_unit_id = u.id and a.ended_at is null)`);
+        and not exists (select 1 from sim_assignments a where a.router_unit_id = u.id and a.ended_at is null)`));
     counts["/prep"] = n;
   }
   const initials = user.fullName.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
