@@ -66,36 +66,45 @@ test("receive a delivery in 3 steps: a bad ICCID saves nothing; corrected, the b
   expect(sim.iccid).toBe("8996800000009990002");
 });
 
-test("device preparation: SIM in, bad IP refused, SIM changed (old one spare), sensors serialised", async ({ page }) => {
+test("device preparation board: SIM in, bad IP refused, SIM changed (old one spare), sensors serialised", async ({ page }) => {
   await page.goto("/prep");
-  const router1 = page.locator(".row", { hasText: "2200000001" });
-  await router1.locator("select[name=simUnitId]").selectOption({ label: "8996800000009990001" });
-  await router1.locator("input[name=ipAddress]").fill("10.64.99.1");
-  await router1.getByRole("button", { name: "Put SIM in" }).click();
-  await saved(page, "the router is ready");
-  expect(await where("2200000001")).toMatchObject({ status: "configured" });
+  const noSim = page.getByRole("region", { name: "No SIM yet" });
+  const ready = page.getByRole("region", { name: "Ready" });
+  const panel = page.getByRole("dialog");
 
-  const router2 = page.locator(".row", { hasText: "2200000002" });
-  await router2.locator("select[name=simUnitId]").selectOption({ index: 1 });
-  await router2.locator("input[name=ipAddress]").fill("10.64.999.1");
-  await router2.getByRole("button", { name: "Put SIM in" }).click();
-  await refused(router2, "Enter a valid IP address");
-  await expect(router2.locator("input[name=ipAddress]")).toHaveValue("10.64.999.1");    // kept for fixing
+  await noSim.getByRole("article", { name: "Router 2200000001" }).getByRole("link", { name: "Prepare" }).click();
+  await panel.locator("select[name=simUnitId]").selectOption({ label: "8996800000009990001" });
+  await panel.locator("input[name=ipAddress]").fill("10.64.99.1");
+  await panel.getByRole("button", { name: "Put SIM in" }).click();
+  await saved(page, "the router is ready");
+  await expect(panel).toContainText("It is ready");
+  expect(await where("2200000001")).toMatchObject({ status: "configured" });
+  await expect(ready.getByRole("article", { name: "Router 2200000001" })).toBeVisible();   // moved to Ready
+
+  await page.goto("/prep");
+  await noSim.getByRole("article", { name: "Router 2200000002" }).getByRole("link", { name: "Prepare" }).click();
+  await panel.locator("select[name=simUnitId]").selectOption({ index: 1 });
+  await panel.locator("input[name=ipAddress]").fill("10.64.999.1");
+  await panel.getByRole("button", { name: "Put SIM in" }).click();
+  await refused(panel, "Enter a valid IP address");
+  await expect(panel.locator("input[name=ipAddress]")).toHaveValue("10.64.999.1");    // kept for fixing
   expect(await where("2200000002")).toMatchObject({ status: "in_office" });
 
-  const swap = page.locator("details", { hasText: "2200000001" });
-  await swap.locator("summary").click();
-  await swap.locator("select[name=simUnitId]").selectOption({ label: "8996800000009990002" });
-  await swap.getByRole("button", { name: "Change SIM" }).click();
+  await page.goto("/prep");
+  await ready.getByRole("article", { name: "Router 2200000001" }).getByRole("link", { name: "Change SIM" }).click();
+  await panel.locator("select[name=simUnitId]").selectOption({ label: "8996800000009990002" });
+  await panel.getByRole("button", { name: "Change SIM" }).click();
   await saved(page, "SIM changed");
   expect(await where("8996800000009990001")).toMatchObject({ status: "in_office" });    // spare again
   const [now] = await db`select s.serial_number from sim_assignments a join units s on s.id = a.sim_unit_id
                          where a.router_unit_id = ${await unitId("2200000001")} and a.ended_at is null`;
   expect(now.serial_number).toBe("8996800000009990002");
 
-  const sensors = page.locator(".row", { hasText: "0 of 5" });
-  await sensors.locator("textarea").fill("AM-E2E-1\nAM-E2E-2");
-  await sensors.getByRole("button", { name: "Save serial numbers" }).click();
+  await page.goto("/prep");
+  const sensors = page.getByRole("region", { name: "Waiting for serial numbers" }).getByRole("article").filter({ hasText: "0 of 5" });
+  await sensors.getByRole("link", { name: "Add serial numbers" }).click();
+  await panel.locator("textarea[name=serials]").fill("AM-E2E-1\nAM-E2E-2");
+  await panel.getByRole("button", { name: "Save serial numbers" }).click();
   await saved(page, "Serial numbers saved");
   expect((await db`select count(*)::int as n from units where serial_number like 'AM-E2E-%'`)[0].n).toBe(2);
 });
