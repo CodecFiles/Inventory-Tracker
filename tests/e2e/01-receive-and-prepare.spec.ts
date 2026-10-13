@@ -29,26 +29,35 @@ test("add a category and product; a duplicate is refused; tracking locks once re
   await expect(page.locator("details[open]").getByText("has been received, so how it is tracked can no longer change")).toBeVisible();
 });
 
-test("receive a delivery: a bad ICCID saves nothing; corrected, the batch is created", async ({ page }) => {
+test("receive a delivery in 3 steps: a bad ICCID saves nothing; corrected, the batch is created", async ({ page }) => {
   const before = (await db`select count(*)::int as n from batches`)[0].n;
   await page.goto("/receive");
-  const cards = page.locator("section.card");
-  await page.locator("select").first().selectOption({ label: "Teltonika Distributor (TEL)" });
-  await choose(cards.nth(1).locator("select"), "TRB140 LTE router");
-  await cards.nth(1).locator("textarea").fill("2200000001\n2200000002");
+  // step 1: shipment
+  await page.locator("select[name=supplierId]").selectOption({ label: "Teltonika Distributor (TEL)" });
+  await page.getByRole("button", { name: /Next: Units/ }).click();
+  // step 2: units, three products
+  const product = (n: number) => page.getByRole("region", { name: `Product ${n}` });
+  await choose(product(1).locator("select[name=productId]"), "TRB140 LTE router");
+  await product(1).locator("textarea[name=serials]").fill("2200000001\n2200000002");
   await page.getByRole("button", { name: "Add another product" }).click();
-  await choose(cards.nth(2).locator("select"), "Omantel Data SIM");
-  await cards.nth(2).locator("textarea").first().fill("8996800000009990001\n12345");
+  await choose(product(2).locator("select[name=productId]"), "Omantel Data SIM");
+  await product(2).locator("textarea[name=serials]").fill("8996800000009990001\n12345");
   await page.getByRole("button", { name: "Add another product" }).click();
-  await choose(cards.nth(3).locator("select"), "CO₂ sensor");
-  await cards.nth(3).locator("input[type=number]").fill("5");
-
+  await choose(product(3).locator("select[name=productId]"), "CO₂ sensor");
+  await product(3).locator("input[name=quantity]").fill("5");
+  await page.getByRole("button", { name: /Next: Review/ }).click();
+  // step 3: review and confirm — the server refuses the bad ICCID and nothing is saved
+  await expect(page.getByRole("region", { name: "Review" })).toContainText("2200000001 … 2200000002");
   await page.getByRole("button", { name: "Receive into MRD Office" }).click();
   await expect(page.locator(".alert.err")).toContainText('"12345" is not an ICCID');
   expect((await db`select count(*)::int as n from batches`)[0].n).toBe(before);           // nothing saved
   expect((await db`select count(*)::int as n from units where serial_number = '2200000001'`)[0].n).toBe(0);
 
-  await cards.nth(2).locator("textarea").first().fill("8996800000009990001\n8996800000009990002");
+  // back to the units, fix it, confirm again: everything typed is still there
+  await page.getByRole("button", { name: "Back to the units" }).click();
+  await expect(product(1).locator("textarea[name=serials]")).toHaveValue("2200000001\n2200000002");
+  await product(2).locator("textarea[name=serials]").fill("8996800000009990001\n8996800000009990002");
+  await page.getByRole("button", { name: /Next: Review/ }).click();
   await page.getByRole("button", { name: "Receive into MRD Office" }).click();
   await page.waitForURL(/\/batches\/\d+\?received=1/);
   await expect(page.locator(".alert.ok")).toContainText("received");
