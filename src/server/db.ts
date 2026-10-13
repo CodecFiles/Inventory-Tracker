@@ -30,7 +30,10 @@ export function databaseUrl(): string | null {
 
 export function getSql(): Sql {
   if (!globalForDb.mrdSql) {
-    const options = { prepare: false, max: 5 };
+    // idle_timeout / max_lifetime: hosted functions pause between requests, and the database's
+    // pooler closes connections that sit unused. Closing idle ones ourselves after 10 s (and every
+    // connection after 10 min) means a dead one is rarely picked up again; withRetry covers the rest.
+    const options = { prepare: false, max: 5, idle_timeout: 10, max_lifetime: 600, connect_timeout: 15 };
     const url = databaseUrl();
     if (!url && process.env.VERCEL) {
       // On the hosted site a missing address is a configuration mistake: say so plainly instead of
@@ -43,3 +46,20 @@ export function getSql(): Sql {
 }
 
 export type Tx = postgres.TransactionSql;
+
+// A connection that died under us (closed by the pooler while the function was paused, a network
+// blip). The query never got an answer, so trying once more on a fresh connection is the fix.
+const LOST = new Set(["CONNECTION_CLOSED", "CONNECTION_ENDED", "CONNECTION_DESTROYED", "CONNECT_TIMEOUT", "ECONNRESET", "EPIPE"]);
+export const isLostConnection = (error: unknown) =>
+  typeof error === "object" && error !== null && LOST.has(String((error as { code?: unknown }).code));
+
+// Runs `work`, and once more if the connection was lost — but only when `safeToRepeat` says so
+// for that error (always for reads; for saves only if nothing reached the database yet).
+export async function withRetry<T>(work: () => Promise<T>, safeToRepeat: (error: unknown) => boolean = () => true): Promise<T> {
+  try {
+    return await work();
+  } catch (error) {
+    if (!isLostConnection(error) || !safeToRepeat(error)) throw error;
+    return work();
+  }
+}

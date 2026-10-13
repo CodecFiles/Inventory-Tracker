@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { DEV_USER_COOKIE, devPreviewUserId } from "@/lib/dev-preview";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { getSql } from "./db";
+import { getSql, withRetry } from "./db";
 
 // Who is using the app right now? Identity comes from the verified Supabase login (getClaims checks
 // the token's signature); status and role come from MRD's own users table.
@@ -27,9 +27,9 @@ export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
     userId = data.claims.sub;
   }
 
-  const [row] = await getSql()<SessionUser[]>`
+  const [row] = await withRetry(() => getSql()<SessionUser[]>`
     select id, email, full_name as "fullName", role::text as role, status::text as status
-    from users where id = ${userId}`;
+    from users where id = ${userId}`);
   return row ?? null;
 });
 
@@ -44,8 +44,8 @@ export async function requireApprovedUser(): Promise<SessionUser> {
 // The permissions of the signed-in user, so screens can hide what they cannot use.
 // Hiding is only for convenience: every action checks the permission again on the server.
 export const getPermissions = cache(async (userId: string): Promise<ReadonlySet<string>> => {
-  const rows = await getSql()<{ key: string }[]>`
-    select key from permissions where has_permission(${userId}, key)`;
+  const rows = await withRetry(() => getSql()<{ key: string }[]>`
+    select key from permissions where has_permission(${userId}, key)`);
   return new Set(rows.map((r) => r.key));
 });
 

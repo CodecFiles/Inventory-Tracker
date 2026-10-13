@@ -1,5 +1,5 @@
 import "server-only";
-import { getSql, type Sql, type Tx } from "./db";
+import { getSql, withRetry, type Sql, type Tx } from "./db";
 import { ForbiddenError, fromDatabaseError } from "./errors";
 
 // Every action a person takes runs through withActor:
@@ -10,16 +10,24 @@ import { ForbiddenError, fromDatabaseError } from "./errors";
 // userId must come from the verified login session (Stage 5.3), never from form input.
 
 export async function withActor<T>(userId: string, action: (tx: Tx) => Promise<T>): Promise<T> {
+  // A save is repeated after a lost connection only if its first step never got an answer: then
+  // nothing was changed. Later on, the outcome is unknown (it may have been saved), so the error
+  // is shown instead of risking a double entry.
+  let started = false;
   try {
-    return (await getSql().begin(async (tx) => {
-      // one round trip for both steps: the database is far away, so each extra query costs time
-      const [user] = await tx`
-        select set_config('app.user_id', ${userId}, true), (select status::text from users where id = ${userId}) as status`;
-      if (user?.status !== "approved") {
-        throw new ForbiddenError("Your account has not been approved yet");
-      }
-      return action(tx);
-    })) as T;
+    return await withRetry(async () => {
+      started = false;
+      return (await getSql().begin(async (tx) => {
+        // one round trip for both steps: the database is far away, so each extra query costs time
+        const [user] = await tx`
+          select set_config('app.user_id', ${userId}, true), (select status::text from users where id = ${userId}) as status`;
+        started = true;
+        if (user?.status !== "approved") {
+          throw new ForbiddenError("Your account has not been approved yet");
+        }
+        return action(tx);
+      })) as T;
+    }, () => !started);
   } catch (error) {
     throw fromDatabaseError(error);
   }
@@ -30,12 +38,14 @@ export async function withActor<T>(userId: string, action: (tx: Tx) => Promise<T
 // to the database, so this saves four per screen panel compared with withActor.)
 export async function withReader<T>(userId: string, permission: string, action: (sql: Sql) => Promise<T>): Promise<T> {
   try {
-    const sql = getSql();
-    const [row] = await sql`
-      select (select status::text from users where id = ${userId}) as status, has_permission(${userId}, ${permission}) as allowed`;
-    if (row?.status !== "approved") throw new ForbiddenError("Your account has not been approved yet");
-    if (!row.allowed) throw new ForbiddenError(`You do not have permission: ${permission}`);
-    return await action(sql);
+    return await withRetry(async () => {   // reading twice is harmless
+      const sql = getSql();
+      const [row] = await sql`
+        select (select status::text from users where id = ${userId}) as status, has_permission(${userId}, ${permission}) as allowed`;
+      if (row?.status !== "approved") throw new ForbiddenError("Your account has not been approved yet");
+      if (!row.allowed) throw new ForbiddenError(`You do not have permission: ${permission}`);
+      return await action(sql);
+    });
   } catch (error) {
     throw fromDatabaseError(error);
   }
