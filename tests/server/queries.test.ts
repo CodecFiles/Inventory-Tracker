@@ -6,6 +6,7 @@ import { ForbiddenError, ValidationError } from "@/server/errors";
 import { addDeploymentItem, completeDeployment, createDeployment } from "@/server/deployments/deployments";
 import { configureRouter } from "@/server/inventory/prepare";
 import { receiveDelivery } from "@/server/inventory/receive";
+import { dashboardPanels } from "@/server/queries/dashboard";
 import { batchDetail, deploymentDetail, listDeployments } from "@/server/queries/documents";
 import { listUnits, search, stockOverview, unitDetail } from "@/server/queries/inventory";
 import { auditLog, facilityDetail, listFacilities, lookups } from "@/server/queries/places";
@@ -91,6 +92,18 @@ describe("who may read", () => {
     const rows = await auditLog(SUPER, { entityType: "deployments", limit: 5 });
     expect(rows.length).toBeGreaterThan(0);
     expect(rows[0]).toHaveProperty("actor");
+  });
+});
+
+describe("dashboard panels", () => {
+  it("counts a router and the SIM inside it as POC equipment, the rest as office stock", async () => {
+    const { categories, life, batches } = await dashboardPanels(VIEWER);
+    const q = categories.find((c) => c.category === "Query test")!;
+    // Q-R1 and its SIM went out on a POC deployment; 2 routers and 2 SIMs are still in the office
+    expect(q).toMatchObject({ total: 6, deployed: 2, poc: 2, contract: 0, inStock: 4, reserved: 0 });
+    expect(life.poc).toBeGreaterThanOrEqual(2);
+    expect(batches.some((b) => b.code === batchCode && b.quantity === 10 && b.lines === 3)).toBe(true);
+    await expect(dashboardPanels(ADMIN)).rejects.toThrow(ForbiddenError);
   });
 });
 

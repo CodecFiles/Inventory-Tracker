@@ -1,4 +1,5 @@
 import Form from "next/form";
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { Icon } from "@/components/icons";
 import { getSql } from "@/server/db";
@@ -31,6 +32,15 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
                style={{ flex: 1, minWidth: 0, border: 0, background: "transparent", font: "inherit", color: "#0E1726", outline: "none" }} />
       </Form>
       <span style={{ flex: 1 }} />
+      {permissions.has("inventory.receive") && (
+        <Link className="btn" href="/receive"><Icon name="receive" size={16} />Receive</Link>
+      )}
+      {permissions.has("deployments.create") && (
+        <Link className="btn p" href="/deployments/new">
+          <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+          New deployment
+        </Link>
+      )}
     </header>
   );
 
