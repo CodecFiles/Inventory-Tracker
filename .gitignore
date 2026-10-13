@@ -42,3 +42,7 @@ next-env.d.ts
 
 # local test database / tooling
 /supabase/.temp
+
+# browser test results (npm run e2e)
+/test-results/
+/playwright-report/

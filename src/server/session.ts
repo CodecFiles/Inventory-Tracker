@@ -1,6 +1,7 @@
 import "server-only";
 import { redirect } from "next/navigation";
-import { devPreviewUserId } from "@/lib/dev-preview";
+import { cookies } from "next/headers";
+import { DEV_USER_COOKIE, devPreviewUserId } from "@/lib/dev-preview";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getSql } from "./db";
 
@@ -16,7 +17,7 @@ export type SessionUser = {
 };
 
 export async function getSessionUser(): Promise<SessionUser | null> {
-  let userId = devPreviewUserId();
+  let userId = devPreviewUserId(process.env, (await cookies()).get(DEV_USER_COOKIE)?.value);
   if (!userId) {
     const supabase = await createSupabaseServerClient();
     const { data, error } = await supabase.auth.getClaims();
