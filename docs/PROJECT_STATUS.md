@@ -9,10 +9,10 @@ different in looks from what I had designed"). Screens were simplified against `
 without charts, inventory without category tabs/column chooser/bulk actions, prep kanban turned into
 lists, receive wizard turned into one form, no lifecycle stepper; POC, Contracts, Reports, Products
 and mobile screens not built. Batch 1 (Dashboard, All inventory, Device detail) done 2026-10-13 —
-owner to review on staging; batch 2 next: Batches + Batch detail, Receive stock (wizard), Device
+owner confirmed on staging: matches the design, site faster; batch 2 next: Batches + Batch detail, Receive stock (wizard), Device
 preparation (kanban).
 Also open (owner reported 2026-10-13):
-- **Slow site.** Fixed in code: 13–24 database queries per page instead of 31–38, most run in parallel. Still to check:
+- **Slow site: owner confirmed faster (2026-10-13).** Fixed in code: 13–24 database queries per page instead of 31–38, most run in parallel. Still to check:
   Vercel Function Region (database is in Tokyo; Tokyo `hnd1` recommended). Moving the database
   closer to Oman is decision R6 — owner's agreement needed.
 - **Site stops opening (2026-10-13, PR #15).** Cause: a lost connection to the Supabase pooler
@@ -28,8 +28,7 @@ Also open (owner reported 2026-10-13):
   inside one piece of work; test `no-pipelining` (11 in flight without the fix, 1 with it).
   Also the dashboard query was rewritten (cost 133k → 217, no JIT). PR #16 merged; owner confirmed
   the site works again (2026-10-13).
-- **Two logins.** The code has one login page; the first one is likely Vercel's Deployment
-  Protection. Needs a screenshot with the address bar to confirm.
+- **Two logins: resolved** (owner, 2026-10-13: login page now proper; cause not confirmed).
 Then: owner's staging walkthrough and Shipments review close the Stage 6 gate.
 Google sign-in and custom SMTP (M3) before colleagues sign up.
 
