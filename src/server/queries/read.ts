@@ -1,16 +1,13 @@
 import "server-only";
 import { z } from "zod";
-import { requirePermission, withActor } from "../actor";
-import type { Tx } from "../db";
+import { withReader } from "../actor";
+import type { Sql } from "../db";
 
 // Shared helpers for read-only queries (the screens' data). Reading needs an approved account and
 // "reports.view" (every role has it by default); the audit log needs "audit.view".
 
-export function read<T>(userId: string, action: (tx: Tx) => Promise<T>, permission = "reports.view"): Promise<T> {
-  return withActor(userId, async (tx) => {
-    await requirePermission(tx, userId, permission);
-    return action(tx);
-  });
+export function read<T>(userId: string, action: (sql: Sql) => Promise<T>, permission = "reports.view"): Promise<T> {
+  return withReader(userId, permission, action);
 }
 
 // Lists are read a page at a time so a screen never loads thousands of rows at once.

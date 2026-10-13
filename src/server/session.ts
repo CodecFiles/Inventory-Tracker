@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { DEV_USER_COOKIE, devPreviewUserId } from "@/lib/dev-preview";
@@ -16,7 +17,8 @@ export type SessionUser = {
   status: "pending" | "approved" | "rejected" | "disabled";
 };
 
-export async function getSessionUser(): Promise<SessionUser | null> {
+// cache(): the layout and the page both ask, but the answer is looked up once per page request.
+export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
   let userId = devPreviewUserId(process.env, (await cookies()).get(DEV_USER_COOKIE)?.value);
   if (!userId) {
     const supabase = await createSupabaseServerClient();
@@ -29,7 +31,7 @@ export async function getSessionUser(): Promise<SessionUser | null> {
     select id, email, full_name as "fullName", role::text as role, status::text as status
     from users where id = ${userId}`;
   return row ?? null;
-}
+});
 
 // For pages that need an approved user: send everyone else to the right place.
 export async function requireApprovedUser(): Promise<SessionUser> {
@@ -41,11 +43,11 @@ export async function requireApprovedUser(): Promise<SessionUser> {
 
 // The permissions of the signed-in user, so screens can hide what they cannot use.
 // Hiding is only for convenience: every action checks the permission again on the server.
-export async function getPermissions(userId: string): Promise<Set<string>> {
+export const getPermissions = cache(async (userId: string): Promise<ReadonlySet<string>> => {
   const rows = await getSql()<{ key: string }[]>`
     select key from permissions where has_permission(${userId}, key)`;
   return new Set(rows.map((r) => r.key));
-}
+});
 
 export const ROLE_LABEL: Record<string, string> = {
   super_admin: "Super Admin", admin: "Admin", editor: "Editor", viewer: "Viewer",

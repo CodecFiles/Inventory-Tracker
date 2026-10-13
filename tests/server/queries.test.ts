@@ -16,6 +16,7 @@ const EDITOR = "6f1c2a3e-0000-4000-8000-0000000009e1";
 const VIEWER = "6f1c2a3e-0000-4000-8000-0000000009e2";
 const ADMIN = "6f1c2a3e-0000-4000-8000-0000000009e3";  // an Admin with no permissions granted
 const SUPER = "6f1c2a3e-0000-4000-8000-0000000009e4";
+const DISABLED = "6f1c2a3e-0000-4000-8000-0000000009e5";  // a Viewer whose account was disabled
 const SIM = ["8996800000000000901", "8996800000000000902", "8996800000000000903"];
 
 let router: number;
@@ -29,12 +30,13 @@ const unit: Record<string, number> = {};
 const today = new Date().toISOString().slice(0, 10);
 
 beforeAll(async () => {
-  await sql`insert into auth.users (id) values (${EDITOR}), (${VIEWER}), (${ADMIN}), (${SUPER})`;
+  await sql`insert into auth.users (id) values (${EDITOR}), (${VIEWER}), (${ADMIN}), (${SUPER}), (${DISABLED})`;
   await sql`insert into users (id, email, full_name, role, status) values
     (${EDITOR}, 'q-editor@moonrock.om', 'Query Editor', 'editor', 'approved'),
     (${VIEWER}, 'q-viewer@gmail.com', 'Query Viewer', 'viewer', 'approved'),
     (${ADMIN}, 'q-admin@moonrock.om', 'Query Admin', 'admin', 'approved'),
-    (${SUPER}, 'q-super@moonrock.om', 'Query Super', 'super_admin', 'approved')`;
+    (${SUPER}, 'q-super@moonrock.om', 'Query Super', 'super_admin', 'approved'),
+    (${DISABLED}, 'q-disabled@gmail.com', 'Query Disabled', 'viewer', 'disabled')`;
   const [{ id: supplierId }] = await sql`insert into suppliers (name, code_prefix) values ('Query Supplier', 'QRS') returning id::int`;
   const [{ id: cat }] = await sql`insert into categories (name) values ('Query test') returning id::int`;
   [{ id: router }] = await sql`insert into products (name, brand, model, category_id, tracking_type, requires_configuration, min_stock_level)
@@ -77,6 +79,11 @@ describe("who may read", () => {
   it("a Viewer can read; an Admin without 'view reports' cannot", async () => {
     await stockOverview(VIEWER);
     await expect(stockOverview(ADMIN)).rejects.toThrow(ForbiddenError);
+  });
+
+  it("a disabled account cannot read, even with a role that may", async () => {
+    await expect(stockOverview(DISABLED)).rejects.toThrow("not been approved");
+    await expect(stockOverview("6f1c2a3e-0000-4000-8000-0000000009ff")).rejects.toThrow("not been approved");   // no such user
   });
 
   it("the audit log needs its own permission", async () => {
