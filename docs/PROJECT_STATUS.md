@@ -26,6 +26,8 @@ Also open (owner reported 2026-10-13):
   (reads outside transactions, 7 dashboard queries at once). Owner rolled back to the PR #13 build.
   Fix: never more database work at once than connections (`withConnection`), no parallel queries
   inside one piece of work; test `no-pipelining` (11 in flight without the fix, 1 with it).
+  Also the dashboard query was rewritten (cost 133k → 217, no JIT). PR #16 merged; owner confirmed
+  the site works again (2026-10-13).
 - **Two logins.** The code has one login page; the first one is likely Vercel's Deployment
   Protection. Needs a screenshot with the address bar to confirm.
 Then: owner's staging walkthrough and Shipments review close the Stage 6 gate.
