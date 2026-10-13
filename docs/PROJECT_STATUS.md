@@ -2,10 +2,10 @@
 
 _Last updated: 2026-10-12_
 
-**Current stage:** 6 — Frontend (step 6.4 done: facilities, deployments, shipments, returns/repairs/write-offs)
+**Current stage:** 6 — Frontend (step 6.5 done; Stage 6 gate: owner walkthrough on staging)
 
-**Next action:** PR for 6.4; owner reviews the new Shipments screen (not in the original design);
-then 6.5 — admin screens (users & roles, audit log, corrections) and the Stage 6 gate.
+**Next action:** PR for 6.5; owner does the Stage 6 walkthrough on staging (checklist in chat
+2026-10-13) and reviews the Shipments screen; then close Stage 6 and start Stage 7 (Testing).
 Google sign-in and custom SMTP (M3) before colleagues sign up.
 
 Staging: `https://inventory-phi-ashen.vercel.app` (permanent address; deployment-specific
@@ -204,6 +204,8 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 | 2026-10-12 | 6.2 screens in local preview (desktop + phone) + pgTAP 0013 (2) | **PASS** — 133 DB, 113 backend | Found and fixed: facility device count included SIMs; phone tiles one per row; table header alignment; SIM notes named the router by internal id → migration 0013 (notes use the serial number; tests fail without it) |
 | 2026-10-12 | 6.3 end-to-end through the screens (local preview, Playwright) | **PASS** after fixes | Settings: add category/product, duplicate refused, kind lock shown, archive. Receive: bad ICCID refused with nothing saved, then batch TEL-2026-002 created. Prep: SIM + IP saved; bad IP refused; SIM change keeps old SIM as spare; 2 sensors serialised (29 → 27 counted). DB checked after each run. Fixed: lost confirmation when a row moves lists → corner notice; database wording in duplicate and field errors |
 | 2026-10-12 | 6.4 end-to-end through the screens (local preview, Playwright) + DB checks | **PASS** after fixes | Facility added; skip without reason refused; DEP-2026-003 drafted; router without SIM shown as blocked; 500 items refused with nothing moved; completed (router + SIM + IP at site); returned (router + SIM back, still configured). SHP-2026-001: unconfigured router + loose SIM + configured router (its SIM along) + 10 cables shipped, then received. Repair → back (SIM kept as spare); write-off needs a reason, actions hidden after. **Bug found and fixed:** after a refused submit React reset the form, silently changing the chosen stage before the retry (ended at BMS scan instead of Contract) → forms now clear only after a successful save; verified. All three earlier flows re-run green |
+| 2026-10-13 | 6.5 backend: Vitest `users-manage.test.ts` (11) | **124/124 pass** | Mutation: without "demoting an Admin removes their permissions", 1 test fails |
+| 2026-10-13 | 6.5 end-to-end through the screens (local preview, Playwright) + DB checks | **PASS** | Approve a sign-up as Editor; own row protected; Viewer → Editor; disable → enable; Editor → Admin with audit.view + reports.view; counted-stock correction (+2, reason); written-off router corrected back to stock; audit log shows "role: viewer → editor" |
 | 2026-10-12 | Staging end-to-end (owner) | **PASS** | Sign-up → email confirm → sign-in → pending page → bootstrap → home shows role `super_admin` |
 
 ## Change log
@@ -252,3 +254,4 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 - 2026-10-12 — 6.2: Dashboard (summary tiles, where everything is, facility pipeline, needs preparation, recent deployments, low stock), All inventory (status chips, filters, pagination, counted stock), item detail (connectivity, identity, SIM/router history, movement history); migration 0013.
 - 2026-10-12 — 6.3: Settings (products, categories, suppliers, repair companies), Receive stock, Batches + detail, Device preparation (office and partner), SIM cards; shared form/notice components; readable error messages.
 - 2026-10-12 — 6.4: Facilities (list, add/edit, contacts, stage change, installed items, returns), Deployments (list, new, detail: add items, schedule, cancel, complete), Shipments (new screen), item actions (repair, back, supplier return, write-off), Settings → Clients and Partners; form-reset bug fixed.
+- 2026-10-13 — 6.5: Users & roles (approve, role change, disable/enable, Admin permissions), Audit log (field-level changes), Corrections (counted stock page; per-item correction on the item page); src/server/users/manage.ts with tests.

@@ -21,7 +21,9 @@ const NAV: { title?: string; items: Item[] }[] = [
     { href: "/shipments", label: "Shipments", icon: "ship", permission: "reports.view" },
   ] },
   { title: "Insights & admin", items: [
-    { href: "/admin/users", label: "Users & roles", icon: "users", permission: "users.approve" },
+    { href: "/admin/users", label: "Users & roles", icon: "users", permission: ["users.approve", "users.manage"] },
+    { href: "/audit", label: "Audit log", icon: "audit", permission: "audit.view" },
+    { href: "/corrections", label: "Corrections", icon: "settings", permission: "corrections.super_admin" },
     { href: "/settings", label: "Settings", icon: "settings", permission: ["products.manage", "suppliers.manage", "facilities.manage", "partners.manage"] },
   ] },
 ];
