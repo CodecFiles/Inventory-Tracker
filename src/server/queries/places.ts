@@ -95,22 +95,41 @@ export async function facilityDetail(userId: string, rawInput: unknown): Promise
   });
 }
 
-// Everything the forms' dropdowns need, in one call (active records only).
-export async function lookups(userId: string) {
-  return read(userId, async (tx) => ({
-    countries: await tx<(Named & { isoCode: string })[]>`select id::int, name, iso_code as "isoCode" from countries order by name`,
-    categories: await tx<Named[]>`select id::int, name from categories where is_active order by name`,
-    products: await tx<LookupProduct[]>`select id::int, name, brand, model, category_id::int as "categoryId", tracking_type::text as tracking,
-                              requires_configuration as "needsConfiguration", is_sim as "isSim"
-                       from products where is_active order by name`,
-    suppliers: await tx<(Named & { codePrefix: string })[]>`select id::int, name, code_prefix as "codePrefix" from suppliers where is_active order by name`,
-    repairCompanies: await tx<Named[]>`select id::int, name from repair_companies where is_active order by name`,
-    clients: await tx<Named[]>`select id::int, name from clients where is_active order by name`,
-    partners: await tx<(Named & { country: string; locationId: number })[]>`select p.id::int, p.name, c.name as country,
-                              (select l.id::int from locations l where l.partner_id = p.id) as "locationId"
-                       from partners p join countries c on c.id = p.country_id
-                       where p.is_active order by p.name`,
-  }));
+// Everything the forms' dropdowns need, in one call (active records only). One query returns every
+// list as JSON, so the far-away database is asked once instead of seven times.
+export type Lookups = {
+  countries: (Named & { isoCode: string })[];
+  categories: Named[];
+  products: LookupProduct[];
+  suppliers: (Named & { codePrefix: string })[];
+  repairCompanies: Named[];
+  clients: Named[];
+  partners: (Named & { country: string; locationId: number })[];
+};
+
+export async function lookups(userId: string): Promise<Lookups> {
+  return read(userId, async (tx) => {
+    const [row] = await tx<Lookups[]>`
+      select
+        (select coalesce(json_agg(json_build_object('id', id, 'name', name, 'isoCode', iso_code) order by name), '[]')
+         from countries) as countries,
+        (select coalesce(json_agg(json_build_object('id', id, 'name', name) order by name), '[]')
+         from categories where is_active) as categories,
+        (select coalesce(json_agg(json_build_object('id', id, 'name', name, 'brand', brand, 'model', model,
+                  'categoryId', category_id, 'tracking', tracking_type, 'needsConfiguration', requires_configuration,
+                  'isSim', is_sim) order by name), '[]')
+         from products where is_active) as products,
+        (select coalesce(json_agg(json_build_object('id', id, 'name', name, 'codePrefix', code_prefix) order by name), '[]')
+         from suppliers where is_active) as suppliers,
+        (select coalesce(json_agg(json_build_object('id', id, 'name', name) order by name), '[]')
+         from repair_companies where is_active) as "repairCompanies",
+        (select coalesce(json_agg(json_build_object('id', id, 'name', name) order by name), '[]')
+         from clients where is_active) as clients,
+        (select coalesce(json_agg(json_build_object('id', p.id, 'name', p.name, 'country', c.name,
+                  'locationId', (select l.id from locations l where l.partner_id = p.id)) order by p.name), '[]')
+         from partners p join countries c on c.id = p.country_id where p.is_active) as partners`;
+    return row;
+  });
 }
 
 // ---------------------------------------------------------------------------------------------

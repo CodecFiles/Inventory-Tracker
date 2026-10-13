@@ -15,6 +15,12 @@ const UNIT: Record<string, [string, string]> = {
 // in the order of a unit's life, for filters
 export const UNIT_STATUSES = Object.entries(UNIT).map(([key, [label]]) => [key, label] as const);
 
+// the dot beside each status chip on All inventory
+export const UNIT_DOT: Record<string, string> = {
+  in_office: "#1A8FAD", configured: "#2F6FE4", deployed: "#12A374", shipped_to_partner: "#3346A8",
+  deployed_abroad: "#0B7A6B", in_repair: "#E86A1C", returned_to_supplier: "#8A7F70", retired: "#9AA3AF",
+};
+
 export function UnitStatus({ status }: { status: string }) {
   const [label, cls] = UNIT[status] ?? [status, ""];
   return <span className={`b ${cls}`}>{label}</span>;

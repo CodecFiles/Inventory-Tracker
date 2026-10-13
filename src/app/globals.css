@@ -156,3 +156,22 @@ details.edit > summary::-webkit-details-marker{display:none}
 /* Toast: short confirmation in the corner (design/BatchDetail.dc.html) */
 .toast{position:fixed;right:24px;bottom:24px;z-index:60;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;background:#0E1726;color:#fff;font-size:13px;box-shadow:0 10px 30px rgba(14,23,38,.3)}
 @media (max-width:900px){.toast{left:16px;right:16px;bottom:16px}}
+
+/* All inventory (design/Inventory.dc.html): status chips, category tabs, filter selects, pagination */
+.fchip{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 12px;border-radius:999px;border:1px solid #DCE1E8;background:#fff;font:inherit;font-size:13px;color:#3B4758;cursor:pointer;white-space:nowrap}
+.fchip:hover{border-color:#B9C2CE;color:#3B4758}
+.fchip.on{border-color:#0B7A6B;background:#ECF7F4;color:#075C51;box-shadow:inset 0 0 0 1px #0B7A6B}
+.fchip strong{font-weight:600;color:#0E1726}
+.fchip i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.ctab{display:inline-flex;align-items:center;gap:6px;height:46px;padding:0 2px;border:0;border-bottom:2px solid transparent;background:none;font:inherit;font-size:13.5px;color:#5E6B7D;cursor:pointer;white-space:nowrap}
+.ctab:hover{color:#0E1726}
+.ctab.on{color:#0E1726;border-bottom-color:#0B7A6B;font-weight:500}
+.ctab .n{font-size:11.5px;background:#EEF1F5;color:#3E4A5C;border-radius:999px;padding:0 7px;line-height:18px}
+.ddsel{height:40px;border:1px solid #D5DBE3;border-radius:9px;background:#fff;padding:0 10px;font:inherit;font-size:13px;color:#1B2638;max-width:220px}
+.ddsel.act{border-color:#0B7A6B;background:#E6F4F1;color:#075C51}
+.sel-s{height:32px;border:1px solid #D5DBE3;border-radius:8px;padding:0 8px;font:inherit;font-size:13px;background:#fff;color:#0E1726}
+.pg{display:inline-flex;align-items:center;justify-content:center;min-width:32px;height:32px;padding:0 8px;border-radius:8px;border:1px solid transparent;background:none;font:inherit;font-size:13px;color:#3B4758}
+.pg:hover{background:#F4F6F8;color:#3B4758}
+.pg.on{border-color:#D5DBE3;background:#fff;color:#0E1726;font-weight:600}
+.pg.off{opacity:.4;pointer-events:none}
+.low{display:inline-flex;align-items:center;height:18px;padding:0 6px;border-radius:5px;background:#FDEBEA;color:#A3201F;font-size:11px;font-weight:600;margin-left:6px}
