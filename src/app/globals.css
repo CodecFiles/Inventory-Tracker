@@ -175,3 +175,28 @@ details.edit > summary::-webkit-details-marker{display:none}
 .pg.on{border-color:#D5DBE3;background:#fff;color:#0E1726;font-weight:600}
 .pg.off{opacity:.4;pointer-events:none}
 .low{display:inline-flex;align-items:center;height:18px;padding:0 6px;border-radius:5px;background:#FDEBEA;color:#A3201F;font-size:11px;font-weight:600;margin-left:6px}
+
+/* Device detail (design/DeviceDetail.dc.html): header actions open as small panels, copy buttons,
+   lifecycle stepper, history chips, traceability chain */
+.actd{position:relative}
+.actd>summary{list-style:none}
+.actd>summary::-webkit-details-marker{display:none}
+.actd[open]>summary{background:#F4F6F8}
+.actd .pop{position:absolute;right:0;top:calc(100% + 8px);z-index:30;width:min(400px,calc(100vw - 32px));background:#fff;border:1px solid #DCE1E8;border-radius:12px;box-shadow:0 16px 40px rgba(14,23,38,.18);padding:16px;display:flex;flex-direction:column;gap:10px;text-align:left}
+.actd .pop h3{font-size:14px;font-weight:600}
+.cpy{width:28px;height:28px;border:0;border-radius:6px;background:none;color:#5E6B7D;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:0 0 28px}
+.cpy:hover{background:#F1F4F7;color:#0E1726}
+.step{display:flex;flex-direction:column;gap:6px;min-width:0}
+.step .dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:0 0 26px;border:2px solid #D5DBE3;background:#fff;color:#9AA3AF}
+.step.done .dot{background:#0B7A6B;border-color:#0B7A6B;color:#fff}
+.step.cur .dot{background:#2F6FE4;border-color:#2F6FE4;color:#fff;box-shadow:0 0 0 4px #DCE6FB}
+.step.next .dot{border-color:#2F6FE4;color:#2F6FE4}
+.step .ln{flex:1;height:2px;background:#E3E7EC}
+.step.done .ln{background:#0B7A6B}
+.chg{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12.5px;color:#5E6B7D}
+.chg .o,.chg .n{font-family:var(--font-geist-mono),ui-monospace,monospace;font-size:11.5px;padding:1px 6px;border-radius:5px}
+.chg .o{background:#F1F4F7;color:#8A96A8;text-decoration:line-through}
+.chg .n{background:#E6F4F1;color:#075C51}
+.chain{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.chain .lk{display:flex;flex-direction:column;gap:2px;padding:10px 14px;border:1px solid #E3E7EC;border-radius:10px;min-width:110px;color:#0E1726}
+.chain .lk.pend{border-style:dashed;color:#5E6B7D}

@@ -34,7 +34,7 @@ test("deploy a router and cables; too many is refused with nothing moved; then c
   await page.getByRole("link", { name: "Lulu Salalah" }).click();
   await page.waitForURL(/\/facilities\/\d+$/);
   const facilityUrl = page.url();
-  await page.getByRole("link", { name: "New deployment" }).first().click();
+  await page.locator("main").getByRole("link", { name: "New deployment" }).first().click();   // not the top bar one
   await page.getByRole("button", { name: "Create draft" }).click();
   await page.waitForURL(/\/deployments\/\d+$/);
 

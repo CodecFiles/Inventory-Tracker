@@ -128,8 +128,15 @@ export type UnitInfo = {
   unitId: number; serial: string; imei: string | null; status: string; createdAt: Date;
   productId: number; product: string; brand: string; model: string; isSim: boolean; needsConfiguration: boolean;
   place: string; location: string; batchCode: string; supplier: string; receivedOn: Date;
-  iccid: string | null; phoneNumber: string | null; carrier: string | null;
+  iccid: string | null; phoneNumber: string | null; carrier: string | null; facilityId: number | null;
 };
+// The deployment that brought it to where it is now (for a SIM inside a router: the router's)
+export type CurrentDeployment = {
+  id: number; code: string; type: string; date: Date | null; facilityId: number; facility: string; stage: string;
+  building: string | null; position: string | null;
+};
+// An open document (draft/scheduled deployment, draft shipment) it is already on
+export type Reservation = { kind: "deployment" | "shipment"; id: number; code: string; status: string; to: string };
 export type Movement = {
   id: number; type: string; movedAt: Date; note: string | null; from: string | null; to: string | null;
   by: string; document: string | null;
@@ -139,16 +146,21 @@ export type SimLink = {
   assignedBy: string; endedBy: string | null;
 };
 
-export async function unitDetail(userId: string, rawInput: unknown): Promise<UnitInfo & { movements: Movement[]; simHistory: SimLink[] }> {
+export type UnitDetail = UnitInfo & {
+  movements: Movement[]; simHistory: SimLink[]; deployment: CurrentDeployment | null; reservation: Reservation | null;
+};
+
+export async function unitDetail(userId: string, rawInput: unknown): Promise<UnitDetail> {
   const { unitId } = parseInput(z.object({ unitId: z.number().int().positive() }), rawInput);
   return read(userId, async (tx) => {
-    const [unit] = await tx<UnitInfo[]>`
+    // the four look-ups do not depend on each other, so they go to the database together
+    const [[unit], movements, simHistory, [deployment], [reservation]] = await Promise.all([tx<UnitInfo[]>`
       select u.id::int as "unitId", u.serial_number as serial, u.imei, u.status::text as status, u.created_at as "createdAt",
              p.id::int as "productId", p.name as product, p.brand, p.model, p.is_sim as "isSim",
              p.requires_configuration as "needsConfiguration",
              l.type::text as place, l.name as location,
              b.code as "batchCode", s.name as supplier, b.received_on as "receivedOn",
-             d.iccid, d.phone_number as "phoneNumber", d.carrier
+             d.iccid, d.phone_number as "phoneNumber", d.carrier, l.facility_id::int as "facilityId"
       from units u
       join products p on p.id = u.product_id
       join locations l on l.id = u.location_id
@@ -156,10 +168,8 @@ export async function unitDetail(userId: string, rawInput: unknown): Promise<Uni
       join batches b on b.id = bl.batch_id
       join suppliers s on s.id = b.supplier_id
       left join sim_details d on d.unit_id = u.id
-      where u.id = ${unitId}`;
-    if (!unit) throw new ValidationError("That item does not exist");
-
-    const movements = await tx<Movement[]>`
+      where u.id = ${unitId}`,
+    tx<Movement[]>`
       select m.id::int, m.movement_type::text as type, m.moved_at as "movedAt", m.note,
              fl.name as "from", tl.name as "to", us.full_name as "by",
              coalesce(dp.code, sh.code, bt.code) as document
@@ -171,10 +181,9 @@ export async function unitDetail(userId: string, rawInput: unknown): Promise<Uni
       left join shipments sh on sh.id = m.shipment_id
       left join batches bt on bt.id = m.batch_id
       where m.unit_id = ${unitId}
-      order by m.moved_at, m.id`;
-
+      order by m.moved_at, m.id`,
     // SIM history: for a router, the SIMs it held; for a SIM, the routers it was in
-    const simHistory = await tx<SimLink[]>`
+    tx<SimLink[]>`
       select case when a.router_unit_id = ${unitId} then s.id else r.id end::int as "otherUnitId",
              case when a.router_unit_id = ${unitId} then s.serial_number else r.serial_number end as "otherSerial",
              host(a.ip_address) as "ipAddress", a.assigned_at as "assignedAt", a.ended_at as "endedAt",
@@ -185,9 +194,30 @@ export async function unitDetail(userId: string, rawInput: unknown): Promise<Uni
       join users ab on ab.id = a.assigned_by
       left join users eb on eb.id = a.ended_by
       where ${unitId} in (a.router_unit_id, a.sim_unit_id)
-      order by a.assigned_at, a.id`;
-
-    return { ...unit, movements, simHistory };
+      order by a.assigned_at, a.id`,
+    tx<CurrentDeployment[]>`
+      select d.id::int, d.code, d.deployment_type::text as type, d.deployment_date as date,
+             f.id::int as "facilityId", f.name as facility, f.stage::text as stage, i.building, i.position
+      from stock_movements m
+      join deployments d on d.id = m.deployment_id
+      join facilities f on f.id = d.facility_id
+      left join deployment_items i on i.deployment_id = d.id and i.removed_at is null
+           and i.unit_id = coalesce((select a.router_unit_id from sim_assignments a
+                                     where a.sim_unit_id = m.unit_id and a.ended_at is null), m.unit_id)
+      where m.unit_id = ${unitId} and m.movement_type in ('deploy', 'deploy_abroad')
+      order by m.moved_at desc, m.id desc limit 1`,
+    tx<Reservation[]>`
+      select 'deployment' as kind, d.id::int, d.code, d.status::text as status, f.name as "to"
+      from deployment_items i join deployments d on d.id = i.deployment_id join facilities f on f.id = d.facility_id
+      where i.unit_id = ${unitId} and i.removed_at is null and d.status in ('draft', 'scheduled')
+      union all
+      select 'shipment', s.id::int, s.code, s.status::text, p.name
+      from shipment_items i join shipments s on s.id = i.shipment_id join partners p on p.id = s.partner_id
+      where i.unit_id = ${unitId} and i.removed_at is null and s.status = 'draft'
+      limit 1`,
+    ]);
+    if (!unit) throw new ValidationError("That item does not exist");
+    return { ...unit, movements, simHistory, deployment: deployment ?? null, reservation: reservation ?? null };
   });
 }
 

@@ -8,9 +8,11 @@ _Last updated: 2026-10-13_
 different in looks from what I had designed"). Screens were simplified against `design/`: dashboard
 without charts, inventory without category tabs/column chooser/bulk actions, prep kanban turned into
 lists, receive wizard turned into one form, no lifecycle stepper; POC, Contracts, Reports, Products
-and mobile screens not built. Batch 1: Dashboard, All inventory, Device detail.
+and mobile screens not built. Batch 1 (Dashboard, All inventory, Device detail) done 2026-10-13 —
+owner to review on staging; batch 2 next: Batches + Batch detail, Receive stock (wizard), Device
+preparation (kanban).
 Also open (owner reported 2026-10-13):
-- **Slow site.** Fixed in code: 16–17 database queries per page instead of 31–38. Still to check:
+- **Slow site.** Fixed in code: 13–24 database queries per page instead of 31–38, most run in parallel. Still to check:
   Vercel Function Region (database is in Tokyo; Tokyo `hnd1` recommended). Moving the database
   closer to Oman is decision R6 — owner's agreement needed.
 - **Two logins.** The code has one login page; the first one is likely Vercel's Deployment
@@ -218,6 +220,7 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 | 2026-10-13 | 6.5 backend: Vitest `users-manage.test.ts` (11) | **124/124 pass** | Mutation: without "demoting an Admin removes their permissions", 1 test fails |
 | 2026-10-13 | 6.5 end-to-end through the screens (local preview, Playwright) + DB checks | **PASS** | Approve a sign-up as Editor; own row protected; Viewer → Editor; disable → enable; Editor → Admin with audit.view + reports.view; counted-stock correction (+2, reason); written-off router corrected back to stock; audit log shows "role: viewer → editor" |
 | 2026-10-13 | Browser tests (Playwright, `tests/e2e`, 10 tests) on a fresh demo DB | **10/10 pass, 3 runs in a row** (~35 s); also without Supabase settings (as on GitHub) | Every main workflow through the screens with DB checks: catalogue, receive (bad ICCID → nothing saved), prep, facility + stage rules, deployment (refusal → nothing moved; SIM travels; return), shipment, repair, write-off, users & roles, corrections, audit log, Viewer refused everywhere. Mutation: re-introducing the 6.4 form-reset bug fails the stage test ("expected contract, received bms_scan") |
+| 2026-10-13 | Design batch 1: Vitest 127/127, browser tests 13/13 (3 new for the redesigned screens), lint, phone width 390 px without sideways scroll | **PASS** | Mutation: counting SIMs by their own deployment line (old rule) fails the new dashboard test (POC SIM counted as contract) |
 | 2026-10-13 | Speed fix: Vitest 126/126, browser tests 10/10, lint, build | **PASS** | Queries per page (local log count) dashboard 38→16, inventory 35→17, item 31→17. Mutation: removing the approved check from reads fails the new disabled-account test |
 | 2026-10-12 | Staging end-to-end (owner) | **PASS** | Sign-up → email confirm → sign-in → pending page → bootstrap → home shows role `super_admin` |
 
@@ -270,3 +273,4 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 - 2026-10-13 — 6.5: Users & roles (approve, role change, disable/enable, Admin permissions), Audit log (field-level changes), Corrections (counted stock page; per-item correction on the item page); src/server/users/manage.ts with tests.
 - 2026-10-13 — PR #12 merged. Automated browser tests (10) + GitHub workflow; preview mode can switch demo user by cookie (dev only, tested). Stage 6 gate waits for the owner's staging walkthrough.
 - 2026-10-13 — Speed: reads use one check query and no transaction; who-is-signed-in and permissions looked up once per page (React cache). Queries per page: dashboard 38→16, inventory 35→17, item 31→17 (local count). New test: a disabled account cannot read.
+- 2026-10-13 — Design batch 1: Dashboard (lifecycle stages, category cards, 3 charts, recently received, upcoming, recent activity), All inventory (status chips, category tabs, filter row, richer rows, counted pieces in the list, pagination), Device detail (header actions, 8 answers, lifecycle stepper, deployment card, history with from→to, traceability). Left out on purpose: bulk actions (they would bypass deployment/shipment rules), notes & attachments, column chooser, export (with Reports), notifications.
