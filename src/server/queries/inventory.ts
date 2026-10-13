@@ -9,33 +9,37 @@ import { likePattern, optionalId, Page, read } from "./read";
 // the balances. "Low" = fewer in MRD Office than the product's minimum stock level.
 // ---------------------------------------------------------------------------------------------
 export type StockRow = {
-  productId: number; name: string; brand: string; model: string; category: string; tracking: string;
+  productId: number; name: string; brand: string; model: string; categoryId: number; category: string; tracking: string;
   minStock: number; inOffice: number; atFacilities: number; atPartners: number; inRepair: number; lowStock: boolean;
+  // counted pieces only (no serial numbers yet), for listing next to the serialised units
+  piecesInOffice: number; piecesElsewhere: number;
 };
 
 export async function stockOverview(userId: string, rawInput: unknown = {}): Promise<StockRow[]> {
   const { lowOnly } = parseInput(z.object({ lowOnly: z.boolean().default(false) }), rawInput);
   return read(userId, (tx) => tx<StockRow[]>`
     with counts as (
-      select u.product_id, l.type, count(*)::int as n
+      select u.product_id, l.type, count(*)::int as n, false as piece
       from units u join locations l on l.id = u.location_id
       where u.status not in ('retired', 'returned_to_supplier')
       group by 1, 2
       union all
-      select s.product_id, l.type, sum(s.quantity)::int
+      select s.product_id, l.type, sum(s.quantity)::int, true
       from stock_levels s join locations l on l.id = s.location_id
       group by 1, 2
     ), totals as (
-      select p.id::int as "productId", p.name, p.brand, p.model, c.name as category,
+      select p.id::int as "productId", p.name, p.brand, p.model, c.id::int as "categoryId", c.name as category,
              p.tracking_type::text as tracking, p.min_stock_level as "minStock",
              coalesce(sum(k.n) filter (where k.type = 'office'), 0)::int as "inOffice",
              coalesce(sum(k.n) filter (where k.type = 'facility'), 0)::int as "atFacilities",
              coalesce(sum(k.n) filter (where k.type = 'partner_stock'), 0)::int as "atPartners",
-             coalesce(sum(k.n) filter (where k.type in ('repair_company', 'supplier')), 0)::int as "inRepair"
+             coalesce(sum(k.n) filter (where k.type in ('repair_company', 'supplier')), 0)::int as "inRepair",
+             coalesce(sum(k.n) filter (where k.piece and k.type = 'office'), 0)::int as "piecesInOffice",
+             coalesce(sum(k.n) filter (where k.piece and k.type <> 'office'), 0)::int as "piecesElsewhere"
       from products p join categories c on c.id = p.category_id
       left join counts k on k.product_id = p.id
       where p.is_active
-      group by p.id, c.name
+      group by p.id, c.id, c.name
     )
     select *, "inOffice" < "minStock" as "lowStock" from totals
     where ${lowOnly ? tx`"inOffice" < "minStock"` : tx`true`}
@@ -48,6 +52,9 @@ export async function stockOverview(userId: string, rawInput: unknown = {}): Pro
 // ---------------------------------------------------------------------------------------------
 export const ListUnitsInput = Page.extend({
   productId: optionalId,
+  categoryId: optionalId,
+  batchId: optionalId,
+  sort: z.enum(["product", "newest", "oldest"]).default("product"),
   status: z.enum(["in_office", "configured", "deployed", "shipped_to_partner", "deployed_abroad",
                   "in_repair", "returned_to_supplier", "retired"]).optional(),
   place: z.enum(["office", "facility", "partner_stock", "repair_company", "supplier"]).optional(),
@@ -64,6 +71,7 @@ export type UnitRow = {
   unitId: number; serial: string; imei: string | null; product: string; productId: number; status: string;
   place: string; location: string; iccid: string | null; phoneNumber: string | null;
   simIccid: string | null; ipAddress: string | null; inRouter: string | null; batchCode: string; batchId: number;
+  brand: string; model: string; category: string; tracking: string; receivedOn: Date;
   total: number;
 };
 
@@ -76,9 +84,11 @@ export async function listUnits(userId: string, rawInput: unknown = {}): Promise
              d.iccid, d.phone_number as "phoneNumber",
              rs.serial_number as "simIccid", host(ra.ip_address) as "ipAddress",
              sr.serial_number as "inRouter", b.code as "batchCode", b.id::int as "batchId",
+             p.brand, p.model, c.name as category, p.tracking_type::text as tracking, b.received_on as "receivedOn",
              count(*) over ()::int as total
       from units u
       join products p on p.id = u.product_id
+      join categories c on c.id = p.category_id
       join locations l on l.id = u.location_id
       join batch_lines bl on bl.id = u.batch_line_id
       join batches b on b.id = bl.batch_id
@@ -89,6 +99,8 @@ export async function listUnits(userId: string, rawInput: unknown = {}): Promise
       left join units sr on sr.id = sa.router_unit_id
       where true
         ${f.productId ? tx`and u.product_id = ${f.productId}` : tx``}
+        ${f.categoryId ? tx`and p.category_id = ${f.categoryId}` : tx``}
+        ${f.batchId ? tx`and b.id = ${f.batchId}` : tx``}
         ${f.status ? tx`and u.status = ${f.status}` : tx``}
         ${f.place ? tx`and l.type = ${f.place}` : tx``}
         ${f.locationId ? tx`and u.location_id = ${f.locationId}` : tx``}
@@ -100,8 +112,10 @@ export async function listUnits(userId: string, rawInput: unknown = {}): Promise
         ${f.routerSim ? tx`and p.requires_configuration and u.status not in ('retired', 'returned_to_supplier')
                              and ra.id is ${f.routerSim === "with" ? tx`not null` : tx`null`}` : tx``}
         ${f.q ? tx`and (u.serial_number ilike ${likePattern(f.q)} or u.imei ilike ${likePattern(f.q)}
-                        or d.phone_number ilike ${likePattern(f.q)})` : tx``}
-      order by p.name, u.serial_number
+                        or d.phone_number ilike ${likePattern(f.q)} or p.name ilike ${likePattern(f.q)}
+                        or b.code ilike ${likePattern(f.q)} or l.name ilike ${likePattern(f.q)})` : tx``}
+      order by ${f.sort === "newest" ? tx`b.received_on desc, u.id desc`
+               : f.sort === "oldest" ? tx`b.received_on, u.id` : tx`p.name, u.serial_number`}
       limit ${f.limit} offset ${f.offset}`;
     return { rows, total: rows[0]?.total ?? 0 };
   });
@@ -114,8 +128,15 @@ export type UnitInfo = {
   unitId: number; serial: string; imei: string | null; status: string; createdAt: Date;
   productId: number; product: string; brand: string; model: string; isSim: boolean; needsConfiguration: boolean;
   place: string; location: string; batchCode: string; supplier: string; receivedOn: Date;
-  iccid: string | null; phoneNumber: string | null; carrier: string | null;
+  iccid: string | null; phoneNumber: string | null; carrier: string | null; facilityId: number | null;
 };
+// The deployment that brought it to where it is now (for a SIM inside a router: the router's)
+export type CurrentDeployment = {
+  id: number; code: string; type: string; date: Date | null; facilityId: number; facility: string; stage: string;
+  building: string | null; position: string | null;
+};
+// An open document (draft/scheduled deployment, draft shipment) it is already on
+export type Reservation = { kind: "deployment" | "shipment"; id: number; code: string; status: string; to: string };
 export type Movement = {
   id: number; type: string; movedAt: Date; note: string | null; from: string | null; to: string | null;
   by: string; document: string | null;
@@ -125,16 +146,21 @@ export type SimLink = {
   assignedBy: string; endedBy: string | null;
 };
 
-export async function unitDetail(userId: string, rawInput: unknown): Promise<UnitInfo & { movements: Movement[]; simHistory: SimLink[] }> {
+export type UnitDetail = UnitInfo & {
+  movements: Movement[]; simHistory: SimLink[]; deployment: CurrentDeployment | null; reservation: Reservation | null;
+};
+
+export async function unitDetail(userId: string, rawInput: unknown): Promise<UnitDetail> {
   const { unitId } = parseInput(z.object({ unitId: z.number().int().positive() }), rawInput);
   return read(userId, async (tx) => {
-    const [unit] = await tx<UnitInfo[]>`
+    // the four look-ups do not depend on each other, so they go to the database together
+    const [[unit], movements, simHistory, [deployment], [reservation]] = await Promise.all([tx<UnitInfo[]>`
       select u.id::int as "unitId", u.serial_number as serial, u.imei, u.status::text as status, u.created_at as "createdAt",
              p.id::int as "productId", p.name as product, p.brand, p.model, p.is_sim as "isSim",
              p.requires_configuration as "needsConfiguration",
              l.type::text as place, l.name as location,
              b.code as "batchCode", s.name as supplier, b.received_on as "receivedOn",
-             d.iccid, d.phone_number as "phoneNumber", d.carrier
+             d.iccid, d.phone_number as "phoneNumber", d.carrier, l.facility_id::int as "facilityId"
       from units u
       join products p on p.id = u.product_id
       join locations l on l.id = u.location_id
@@ -142,10 +168,8 @@ export async function unitDetail(userId: string, rawInput: unknown): Promise<Uni
       join batches b on b.id = bl.batch_id
       join suppliers s on s.id = b.supplier_id
       left join sim_details d on d.unit_id = u.id
-      where u.id = ${unitId}`;
-    if (!unit) throw new ValidationError("That item does not exist");
-
-    const movements = await tx<Movement[]>`
+      where u.id = ${unitId}`,
+    tx<Movement[]>`
       select m.id::int, m.movement_type::text as type, m.moved_at as "movedAt", m.note,
              fl.name as "from", tl.name as "to", us.full_name as "by",
              coalesce(dp.code, sh.code, bt.code) as document
@@ -157,10 +181,9 @@ export async function unitDetail(userId: string, rawInput: unknown): Promise<Uni
       left join shipments sh on sh.id = m.shipment_id
       left join batches bt on bt.id = m.batch_id
       where m.unit_id = ${unitId}
-      order by m.moved_at, m.id`;
-
+      order by m.moved_at, m.id`,
     // SIM history: for a router, the SIMs it held; for a SIM, the routers it was in
-    const simHistory = await tx<SimLink[]>`
+    tx<SimLink[]>`
       select case when a.router_unit_id = ${unitId} then s.id else r.id end::int as "otherUnitId",
              case when a.router_unit_id = ${unitId} then s.serial_number else r.serial_number end as "otherSerial",
              host(a.ip_address) as "ipAddress", a.assigned_at as "assignedAt", a.ended_at as "endedAt",
@@ -171,9 +194,30 @@ export async function unitDetail(userId: string, rawInput: unknown): Promise<Uni
       join users ab on ab.id = a.assigned_by
       left join users eb on eb.id = a.ended_by
       where ${unitId} in (a.router_unit_id, a.sim_unit_id)
-      order by a.assigned_at, a.id`;
-
-    return { ...unit, movements, simHistory };
+      order by a.assigned_at, a.id`,
+    tx<CurrentDeployment[]>`
+      select d.id::int, d.code, d.deployment_type::text as type, d.deployment_date as date,
+             f.id::int as "facilityId", f.name as facility, f.stage::text as stage, i.building, i.position
+      from stock_movements m
+      join deployments d on d.id = m.deployment_id
+      join facilities f on f.id = d.facility_id
+      left join deployment_items i on i.deployment_id = d.id and i.removed_at is null
+           and i.unit_id = coalesce((select a.router_unit_id from sim_assignments a
+                                     where a.sim_unit_id = m.unit_id and a.ended_at is null), m.unit_id)
+      where m.unit_id = ${unitId} and m.movement_type in ('deploy', 'deploy_abroad')
+      order by m.moved_at desc, m.id desc limit 1`,
+    tx<Reservation[]>`
+      select 'deployment' as kind, d.id::int, d.code, d.status::text as status, f.name as "to"
+      from deployment_items i join deployments d on d.id = i.deployment_id join facilities f on f.id = d.facility_id
+      where i.unit_id = ${unitId} and i.removed_at is null and d.status in ('draft', 'scheduled')
+      union all
+      select 'shipment', s.id::int, s.code, s.status::text, p.name
+      from shipment_items i join shipments s on s.id = i.shipment_id join partners p on p.id = s.partner_id
+      where i.unit_id = ${unitId} and i.removed_at is null and s.status = 'draft'
+      limit 1`,
+    ]);
+    if (!unit) throw new ValidationError("That item does not exist");
+    return { ...unit, movements, simHistory, deployment: deployment ?? null, reservation: reservation ?? null };
   });
 }
 
@@ -212,14 +256,26 @@ export async function search(userId: string, rawInput: unknown): Promise<SearchH
 // How many units have each status (Inventory screen's status chips), optionally for one product.
 // ---------------------------------------------------------------------------------------------
 export async function unitStatusCounts(userId: string, rawInput: unknown = {}): Promise<Record<string, number>> {
-  const { productId } = parseInput(z.object({ productId: optionalId }), rawInput);
+  const { productId, categoryId } = parseInput(z.object({ productId: optionalId, categoryId: optionalId }), rawInput);
   return read(userId, async (tx) => {
     const rows = await tx<{ status: string; n: number }[]>`
-      select status::text, count(*)::int as n from units
-      where true ${productId ? tx`and product_id = ${productId}` : tx``}
+      select u.status::text, count(*)::int as n from units u join products p on p.id = u.product_id
+      where true ${productId ? tx`and u.product_id = ${productId}` : tx``}
+        ${categoryId ? tx`and p.category_id = ${categoryId}` : tx``}
       group by 1`;
     return Object.fromEntries(rows.map((r) => [r.status, r.n]));
   });
+}
+
+// Category tabs on All inventory: serialised units plus counted pieces in each category.
+export async function categoryCounts(userId: string) {
+  return read(userId, (tx) => tx<{ id: number; name: string; units: number; pieces: number }[]>`
+    select c.id::int, c.name,
+           (select count(*)::int from units u join products p on p.id = u.product_id
+            where p.category_id = c.id and u.status not in ('retired', 'returned_to_supplier')) as units,
+           (select coalesce(sum(s.quantity), 0)::int from stock_levels s join products p on p.id = s.product_id
+            where p.category_id = c.id) as pieces
+    from categories c order by c.name`);
 }
 
 // ---------------------------------------------------------------------------------------------

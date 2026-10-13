@@ -1,5 +1,5 @@
 import "server-only";
-import { getSql, type Tx } from "./db";
+import { getSql, type Sql, type Tx } from "./db";
 import { ForbiddenError, fromDatabaseError } from "./errors";
 
 // Every action a person takes runs through withActor:
@@ -12,13 +12,30 @@ import { ForbiddenError, fromDatabaseError } from "./errors";
 export async function withActor<T>(userId: string, action: (tx: Tx) => Promise<T>): Promise<T> {
   try {
     return (await getSql().begin(async (tx) => {
-      await tx`select set_config('app.user_id', ${userId}, true)`;
-      const [user] = await tx`select status from users where id = ${userId}`;
-      if (!user || user.status !== "approved") {
+      // one round trip for both steps: the database is far away, so each extra query costs time
+      const [user] = await tx`
+        select set_config('app.user_id', ${userId}, true), (select status::text from users where id = ${userId}) as status`;
+      if (user?.status !== "approved") {
         throw new ForbiddenError("Your account has not been approved yet");
       }
       return action(tx);
     })) as T;
+  } catch (error) {
+    throw fromDatabaseError(error);
+  }
+}
+
+// Reading changes nothing, so it needs no transaction and no app.user_id: one query checks the
+// account is approved and has the permission, then the reading starts. (Each query is a round trip
+// to the database, so this saves four per screen panel compared with withActor.)
+export async function withReader<T>(userId: string, permission: string, action: (sql: Sql) => Promise<T>): Promise<T> {
+  try {
+    const sql = getSql();
+    const [row] = await sql`
+      select (select status::text from users where id = ${userId}) as status, has_permission(${userId}, ${permission}) as allowed`;
+    if (row?.status !== "approved") throw new ForbiddenError("Your account has not been approved yet");
+    if (!row.allowed) throw new ForbiddenError(`You do not have permission: ${permission}`);
+    return await action(sql);
   } catch (error) {
     throw fromDatabaseError(error);
   }

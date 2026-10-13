@@ -9,7 +9,7 @@ import postgres from "postgres";
 // `prepare: false` is required for that pooler. Locally (tests) neither is set and postgres.js uses
 // the standard PGHOST / PGPORT / PGUSER / PGDATABASE environment variables instead.
 
-type Sql = postgres.Sql;
+export type Sql = postgres.Sql;
 
 const globalForDb = globalThis as unknown as { mrdSql?: Sql };
 

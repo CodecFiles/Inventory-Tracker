@@ -1,4 +1,5 @@
 import Form from "next/form";
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { Icon } from "@/components/icons";
 import { getSql } from "@/server/db";
@@ -9,7 +10,7 @@ import { navFor } from "./nav";
 // Every signed-in page sits inside this layout: only approved users get past it.
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const user = await requireApprovedUser();
-  const permissions = await getPermissions(user.id);
+  const permissions = new Set(await getPermissions(user.id));   // a copy: the cached set is shared
   // corrections are a Super Admin power, not a permission that can be given (decision 0011)
   if (user.role === "super_admin") permissions.add("corrections.super_admin");
   // badge on "Device preparation": office routers still without a SIM
@@ -31,6 +32,15 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
                style={{ flex: 1, minWidth: 0, border: 0, background: "transparent", font: "inherit", color: "#0E1726", outline: "none" }} />
       </Form>
       <span style={{ flex: 1 }} />
+      {permissions.has("inventory.receive") && (
+        <Link className="btn" href="/receive"><Icon name="receive" size={16} />Receive</Link>
+      )}
+      {permissions.has("deployments.create") && (
+        <Link className="btn p" href="/deployments/new">
+          <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+          New deployment
+        </Link>
+      )}
     </header>
   );
 
