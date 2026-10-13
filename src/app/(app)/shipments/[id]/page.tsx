@@ -4,7 +4,7 @@ import { ActionForm } from "@/components/action-form";
 import { DocStatus } from "@/components/status";
 import { shipmentDetail } from "@/server/queries/documents";
 import { availableUnits, countedStockAt } from "@/server/queries/inventory";
-import { getSql, withRetry } from "@/server/db";
+import { getSql, withConnection, withRetry } from "@/server/db";
 import { getPermissions, requireApprovedUser } from "@/server/session";
 import { addCounted, addUnit, cancel, received, removeItem, ship } from "../actions";
 
@@ -24,7 +24,7 @@ export default async function ShipmentPage({ params }: PageProps<"/shipments/[id
   }
   const permissions = await getPermissions(user.id);
   const canEdit = s.status === "draft" && permissions.has("shipments.manage");
-  const [{ office }] = await withRetry(() => getSql()<{ office: number }[]>`select office_location_id()::int as office`);
+  const [{ office }] = await withConnection(() => withRetry(() => getSql()<{ office: number }[]>`select office_location_id()::int as office`));
   const [units, counted] = canEdit
     ? await Promise.all([availableUnits(user.id, { locationId: office }), countedStockAt(user.id, { locationId: office })])
     : [[], []];

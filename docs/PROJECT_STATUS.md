@@ -20,6 +20,12 @@ Also open (owner reported 2026-10-13):
   later request on that server hangs. Fixed with a small library patch (`scripts/patch-postgres.mjs`,
   run after every install), safe retries, shorter idle connections; reproduced and tested with a relay that
   cuts the connection. Owner: keep only Tokyo `hnd1` as Function Region, Save, Redeploy.
+- **Site hangs after sign-in (2026-10-13, after PR #14/#15).** Cause (confirmed by a test relay):
+  postgres.js "pipelines" a query onto a busy connection; Supabase's transaction pooler (Supavisor)
+  can lose the answer, so the page waits until the 2-minute statement timeout. PR #14 made it common
+  (reads outside transactions, 7 dashboard queries at once). Owner rolled back to the PR #13 build.
+  Fix: never more database work at once than connections (`withConnection`), no parallel queries
+  inside one piece of work; test `no-pipelining` (11 in flight without the fix, 1 with it).
 - **Two logins.** The code has one login page; the first one is likely Vercel's Deployment
   Protection. Needs a screenshot with the address bar to confirm.
 Then: owner's staging walkthrough and Shipments review close the Stage 6 gate.
@@ -225,6 +231,7 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 | 2026-10-13 | 6.5 backend: Vitest `users-manage.test.ts` (11) | **124/124 pass** | Mutation: without "demoting an Admin removes their permissions", 1 test fails |
 | 2026-10-13 | 6.5 end-to-end through the screens (local preview, Playwright) + DB checks | **PASS** | Approve a sign-up as Editor; own row protected; Viewer → Editor; disable → enable; Editor → Admin with audit.view + reports.view; counted-stock correction (+2, reason); written-off router corrected back to stock; audit log shows "role: viewer → editor" |
 | 2026-10-13 | Browser tests (Playwright, `tests/e2e`, 10 tests) on a fresh demo DB | **10/10 pass, 3 runs in a row** (~35 s); also without Supabase settings (as on GitHub) | Every main workflow through the screens with DB checks: catalogue, receive (bad ICCID → nothing saved), prep, facility + stage rules, deployment (refusal → nothing moved; SIM travels; return), shipment, repair, write-off, users & roles, corrections, audit log, Viewer refused everywhere. Mutation: re-introducing the 6.4 form-reset bug fails the stage test ("expected contract, received bms_scan") |
+| 2026-10-13 | No-pipelining fix: Vitest 131/131, browser tests 13/13, lint, build | **PASS** | Relay counts queries in flight per connection under 42 simultaneous reads and saves on a 2-connection pool: 11 without the fix, 1 with it |
 | 2026-10-13 | Lost-connection fix: Vitest 130/130 (3 new), browser tests 13/13, lint, build | **PASS** | Mutation: without the library patch the mid-save cut test hangs (the staging bug); with it the save fails cleanly, nothing is kept, the next request works |
 | 2026-10-13 | Design batch 1: Vitest 127/127, browser tests 13/13 (3 new for the redesigned screens), lint, phone width 390 px without sideways scroll | **PASS** | Mutation: counting SIMs by their own deployment line (old rule) fails the new dashboard test (POC SIM counted as contract) |
 | 2026-10-13 | Speed fix: Vitest 126/126, browser tests 10/10, lint, build | **PASS** | Queries per page (local log count) dashboard 38→16, inventory 35→17, item 31→17. Mutation: removing the approved check from reads fails the new disabled-account test |

@@ -1,5 +1,5 @@
 import "server-only";
-import { read } from "./read";
+import { inOrder, read } from "./read";
 
 // The dashboard's panels (design/Main.dc.html) from real data: the lifecycle of every unit, a card
 // per category, three small charts, recent deliveries, upcoming deployments and recent stock moves.
@@ -40,8 +40,8 @@ export async function dashboardPanels(userId: string) {
         from units u join products p on p.id = u.product_id join locations l on l.id = u.location_id
         where u.status not in ('retired', 'returned_to_supplier')
       )`;
-    const [[life], categories, months, [totals], batches, upcoming, activity] = await Promise.all([
-      sql<LifecycleCounts[]>`
+    const [[life], categories, months, [totals], batches, upcoming, activity] = await inOrder([
+      () => sql<LifecycleCounts[]>`
         ${units}
         select count(*) filter (where ltype = 'office' and status = 'in_office' and not reserved)::int as office,
                count(*) filter (where ltype = 'office' and status = 'configured' and not reserved)::int as ready,
@@ -55,7 +55,7 @@ export async function dashboardPanels(userId: string) {
                count(*)::int as total,
                0 as other
         from live`,
-      sql<CategoryCounts[]>`
+      () => sql<CategoryCounts[]>`
         ${units}
         select c.id::int as "categoryId", c.name as category,
                coalesce(string_agg(distinct live.model, ' · '), '') as models,
@@ -70,7 +70,7 @@ export async function dashboardPanels(userId: string) {
         from live join categories c on c.id = live.category_id
         group by c.id, c.name order by count(*) desc, c.name`,
       // serialised units received and deployed per month, the last 7 months (Oman time)
-      sql<MonthCounts[]>`
+      () => sql<MonthCounts[]>`
         select to_char(m, 'Mon') as month,
                count(s.id) filter (where s.movement_type = 'receive')::int as received,
                count(s.id) filter (where s.movement_type in ('deploy', 'deploy_abroad'))::int as deployed
@@ -80,18 +80,18 @@ export async function dashboardPanels(userId: string) {
               and s.movement_type in ('receive', 'deploy', 'deploy_abroad')
               and date_trunc('month', s.moved_at at time zone 'Asia/Muscat') = m
         group by m order by m`,
-      sql<{ products: number; categories: number; counted: number }[]>`
+      () => sql<{ products: number; categories: number; counted: number }[]>`
         select (select count(*)::int from products where is_active) as products,
                (select count(distinct category_id)::int from products where is_active) as categories,
                (select coalesce(sum(quantity), 0)::int from stock_levels) as counted`,
-      sql<RecentBatch[]>`
+      () => sql<RecentBatch[]>`
         select b.id::int, b.code, b.received_on as "receivedOn",
                (select p.name from batch_lines bl join products p on p.id = bl.product_id
                 where bl.batch_id = b.id order by bl.id limit 1) as product,
                (select count(*)::int from batch_lines bl where bl.batch_id = b.id) as lines,
                (select coalesce(sum(bl.quantity_received), 0)::int from batch_lines bl where bl.batch_id = b.id) as quantity
         from batches b order by b.received_on desc, b.id desc limit 5`,
-      sql<UpcomingDeployment[]>`
+      () => sql<UpcomingDeployment[]>`
         select d.id::int, d.code, d.deployment_date as date, d.deployment_type::text as type, d.status::text as status,
                f.name as facility, f.id::int as "facilityId",
                (select coalesce(sum(i.quantity), 0)::int from deployment_items i
@@ -100,7 +100,7 @@ export async function dashboardPanels(userId: string) {
         where d.status in ('draft', 'scheduled')
         order by d.deployment_date nulls last, d.id limit 4`,
       // one line per person, kind of move, product, place and minute (a deployment of 4 sensors is one line)
-      sql<Activity[]>`
+      () => sql<Activity[]>`
         select u.full_name as who, s.movement_type::text as type, p.name as product, sum(s.quantity)::int as quantity,
                coalesce(tl.name, fl.name) as place, max(b.code) as batch, max(s.moved_at) as at
         from stock_movements s join users u on u.id = s.performed_by join products p on p.id = s.product_id
@@ -109,7 +109,7 @@ export async function dashboardPanels(userId: string) {
         left join batches b on b.id = s.batch_id
         group by u.full_name, s.movement_type, p.name, tl.name, fl.name, date_trunc('minute', s.moved_at)
         order by max(s.moved_at) desc limit 6`,
-    ]);
+    ] as const);
     life.other = Math.max(0, life.total - life.office - life.ready - life.reserved - life.partners - life.poc - life.contract);
     return { life, categories, months, totals, batches, upcoming, activity };
   });

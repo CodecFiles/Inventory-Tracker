@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import postgres from "postgres";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { databaseUrl, getSql } from "@/server/db";
+import { databaseUrl, getSql, withConnection } from "@/server/db";
 
 // Diagnostic for the database connection, for staging set-up. It shows the NON-secret parts of
 // the database address (DATABASE_URL or POSTGRES_URL): user, host, port, database, only the *length*
@@ -16,7 +16,7 @@ export async function GET() {
 
   // Checking the role needs the database. If that fails, say only that — no connection details.
   try {
-    const [me] = await getSql()`select role::text from users where id = ${userId} and status = 'approved'`;
+    const [me] = await withConnection(() => getSql()`select role::text from users where id = ${userId} and status = 'approved'`);
     if (me?.role !== "super_admin") return NextResponse.json({ error: "Super Admin only" }, { status: 403 });
   } catch (e) {
     return NextResponse.json({ ok: false, problem: "The database cannot be reached", code: (e as { code?: string }).code }, { status: 503 });

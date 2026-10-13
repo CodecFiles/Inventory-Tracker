@@ -1,5 +1,5 @@
 import "server-only";
-import { getSql, withRetry, type Sql, type Tx } from "./db";
+import { getSql, withConnection, withRetry, type Sql, type Tx } from "./db";
 import { ForbiddenError, fromDatabaseError } from "./errors";
 
 // Every action a person takes runs through withActor:
@@ -15,7 +15,7 @@ export async function withActor<T>(userId: string, action: (tx: Tx) => Promise<T
   // is shown instead of risking a double entry.
   let started = false;
   try {
-    return await withRetry(async () => {
+    return await withConnection(() => withRetry(async () => {
       started = false;
       return (await getSql().begin(async (tx) => {
         // one round trip for both steps: the database is far away, so each extra query costs time
@@ -27,7 +27,7 @@ export async function withActor<T>(userId: string, action: (tx: Tx) => Promise<T
         }
         return action(tx);
       })) as T;
-    }, () => !started);
+    }, () => !started));
   } catch (error) {
     throw fromDatabaseError(error);
   }
@@ -38,14 +38,14 @@ export async function withActor<T>(userId: string, action: (tx: Tx) => Promise<T
 // to the database, so this saves four per screen panel compared with withActor.)
 export async function withReader<T>(userId: string, permission: string, action: (sql: Sql) => Promise<T>): Promise<T> {
   try {
-    return await withRetry(async () => {   // reading twice is harmless
+    return await withConnection(() => withRetry(async () => {   // reading twice is harmless
       const sql = getSql();
       const [row] = await sql`
         select (select status::text from users where id = ${userId}) as status, has_permission(${userId}, ${permission}) as allowed`;
       if (row?.status !== "approved") throw new ForbiddenError("Your account has not been approved yet");
       if (!row.allowed) throw new ForbiddenError(`You do not have permission: ${permission}`);
       return await action(sql);
-    });
+    }));
   } catch (error) {
     throw fromDatabaseError(error);
   }
