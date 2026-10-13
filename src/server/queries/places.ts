@@ -114,13 +114,18 @@ export async function lookups(userId: string) {
 // ---------------------------------------------------------------------------------------------
 // Audit log: who changed what, when — needs its own permission (audit.view).
 // ---------------------------------------------------------------------------------------------
-export async function auditLog(userId: string, rawInput: unknown = {}) {
+export type AuditRow = {
+  id: number; occurredAt: Date; action: string; entityType: string; entityId: string | null; actor: string | null;
+  before: Record<string, unknown> | null; after: Record<string, unknown> | null;
+};
+
+export async function auditLog(userId: string, rawInput: unknown = {}): Promise<AuditRow[]> {
   const f = parseInput(Page.extend({
     entityType: z.string().regex(/^[a-z_]+$/).max(50).optional(),
     entityId: z.string().max(50).optional(),
     actorId: z.uuid().optional(),
   }), rawInput);
-  return read(userId, (tx) => tx`
+  return read(userId, (tx) => tx<AuditRow[]>`
     select a.id::int, a.occurred_at as "occurredAt", a.action, a.entity_type as "entityType", a.entity_id as "entityId",
            u.full_name as actor, a.before, a.after
     from audit_log a left join users u on u.id = a.actor_id
@@ -129,4 +134,11 @@ export async function auditLog(userId: string, rawInput: unknown = {}) {
       ${f.entityId ? tx`and a.entity_id = ${f.entityId}` : tx``}
       ${f.actorId ? tx`and a.actor_id = ${f.actorId}` : tx``}
     order by a.id desc limit ${f.limit} offset ${f.offset}`, "audit.view");
+}
+
+// Every place stock can be (for Super Admin corrections).
+export async function allLocations(userId: string) {
+  return read(userId, (tx) => tx<{ id: number; name: string; type: string }[]>`
+    select id::int, name, type::text from locations
+    order by case type when 'office' then 0 when 'facility' then 1 when 'partner_stock' then 2 else 3 end, name`);
 }

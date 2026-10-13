@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 import { ActionForm } from "@/components/action-form";
 import { UnitStatus } from "@/components/status";
 import { unitDetail } from "@/server/queries/inventory";
-import { lookups } from "@/server/queries/places";
+import { allLocations, lookups } from "@/server/queries/places";
+import { fixUnit } from "../../corrections/actions";
+import { UNIT_STATUSES } from "@/components/status";
 import { getPermissions, requireApprovedUser } from "@/server/session";
 import { backFrom, repair, retire, toSupplier } from "../actions";
 
@@ -42,7 +44,10 @@ export default async function ItemPage({ params }: PageProps<"/inventory/[id]">)
     notFound();
   }
   const current = u.simHistory.find((s) => !s.endedAt);
-  const [permissions, lists] = await Promise.all([getPermissions(user.id), lookups(user.id)]);
+  const isSuper = user.role === "super_admin";
+  const [permissions, lists, locations] = await Promise.all([
+    getPermissions(user.id), lookups(user.id), isSuper ? allLocations(user.id) : Promise.resolve([]),
+  ]);
   // What can happen to it next, depending on where it is (SIMs inside a router move with the router)
   const simInRouter = u.isSim && !!current;
   const canMove = permissions.has("inventory.move") && !simInRouter && !["retired", "returned_to_supplier"].includes(u.status);
@@ -154,6 +159,31 @@ export default async function ItemPage({ params }: PageProps<"/inventory/[id]">)
             </details>
           </div>
         </section>
+      )}
+
+      {isSuper && !simInRouter && (
+        <details className="card edit">
+          <summary style={{ padding: "14px 18px", fontWeight: 600 }}>Correct this item (Super Admin)</summary>
+          <div style={{ padding: "0 18px 18px" }}>
+            <p className="muted" style={{ fontSize: 13, marginBottom: 10 }}>
+              For mistakes only, e.g. recorded at the wrong site or written off by mistake. A router&apos;s SIM is corrected with it.
+            </p>
+            <ActionForm action={fixUnit.bind(null, u.unitId)} submit="Record correction" className="formrow" confirm="Record this correction?">
+              <label className="fl">Where it really is
+                <select className="fld" name="locationId" defaultValue="">
+                  <option value="">Same place ({u.location})</option>
+                  {locations.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
+                </select>
+              </label>
+              <label className="fl">Status it really has
+                <select className="fld" name="status" defaultValue={u.status}>
+                  {UNIT_STATUSES.map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+                </select>
+              </label>
+              <label className="fl" style={{ flexBasis: "100%" }}>Reason<input className="fld" name="reason" required placeholder="e.g. Found in the store room" /></label>
+            </ActionForm>
+          </div>
+        </details>
       )}
 
       <section style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "flex-start" }}>
