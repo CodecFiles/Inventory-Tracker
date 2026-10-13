@@ -9,7 +9,7 @@
     "lint": "eslint",
     "test": "vitest run",
     "e2e": "playwright test",
-    "postinstall": "patch-package"
+    "postinstall": "node scripts/patch-postgres.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",
@@ -28,7 +28,6 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.8",
-    "patch-package": "8.0.0",
     "typescript": "^5",
     "vitest": "4.1.10"
   }

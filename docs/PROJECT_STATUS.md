@@ -17,8 +17,8 @@ Also open (owner reported 2026-10-13):
   closer to Oman is decision R6 — owner's agreement needed.
 - **Site stops opening (2026-10-13, PR #15).** Cause: a lost connection to the Supabase pooler
   mid-transaction makes postgres.js 3.4.9 (latest) crash and park the dead connection, so every
-  later request on that server hangs. Fixed with a 6-line library patch (`patches/`, applied by
-  patch-package), safe retries, shorter idle connections; reproduced and tested with a relay that
+  later request on that server hangs. Fixed with a small library patch (`scripts/patch-postgres.mjs`,
+  run after every install), safe retries, shorter idle connections; reproduced and tested with a relay that
   cuts the connection. Owner: keep only Tokyo `hnd1` as Function Region, Save, Redeploy.
 - **Two logins.** The code has one login page; the first one is likely Vercel's Deployment
   Protection. Needs a screenshot with the address bar to confirm.
