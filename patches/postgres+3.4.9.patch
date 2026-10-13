@@ -1,47 +1,59 @@
 diff --git a/node_modules/postgres/cf/src/connection.js b/node_modules/postgres/cf/src/connection.js
-index 8e79170..d7f2e82 100644
+index 8e79170..d018b1c 100644
 --- a/node_modules/postgres/cf/src/connection.js
 +++ b/node_modules/postgres/cf/src/connection.js
-@@ -165,6 +165,11 @@ function Connection(options, queues = {}, { onopen = noop, onend = noop, onclose
+@@ -165,6 +165,15 @@ function Connection(options, queues = {}, { onopen = noop, onend = noop, onclose
      if (q.cancelled)
        return
  
 +    // MRD patch: the connection closed (e.g. mid-transaction) and the socket is gone. Fail this
 +    // query now instead of writing to a null socket (uncaught TypeError, then the pool hangs).
-+    if (!socket)
-+      return queryError(q, Errors.connection('CONNECTION_CLOSED', options))
++    // Return true so callers do not move this connection to the "full" queue: it must stay in
++    // "closed", where the pool reconnects it for the next query.
++    if (!socket) {
++      queryError(q, Errors.connection('CONNECTION_CLOSED', options))
++      return true
++    }
 +
      try {
        q.state = backend
        query
 diff --git a/node_modules/postgres/cjs/src/connection.js b/node_modules/postgres/cjs/src/connection.js
-index 07f6716..3503391 100644
+index 07f6716..35603d2 100644
 --- a/node_modules/postgres/cjs/src/connection.js
 +++ b/node_modules/postgres/cjs/src/connection.js
-@@ -163,6 +163,11 @@ function Connection(options, queues = {}, { onopen = noop, onend = noop, onclose
+@@ -163,6 +163,15 @@ function Connection(options, queues = {}, { onopen = noop, onend = noop, onclose
      if (q.cancelled)
        return
  
 +    // MRD patch: the connection closed (e.g. mid-transaction) and the socket is gone. Fail this
 +    // query now instead of writing to a null socket (uncaught TypeError, then the pool hangs).
-+    if (!socket)
-+      return queryError(q, Errors.connection('CONNECTION_CLOSED', options))
++    // Return true so callers do not move this connection to the "full" queue: it must stay in
++    // "closed", where the pool reconnects it for the next query.
++    if (!socket) {
++      queryError(q, Errors.connection('CONNECTION_CLOSED', options))
++      return true
++    }
 +
      try {
        q.state = backend
        query
 diff --git a/node_modules/postgres/src/connection.js b/node_modules/postgres/src/connection.js
-index 1b1cccd..f9ba4c0 100644
+index 1b1cccd..21f6848 100644
 --- a/node_modules/postgres/src/connection.js
 +++ b/node_modules/postgres/src/connection.js
-@@ -163,6 +163,11 @@ function Connection(options, queues = {}, { onopen = noop, onend = noop, onclose
+@@ -163,6 +163,15 @@ function Connection(options, queues = {}, { onopen = noop, onend = noop, onclose
      if (q.cancelled)
        return
  
 +    // MRD patch: the connection closed (e.g. mid-transaction) and the socket is gone. Fail this
 +    // query now instead of writing to a null socket (uncaught TypeError, then the pool hangs).
-+    if (!socket)
-+      return queryError(q, Errors.connection('CONNECTION_CLOSED', options))
++    // Return true so callers do not move this connection to the "full" queue: it must stay in
++    // "closed", where the pool reconnects it for the next query.
++    if (!socket) {
++      queryError(q, Errors.connection('CONNECTION_CLOSED', options))
++      return true
++    }
 +
      try {
        q.state = backend

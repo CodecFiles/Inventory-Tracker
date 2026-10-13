@@ -11,14 +11,14 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 const ADMIN = "6f1c2a3e-0000-4000-8000-0000000010c1";
 const direct = postgres({ onnotice: () => {} });   // for setting up and checking, not through the relay
 
-// The relay: forwards bytes both ways; when armed, the n-th message from the app kills the connection.
-let cutAt = 0;
-let seen = 0;
+// The relay: forwards bytes both ways; when armed, the first message from the app that contains
+// the chosen text (e.g. "begin", "insert into") kills the connection instead of reaching PostgreSQL.
+let cutOn: string | null = null;
 const relay = net.createServer((app) => {
   const db = net.connect({ path: `${process.env.PGHOST ?? "/tmp"}/.s.PGSQL.${process.env.PGPORT ?? "5432"}` });
   app.on("data", (chunk) => {
-    if (cutAt && ++seen === cutAt) {
-      cutAt = 0;
+    if (cutOn !== null && chunk.toString("latin1").includes(cutOn)) {
+      cutOn = null;
       app.destroy();
       db.destroy();
       return;
@@ -31,7 +31,7 @@ const relay = net.createServer((app) => {
   app.on("close", () => db.destroy());
   db.on("close", () => app.destroy());
 });
-const cutOnMessage = (n: number) => { seen = 0; cutAt = n; };
+const cutWhenSending = (text: string) => { cutOn = text; };
 
 let readStock: typeof import("@/server/queries/inventory").stockOverview;
 let createRecord: typeof import("@/server/catalogue/catalogue").createRecord;
@@ -41,8 +41,8 @@ beforeAll(async () => {
   const { port } = relay.address() as net.AddressInfo;
   // the app's shared pool goes through the relay (db.ts reuses an existing global pool)
   (globalThis as { mrdSql?: unknown }).mrdSql = postgres({
-    host: "127.0.0.1", port, database: process.env.PGDATABASE, username: process.env.PGUSER ?? "postgres",
-    prepare: false, max: 1, onnotice: () => {},
+    // the user and database come from the same PG* settings as every other test
+    host: "127.0.0.1", port, database: process.env.PGDATABASE, prepare: false, max: 1, onnotice: () => {},
   });
   await direct`insert into auth.users (id) values (${ADMIN})`;
   await direct`insert into users (id, email, full_name, role, status)
@@ -62,22 +62,22 @@ const categories = async (name: string) => (await direct`select count(*)::int as
 
 describe("a connection lost under a request", () => {
   it("a read is tried again and works", async () => {
-    cutOnMessage(1);
+    cutWhenSending("has_permission");   // the first query of a read
     await expect(readStock(ADMIN)).resolves.toBeInstanceOf(Array);
-    expect(cutAt).toBe(0);   // the cut really happened
+    expect(cutOn).toBeNull();   // the cut really happened
   });
 
   it("a save cut before anything reached the database is tried again and saved once", async () => {
-    cutOnMessage(1);   // the BEGIN
+    cutWhenSending("begin");   // nothing has reached the database yet
     await createRecord(ADMIN, "category", { name: "Lost conn early" });
-    expect(cutAt).toBe(0);
+    expect(cutOn).toBeNull();   // the cut really happened
     expect(await categories("Lost conn early")).toBe(1);
   });
 
   it("a save cut half-way is not repeated: it fails and nothing is kept", async () => {
-    cutOnMessage(3);   // BEGIN, who-is-acting, then the insert itself
+    cutWhenSending("insert into");   // begun, and who is acting already recorded
     await expect(createRecord(ADMIN, "category", { name: "Lost conn late" })).rejects.toThrow();
-    expect(cutAt).toBe(0);
+    expect(cutOn).toBeNull();   // the cut really happened
     expect(await categories("Lost conn late")).toBe(0);
     await expect(readStock(ADMIN)).resolves.toBeInstanceOf(Array);   // and the next request works
   });
