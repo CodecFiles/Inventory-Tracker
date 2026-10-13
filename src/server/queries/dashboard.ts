@@ -27,17 +27,27 @@ export type Activity = { who: string; type: string; product: string; quantity: n
 
 export async function dashboardPanels(userId: string) {
   return read(userId, async (sql) => {
+    // Each unit's "reserved" flag and last deployment type are worked out once for all units and
+    // joined in, not looked up unit by unit: per-unit look-ups made PostgreSQL estimate this as a
+    // huge query and spend time compiling it (JIT) before running it on a handful of rows.
     const units = sql`
-      with live as (
+      with reserved as (
+        select i.unit_id from deployment_items i join deployments d on d.id = i.deployment_id
+        where i.unit_id is not null and i.removed_at is null and d.status in ('draft', 'scheduled')
+        union
+        select i.unit_id from shipment_items i join shipments s on s.id = i.shipment_id
+        where i.unit_id is not null and i.removed_at is null and s.status = 'draft'
+      ), last_deploy as (
+        select distinct on (m.unit_id) m.unit_id, d.deployment_type
+        from stock_movements m join deployments d on d.id = m.deployment_id
+        where m.unit_id is not null and m.movement_type in ('deploy', 'deploy_abroad')
+        order by m.unit_id, m.moved_at desc, m.id desc
+      ), live as (
         select u.id, u.status, l.type as ltype, u.location_id, p.category_id, p.model,
-               exists (select 1 from deployment_items i join deployments d on d.id = i.deployment_id
-                       where i.unit_id = u.id and i.removed_at is null and d.status in ('draft', 'scheduled'))
-               or exists (select 1 from shipment_items i join shipments s on s.id = i.shipment_id
-                          where i.unit_id = u.id and i.removed_at is null and s.status = 'draft') as reserved,
-               (select d.deployment_type from stock_movements m join deployments d on d.id = m.deployment_id
-                where m.unit_id = u.id and m.movement_type in ('deploy', 'deploy_abroad')
-                order by m.moved_at desc, m.id desc limit 1) as dep_type
+               r.unit_id is not null as reserved, ld.deployment_type as dep_type
         from units u join products p on p.id = u.product_id join locations l on l.id = u.location_id
+        left join reserved r on r.unit_id = u.id
+        left join last_deploy ld on ld.unit_id = u.id
         where u.status not in ('retired', 'returned_to_supplier')
       )`;
     const [[life], categories, months, [totals], batches, upcoming, activity] = await inOrder([
