@@ -1,5 +1,6 @@
 // Backend tests for the read queries behind the screens: who may read, stock overview with low
 // stock, item lists and history, search, documents, facility detail and the audit log.
+import postgres from "postgres";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { getSql } from "@/server/db";
 import { ForbiddenError, ValidationError } from "@/server/errors";
@@ -97,7 +98,19 @@ describe("who may read", () => {
 
 describe("dashboard panels", () => {
   it("counts a router and the SIM inside it as POC equipment, the rest as office stock", async () => {
-    const { categories, life, batches } = await dashboardPanels(VIEWER);
+    // TEMPORARY diagnostic (CI hang on PR #16): if the dashboard takes over 4 s, print what the
+    // database and the connection slots are doing, then fail.
+    const work = dashboardPanels(VIEWER);
+    const slow = setTimeout(async () => {
+      const probe = postgres({ max: 1, onnotice: () => {} });
+      const activity = await probe`select pid, state, wait_event_type, wait_event, now() - query_start as for,
+                                          left(query, 120) as query from pg_stat_activity
+                                   where datname = current_database() and pid <> pg_backend_pid()`;
+      console.error("DIAG slots", JSON.stringify((globalThis as { mrdSlots?: unknown }).mrdSlots));
+      console.error("DIAG activity", JSON.stringify(activity, null, 1));
+      await probe.end();
+    }, 4000);
+    const { categories, life, batches } = await work.finally(() => clearTimeout(slow));
     const q = categories.find((c) => c.category === "Query test")!;
     // Q-R1 and its SIM went out on a POC deployment; 2 routers and 2 SIMs are still in the office
     expect(q).toMatchObject({ total: 6, deployed: 2, poc: 2, contract: 0, inStock: 4, reserved: 0 });
