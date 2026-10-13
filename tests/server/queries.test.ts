@@ -6,6 +6,7 @@ import { ForbiddenError, ValidationError } from "@/server/errors";
 import { addDeploymentItem, completeDeployment, createDeployment } from "@/server/deployments/deployments";
 import { configureRouter } from "@/server/inventory/prepare";
 import { receiveDelivery } from "@/server/inventory/receive";
+import { batchFull, batchList } from "@/server/queries/batches";
 import { dashboardPanels } from "@/server/queries/dashboard";
 import { batchDetail, deploymentDetail, listDeployments } from "@/server/queries/documents";
 import { listUnits, search, stockOverview, unitDetail } from "@/server/queries/inventory";
@@ -168,6 +169,28 @@ describe("documents and places", () => {
     const b = await batchDetail(VIEWER, { id: batchId });
     expect(b.lines.map((l) => [l.product, l.quantityReceived, l.serialised])).toEqual([["Q router", 3, 3], ["Q SIM", 3, 3], ["Q cable", 4, 0]]);
     expect(b.units).toHaveLength(6);
+  });
+
+  it("batches list: where the units of each delivery are now, with filters", async () => {
+    const { rows, summary } = await batchList(VIEWER, { q: batchCode });
+    // Q-R1 and its SIM deployed; Q-R3 and its SIM configured; Q-R2 and SIM[1] in stock
+    expect(rows).toEqual([expect.objectContaining({
+      code: batchCode, lines: 3, quantity: 10, units: 6, deployed: 2, ready: 2, inStock: 2, available: 4,
+    })]);
+    expect(summary.received).toBeGreaterThanOrEqual(10);
+    expect((await batchList(VIEWER, { q: "no such batch" })).rows).toEqual([]);
+    expect((await batchList(VIEWER, { q: "INV-Q-77" })).rows.map((r) => r.code)).toEqual([batchCode]);   // by invoice
+  });
+
+  it("batch detail: lines, units with SIM and IP, the deployment they went out on, activity", async () => {
+    const b = await batchFull(VIEWER, { id: batchId });
+    expect(b.lines.map((l) => [l.product, l.quantityReceived, l.serialised])).toEqual([["Q router", 3, 3], ["Q SIM", 3, 3], ["Q cable", 4, 0]]);
+    expect(b.units.find((u) => u.serial === "Q-R1")).toMatchObject({ simIccid: SIM[0], ipAddress: "10.50.0.1", place: "facility" });
+    expect(b.units.find((u) => u.serial === SIM[0])).toMatchObject({ inRouter: "Q-R1", ipAddress: "10.50.0.1" });
+    expect(b.deployments.map((d) => [d.code, d.serial, d.type])).toEqual(
+      expect.arrayContaining([[deploymentCode, "Q-R1", "poc"], [deploymentCode, SIM[0], "poc"]]));
+    expect(b.activity.map((a) => a.type)).toEqual(expect.arrayContaining(["receive", "deploy"]));
+    await expect(batchFull(VIEWER, { id: 999999 })).rejects.toThrow("does not exist");
   });
 
   it("facility detail: what is installed (router with SIM and IP, cables) and its stage history", async () => {
