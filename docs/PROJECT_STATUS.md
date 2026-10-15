@@ -9,10 +9,11 @@ different in looks from what I had designed"). Screens were simplified against `
 without charts, inventory without category tabs/column chooser/bulk actions, prep kanban turned into
 lists, receive wizard turned into one form, no lifecycle stepper; POC, Contracts, Reports, Products
 and mobile screens not built. Batch 1 (Dashboard, All inventory, Device detail) done 2026-10-13 —
-owner to review on staging; batch 2 next: Batches + Batch detail, Receive stock (wizard), Device
-preparation (kanban).
+owner confirmed on staging: matches the design, site faster. Batch 2 (Batches + Batch detail, Receive stock
+3-step wizard, Device preparation board with side panel) done 2026-10-13 — owner to review on staging.
+Batch 3 next: Facilities, Facility detail, Deployments.
 Also open (owner reported 2026-10-13):
-- **Slow site.** Fixed in code: 13–24 database queries per page instead of 31–38, most run in parallel. Still to check:
+- **Slow site: owner confirmed faster (2026-10-13).** Fixed in code: 13–24 database queries per page instead of 31–38, most run in parallel. Still to check:
   Vercel Function Region (database is in Tokyo; Tokyo `hnd1` recommended). Moving the database
   closer to Oman is decision R6 — owner's agreement needed.
 - **Site stops opening (2026-10-13, PR #15).** Cause: a lost connection to the Supabase pooler
@@ -26,8 +27,9 @@ Also open (owner reported 2026-10-13):
   (reads outside transactions, 7 dashboard queries at once). Owner rolled back to the PR #13 build.
   Fix: never more database work at once than connections (`withConnection`), no parallel queries
   inside one piece of work; test `no-pipelining` (11 in flight without the fix, 1 with it).
-- **Two logins.** The code has one login page; the first one is likely Vercel's Deployment
-  Protection. Needs a screenshot with the address bar to confirm.
+  Also the dashboard query was rewritten (cost 133k → 217, no JIT). PR #16 merged; owner confirmed
+  the site works again (2026-10-13).
+- **Two logins: resolved** (owner, 2026-10-13: login page now proper; cause not confirmed).
 Then: owner's staging walkthrough and Shipments review close the Stage 6 gate.
 Google sign-in and custom SMTP (M3) before colleagues sign up.
 
@@ -231,6 +233,7 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 | 2026-10-13 | 6.5 backend: Vitest `users-manage.test.ts` (11) | **124/124 pass** | Mutation: without "demoting an Admin removes their permissions", 1 test fails |
 | 2026-10-13 | 6.5 end-to-end through the screens (local preview, Playwright) + DB checks | **PASS** | Approve a sign-up as Editor; own row protected; Viewer → Editor; disable → enable; Editor → Admin with audit.view + reports.view; counted-stock correction (+2, reason); written-off router corrected back to stock; audit log shows "role: viewer → editor" |
 | 2026-10-13 | Browser tests (Playwright, `tests/e2e`, 10 tests) on a fresh demo DB | **10/10 pass, 3 runs in a row** (~35 s); also without Supabase settings (as on GitHub) | Every main workflow through the screens with DB checks: catalogue, receive (bad ICCID → nothing saved), prep, facility + stage rules, deployment (refusal → nothing moved; SIM travels; return), shipment, repair, write-off, users & roles, corrections, audit log, Viewer refused everywhere. Mutation: re-introducing the 6.4 form-reset bug fails the stage test ("expected contract, received bms_scan") |
+| 2026-10-13 | Design batch 2: Vitest 133/133 (2 new batch query tests), browser tests 13/13 (receive and prep rewritten for the wizard and board), lint, build, phone width; largest query cost 17.7k (below JIT) | **PASS** | |
 | 2026-10-13 | No-pipelining fix: Vitest 131/131, browser tests 13/13, lint, build | **PASS** | Relay counts queries in flight per connection under 42 simultaneous reads and saves on a 2-connection pool: 11 without the fix, 1 with it |
 | 2026-10-13 | Lost-connection fix: Vitest 130/130 (3 new), browser tests 13/13, lint, build | **PASS** | Mutation: without the library patch the mid-save cut test hangs (the staging bug); with it the save fails cleanly, nothing is kept, the next request works |
 | 2026-10-13 | Design batch 1: Vitest 127/127, browser tests 13/13 (3 new for the redesigned screens), lint, phone width 390 px without sideways scroll | **PASS** | Mutation: counting SIMs by their own deployment line (old rule) fails the new dashboard test (POC SIM counted as contract) |
@@ -287,3 +290,4 @@ design, 5 migrations live on Supabase staging, 87 integrity tests + race test ru
 - 2026-10-13 — PR #12 merged. Automated browser tests (10) + GitHub workflow; preview mode can switch demo user by cookie (dev only, tested). Stage 6 gate waits for the owner's staging walkthrough.
 - 2026-10-13 — Speed: reads use one check query and no transaction; who-is-signed-in and permissions looked up once per page (React cache). Queries per page: dashboard 38→16, inventory 35→17, item 31→17 (local count). New test: a disabled account cannot read.
 - 2026-10-13 — Design batch 1: Dashboard (lifecycle stages, category cards, 3 charts, recently received, upcoming, recent activity), All inventory (status chips, category tabs, filter row, richer rows, counted pieces in the list, pagination), Device detail (header actions, 8 answers, lifecycle stepper, deployment card, history with from→to, traceability). Left out on purpose: bulk actions (they would bypass deployment/shipment rules), notes & attachments, column chooser, export (with Reports), notifications.
+- 2026-10-13 — Design batch 2: Batches (tiles, category chips, filters, unit-state bars), Batch detail (traceability chain, status tiles, units by status, info, activity, deployment history), Receive stock as a 3-step wizard with receipt summary, Device preparation as a board (No SIM yet / Waiting for serial numbers / Ready) with a side panel. Left out (no data yet): batch editing, labels, documents, warranty, firmware/config profile/MAC, sign-off steps.

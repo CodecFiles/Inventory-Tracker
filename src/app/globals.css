@@ -154,7 +154,7 @@ details.edit > summary::-webkit-details-marker{display:none}
 .formrow > .btn{flex:0 0 auto}
 
 /* Toast: short confirmation in the corner (design/BatchDetail.dc.html) */
-.toast{position:fixed;right:24px;bottom:24px;z-index:60;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;background:#0E1726;color:#fff;font-size:13px;box-shadow:0 10px 30px rgba(14,23,38,.3)}
+.toast{position:fixed;right:24px;bottom:24px;z-index:100;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;background:#0E1726;color:#fff;font-size:13px;box-shadow:0 10px 30px rgba(14,23,38,.3)}
 @media (max-width:900px){.toast{left:16px;right:16px;bottom:16px}}
 
 /* All inventory (design/Inventory.dc.html): status chips, category tabs, filter selects, pagination */
@@ -200,3 +200,18 @@ details.edit > summary::-webkit-details-marker{display:none}
 .chain{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .chain .lk{display:flex;flex-direction:column;gap:2px;padding:10px 14px;border:1px solid #E3E7EC;border-radius:10px;min-width:110px;color:#0E1726}
 .chain .lk.pend{border-style:dashed;color:#5E6B7D}
+
+/* Device preparation (design/DevicePrep.dc.html): board columns and the side panel */
+.board{display:grid;grid-template-columns:repeat(3,minmax(260px,1fr));gap:14px;overflow-x:auto;padding-bottom:4px}
+.bcol{background:#F1F4F7;border:1px solid #E3E7EC;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.bcol h2{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600}
+.bcol h2 .n{font-size:11.5px;background:#fff;border:1px solid #DCE1E8;border-radius:999px;padding:0 8px;line-height:18px;font-weight:500}
+.bcard{background:#fff;border:1px solid #E3E7EC;border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:6px}
+.bcard.on{border-color:#0B7A6B;box-shadow:inset 0 0 0 1px #0B7A6B}
+.scrim-link{position:fixed;inset:0;background:rgba(14,23,38,.35);z-index:90}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(480px,100vw);background:#fff;z-index:91;box-shadow:-16px 0 40px rgba(14,23,38,.18);display:flex;flex-direction:column;overflow-y:auto}
+.drawer .dh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:20px 22px 14px;border-bottom:1px solid #EEF1F4}
+.drawer .ds{padding:16px 22px;border-bottom:1px solid #EEF1F4;display:flex;flex-direction:column;gap:12px}
+.drawer .ds h3{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+.drawer .ds h3 .k{width:22px;height:22px;border-radius:50%;background:#F1F4F7;font-size:11.5px;display:inline-flex;align-items:center;justify-content:center}
+@media (max-width:760px){.board{grid-template-columns:repeat(3,minmax(250px,85vw))}}
